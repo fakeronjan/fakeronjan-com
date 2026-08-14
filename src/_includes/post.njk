@@ -1,0 +1,10 @@
+---
+layout: base.njk
+---
+<article class="post">
+  <p class="post-meta">
+    {{ date | mdy }}
+    {%- if original_source %} &middot; originally published on {{ original_source }}{% endif %}
+  </p>
+  {{ content | safe }}
+</article>

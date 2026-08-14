@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "FAKE RONJAN!!" }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="/style.css?v={{ buildTime }}">
+  <script>
+    (function () {
+      var saved = localStorage.getItem("theme");
+      if (saved === "light" || saved === "dark") {
+        document.documentElement.dataset.theme = saved;
+      }
+    })();
+  </script>
+</head>
+<body>
+  <header>
+    <div class="brand"><a href="/"><img src="/img/avatar.webp" alt="FAKE RONJAN!!" class="brand-logo">FAKE RONJAN!!</a></div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/blog/">Blog</a>
+      <a href="/sports/">Sports Ratings</a>
+      <a href="/video-games/">Game of the Year</a>
+      <a class="nav-preview" href="https://mariopaintmusicguy.com/" target="_blank" rel="noopener" data-logo="/img/mpmg-avatar.png">Mario Paint Music Guy<span class="nav-arrow">&#8599;</span></a>
+      <a class="nav-preview" href="https://fakebasketball.com/" target="_blank" rel="noopener" data-logo="/img/fakebasketball-logo.png">Fake Basketball<span class="nav-arrow">&#8599;</span></a>
+      <button id="themeToggle" class="theme-toggle" aria-label="Toggle light and dark mode" type="button">
+        <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    {{ content | safe }}
+  </main>
+
+  <script>
+    document.getElementById("themeToggle").addEventListener("click", function () {
+      var current = document.documentElement.dataset.theme ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      var next = current === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem("theme", next);
+    });
+  </script>
+
+  <script>
+    (function () {
+      var overlay = document.createElement("img");
+      overlay.className = "nav-preview-overlay";
+      document.body.appendChild(overlay);
+      document.querySelectorAll(".nav-preview[data-logo]").forEach(function (link) {
+        link.addEventListener("mouseenter", function () {
+          var rect = link.getBoundingClientRect();
+          overlay.src = link.dataset.logo;
+          overlay.style.left = (rect.left + rect.width / 2) + "px";
+          overlay.style.top = (rect.bottom + 8) + "px";
+          overlay.style.display = "block";
+        });
+        link.addEventListener("mouseleave", function () {
+          overlay.style.display = "none";
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

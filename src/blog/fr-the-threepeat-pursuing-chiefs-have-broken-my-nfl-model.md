@@ -1,0 +1,20 @@
+---
+layout: post.njk
+title: "The threepeat-pursuing Chiefs have broken my NFL model"
+date: 2025-01-20
+---
+
+# {{ title }}
+
+<p>I’ve loved ranking things for as long as I can remember. Over the years, I’ve ranked sports teams (<a href="https://fakeronjan.com/nba" rel="noopener" target="_blank">NBA</a>, <a href="https://fakeronjan.com/wnba" rel="noopener" target="_blank">WNBA</a>), <a href="https://fakeronjan.com/music" rel="noopener" target="_blank">music tracks</a>, <a href="https://fakeronjan.com/video-games" rel="noopener" target="_blank">video games</a>, <a href="/blog/fr-the-most-exciting-events-ive-witnessed-from-my-apartment-ranked/">exciting events that happened in my neighborhood</a>, at at one point in third grade, I even ranked how much I liked all of my friends. Protip - don’t do that.</p>
+<p>Of everything I’ve ever ranked, though, my <a href="https://fakeronjan.com/nfl" rel="noopener" target="_blank">NFL power rankings</a> have been my favorite. There’s something about the shorter schedule, the likelihood of upsets, and in-season narratives that makes NFL power rankings the most compelling to track over time.</p>
+<p>I first started ranking teams qualitatively every week in middle school, but I decided to create a model to do it for me in 2013. It was a simple model that used the Excel solver function to predict the scoring margin between teams using only three inputs - the quality of the opponent, the final score, and how recent the game was. Scores were zero-centered, with good teams being rated between 5 and 10, great teams between 10 and 15, and historically great teams above 15.</p>
+<p>A few years later, I updated the model to be fully automated in Python, and that allowed me to run retroactive weekly ratings back to 1970. This opened up a new level of historical context and analysis that I’d never been able to do before, and I couldn’t be happier.</p>
+<p>Except for one thing. My model is fundamentally broken. It doesn’t know how to handle the Patrick Mahomes-era Kansas City Chiefs. Like, at all.</p>
+<p>Typically, teams that win Super Bowls have good-to-great regular seasons. Typically, teams that win back-to-back Super Bowls have at least one truly dominant season. Typically, teams that threaten a threepeat have the stats putting them at or among the top spot in the league.</p>
+<p>These Chiefs? They keep winning games and Super Bowls by the skin of their teeth, and my model simply doesn’t know what to do. When you only use three inputs (quality of opponent, final score, and game recency), I guess you lose the nuance of “Mahomes scrambles for 12 yards on 3rd-and-11” or “ticky tack penalty called on the defense on a KC failed 4th down” that seems to keep happening, week after week.</p>
+<p>I went back and looked at every post-merger back-to-back Super Bowl champion’s ratings for their title seasons, the season before they won, and the season after they won when they were going for a threepeat. I compared their power ratings for both the end of the regular season and the end of the playoffs.</p>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/the-threepeat-pursuing-chiefs-have-broken-my-nfl-model/screenshot-2025-01-20-at-11.44.22-e2-80-afam.png"/></figure>
+<p>Wow, do these Chiefs stick out. Their best season by the numbers was the year they <em>didn’t</em> make the Super Bowl (2021). They’re the only team on this list not to put up a “great” (10+ rating) season when they won the title. And they have the two lowest postseason ratings in the years they won it all of any team on this list.</p>
+<p>I don’t know what to say. They’ve broken more than my model - they’ve broken the league. I mean, the Chiefs have won three of the past five Super Bowls, and they were down double-digits in each of those wins! What do you even do about that?</p>
+<p>In my case … I guess I’ll just keep calm and carry on running my model, hoping that someday it makes sense again. Because even though the Chiefs and Mahomes magic have broken the league, they haven’t taken the fun out of ranking NFL teams. Yet.</p>

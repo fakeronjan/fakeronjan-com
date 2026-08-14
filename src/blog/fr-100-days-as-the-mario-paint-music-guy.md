@@ -1,0 +1,58 @@
+---
+layout: post.njk
+title: "100 days as the Mario Paint Music Guy"
+date: 2025-12-07
+tags: [music, about-me]
+description: reviewing my new musical composer journey
+---
+
+# {{ title }}
+
+<p>For 100 straight days, I’ve uploaded music to my new YouTube channel, <a href="https://www.youtube.com/@mariopaintmusicguy" rel="noopener" target="_blank">Mario Paint Music Guy</a>. (Well, technically, the 100th goes up on December 10th.) It’s the most consistent effort I’ve put into music of any kind in decades, and I’m excited to keep it going. At this milestone, I thought I’d do a quick retrospective on the experience so far.</p>
+<h3>The idea</h3>
+<p>The idea came together pretty quickly. On August 17th, I posted a <a href="/blog/fr-40-years-a-musician/">birthday retro about the 40 years of my life as a musician</a>. I closed it with this commitment:</p>
+<blockquote class="big">
+Even though I still don’t know exactly how I intend to keep in touch with music going forward, I know that I will find a way.
+<cite>Real Ronjan</cite>
+</blockquote>
+<p>A few days later while on vacation, in the middle of our household’s <em>K-Pop Demon Hunters</em> mania, I thought it’d be fun to do some of the music in <em>Mario Paint</em> on the Analogue Pocket I’d brought with me. Between August 21st and 24th I wrote up 5 of the songs (<em>Golden</em>, <em>Soda Pop</em>, <em>How It’s Done</em>, <em>Takedown</em>, and <em>What It Sounds Like</em>) and recorded them with my phone.</p>
+<div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/4ZWilVUmlLQ"></iframe></div>
+<p>I posted them on my <a href="https://www.youtube.com/@fakeronjan" rel="noopener" target="_blank">personal YouTube channel</a> (I’ve since moved them to the Mario Paint Music Guy channel) and they got a few hundred views. Not bad for a lark, I definitely timed the market!</p>
+<p>Then, on August 28th, <em>Nintendo Life</em> posted an amazing video about <em>Mario Paint</em>. They bought 100 used cartridges of the game to see what kind of masterpieces were saved to them. And while they found some gold, the ultimate takeaway was that most of the batteries that were backing up the data of these 30-year-old cartridges have likely failed, meaning all of these works are lost to time.</p>
+<div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/aHuQZVtzdIo"></iframe></div>
+<p>As someone who spent dozens of hours creating music in <em>Mario Paint</em> as a child, this hit hard. I wanted to get back to creation, I wanted to bring back some of my old stuff, and I wanted to archive my work properly.</p>
+<p>So, after a quick check online to make sure that no one else already had the name, the <em>Mario Paint Music Guy</em> was born!</p>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/100-days-as-the-mario-paint-music-guy/logo---channel-pic.png"/></figure>
+<h3>Getting started</h3>
+<p>I didn’t really have a game plan from here. I just started making music and recording it. I did some pop music, some video game music, some sports themes. Anything that came to mind. I asked friends for some requests to get the ideas flowing. <em>Nirvana</em>. <em>Balatro</em>. <em>System of a Down</em>. <em>Juvenile</em>.</p>
+<p>Once I had a dozen or so completed, I started posting them daily. The first one was a re-upload of <em>Golden</em> from <em>K-Pop Demon Hunters</em> on September 2nd. And I was off to the races!</p>
+<p>At first I was posting to YouTube, re-uploading as YouTube Shorts, and also posting as Instagram Reels. That ended up being overkill and I noticed that the Shorts &amp; Reels would do really big views in a day - like hundreds - but would then fall off. The standard YouTube uploads would be much slower burns, a few views a day, but they wouldn’t die off after day one. I decided that regular YouTube was the best place to focus. I’m not doing this to make money, I’m doing this to preserve and share my work. So that’s where it belongs.</p>
+<h3>The creative process</h3>
+<p>It’s important to call out here that <em>Mario Paint</em>’s music composer has some huge limitations. You can only have 96 beats worth of music - 24 measures of 4/4 or 32 measures of 3/4, so you can only do part of a song. You can only have 3 instruments playing at a given time and they can’t play the same note, so you’ve got to pick which instrument plays what note judiciously. And there’s no sharps and flats, meaning you’re pretty much locked into transposing into C or G major and A, D, or perhaps E minor. This forces creative tradeoffs that don’t exist in other music creation tools.</p>
+<p>I’m fully aware of mods that eliminate these restrictions such as <a href="https://danielx.net/composer/" rel="noopener" target="_blank"><em>Mario Paint Music Composer</em></a>, but the limitations of original <em>Mario Paint</em> are my favorite thing about it. Find a way to make it work. And I did!</p>
+<p>My process for creation was pretty straightforward. I am blessed with perfect pitch and can notate pretty much anything by ear, so each one of these took somewhere between 20-30 minutes to do. I sequenced the layers pretty much the same every time, starting with the melody, then the bass, then percussion, then a few ornamental layers until I liked how it sounded. I demonstrated the process in this video:</p>
+<div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/NL6EQAy2Z1I"></iframe></div>
+<p>Because I had a buffer of a dozen or so videos, I had flexibility on when I’d do these. Because I had the Analogue Pocket, I could do them anywhere, even on the daily bus commute. Sometimes I’d go a stretch making one a day for a bit. Other times I’d have a dry spell and would binge-create 5+ in a row to catch up.</p>
+<p>It never really felt like work. On the contrary, if anything, it was an exciting thing to do whenever I had the time. I looked forward to it and never fell into the content creator stress loop. It helps that this channel is really small and there’s not much at stake. I’m well below any thresholds where this can make any money, and I’m not particularly interested in changing that.</p>
+<p>That said, on September 23rd I started using a <a href="https://www.elgato.com/us/en/p/game-capture-neo" rel="noopener" target="_blank">capture card</a> to upgrade my production quality at least a little bit. No more cell phone recording of another screen. Not quite the big leagues but I’m glad I did it.</p>
+<h3>what I made</h3>
+<p>My top category by far was game music (<a href="https://www.youtube.com/playlist?list=PLbLpXee-8ZBtNtfNPHHD2D1qRhsVfUYX6" rel="noopener" target="_blank">playlist</a>). The <em>Mario</em> theme, the <em>Zelda</em> theme, the <em>Balatro</em> theme, lots of <em>Persona</em> music, and so on. 29 tracks in total. In terms of pop music, I did 18 tracks from the 2000s (<a href="https://www.youtube.com/playlist?list=PLbLpXee-8ZBt4iRv32ATIORSVO7ZWeaCt" rel="noopener" target="_blank">playlist</a>), 12 from the 1990s (<a href="https://www.youtube.com/playlist?list=PLbLpXee-8ZBtit109CBYfYEhFgUaCgPk6" rel="noopener" target="_blank">playlist</a>), and even a couple from the 1980s (<a href="https://www.youtube.com/playlist?list=PLbLpXee-8ZBvOBC-cSlfrgD71X-3C1QAc" rel="noopener" target="_blank">playlist</a>). I did 6 sports themes (<a href="https://www.youtube.com/playlist?list=PLbLpXee-8ZBvGeCxG15oX6dMUE9OB5T1j" rel="noopener" target="_blank">playlist</a>), 5 movie and TV themes (<a href="https://www.youtube.com/playlist?list=PLbLpXee-8ZBsn_Bd2igcNAQ5oJ1xLjef0" rel="noopener" target="_blank">playlist</a>), and 4 Disney tracks (<a href="https://www.youtube.com/playlist?list=PLbLpXee-8ZBvkfzbAMAERMDHTmO5rNhh2" rel="noopener" target="_blank">playlist</a>). I even brought back childhood compositions (<a href="https://www.youtube.com/playlist?list=PLbLpXee-8ZBssiYT4EPdsQFce93cc9yRA" rel="noopener" target="_blank">playlist</a>) - some that I had originally written for the piano, others that I had originally done in <em>Mario Paint</em> back then. And perhaps dorkiest, I did the <a href="https://www.youtube.com/watch?v=JKsizTyfxZk" rel="noopener" target="_blank">Incoming Huddle music from Slack</a>, yes, the work program.</p>
+<p>Across everything, here are my top 5 favorites that I’ve published so far:</p>
+<p><strong>5. Golden (part 2) by Huntr/x from K-Pop Demon Hunters</strong></p>
+<p>My very first upload for the channel was from a different part of this song, but I took a second crack at it to do the verse section. This was one of my first experiments with doing two melody sections at the same time, getting Rumi, Zoey, and Mira in one shot. I like how it came together.</p>
+<div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/SF5gaCYobFs"></iframe></div>
+<p><strong>4. Thong Song by Sisqo</strong></p>
+<p>I like how the ornamental instrumentation brings the energy level up on this one. They emulate motifs from other parts of the song.</p>
+<div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/mmoADgTgreM"></iframe></div>
+<p><strong>3. Balatro Theme</strong></p>
+<p>Honestly, I just wasn’t sure if I’d be able to get this theme working in <em>Mario Paint</em>, given its odd time signature and what would appear to be required sharps and flats. I was really thrilled that it ended up working, at least as a reasonable approximation.</p>
+<div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/Vz_tdm-vJGY"></iframe></div>
+<p><strong>2. Stupify by Disturbed</strong></p>
+<p>Another personal favorite that I wasn’t sure was possible in <em>Mario Paint</em>. I really got the driving rhythm working, and the goose instrument matches David Draiman’s energy level.</p>
+<div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/S7_YqT8m7cQ"></iframe></div>
+<p><strong>1. Back That Thang / Azz Up by Juvenile</strong></p>
+<p>There was no doubt that once I got this one working it’d be a personal favorite. The pig and Yoshi sounds got Juvenile’s flow down perfectly and I was absolutely thrilled. It’ll be hard to top this one.</p>
+<div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/PQMScBLyL8s"></iframe></div>
+<h3>What’s next</h3>
+<p>So what’s next? Once the 100th video goes up on December 10th, I’m going to take a short break. I don’t know how long, it could be a few days or a few months. But I’ll be making music whenever I can and building up a buffer to post again.</p>
+<p>So this isn’t the end of an experiment. It’s just the beginning. I’m not done, I can’t be done. After all, I’m the Mario Paint Music Guy.</p>

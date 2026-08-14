@@ -1,0 +1,85 @@
+---
+layout: base.njk
+title: Blog | FAKE RONJAN!!
+permalink: /blog/
+---
+
+<h1>Blog</h1>
+
+<div class="tag-filters" id="tagFilters">
+  <button class="tag-filter active" data-filter="all">All ({{ collections.blog | countTag('all') }})</button>
+  {%- for tag in tagList %}
+  <button class="tag-filter" data-filter="{{ tag.slug }}">{{ tag.label }} ({{ collections.blog | countTag(tag.slug) }})</button>
+  {%- endfor %}
+</div>
+
+<div class="post-grid" id="postGrid">
+{%- for post in collections.blog %}
+  <a class="post-tile" href="{{ post.url }}" data-tags="{{ (post.data.tags or []) | join(',') }}">
+    <span class="post-tile-title">{{ post.data.title }}</span>
+    {%- if post.data.tags and post.data.tags.length %}
+    <span class="post-tile-tags">
+      {%- for t in post.data.tags %}<span class="tag-pill">{{ t | tagLabel }}</span>{% endfor %}
+    </span>
+    {%- endif %}
+    <span class="post-tile-meta">
+      <span class="post-tile-date">{{ post.date | mdy }}</span>
+      {%- if post.data.original_source %}
+      <span class="post-source">{{ post.data.source_short or post.data.original_source }}</span>
+      {%- endif %}
+    </span>
+  </a>
+{%- endfor %}
+</div>
+
+<script>
+function balanceTagFilters() {
+  const container = document.getElementById("tagFilters");
+  container.querySelectorAll(".row-break").forEach((el) => el.remove());
+  const buttons = Array.from(container.querySelectorAll(".tag-filter"));
+  const n = buttons.length;
+  if (n < 2) return;
+
+  const containerWidth = container.clientWidth;
+  const gap = parseFloat(getComputedStyle(container).gap) || 0;
+  const widths = buttons.map((b) => b.getBoundingClientRect().width);
+
+  // greedy: how many fit on one natural row before the first overflow
+  let maxPerRow = 0, used = 0;
+  for (let i = 0; i < n; i++) {
+    const next = used + (i > 0 ? gap : 0) + widths[i];
+    if (next > containerWidth && maxPerRow > 0) break;
+    used = next;
+    maxPerRow++;
+  }
+  if (maxPerRow >= n) return; // everything already fits on one row
+
+  const rows = Math.ceil(n / maxPerRow);
+  const base = Math.floor(n / rows);
+  const remainder = n % rows; // first `remainder` rows get one extra item
+
+  let idx = 0;
+  for (let r = 0; r < rows - 1; r++) {
+    idx += base + (r < remainder ? 1 : 0);
+    const brk = document.createElement("span");
+    brk.className = "row-break";
+    brk.style.flexBasis = "100%";
+    brk.style.width = "0";
+    brk.style.height = "0";
+    buttons[idx].parentNode.insertBefore(brk, buttons[idx]);
+  }
+}
+window.addEventListener("load", balanceTagFilters);
+window.addEventListener("resize", balanceTagFilters);
+
+document.getElementById("tagFilters").addEventListener("click", (e) => {
+  const btn = e.target.closest(".tag-filter");
+  if (!btn) return;
+  document.querySelectorAll(".tag-filter").forEach((b) => b.classList.toggle("active", b === btn));
+  const filter = btn.dataset.filter;
+  document.querySelectorAll(".post-tile").forEach((tile) => {
+    const tags = (tile.dataset.tags || "").split(",");
+    tile.style.display = filter === "all" || tags.includes(filter) ? "" : "none";
+  });
+});
+</script>

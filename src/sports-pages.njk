@@ -1,0 +1,32 @@
+---
+pagination:
+  data: sportsPages
+  size: 1
+  alias: sport
+permalink: "/{{ sport.slug }}/"
+layout: base.njk
+eleventyComputed:
+  title: "{{ sport.label }} | FAKE RONJAN!!"
+---
+<div class="sports-embed"><div class="sports-embed-inner">
+<iframe
+  src="{{ sport.target }}"
+  width="100%"
+  height="800"
+  style="border:none; display:block; transition:height 0.2s"
+  loading="lazy"
+></iframe>
+</div></div>
+<script>
+window.addEventListener('message', function (e) {
+  if (e.origin !== 'https://fakeronjan.github.io') return;
+  if (!e.data || e.data.type !== 'fakeronjan-resize') return;
+  var iframes = document.querySelectorAll('iframe');
+  for (var i = 0; i < iframes.length; i++) {
+    if (iframes[i].contentWindow === e.source) {
+      iframes[i].style.setProperty('height', (e.data.height + 8) + 'px', 'important');
+      return;
+    }
+  }
+});
+</script>

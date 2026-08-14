@@ -1,0 +1,25 @@
+---
+layout: post.njk
+title: "Box Score Monday: a Madden 93 classic"
+date: 2013-08-26
+original_source: uselesssportsanalysis.com
+---
+
+# {{ title }}
+
+<p><a href="http://www.easports.com/madden-nfl" rel="noopener" target="_blank" title="">Madden NFL 25</a> comes out tomorrow, and Useless Sports Analysis is celebrating with Madden Week!  All of our posts this week will be somehow Madden related.  We'll kick it off with the Box Score Monday.</p>
+<p><a href="http://www.youtube.com/watch?v=CHio4lLOhKc" rel="noopener" target="_blank" title="">Super Nintendo, Sega Genesis</a>.  <a href="http://www.youtube.com/watch?v=05wV8cSmZPU" rel="noopener" target="_blank" title="">Buffalo Bills, Dallas Cowboys</a>.  Those were two of the biggest rivalries of the early 1990s, and <a href="http://mediasaurus.blogspot.com/" rel="noopener" target="_blank">my buddy Sudhir</a> and I were all-in on the action.  I had a Super Nintendo and rooted for the Bills, he had a Sega Genesis and rooted for the Cowboys.</p>
+<p><a href="http://en.wikipedia.org/wiki/John_Madden_Football_'93" rel="noopener" target="_blank" title="">John Madden Football 93</a> was the common linkage.  This was the last year before the game got the NFL license, so it didn't have any NFL branding, team logos, or player names.  But you still knew who everyone was, dammit!</p>
+<figure><img alt="" loading="lazy" src="/blog/img/ua/box-score-monday-a-madden-93-classic/9859800-324.png"/></figure>
+<p>We set up a home-and-home series where we'd play once on the Super NES and once on the Genesis, and I'd play as the Buffalo Bills and Sudhir would play as the Dallas Cowboys.  The first game was on the Super NES.  Neither of us remember much about that matchup, but I, and the Buffalo Bills, won.  On to the Genesis!</p>
+<p>This one was a doozy.  The details are sketchy, but both teams scored at will, and we were tied 42-42 at the end of regulation.  What happened next was truly incredible.</p>
+<p>Sudhir, and the Cowboys, won the coin toss.  And as had been the case throughout the game, the Cowboys drove down the field.  In scoring position, Aikman hit (I think) Michael Irvin on a dead run and he had the goal line in sight with no defenders nearby.  Naturally, Sudhir -- controlling Irvin -- showboated, with the victory now certain.</p>
+<p>Until a Bills defender -- I think it was Nate Odomes, as he was the fastest Bills defensive back in that game -- stormed into the picture, tackled Irvin at the 1 yard line, and forced a fumble.  (While the stakes were much different, it was certainly reminiscent of the <a href="http://www.youtube.com/watch?v=NTeqQY_T2mE" rel="noopener" target="_blank" title="">real-life Leon Lett fumble in the Super Bowl</a>.)</p>
+<p>I'm not sure if Odomes scooped the fumble up and ran it 99 yards in for the score, or if the Bills' offense did the trick, but either way, the Bills scored the final touchdown of the game to win, 48-42.</p>
+<figure><img alt="" loading="lazy" src="/blog/img/ua/box-score-monday-a-madden-93-classic/4626434-403.png"/></figure>
+<p>Here's a shot of what the touchdown may have looked like back then:</p>
+<figure><img alt="" loading="lazy" src="/blog/img/ua/box-score-monday-a-madden-93-classic/1264443_orig.png"/></figure>
+<p>Game-set-match to me!  Or so you'd think.  In the aftermath of that matchup, the final result has been in dispute for 20 years.  Was I really better, or did I win on a fluke?</p>
+<p>Sudhir in 2004: <span style="background- font-family: arial, sans-serif; font-size: 13px; line-height: normal">I </span><span style="font-family: arial, sans-serif; font-size: 13px; line-height: normal; background-">dominate you in everything related to football, including Madden</span><span style="font-family: arial, sans-serif; font-size: 13px; line-height: normal; background-"> 93 </span><span style="background- font-family: arial, sans-serif; font-size: 13px; line-height: normal">;)</span><br/><span style="background- font-family: arial, sans-serif; font-size: 13px; line-height: normal"><br/></span>Sudhir in 2009: <span style="font-family: arial, sans-serif; font-size: 13px; line-height: normal; background-">i've always felt bad for my Madden</span><span style="font-family: arial, sans-serif; font-size: 13px; line-height: normal; background-"> victories..:)</span><br/><span style="font-family: arial, sans-serif; font-size: 13px; line-height: normal; background-"><br/></span>Sudhir six days ago: <span style="background- font-family: arial, sans-serif; font-size: 13px; line-height: normal">I don't really remember what happened, but I know that to this day I continue to believe I won that game, so I must have won it</span><span style="font-family: arial, sans-serif; font-size: 13px; line-height: normal; background-"><br/></span><br/>So there you have it.</p>
+<p>No matter what actually happened, it's clear that the Madden games have been an important part of the NFL landscape and my NFL fandom for over twenty years.  And I can't wait for that to continue for the next twenty.</p>
+<p>-rj</p>
