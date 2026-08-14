@@ -24,7 +24,6 @@ original_source: uselesssportsanalysis.com
 <p>Julius Erving - 1985 Sixers<br/>Hedo Turkoglu - Magic</p>
 <p>Finally, the big question.  Which franchise should we use for the Dream Team?  To me, the 76ers made the most sense.  Their uniforms are the right colors, and what is more patriotic than a 76er?  Nothing!</p>
 <p>Here's our team:</p>
-<figure><img alt="" loading="lazy" src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/4335566_orig.jpg"/></figure>
 <p><u>Step 2: Create the Michael Jordan Team</u></p>
 <p>This team was trickier to build.  Let's start simple -- there are six versions of Michael Jordan in NBA 2K14.  They're all in.</p>
 <p>Michael Jordan - 1986 Bulls<br/>Michael Jordan - 1989 Bulls<br/>Michael Jordan - 1991 Bulls<br/>Michael Jordan - 1993 Bulls<br/>Michael Jordan - 1996 Bulls<br/>Michael Jordan - 1998 Bulls</p>
@@ -36,23 +35,25 @@ original_source: uselesssportsanalysis.com
 <p>Still three spots left.  Yikes.  What if we just fill the team out with low-rated shooting guards from the Wizards, since Jordan last played there?  It's a stretch, but I really don't care at this point.  These guys won't be playing much.</p>
 <p>Garrett Temple - Wizards<br/>Glen Rice, Jr. - Wizards<br/>Martell Webster - Wizards</p>
 <p>Here's the final team:</p>
-<figure><img alt="" loading="lazy" src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/9981111_orig.jpg"/></figure>
 <p><u>Step 3: Final Preparations</u></p>
 <p>Let's make sure that the teams are coached appropriately.  Not a ton to say here.</p>
 <p>I let the Dream Team have a lot of freedom in how it played, balancing on size / speed, offense / defense, and inside / outside games.  Meanwhile, I told the Jordan team to use their speed on offense and create chaos on defense.</p>
 <p>I'm not sure exactly how much impact these coaching settings have, but they're fun to play around with:</p>
+<figure><img src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/5490575.jpg" alt="" loading="lazy"></figure>
+<figure><img src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/7387413.jpg" alt="" loading="lazy"></figure>
 <p>From here, the game chose the starters for each squad.  Notably for the Dream Team, Isiah got the starting nod over Magic Johnson and Clyde Drexler filled Jordan's void at shooting guard.  Meanwhile, there's not much to say about Team Jordan:</p>
+<figure><img src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/2419960.jpg" alt="" loading="lazy"></figure>
+<figure><img src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/6070871.jpg" alt="" loading="lazy"></figure>
 <p><u>Game Time!</u></p>
 <p>So after all of that "hard work", time to see the fruits of our labor!  I put these two teams against each other, giving Jordan home court advantage, since as the most popular athlete on the planet at the time he'd be in the position to make demands.</p>
 <p>The first half of the game was tight, with Team Jordan finishing out with a 38-35 lead.  The third quarter was the most interesting and entertaining, so I present it to you below, uncut:</p>
 <div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/CbeX_-m_ysA"></iframe></div>
 <p>The Dream Team had chances to finally take the lead, as it was 47-46 for over a full minute, but they weren't able to convert and Team Jordan pushed the lead back to 7 at the end of the 3rd quarter.  This proved to be costly, as the 4th quarter wasn't particularly close.  Team Jordan pulled their starters with a few minutes to go and cruised to a 72-60 victory.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/3132064_orig.jpg"/></figure>
 <p>Notably, the Dream Team got crushed in scoring off of turnovers, as Jordan's 14-3 lead in that department explained virtually the entire scoring margin.  It's also a bit alarming that Team Jordan won on points in the paint and rebounds.</p>
 <p>Larry Bird led the Dream Team in scoring (remember, this is the 1986 version of Larry) but struggled with his shot.  Meanwhile, Michael Jordan was the #1, #2, #3, #4, and #6 scorer on his team, with Garrett Temple somehow getting 5 points in his 4 minutes.</p>
+<figure><img src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/7451855.jpg" alt="" loading="lazy"></figure>
+<figure><img src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/2520610.jpg" alt="" loading="lazy"></figure>
 <p>The winner of the Jordan Player of the Game?  Michael Jordan!</p>
-<figure><img alt="" loading="lazy" src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/4429779_orig.jpg"/></figure>
 <p>The other Michael Jordans were not amused.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/ua/xs-os-and-triangles-dream-team-vs-jordan/7713800_orig.jpg"/></figure>
 <p>And with that, we'll wrap up.  It turns out that a pissed-off team of cloned Jordans could easily take out the greatest team in sports history.  So while it's a bummer that Isiah Thomas didn't get his due on the Dream Team, it's probably best the way that it worked out.</p>
 <p>-rj</p>
