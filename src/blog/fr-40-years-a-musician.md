@@ -23,7 +23,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <h3>Finding the stage</h3>
 <p>I was blessed early on with perfect pitch, the ability to identify which notes are being played just by listening to them. This allowed me to learn pretty much anything by ear, and that superpower was a key springboard.</p>
 <p>The other key element was the stage. I loved it. I spent my entire first solo piano recital staring at the audience while playing, hamming it up. As the family lore tells it, they called me “little Liberace”. I’m not sure who “they” were, but I’ll take it.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-first-recital.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-first-recital.jpg"/><figcaption>First time!</figcaption></figure>
 <p>I loved performing, I loved the attention, I loved the reactions. I even loved the nerves right before a performance that brought a level of focus I never had when practicing.</p>
 <p>I was stunningly small as a child, which helped play into the audience effect. How can someone this small even do this? I knew they were thinking this. I <em>wanted</em> them thinking this. I was a magician, and this was my magic trick.</p>
 <p>I shot out the gate quickly, and soon I was playing Mozart and Bartok at piano festivals.</p>
@@ -31,7 +31,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <p>Shortly after starting on the piano, I started meeting Tony Kallet. He called himself a music theory teacher, but he really taught his students how to find the fun and beauty inherent in music itself. “You don’t need a stage and an audience to have fun, Ronjan!”</p>
 <p>Tony would come up with nicknames for everyone. He called me “John Ron”. What can I say, it made me laugh at age four.</p>
 <p>Every week, I’d go to his house and we’d jam, we’d compose, we’d experiment. I wrote a suite of <em>Monkey Dances</em> that were the center of this for a while.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/tony-kallet.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/tony-kallet.jpg"/><figcaption>What a mentor</figcaption></figure>
 <p>Later, with his encouragement, I wrote a little piece I was truly proud of, <em>Musette in C</em>. I’m pretty sure it wasn’t technically a “musette”, and it was a bit derivative of the Mozart <em>Sonata</em> I was practicing for Mrs. Fest, but he kept pushing me. He brought the best out of me.</p>
 <p>I’d start writing other pieces with my sister in “off hours”. <em>Journeys on the Porch</em>. <em>Spooks</em>. <em>Raindrops</em>, which was originally called <em>Flowers</em>. I can’t wait for Tony to hear them!</p>
 <p>And then we lost Tony.</p>
@@ -52,7 +52,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <p>Sometimes we sang. “Oray greeho bahshee”, or “aire chutay ai”, whatever these words meant.</p>
 <p>Sometimes we danced, the boys clomping around as the girls moved gracefully.</p>
 <p>And many times, we played. Sometimes I played on the keys solo. Sometimes I was on the keys when others sang. Sometimes my mom and I would play the violin together. Sometimes it’d be me on the keys and my sister on the cello. Every configuration was different, and that kept it fun.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-and-mom-bengali.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-and-mom-bengali.jpg"/><figcaption>Check out my outfit!</figcaption></figure>
 <p>At some point, I somehow got featured on TV in India to perform Bengali music solo on the keyboard there. I was proud to rep my culture with the thing I do best.</p>
 <h3>Getting competitive on piano</h3>
 <p>I moved from Boulder to Cincinnati in 1990, so I needed a new piano teacher. I started up with Bloom Lippmann, and she built on the work Mrs. Fest did, helping me find my style and play my best.</p>
@@ -63,7 +63,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <h3>No longer going solo</h3>
 <p>After the move to Ohio, I also needed a new violin teacher, and Jacquie Fennell answered the call.</p>
 <p>Mrs. Fennell is responsible for the best motivational technique of any music teacher I have ever had. She told me that if I practiced well for a month, I could have a Shaquille O’Neal rookie card. Done and done!</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/shaq-rookie.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/shaq-rookie.jpg"/><figcaption>Sadly I sold it. Hopefully it was the $20 one, not the $1,000 one.</figcaption></figure>
 <p>Before Shaq entered the NBA, though, Mrs. Fennell did something far more important. She also got me excited about the concept of performing for a youth orchestra called the Cincinnati Junior Strings that accepted students through 9th grade.</p>
 <p>After 3rd grade, Mrs. Fennell suggested that I audition. It’s selective, so I probably won’t get in for 4th grade, but I’ll know the whole process and I’ll probably be in by 5th grade.</p>
 <p>Nope! CJS said yes and took me on as their youngest violinist. Looking back, I was probably a reach pick, this shrimp whose legs were too short to reach the floor from his seat, but I’ll take it.</p>
@@ -74,7 +74,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <p>Tim was the guy you wanted to be while knowing you never could. How do you catch up to someone who’s driving faster than you?</p>
 <p>That said, I got to know Tim. The CJS were going on a trip to Hong Kong, Guangzhou, and Singapore that summer. And Tim and I were roommates on that trip!</p>
 <p>We played cards. We played Game Boy. We played the violin in the same orchestra. Even the legends of the world are human. It was an amazing time.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-and-tim.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-and-tim.jpg"/><figcaption>Chillin’ in Asia</figcaption></figure>
 <h3>School orchestra</h3>
 <p>Now entering 5th grade, my middle school has an orchestra too. I didn’t want to join. I’d literally just performed in Asia with the A team. Now I was supposed to play with a bunch of beginners? We wouldn’t even get to do the <em>Witches’ Dance</em>?</p>
 <p>Mr. David Smarelli had a tough job. He led the orchestra program for the school district across middle, junior high, and high school. He had to balance people who are on day one, just like I was at Mrs. Albers’s house 4 years ago, with people like me now who’d been playing for years.</p>
@@ -85,11 +85,11 @@ description: 43rd birthday retrospective about 40 years as a musician
 <p>School orchestra wasn’t just an orchestra. It was a series of partnerships with some of my favorite people in my life.</p>
 <p>Matt Thornton lived across the street from me. Both of his parents played in the Cincinnati Symphony Orchestra. I’d go to his house after school to play Sega Genesis while waiting for my mom to come home from work.</p>
 <p>Now in 5th grade orchestra, Matt and I were partners. As Mr. Smarelli focused on teaching newer musicians, Matt and I worked on duets, him on the cello. We’d get special spots in school performances to show off what we can do.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-and-matt.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-and-matt.jpg"/><figcaption>At least Matt looks normal</figcaption></figure>
 <p>Silvia Li and I became friends after I said something rude to upset her and wrote her an apology note. She accepted my apology in a note back, and we just kept writing and passing notes to each other from then on.</p>
 <p>Soon after, Silvia and I were stand partners in the junior high orchestra. No one knows your habits like your stand partner. When you like the page turned, which bowing or fingering instructions you ignore, just generally what makes you tick.</p>
 <p>To this day, that understanding is still there. Every once in a while Silvia will text me a music meme she uniquely knows will hit the mark, and it always does.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-and-silvia.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/ronjan-and-silvia.jpg"/><figcaption>Stand partners</figcaption></figure>
 <p>Keegan “Casey” Dwyer moved to Ohio from Massachusetts and brought incredible energy to our group. Keegan was passionate and playful, bringing the fun every day. His vibe reminded me of Tony Kallet.</p>
 <p>In high school, I joined the chamber orchestra to play more with Keegan. We joined the orchestra council together, although I can’t remember if we passed any life-changing orchestra legislation.</p>
 <p>Many years later, I somehow ended up in a fiddle bar in Covington, Kentucky, hammered, playing the violin with him on stage. That was my last public violin performance, but it was a blast.</p>
@@ -100,7 +100,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <p>Juliana Han was the Tim O’Neill of the piano. Unbelievably talented, skilled, disciplined, in total control of the instrument, and she put in the work. That was the word on the street, at least. If you want to come at the king, you best not miss.</p>
 <p>In 1992, I was in the 4th-through-6th grade division of the OMTA competition I won the previous year. I came in 3rd. Juliana won. In 1993, I came in 3rd again. Juliana won. Later in 1993, the Clifton Music Club had a competition. I took 2nd. Juliana won.</p>
 <p>I came at the king and I missed. I’m playing for 2nd. It’s sobering. But it’s good to know, too.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/2nd-place.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/2nd-place.jpg"/><figcaption>Better than another 3rd, right?</figcaption></figure>
 <p>In 1994, Juliana moved up a division. It was my time to reclaim the OMTA title. No, I still finished 3rd.</p>
 <p>Later in 1994 I entered the World Piano Competition which, let’s be clear, is not actually a global competition. I took the silver medal in my division. I took another swing at the World Piano Competition in 1995. Silver medal again.</p>
 <p>2nd place is my high water mark. It just is. Which isn’t to say that I was miserable here.</p>
@@ -116,7 +116,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <p>First off, it’s time to move up to the high school orchestra. Guess who’s there? Matt Thornton and Silvia Li and Keegan Dwyer, of course, as we’re in the same grade. But guess who else is there? Tim O’Neill and Juliana Han.</p>
 <p>I haven’t seen Tim in years. I’m excited. He’s still as good as ever - the concertmaster as usual - but he’s brought a new playful swagger to the table. He, too, reminds me of Tony, cracking music jokes left and right. It’s fun to be around.</p>
 <p>The school orchestra that 4 years ago I was worried about joining is now an unbelievable confluence of some of the most talented people I’ve ever known. Thanks for recruiting me, Mr. Smarelli.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/orch-letter.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/orch-letter.jpg"/><figcaption>The one varsity letter I could hope to get</figcaption></figure>
 <p>I also needed a new violin teacher again. Mrs. Fennell left the conservatory she taught at and wasn’t allowed to take her students with her. I take a big jump.</p>
 <h3>One year in Starling</h3>
 <p>Why hadn’t I seen Tim in years before high school? Because after that Asia trip with the Cincinnati Junior Strings, he fully focused on the Starling program, an intense accelerator and chamber orchestra for the highest potential musicians in the city.</p>
@@ -138,11 +138,11 @@ description: 43rd birthday retrospective about 40 years as a musician
 <p>I actually joined <em>three</em> new orchestras in 9th grade - the high school orchestra, Starling, and the Cincinnati Symphony Youth Orchestra. So long to the CJS and the red suspenders, hello to the CSYO with full woodwinds, brass, and percussion.</p>
 <p>I’ve never had more fun with music than I had in the CSYO, full stop. You have 100 people working towards a single goal, making sound waves that run through each others’ bodies, with the scale that smaller ensembles can’t touch.</p>
 <p>Our maestro was Chelsea Tipton II, a handsome, energetic, and passionate conductor who focused on one mantra: “practice makes better”.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/screenshot-2025-08-17-at-17-34-44-fwd-so-good-to-hear-from-you---rjsikdar-40gmail.com---gmail.png"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/screenshot-2025-08-17-at-17-34-44-fwd-so-good-to-hear-from-you---rjsikdar-40gmail.com---gmail.png"/><figcaption>I’m glad I reached out</figcaption></figure>
 <p>I still remember how beads of sweat would fly off of his head during particularly intense sequences. Can’t blame a guy for getting into the moment, especially since he selected some of the best works in the symphony repertoire. <em>Procession of the Nobles</em>. <em>Capriccio Italien</em>. <em>Jupiter</em> and <em>Mars</em> from <em>The Planets</em>. A <em>Star Wars</em> medley to celebrate the original movies being re-released in the theater. <em>Die Moldau</em>. A medley from <em>West Side Story</em>. And perhaps my favorite of them all, <em>Danse Bacchanale</em>.</p>
 <p>The only one I hated was the freaking <em>Stars and Stripes Forever</em> at every Memorial Day concert, because of the brass section. You’re out there working your asses off in the string sections, and then the fucking brass comes in and drowns us all out. Oh well. They can have that one.</p>
 <p>After 3 years of Maestro Tipton, Alastair Willis came on for my senior year. He was more technical and understated. “Less tongue, more air”, he’d say to the wind section, whatever that meant. We still played some bangers. Dvorak’s <em>Symphony No. 8</em>, <em>Ruslan and Ludmila</em>, the <em>1812 Overture</em>. And of course, we still had to play <em>The Stars and Stripes Forever</em>.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/csyo.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/csyo.jpg"/><figcaption>End of an era</figcaption></figure>
 <p>As my fourth year in the CSYO came to a close, it dawned on me that this was it. I wasn’t going to join an orchestra in college. I won’t see anything at this scale again. Ever.</p>
 <h3>Recording a CD</h3>
 <p>I continued to stay in touch with my Bengali roots by performing at pujas. One year our community adapted Cinderella into a Bengali musical, <em>Chadrapati</em>, and I played all of the music on my keyboard. It was amazing.</p>
@@ -166,7 +166,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <p>First, I officially performed for the first time in decades when I played at my sister’s wedding, and so did my son!</p>
 <div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/H_AxnwbAlsc"></iframe></div>
 <p>Last year, I got my childhood baby grand shipped from Ohio to my home in the Bronx. It was like reuniting with a best friend.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/piano.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/piano.jpg"/><figcaption>Welcome home, old friend</figcaption></figure>
 <p>Earlier this year, I performed two duets, one with Damon and one with his teacher. He starts up his own new experience this fall as he will take up the trombone in the band. I’m excited what this means for us playing more together in the future.</p>
 <p>In some ways, I <em>feel</em> like I’m better at the piano now than I was 25 years ago. I have a fuller grasp of music itself and that can make up for the fastball I’ve clearly lost at this point.</p>
 <p>I can still play most of the Beethoven stuff. Chopin less so. And I definitely can’t play Liszt anymore. But if I go back to playing by ear and just jamming to video game music or <em>K-Pop Demon Hunters</em>? I sound better than ever.</p>

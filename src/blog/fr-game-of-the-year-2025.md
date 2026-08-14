@@ -20,7 +20,7 @@ tags: [game-of-the-year]
 <p>Next up, new gaming systems.</p>
 <p>With the original Nintendo Switch winding down in the spring, I first <a href="/blog/fr-switch-1-top-5-lists/"><span style="text-decoration:underline">reflected on the legacy of the original Switch</span></a>, and then focused my attention on getting its sequel.</p>
 <p>The preorder process was a chaotic mess, and I spent two hours after midnight one day in April refreshing every retailer’s website and app over and over. I ended up snagging four consoles, selling the extras at cost to friends who had missed out.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/20250606_192527.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/20250606_192527.jpg"/><figcaption>I’m no scalper, I sold them at cost to friends!</figcaption></figure>
 <p>Once our Switch 2 arrived in June, I had expected it to dominate the rest of the year, but in reality this ended up being one of the most disappointing Nintendo years ever for me.</p>
 <p><em>Mario Kart World</em> made a great first impression, and I loved exploring the open world. It initially reminded me of another all-time favorite racer, <em>Burnout Paradise</em>.</p>
 <p>But as I kept playing, the lack of substance in the open world started wearing on me and I fell off the game pretty quickly. It has an incredible soundtrack, perhaps even better than <a href="/blog/fr-the-best-music-in-mario-kart-8-deluxe/"><span style="text-decoration:underline">its predecessor’s</span></a>, but I won’t be playing this one again until there’s some significant content expansion or DLC.</p>
@@ -28,24 +28,24 @@ tags: [game-of-the-year]
 <p>Despite this pedigree, I didn’t even come close to finishing <em>Bananza</em>. I found the smashy smashy gameplay to be surprisingly dull, the visuals to be garish, and the overall level design a snoozefest. So despite Donkey Kong’s expressive new redesign and the title’s focus on Pauline developing her musical voice, this was a total miss for me. What a bummer.</p>
 <p>And that was it, honestly, for Nintendo. I can’t play <em>Metroid Prime 4: Beyond</em>, as first-person shooters give me vertigo. Nothing else Nintendo released seemed interesting. Oh well, we’ll try again next year.</p>
 <p>My favorite “Nintendo system” I got this year was the LEGO Game Boy which my son got me for my birthday.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/20251129_203741.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/20251129_203741.jpg"/><figcaption>It was a fun build</figcaption></figure>
 <p>And my overall favorite new system of the year was the recently-released <a href="https://www.ayntec.com/products/ayn-thor" rel="noopener" target="_blank"><span style="text-decoration:underline">AYN Thor</span></a>. I’m still setting it up and figuring out how I want to use it, but it’s fun to have a new toy to tinker with that isn’t completely locked down by a corporate conglomerate.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/20251127_092136.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/20251127_092136.jpg"/><figcaption>I’m going to have a lot of fun with this over the coming years</figcaption></figure>
 <p>On the passion project side, I became the Mario Paint Music Guy.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/logo---channel-pic.png"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/logo---channel-pic.png"/><figcaption>It’s-a-me, Mario Paint Music Guy!</figcaption></figure>
 <p>I spent hours in the last few months of the year writing and publishing <em>Mario Paint</em> music, and it’s made me feel whole. I cataloged it all <a href="/blog/fr-100-days-as-the-mario-paint-music-guy/"><span style="text-decoration:underline">here</span></a>, and I’m excited to keep going next year.</p>
 <p>Okay, I’m over 900 words into this post and I still haven’t said a single word about games I actually liked this year. I should probably do that. First off, what did I actually play?</p>
 <p>Well, I started the year on Steam weaning myself off of <a href="/blog/fr-one-year-four-balatros/"><span style="text-decoration:underline">my <em>Balatro</em> addiction from last year</span></a>:</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/screenshot-2025-12-21-at-11.16.22-e2-80-afam.png"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/screenshot-2025-12-21-at-11.16.22-e2-80-afam.png"/><figcaption>Any health professional will call this progress!</figcaption></figure>
 <p>By the summer I’d completely stopped playing the game <em>and</em> watching Roffle stream it. I’m proud of this accomplishment.</p>
 <p>Over on PS5, <em>Persona 5 Royal</em>, <a href="/blog/fr-spending-sabbatical-in-high-school/"><span style="text-decoration:underline">which I played during my sabbatical</span></a>, dominated my time spent. No surprise there. More to come on a couple of other titles in this list in a bit.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/screenshot-2025-12-17-at-8.13.41-e2-80-afpm.png"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/screenshot-2025-12-17-at-8.13.41-e2-80-afpm.png"/><figcaption>That’s a lot of college football</figcaption></figure>
 <p>So with the Steam and PS5 “wrapped” segments done, let’s start counting down my favorite games of 2025!</p>
 <p><br/><strong>Honorable Mention #1 - </strong><a href="https://neal.fun/stimulation-clicker/" rel="noopener" target="_blank"><span style="text-decoration:underline"><strong><em>Stimulation Clicker</em></strong></span></a></p>
 <p>I found this to be simultaneously a hilarious, borderline-stupid experience and also an incredibly profound allegory for digital <a href="https://pluralistic.net/2023/01/21/potemkin-ai/#hey-guys" rel="noopener" target="_blank"><span style="text-decoration:underline">enshittification</span></a> and attention optimization. I’ve played through it to completion multiple times and I still think about it every day. Play this game, you’ll only need an hour.</p>
 <p><br/><strong>Honorable Mention #2 - <em>Lost Records: Bloom &amp; Rage</em></strong></p>
 <p>I’m a sucker for these types of games, and I love how Don’t Nod built on the <em>Life is Strange</em> formula. I came away impressed by how many outcomes there are for the story, the overall vibes and setting, and of course the 90s nostalgia.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/lost-records.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/lost-records.jpg"/><figcaption>Vibes</figcaption></figure>
 <p><br/><strong>Honorable Mention #3 - Springfield Island in <em>Fortnite</em></strong></p>
 <p>I don’t care for <em>Fortnite</em> literally at all, but there hasn’t been a new <em>Simpsons</em> video game released since 2012, and <em>Fortnite</em> did <em>The Simpsons</em> right. For the first time ever, I spent money in <em>Fortnite</em> to get the <em>Simpsons</em> battle pass. I also got the <em>K-Pop Demon Hunters</em> skins, because why not. And I won my first game ever. I know I probably just beat bots, but I’ll take it.</p>
 <div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/rFUYQMxONKg"></iframe></div>
@@ -53,7 +53,7 @@ tags: [game-of-the-year]
 <p>I enjoyed 2024’s <em>Like a Dragon: Infinite Wealth</em> enough that it made my <a href="/blog/fr-my-favorite-rpgs/"><span style="text-decoration:underline">favorite RPGs</span></a> list earlier this year. I was excited to explore Hawaii again when this brawler was announced.</p>
 <p>The sea exploration reminded me of <em>The Legend of Zelda: Wind Waker</em>, and it was the first time I’d ever enjoyed pirate ship gameplay, ever.</p>
 <p>Its lighthearted theme came through in several moments, from the Broadway-style <a href="https://www.youtube.com/watch?v=-wrkjc7YCuk" rel="noopener" target="_blank"><span style="text-decoration:underline">opening number</span></a> to the ridiculous <a href="https://www.youtube.com/watch?v=mPUiEfYFMt0" rel="noopener" target="_blank"><span style="text-decoration:underline">live-action dating show</span></a> to the <a href="https://www.youtube.com/watch?v=efGZXjD73eU" rel="noopener" target="_blank"><span style="text-decoration:underline">closing dance party</span></a>. And while I didn’t ultimately enjoy beating everyone up as Majima as much as I enjoyed the turn-based combat of the prior game, I had a great time.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/pirate-yakuza.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/pirate-yakuza.jpg"/><figcaption>The Goro Pirates!</figcaption></figure>
 <blockquote class="big">
 One day you get to look back at how far you got, and grow old. All your dreams, the ones you had and never saw come true, you leave them to the next guy.
 <cite>Goro Majima</cite>
@@ -63,21 +63,21 @@ One day you get to look back at how far you got, and grow old. All your dreams, 
 <p>This year, I got back into 2022’s <em>Teenage Mutant Ninja Turtles: Shredder’s Revenge</em>, beating it with my son and his friends with several characters. Then, a Marvel version from the same development team was announced, and I was excited.</p>
 <p>And for good reason - this game rocks! Even more so than <em>Shredder’s Revenge</em>, <em>Marvel Cosmic Invasion</em> has a wide variety of characters who play completely differently from each other. I ended up mastering a few - Captain America and his boomerang shield throw, Storm and her lightning strikes, Wolverine and his pounce-and-toss. My son mastered other characters, particularly Phoenix’s firestorms and Spider-Man’s web slinging.</p>
 <p>We ended up blowing through this game in just a few days and loved almost everything about it. I suppose I wish there were more iconic music, a little less cheese in some later bosses, and more characters, but maybe they’ll expand off of this fantastic foundation.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/marvel.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/marvel.jpg"/><figcaption>We enjoyed beating Phoenix the 2nd time by using Phoenix</figcaption></figure>
 <p><em>My 11-year-old son’s take: “It was kind of annoying when Storm kept saying ‘even a goddess needs to eat’ over and over, but this game was really cool.”</em></p>
 <p><br/><strong>3. <em>Dispatch</em></strong></p>
 <p>I love the classic Telltale games, particularly <em>The Walking Dead</em> - my 2012 game of the year - and <em>The Wolf Among Us</em>. I was excited for this genre’s return with team members from those original games. And despite not being a huge superhero guy (my <em>Marvel Cosmic Invasion</em> pick notwithstanding) I was intrigued by the world they were setting up.</p>
 <p>In the end, I loved the choice-based parts of the gameplay, I liked the “dispatch” gameplay where you sent different superheroes out on assignments, and I loathed the hacking minigames that rounded out the mechanics.</p>
 <p>Ultimately, this game was about moments. Choosing who to boot from your team. Navigating a love triangle. And maybe <a href="https://www.youtube.com/watch?v=gfGLDwu7F2c" rel="noopener" target="_blank"><span style="text-decoration:underline">the best superhero bar fight scene of all time</span></a>.</p>
 <p>I immediately want a sequel, I want to buy comic books, I want to spend so much more time in this world. That’s never happened to me with a superhero universe, ever.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/dispatch.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/dispatch.jpg"/><figcaption>I chose Visi</figcaption></figure>
 <p><em>My 11-year-old son’s take: “It had the most hilarious superstar in Prism, and she slays. I like the character designs and how they match their personalities. It had a great story.”</em></p>
 <p><br/><strong>2. <em>Split Fiction</em></strong></p>
 <p>Let’s get this out of the way - this game has stunningly in-your-face stilted writing. At least for adults. But I didn’t play this game with an adult, I played it with my son, and playing through this half-fantasy half-sci-fi title with him was an unforgettable experience.</p>
 <p>The asymmetric gameplay design is phenomenal. We’d have different abilities and different assignments, and we’d have to rely on each other in order to overcome obstacles and opponents.</p>
 <p>At times we’d bicker. Okay, fine, constantly we’d bicker. Why didn’t you jump? You shot too early! Where are you, come back! But that was the fun of it all. Figuring it out while next to each other on the couch, and rooting for each other when one of us needed to carry. It was amazing.</p>
 <p>Among many stellar mechanical moments, the ending sequence is a standout. The fantasy and sci-fi worlds are rendered simultaneously, with both players having to navigate through each. It’s the kind of technically impressive sequence you have to play. And I’m glad I did.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/split-fiction.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/split-fiction.jpg"/><figcaption>What a stunning finale, bravo</figcaption></figure>
 <p><em>My 11-year-old son’s take: “I love the two different stories, between fantasy and sci-fi. Zoey is an absolute sweetheart, Mio is cool, and Raider sucks. I liked turning into pigs and then turning into hot dogs that got eaten.”</em></p>
 <p><br/><strong>1. <em>Clair Obscur: Expedition 33</em></strong></p>
 <p>I’m annoyed that for the second straight year, my game of the year is the same as <a href="https://thegameawards.com/" rel="noopener" target="_blank"><span style="text-decoration:underline"><em>The Game Awards</em></span></a>. I’d never done that until <a href="/blog/2024/12/30/game-of-the-year-2024">last year</a>, and I don’t like chalk picks.</p>
@@ -90,8 +90,8 @@ One day you get to look back at how far you got, and grow old. All your dreams, 
 <p><em>Clair Obscur: Expedition 33</em> nailed everything it was going for. The concept. The world. The art. The exploration. The combat. The music. The characters. The story. The ending. It deserves all of the accolades it’s winning around the industry, and it represents a transformative piece of work for what games are and how they’re made. It’s an all time triumph and one of my all time favorite games.</p>
 <p><em>My 11-year-old son’s take: “The characters were absolutely amazing. Their backstories bring so much to the plotline. Esquie is a large, funny creature who loves his rocks. The Sakapatate gestrals are funny. This is my game of the year.”</em></p>
 <p>I’ll close with my favorite screenshots from my play-through of the game. Spoilers abound - beware!</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-start.jpg"/></figure>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-plant-flag.jpg"/></figure>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-maelle.jpg"/></figure>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-verso.jpg"/></figure>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-the-main-point.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-start.jpg"/><figcaption>Staring the mission in the face</figcaption></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-plant-flag.jpg"/><figcaption>Planting the victory flag after clearing the mission</figcaption></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-maelle.jpg"/><figcaption>The harrowing “good vibes” ending</figcaption></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-verso.jpg"/><figcaption>The devastating “acceptance” ending</figcaption></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2025/e33-the-main-point.jpg"/><figcaption>The point of the game. For those who come after.</figcaption></figure>

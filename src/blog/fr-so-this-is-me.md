@@ -9,7 +9,7 @@ description: "a story about the nerdiest thing I’ve ever done"
 # {{ title }}
 
 <p>My friend Mike posted this in a group chat recently:</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/so-this-is-me/sports.png"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/so-this-is-me/sports.png"/><figcaption>Source: https://xkcd.com/904/</figcaption></figure>
 <p>I mean, it’s true. That’s basically what the entire sports commentary industry has always been. And while aspects of sports commentary have devolved into a cringey “take economy” where commentators yell at each other to get attention, we’ve also seen the rise of high quality analytics-based sports commentary in recent years that seem almost deliberately targeted against the things I love most in the world.</p>
 <p>So look, I love sports analysis. I love the narratives, I love the statistics, I love the well-researched debates, I love how pointless it is at the end of the day, I love all of it. I always have. Probably too much.</p>
 <p>That xkcd comic got me reflecting on my own engagement with sports analysis over the years and the different ways that it has manifested. Since sharing is caring, I’m going to tell you all about it.</p>
@@ -38,7 +38,7 @@ description: "a story about the nerdiest thing I’ve ever done"
 <p>With this method, possessions can still be worth 0, 1, 2, or 3 points, but now the distribution is weighted towards 0, 1, and 2, driving scores down a bit, and teams can now be inherently better than others, creating the potential for winning streaks and upsets.</p>
 <p>Not only did this approach work well, but it also led to an average score of 100 points for a 3.0 strength team and an average of 125 points for a 3.5 strength team. Success!</p>
 <p>Now that my scoring engine was working, it was time to take the next step. I had to create a fake basketball league, complete with team names and Microsoft Paint logos. I don’t remember how many teams were in the Ronjan Basketball Association, but I can tell you that two of them were called the Denver Blizzard and the Norfolk Nice Folks.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/so-this-is-me/img_0467.jpeg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/so-this-is-me/img_0467.jpeg"/><figcaption>Update 2/1/2024: My friend Matt generated this logo for me using DALL-E. Thank you, Matt!</figcaption></figure>
 <p>Now that I had a game engine and a league, I programmed a full schedule for a single season. I don’t quite remember how many games each team played, but I know that I set up a regular season and playoffs complete with elimination series.</p>
 <p>Once I had the schedule, I made my final tweak. I wanted teams to rise and fall over time, so I needed their team strength variables to change over time as well. Enter the team strength adjustment. After every win, a team’s strength would increase (capped at 3.5) and after every loss, a team’s strength would decrease (floored at 3.0).</p>
 <p>In the end, I actually did a pretty good job of emulating the NBA. Across seasons, dynasties would emerge, they’d be challenged, and new title contenders would displace them. I also remember creating a narrative that one team, after several losing seasons, relocated to New Jersey. Yikes.</p>

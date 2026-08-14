@@ -22,7 +22,7 @@ Even though I still don’t know exactly how I intend to keep in touch with musi
 <div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/aHuQZVtzdIo"></iframe></div>
 <p>As someone who spent dozens of hours creating music in <em>Mario Paint</em> as a child, this hit hard. I wanted to get back to creation, I wanted to bring back some of my old stuff, and I wanted to archive my work properly.</p>
 <p>So, after a quick check online to make sure that no one else already had the name, the <em>Mario Paint Music Guy</em> was born!</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/100-days-as-the-mario-paint-music-guy/logo---channel-pic.png"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/100-days-as-the-mario-paint-music-guy/logo---channel-pic.png"/><figcaption>I am sorry that I used ChatGPT for this v1.0 logo</figcaption></figure>
 <h3>Getting started</h3>
 <p>I didn’t really have a game plan from here. I just started making music and recording it. I did some pop music, some video game music, some sports themes. Anything that came to mind. I asked friends for some requests to get the ideas flowing. <em>Nirvana</em>. <em>Balatro</em>. <em>System of a Down</em>. <em>Juvenile</em>.</p>
 <p>Once I had a dozen or so completed, I started posting them daily. The first one was a re-upload of <em>Golden</em> from <em>K-Pop Demon Hunters</em> on September 2nd. And I was off to the races!</p>

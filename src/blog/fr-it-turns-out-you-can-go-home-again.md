@@ -28,7 +28,7 @@ description: recap of 25-year high school reunion
 <p>But traveling back to Cincinnati just for one night? That’s a lot to ask, pull me out of my groove. Pull everyone else out of theirs.</p>
 <p>Then in May of this year, I met my friend Stan for breakfast in New York. I hadn’t seen him in 21 years. It was incredible - we picked up right where we left off. It meant so much, reconnecting with one of my childhood best friends. I wished we had done so sooner.</p>
 <p>And that made it clear to me - the groove can wait. I have to go to the reunion.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/it-turns-out-you-can-go-home-again/screenshot-2025-09-24-at-5.47.30-e2-80-afpm.png"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/it-turns-out-you-can-go-home-again/screenshot-2025-09-24-at-5.47.30-e2-80-afpm.png"/><figcaption>Yes, I always open posts with “howdy”. What of it?</figcaption></figure>
 <p>I fly into Cincinnati the night before the reunion. My parents are out of town, so it’s literally just me in their house. They moved after I graduated, so it’s not even my childhood house.</p>
 <p>I meet up with my friends Mike, Phil, and Todd, from the math nerd niche. We go on a nostalgia drive. We visit our old schools. They’ve been completely transformed. We try to find each others’ childhood houses on muscle memory. We can still do it. We find the park where we played football every Friday.</p>
 <p>We have lunch at Skyline Chili. We used to go every week. I can’t have red meat anymore, but luckily they have chicken chili. It’s just as good.</p>
@@ -59,8 +59,8 @@ description: recap of 25-year high school reunion
 <p>I get to my parents’ home. I’m still alone. I can’t sleep.</p>
 <p>I start thinking about who wasn’t there. My best friend from when I was 9 years old, Ollie. He died in 2018 in a horrific accident.</p>
 <p>I still have the first and last things Ollie ever wrote to me.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/it-turns-out-you-can-go-home-again/ollie-1992.jpg"/></figure>
-<figure><img alt="" loading="lazy" src="/blog/img/fr/it-turns-out-you-can-go-home-again/ollie-2016.jpg"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/it-turns-out-you-can-go-home-again/ollie-1992.jpg"/><figcaption>4th grade yearbook signing from 1992</figcaption></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/fr/it-turns-out-you-can-go-home-again/ollie-2016.jpg"/><figcaption>LinkedIn message from 2016</figcaption></figure>
 <p>He was a true friend. We had lost touch. And I’m never going to be able to have one of these conversations - the ones I had all night - with him. Ever again.</p>
 <p>I’m never going to be able to talk to him about the time when a classmate said to me, “at least I never got stuck in the toaster”, and he wasn’t having it. He fired back, on my behalf, and saved me. It was the first time I had experienced racism first hand, and it was immediately followed by my best friend having my back. And maybe Ollie is the reason that I was only mildly bullied the rest of my childhood.</p>
 <p>I can’t tell him how much that meant to me. I can’t tell him how much <em>he</em> meant to me.</p>
