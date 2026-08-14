@@ -235,9 +235,13 @@ nav a:hover { color: var(--accent); }
   border-radius: 8px;
   text-decoration: none;
   color: var(--fg);
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-.site-map-card:hover { border-color: var(--accent-2); }
+.site-map-card:hover {
+  border-color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 6%, transparent);
+  box-shadow: 0 0 0 1px var(--accent-2), 0 6px 20px rgba(0, 0, 0, 0.12);
+}
 .site-map-row {
   display: flex;
   align-items: center;
@@ -301,9 +305,13 @@ nav a:hover { color: var(--accent); }
   border-radius: 8px;
   text-decoration: none;
   color: var(--fg);
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-.post-tile:hover { border-color: var(--accent-2); }
+.post-tile:hover {
+  border-color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 6%, transparent);
+  box-shadow: 0 0 0 1px var(--accent-2), 0 6px 20px rgba(0, 0, 0, 0.12);
+}
 .post-source {
   font-size: 0.72rem;
   letter-spacing: 0.02em;
