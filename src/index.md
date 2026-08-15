@@ -47,8 +47,7 @@ Welcome to my website! This is home base for a lot of my hobbies: writing, ranki
     <div class="post-list-row">
       <span class="post-list-main">
         <a href="{{ post.url }}">{{ post.data.title }}</a>
-        <span class="post-list-sep">&middot;</span>
-        <span class="post-list-desc">{{ post.data.description }}</span>
+        <span class="post-list-desc">&middot;&nbsp;{{ post.data.description }}</span>
       </span>
       <div class="date">{{ post.date | mdy }}</div>
     </div>

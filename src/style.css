@@ -287,7 +287,6 @@ nav a:hover { color: var(--accent); }
 .post-list a { color: var(--fg); text-decoration: none; }
 .post-list a:hover { color: var(--accent); }
 .post-list .date { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
-.post-list-sep { color: var(--muted); }
 .post-list-desc { color: var(--muted); font-size: 0.9rem; }
 
 .post-grid {
