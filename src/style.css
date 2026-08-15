@@ -352,12 +352,37 @@ footer {
 }
 .post a { color: var(--accent-2); }
 
+.post blockquote {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1.25rem;
+  border-left: 3px solid var(--accent);
+  font-style: italic;
+  font-size: 1.05rem;
+}
+.post blockquote cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-style: normal;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.post blockquote cite::before {
+  content: "- ";
+}
+
 .post img {
   max-width: 100%;
   max-height: 70vh;
   border-radius: 6px;
   display: block;
   margin: 1.5rem auto;
+}
+
+.post audio {
+  width: 100%;
+  max-width: 400px;
+  display: block;
+  margin: 1rem 0;
 }
 .post figcaption {
   color: var(--muted);

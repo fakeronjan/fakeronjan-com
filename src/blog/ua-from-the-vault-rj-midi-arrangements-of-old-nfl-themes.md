@@ -9,8 +9,10 @@ original_source: uselesssportsanalysis.com
 
 <p>Sports often have really fantastic theme music, and I used to arrange my favorite ones in MIDI format way back in the day.  My buddy Phil has kept these in his archives all these years, and today I decided to go back and listen to them again.  Below are two of my favorite NFL themes that have since been replaced.</p>
 <p>NFL on NBC - the classic theme last heard during Super Bowl XXXII</p>
-<hr>
+<audio controls src="/blog/img/ua/from-the-vault-rj-midi-arrangements-of-old-nfl-themes/nbc.mp3"></audio>
+<p><a href="/blog/img/ua/from-the-vault-rj-midi-arrangements-of-old-nfl-themes/nbc.mid" download>Download original nbc.mid</a></p>
 <p>NFL on CBS - the classic theme that they were crazy to replace</p>
-<hr>
+<audio controls src="/blog/img/ua/from-the-vault-rj-midi-arrangements-of-old-nfl-themes/cbs.mp3"></audio>
+<p><a href="/blog/img/ua/from-the-vault-rj-midi-arrangements-of-old-nfl-themes/cbs.mid" download>Download original cbs.mid</a></p>
 <p>Enjoy, and I hope these bring back some memories!</p>
 <p>-rj</p>
