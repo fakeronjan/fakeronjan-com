@@ -35,6 +35,7 @@ module.exports = function (eleventyConfig) {
 
   // cache-buster for style.css so a rebuild always forces a fresh fetch
   eleventyConfig.addGlobalData("buildTime", () => Date.now());
+  eleventyConfig.addGlobalData("currentYear", () => new Date().getFullYear());
 
   return {
     dir: {
