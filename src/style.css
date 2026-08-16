@@ -369,6 +369,43 @@ nav a:hover { color: var(--accent); }
 }
 .post-tile-date { color: var(--muted); font-size: 0.82rem; }
 
+.post-adjacent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+.post-adjacent-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--muted);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--fg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.post-adjacent-link:hover {
+  border-color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 6%, transparent);
+  box-shadow: 0 0 0 1px var(--accent-2), 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+.post-adjacent-next { text-align: right; align-items: flex-end; }
+.post-adjacent-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+.post-adjacent-title { font-weight: 500; line-height: 1.35; color: var(--accent); }
+.post-adjacent-date { color: var(--muted); font-size: 0.82rem; }
+
+@media (max-width: 640px) {
+  .post-adjacent { grid-template-columns: 1fr; }
+  .post-adjacent-next { text-align: left; align-items: flex-start; }
+}
+
 footer {
   margin-top: 3rem;
   padding-top: 1rem;

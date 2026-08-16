@@ -34,6 +34,17 @@ module.exports = function (eleventyConfig) {
     posts.filter((p) => (p.data.tags || []).includes(slug))
   );
 
+  // posts collection is sorted newest-first, so the older post (chronological
+  // predecessor) sits at idx+1 and the newer post (successor) sits at idx-1.
+  eleventyConfig.addFilter("adjacentPosts", (posts, url) => {
+    const idx = posts.findIndex((p) => p.url === url);
+    if (idx === -1) return { previous: null, next: null };
+    return {
+      previous: idx + 1 < posts.length ? posts[idx + 1] : null,
+      next: idx > 0 ? posts[idx - 1] : null,
+    };
+  });
+
   // cache-buster for style.css so a rebuild always forces a fresh fetch
   eleventyConfig.addGlobalData("buildTime", () => Date.now());
   eleventyConfig.addGlobalData("currentYear", () => new Date().getFullYear());
