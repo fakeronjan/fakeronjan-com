@@ -81,7 +81,7 @@ tags: [sports-memories]
 <p>My Knicks fan life starts flashing before my eyes. Back to Bing Bong, Linsanity, the bet I had with Phil.  What a ride.</p>
 <p>I had tickets to Game 6 of the Finals as part of my half-season plan. I of course won’t get to go, because the Knicks won too fast. I am too excited to care.</p>
 <p>In the aftermath, it’s hard not to view this Knicks team as an all timer in NBA history. No, they didn’t have a dominant regular season, but their playoff run is virtually unprecedented.</p>
-<p>My <a href="https://fakeronjan.com/nba" rel="noopener" target="_blank"><span style="text-decoration:underline">NBA rating model</span></a> (which goes back to 1977) puts these Knicks as the 3rd-highest rating of any NBA champion:</p>
+<p>My <a href="/nba/"><span style="text-decoration:underline">NBA rating model</span></a> (which goes back to 1977) puts these Knicks as the 3rd-highest rating of any NBA champion:</p>
 <figure><img alt="" loading="lazy" src="/blog/img/fr/knicks-4-spurs-1/all-time-rating---knicks-3rd.png"/></figure>
 <p>More than the stats, though, I want to capture this feeling right now.</p>
 <p>This team was full of castoffs, players who weren’t wanted, players who were passed up in the draft. They were called too small, not talented enough, not consistent enough.</p>

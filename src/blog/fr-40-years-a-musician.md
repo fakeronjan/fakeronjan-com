@@ -147,7 +147,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <h3>Recording a CD</h3>
 <p>I continued to stay in touch with my Bengali roots by performing at pujas. One year our community adapted Cinderella into a Bengali musical, <em>Chadrapati</em>, and I played all of the music on my keyboard. It was amazing.</p>
 <p>In the summer before 12th grade, I notated 12 Tagore and Nazrul songs into a book so Bengali kids in the community could learn how to play them. Then, I recorded an album of these pieces with two Bengali professionals, a sitar player and a tabla player.</p>
-<p>It was wild recording 12 pieces in a single day. We recorded violin, sitar, and tabla parts together, and I came back in a 2nd run to add the keyboard. It’s raw, and it’s not a particularly impressive technical achievement by any means. But hey, <a href="https://fakeronjan.com/music" rel="noopener" target="_blank"><span style="text-decoration:underline">it’s an album</span></a>. I’m proud of it.</p>
+<p>It was wild recording 12 pieces in a single day. We recorded violin, sitar, and tabla parts together, and I came back in a 2nd run to add the keyboard. It’s raw, and it’s not a particularly impressive technical achievement by any means. But hey, <a href="https://mariopaintmusicguy.com/about.html" rel="noopener" target="_blank"><span style="text-decoration:underline">it’s an album</span></a>. I’m proud of it.</p>
 <figure><img alt="" loading="lazy" src="/blog/img/fr/40-years-a-musician/cd.jpg"/></figure>
 <h3>Second life in piano</h3>
 <p>This whole time I’d still been playing the piano. I didn’t even enter competitions anymore. I truly wasn’t motivated by the win - I was back to being motivated by the crowd.</p>
@@ -157,7 +157,7 @@ description: 43rd birthday retrospective about 40 years as a musician
 <h3>Holding on</h3>
 <p>After graduating high school, this was the score: I had no piano teacher, I had no violin teacher, I was in no orchestra, and I had no more Bengali pujas to perform at. Just as I’d hit my 10,000 hours in my Gladwell score, I was on my own.</p>
 <p>I found ways to keep going. Whenever I was at the Cincinnati home, I’d play the baby grand piano that I picked out back in my competing days. I had to stay reasonably sharp.</p>
-<p>As a child I would constantly play <em>Mario Paint</em> for its music composer, and I kept going with that and MIDI software. I continue to do so <a href="https://fakeronjan.com/music" rel="noopener" target="_blank"><span style="text-decoration:underline">to this day</span></a>.</p>
+<p>As a child I would constantly play <em>Mario Paint</em> for its music composer, and I kept going with that and MIDI software. I continue to do so <a href="https://mariopaintmusicguy.com/about.html" rel="noopener" target="_blank"><span style="text-decoration:underline">to this day</span></a>.</p>
 <p>In 2012, I played the keys in a rap music video for a friend’s pepper company. It was fun.</p>
 <div class="video-embed"><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" loading="lazy" src="https://www.youtube-nocookie.com/embed/iVnAZ4Kk20Q"></iframe></div>
 <p>For a while, a couple friends and I started up a band called <em>Full Spectrum</em> that played all different types of music. We were very racially diverse, so we were very proud of the name. Sadly, that band fell apart when we couldn’t find a place to practice in the Bronx without getting yelled at by neighbors. City life.</p>

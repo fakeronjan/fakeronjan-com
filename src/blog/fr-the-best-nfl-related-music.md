@@ -7,7 +7,7 @@ tags: [music]
 
 # {{ title }}
 
-<p>Ever since I was little, I was both an <a href="https://fakeronjan.com/nfl" rel="noopener" target="_blank">NFL fan</a> (outside of a couple of <a href="/blog/2023/1/4/re-quitting-the-nfl">failed boycotts</a>) and a <a href="https://fakeronjan.com/music" rel="noopener" target="_blank">musician</a>. And believe it or not, those worlds would collide more than you’d think.</p>
+<p>Ever since I was little, I was both an <a href="/nfl/">NFL fan</a> (outside of a couple of <a href="/blog/fr-re-quitting-the-nfl/">failed boycotts</a>) and a <a href="https://mariopaintmusicguy.com/about.html" rel="noopener" target="_blank">musician</a>. And believe it or not, those worlds would collide more than you’d think.</p>
 <p>I’d play music from NFL shows and video games on the piano. I remixed NFL theme music in <em>Mario Paint</em> and MIDI sequencers. I even bought the 10-CD album that was the soundtrack to <em>NFL Films</em> the day it came out.</p>
 <figure><img alt="" loading="lazy" src="/blog/img/fr/the-best-nfl-related-music/2187337-663.png"/></figure>
 <p>Well, it’s Super Bowl week and I’ve got NFL on the brain, so I figured I’d count down my favorite music that’s related to the NFL. This sources from all over the place - NFL telecast theme songs, music from NFL recap shows, and even NFL video games. Enjoy!</p>

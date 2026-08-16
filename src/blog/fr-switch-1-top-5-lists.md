@@ -13,7 +13,7 @@ tags: [game-rankings]
 <p>Between the two of us, we ran through six different Nintendo Switch consoles and played collectively for hundreds of hours. Yikes, that’s a lot of gaming to reflect on.</p>
 <p>So let’s reflect! We had a father-son lunch today and at the restaurant we laid out each of our top 5 games. We’ll go through them in alternating fashion. (Quick note, cross-platform games will appear if the Switch was the platform where we played the game the most.)</p>
 <p><strong>Damon’s #5 - <em>Shovel Knight: Treasure Trove</em></strong></p>
-<p>I was surprised this one connected so much with Damon, given its 8-bit pedigree, but Damon loved the cast of characters, the surprisingly complex stories and backstories, and the chiptune music (that <a href="/blog/2025/2/25/two-debuts-in-the-city">we saw performed live</a>!).</p>
+<p>I was surprised this one connected so much with Damon, given its 8-bit pedigree, but Damon loved the cast of characters, the surprisingly complex stories and backstories, and the chiptune music (that <a href="/blog/fr-two-debuts-in-the-city/">we saw performed live</a>!).</p>
 <p><strong>Ronjan’s #5 - <em>The Legend of Zelda: Link’s Awakening</em></strong></p>
 <p>I missed out on the original Game Boy release entirely as a child, but I loved the Switch remake so much that it became my <a href="/blog/fr-game-of-the-year-game-of-the-decade/">2019 game of the year</a> and my <a href="/blog/fr-my-top-10-zelda-games/">2nd-favorite game in the franchise</a> behind <em>A Link Between Worlds</em>.</p>
 <p><strong>Damon’s #4 - <em>Mario Kart 8 Deluxe</em></strong></p>

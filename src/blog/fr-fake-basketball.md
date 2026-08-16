@@ -8,7 +8,7 @@ description: a story of how I made my first computer game
 
 # {{ title }}
 
-<p><em>[Originally posted April 30th at </em><a href="https://fakeronjan.com/fakebasketball" rel="noopener" target="_blank"><em>fakeronjan.com/fakebasketball]</em></a></p>
+<p><em>[Originally posted April 30th at fakeronjan.com/fakebasketball]</em></p>
 <p>I made a game! Well, I vibe-coded a game.</p>
 <p>It’s a text-based basketball simulation game called <em>Fake Basketball Commissioner</em> and I made it because, honestly, it’s the game I always wanted to play.</p>
 <p>In sports video games throughout my life, I’ve been fascinated with simulating the actual sports part to see what happens in the long-term meta-narrative of the league. I want to see Hall of Fame career arcs, dynasties that rise and fall, rule changes that impact strategy, the coaching carousel, even owners that start up competitive leagues.</p>

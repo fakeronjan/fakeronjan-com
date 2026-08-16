@@ -7,7 +7,7 @@ date: 2025-02-12
 # {{ title }}
 
 <p>Super Bowl LIX / 59 has been in the books, the king is dead, <a href="/blog/fr-the-threepeat-pursuing-chiefs-have-broken-my-nfl-model/">my model has been saved</a>, and it’s definitely time to do a retro across Super Bowls to see what we’ve learned!</p>
-<p>I run a weekly <a href="https://fakeronjan.com/nfl" rel="noopener" target="_blank">NFL ratings model</a> that uses data going back to the 1970 and produces ratings starting with the 1971 season, meaning I have metrics on every Super Bowl team that participated from Super Bowl VI onwards. I’ve cut this database several ways, and I hope it’s interesting to read through.</p>
+<p>I run a weekly <a href="/nfl/">NFL ratings model</a> that uses data going back to the 1970 and produces ratings starting with the 1971 season, meaning I have metrics on every Super Bowl team that participated from Super Bowl VI onwards. I’ve cut this database several ways, and I hope it’s interesting to read through.</p>
 <p>First off, the age old question … what’s the greatest NFL team of all time? Well, according to my model, here are the top Super Bowl winning teams since 1971:</p>
 <figure><img alt="" loading="lazy" src="/blog/img/fr/an-analysis-of-54-super-bowls/1.-best-super-bowl-winners.png"/></figure>
 <p>Notably, the 2024 Eagles slot into the 14th spot here and are the highest rated champion since the 2013 Seahawks! This was a historically great team, particularly so in the salary cap era, as they are the 6th-highest rated champion since the salary cap was instituted in 1994. Big big congrats, Iggles fans!</p>

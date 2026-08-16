@@ -22,7 +22,7 @@ date: 2025-02-25
 <p>The play calls out that there are three deaths. The moment you die, the moment you are laid to rest, and the moment your name is spoken for the last time and you are truly forgotten to the cosmos. And while the play didn’t overtly call it out, we probably have the most actual agency and control over our third death - how we are remembered.</p>
 <p>The play closed by asking everyone in the audience to speak the name of someone they’d like to remember, someone whose name they’d like to say for the first time in a while, someone who they’d like to delay that third death for.</p>
 <p>Everyone said their chosen name at the same time as the lights went dark.</p>
-<p>I chose my maternal grandfather, Mihir Nath Das. I wrote about him in a piece about <a href="/blog/2019/1/5/finding-home">finding my own roots</a> a few years ago:</p>
+<p>I chose my maternal grandfather, Mihir Nath Das. I wrote about him in a piece about <a href="/blog/fr-finding-home/">finding my own roots</a> a few years ago:</p>
 <blockquote class="big">
 He was a witty man who helped me pronounce Rabindranath Tagore’s name by telling me to say ‘robin donut’.  He was a well-traveled scholar who spent a few years teaching chemistry in the United States in the 1950s.  And he was someone with whom I shared a special bond – I was his only grandson, and he was my only living grandfather. I vividly remember the last days I spent with him.  I watched him laboriously walk from one room to another, oxygen tank in tow, as he suffered from the final stage of the emphysema that eventually took his life.  I was a teenager when he passed away, and I missed him tremendously, angry that a preventable disease took him away from my family.
 </blockquote>
