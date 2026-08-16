@@ -180,7 +180,6 @@ nav a:hover { color: var(--accent); }
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    touch-action: pan-x;
     overscroll-behavior-x: contain;
     gap: 1.1rem;
     padding-bottom: 2px;
