@@ -2,7 +2,6 @@
 layout: post.njk
 title: "Dumb cat memes"
 date: 2026-08-16
-tags: [about-me]
 ---
 
 # {{ title }}
