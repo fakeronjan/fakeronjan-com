@@ -104,6 +104,15 @@ li:last-child { margin-bottom: 0; }
   line-height: 1.5;
   color: var(--muted);
 }
+.commentary-text {
+  display: flex;
+  flex-direction: column;
+}
+.commentary-cell p.commentary-attribution {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  font-style: italic;
+}
 .methodology { font-size: 0.85rem; color: var(--muted); margin: 0.5rem 0 1rem; }
 
 body {

@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "Game of the year 2021"
+title: "Game of the Year 2021"
 date: 2021-12-27
 tags: [game-of-the-year]
 ---
