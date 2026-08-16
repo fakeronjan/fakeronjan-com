@@ -166,7 +166,7 @@ h1, h2, h3, h4, h5, h6 {
   object-fit: cover;
 }
 
-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1.6rem; }
+nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1.6rem; width: 100%; min-width: 0; }
 nav a { color: var(--fg); text-decoration: none; font-size: 0.95rem; font-weight: 400; }
 nav a:hover { color: var(--accent); }
 .nav-arrow { font-size: 0.8em; margin-left: 0.15em; }
