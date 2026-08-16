@@ -171,12 +171,20 @@ nav a { color: var(--fg); text-decoration: none; font-size: 0.95rem; font-weight
 nav a:hover { color: var(--accent); }
 .nav-arrow { font-size: 0.8em; margin-left: 0.15em; }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   header { margin-bottom: 1.25rem; gap: 0.5rem; }
   .brand-logo { width: 36px; height: 36px; }
   .brand a { font-size: 1.1rem; }
-  nav { gap: 0.6rem 0.9rem; }
-  nav a { font-size: 0.85rem; }
+  nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 1.1rem;
+    padding-bottom: 2px;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav a { flex: none; white-space: nowrap; font-size: 0.85rem; }
 }
 
 .nav-preview-overlay {
