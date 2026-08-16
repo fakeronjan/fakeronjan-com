@@ -300,8 +300,8 @@ nav a:hover { color: var(--accent); }
   gap: 0.4rem;
   min-width: 0;
 }
-.post-list a { color: var(--fg); text-decoration: none; }
-.post-list a:hover { color: var(--accent); }
+.post-list a { color: var(--accent); text-decoration: none; }
+.post-list a:hover { color: var(--accent-2); }
 .post-list .date { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
 .post-list-desc { color: var(--muted); font-size: 0.9rem; }
 
