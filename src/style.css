@@ -968,8 +968,9 @@ footer {
 }
 .wc-champ-cell { font-weight: 800; }
 .wc-results { font-size: 0.78rem; width: 15rem; }
-.wc-results-inner { white-space: normal; overflow-wrap: anywhere; line-height: 1.55; }
-.wc-seg { white-space: nowrap; }
+.wc-results-inner { overflow-wrap: anywhere; }
+.wc-seg { display: block; white-space: nowrap; line-height: 1.5; margin-bottom: 2px; }
+.wc-seg:last-child { margin-bottom: 0; }
 .wc-grp {
   display: inline-block;
   font-weight: 700;
@@ -997,7 +998,6 @@ footer {
 .wc-w { color: var(--accent); font-weight: 700; }
 .wc-l { color: var(--accent-2); font-weight: 700; }
 .wc-heat .wc-wl { font-size: 0.8rem; font-weight: 800; }
-.wc-sep { color: var(--muted); opacity: 0.5; margin: 0 2px; }
 
 .wc-stamp { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; margin: 0.1rem 0 0.9rem; font-size: 0.78rem; }
 .wc-run {

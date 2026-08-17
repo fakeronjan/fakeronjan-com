@@ -1256,25 +1256,30 @@
       if (t.eliminated) return '<td class="col-od wc-heat ' + (cls || "") + '"><span style="color:var(--muted)">-</span></td>';
       return '<td class="col-od wc-heat ' + (cls || "") + '" style="' + heat(t[k], range[k]) + '">' + pct(t[k]) + "</td>";
     }
+    // Newest-first (fleet convention): latest knockout round on top, group
+    // stage (always the earliest) last. ko_path itself arrives chronological
+    // (R32 -> Final), so it's reversed here rather than at the data layer.
+    // One match per row - not inline-wrapped spans, which read as a run-on
+    // sentence in a dense grid.
     function resultsCell(t) {
-      var parts = [];
-      if (t.grp) {
-        var out = (t.eliminated && !(t.ko_path || []).length) ? ' <span class="wc-out">OUT</span>' : "";
-        parts.push('<span class="wc-grp">' + t.grp + "</span>" + (t.grp_rec ? '<span class="wc-rec">(' + t.grp_rec + ")</span>" : "") + out);
-      }
-      (t.ko_path || []).forEach(function (k) {
+      var lines = [];
+      (t.ko_path || []).slice().reverse().forEach(function (k) {
         var rd = '<span class="wc-rd">' + k.round + "</span>";
         var opp = '<span class="wc-vs">vs. ' + (k.opp_flag || "") + " " + k.opp + "</span>";
         if (k.pending) {
           var when = k.date ? ' <span class="wc-when">(' + k.date.slice(5) + ")</span>" : "";
-          parts.push(rd + " " + opp + when);
+          lines.push(rd + " " + opp + when);
         } else {
           var pens = k.pens ? ' <span class="wc-so">p</span>' : "";
-          parts.push(rd + ' <span class="' + (k.won ? "wc-w" : "wc-l") + '">' + (k.won ? "W" : "L") + " " + k.gf + "-" + k.ga + pens + "</span> " + opp);
+          lines.push(rd + ' <span class="' + (k.won ? "wc-w" : "wc-l") + '">' + (k.won ? "W" : "L") + " " + k.gf + "-" + k.ga + pens + "</span> " + opp);
         }
       });
-      var body = parts.length
-        ? parts.map(function (p) { return '<span class="wc-seg">' + p + "</span>"; }).join(' <span class="wc-sep">·</span> ')
+      if (t.grp) {
+        var out = (t.eliminated && !(t.ko_path || []).length) ? ' <span class="wc-out">OUT</span>' : "";
+        lines.push('<span class="wc-grp">' + t.grp + "</span>" + (t.grp_rec ? '<span class="wc-rec">(' + t.grp_rec + ")</span>" : "") + out);
+      }
+      var body = lines.length
+        ? lines.map(function (p) { return '<div class="wc-seg">' + p + "</div>"; }).join("")
         : '<span style="color:var(--muted)">-</span>';
       return '<td class="wc-results"><div class="wc-results-inner">' + body + "</div></td>";
     }
