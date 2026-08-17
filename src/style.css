@@ -163,7 +163,7 @@ h1, h2, h3, h4, h5, h6 {
 .brand-logo {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: 8px;
   object-fit: cover;
 }
 
@@ -560,7 +560,7 @@ footer {
 .fleet-nav-leagues a:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); }
 .fleet-nav-leagues a.active { color: var(--accent); font-weight: 700; }
 
-.sport-page h1 { margin-bottom: 0; }
+.sport-page h1 { margin-bottom: 0; color: var(--accent); }
 .sport-subtitle {
   font-size: 0.78rem;
   font-weight: 500;
@@ -836,7 +836,7 @@ footer {
 .sport-table thead .sort-col { color: var(--accent) !important; }
 .sport-table .sort-col.rating-cell { font-weight: 800; }
 .sport-table tbody tr.row-group-end { border-bottom: 2px solid var(--muted); }
-.season-cell { font-weight: 700; color: var(--accent); white-space: nowrap; text-align: center; }
+.sport-table .season-cell { font-weight: 700; color: var(--accent); white-space: nowrap; text-align: center; }
 .divider-col { width: 4rem; text-align: center; font-size: 0.72rem; font-weight: 600; white-space: nowrap; padding: 0.2rem 0.4rem; }
 .sport-table th.divider-col { font-size: 0.68rem; }
 .sport-afl-tag { font-weight: 400; font-style: italic; color: var(--muted); }
