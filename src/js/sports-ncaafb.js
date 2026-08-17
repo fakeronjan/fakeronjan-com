@@ -609,12 +609,7 @@
       });
   }
 
-  function stackedLines(primaryHtml, coHtml) {
-    if (!coHtml) return primaryHtml;
-    return primaryHtml + '<div class="sport-co-champ">' + coHtml + "</div>";
-  }
-
-  function teamLine(t, season) {
+  function teamNameHtml(t, season) {
     var sel = (t.selectors && t.selectors.length) ? t.selectors.join("+") : "";
     var selTag = sel ? '<span class="finish-badge finish-champion sport-sel-tag">' + sel + " 👑</span>" : "";
     var conf = confBadge(t.conference_raw || t.conference, !!t.conference_champ);
@@ -629,27 +624,21 @@
       : t.team;
     return '<div class="sport-champ-name">' + nameHtml + selTag + cnt + "</div><div class=\"sport-champ-conf\">" + conf + "</div>";
   }
-  function ovrLine(t) { return t.rank != null ? String(t.rank) : '<span class="sport-dim-dash">-</span>'; }
-  function confLine(t) { return t.conf_rank != null ? String(t.conf_rank) : '<span class="sport-dim-dash">-</span>'; }
-  function reactLine(t) { return t.rating != null ? t.rating.toFixed(2) : '<span class="sport-dim-dash">-</span>'; }
-  function offLine(t) { return t.rating_o != null ? t.rating_o.toFixed(2) : '<span class="sport-dim-dash">-</span>'; }
-  function defLine(t) { return t.rating_d != null ? t.rating_d.toFixed(2) : '<span class="sport-dim-dash">-</span>'; }
-  function wlLine(t) { return fmtRecordStacked(t.regular_record, t.playoff_record); }
 
-  // 7-cell team block (team / OVR# / Conf# / Rating / OFF / DEF / W-L),
-  // stacking co_champion below primary in each cell when a title was split.
-  function teamSide(primary, co, bg, season) {
-    if (!primary) {
-      return '<td class="' + bg + ' sport-dim-dash" style="text-align:center" colspan="7">-</td>';
-    }
+  // 5-cell single-team row (team / Rating[+OVR rank] / OFF[+rank] / DEF[+rank] / W-L).
+  // Split/co-championship seasons render each team on its OWN <tr> (see
+  // renderChampions) instead of stacking two teams inside one cell - a per-cell
+  // stack put each column's divider at a different height since cell content
+  // heights differ, so the dashed lines never lined up across columns. Real
+  // adjacent rows share one clean row boundary for every column instead.
+  function teamCells(t, bg, season) {
+    if (!t) return '<td class="' + bg + ' sport-dim-dash" style="text-align:center" colspan="5">-</td>';
     return (
-      '<td class="' + bg + ' team-cell" style="vertical-align:top">' + stackedLines(teamLine(primary, season), co ? teamLine(co, season) : null) + "</td>" +
-      '<td class="' + bg + ' col-hide-mobile col-rank" style="vertical-align:top">' + stackedLines(ovrLine(primary), co ? ovrLine(co) : null) + "</td>" +
-      '<td class="' + bg + ' col-hide-mobile col-rank" style="vertical-align:top">' + stackedLines(confLine(primary), co ? confLine(co) : null) + "</td>" +
-      '<td class="' + bg + ' rating-cell" style="vertical-align:top">' + stackedLines(reactLine(primary), co ? reactLine(co) : null) + "</td>" +
-      '<td class="' + bg + ' rating-cell col-hide-mobile" style="vertical-align:top">' + stackedLines(offLine(primary), co ? offLine(co) : null) + "</td>" +
-      '<td class="' + bg + ' rating-cell col-hide-mobile" style="vertical-align:top">' + stackedLines(defLine(primary), co ? defLine(co) : null) + "</td>" +
-      '<td class="' + bg + ' col-hide-mobile col-record" style="vertical-align:top">' + stackedLines(wlLine(primary), co ? wlLine(co) : null) + "</td>"
+      '<td class="' + bg + ' team-cell">' + teamNameHtml(t, season) + "</td>" +
+      '<td class="' + bg + ' rating-cell col-od">' + fmtOD(t.rating, t.rank) + "</td>" +
+      '<td class="' + bg + ' rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
+      '<td class="' + bg + ' rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
+      '<td class="' + bg + ' col-hide-mobile col-record">' + fmtRecordStacked(t.regular_record, t.playoff_record) + "</td>"
     );
   }
 
@@ -670,28 +659,37 @@
     updateDisruptedNote("championsDisrupted", entries.map(function (e) { return e.season; }));
 
     var rows = entries.map(function (e) {
+      var hasCo = !!e.co_champion;
+      var rspan = hasCo ? 2 : 1;
       var eraTag = e.era ? '<div class="sub-line">' + e.era + "</div>" : "";
-      return (
-        "<tr>" +
-        '<td class="season-cell linked" data-season-link="' + e.season + '" style="vertical-align:top">' + e.season + seasonTag(e.season) + eraTag + "</td>" +
-        teamSide(e.champion, e.co_champion, "col-champ", e.season) +
-        '<td class="divider-col" style="vertical-align:top">' + (e.final_score || '<span class="sport-dim-dash">-</span>') + "</td>" +
-        teamSide(e.runner_up, null, "col-ru", e.season) +
-        "</tr>"
-      );
+      var seasonCell = '<td class="season-cell linked" data-season-link="' + e.season + '" rowspan="' + rspan + '">' + e.season + seasonTag(e.season) + eraTag + "</td>";
+      var scoreCell = '<td class="divider-col" rowspan="' + rspan + '">' + (e.final_score || '<span class="sport-dim-dash">-</span>') + "</td>";
+      // co_champion only occurs in poll-era seasons, which never had a title
+      // game to produce a runner_up (confirmed against live data - every
+      // co_champion entry has runner_up: null) - the collapsed dash spans
+      // both sub-rows. Still handled generically in case that ever changes.
+      var runnerCell = e.runner_up
+        ? teamCells(e.runner_up, "col-ru", e.season)
+        : '<td class="col-ru sport-dim-dash" style="text-align:center" colspan="5" rowspan="' + rspan + '">-</td>';
+
+      if (hasCo) {
+        return (
+          '<tr class="sport-split-top">' + seasonCell + teamCells(e.champion, "col-champ", e.season) + scoreCell + runnerCell + "</tr>" +
+          '<tr class="row-group-end">' + teamCells(e.co_champion, "col-champ", e.season) + "</tr>"
+        );
+      }
+      return "<tr>" + seasonCell + teamCells(e.champion, "col-champ", e.season) + scoreCell + runnerCell + "</tr>";
     }).join("");
 
     historyTableWrap.innerHTML =
       '<table class="sport-table"><thead><tr>' +
       '<th class="col-rank">Season</th>' +
-      '<th class="col-champ">Champion</th><th class="col-champ col-hide-mobile col-rank">OVR #</th>' +
-      '<th class="col-champ col-hide-mobile col-rank">Conf #</th><th class="col-champ">Rating</th>' +
-      '<th class="col-champ col-hide-mobile">OFF</th><th class="col-champ col-hide-mobile">DEF</th>' +
+      '<th class="col-champ">Champion</th><th class="col-champ col-od">Rating</th>' +
+      '<th class="col-champ col-hide-mobile col-od">OFF</th><th class="col-champ col-hide-mobile col-od">DEF</th>' +
       '<th class="col-champ col-hide-mobile col-record">W-L</th>' +
       '<th class="divider-col">Score</th>' +
-      '<th class="col-ru">Runner-Up</th><th class="col-ru col-hide-mobile col-rank">OVR #</th>' +
-      '<th class="col-ru col-hide-mobile col-rank">Conf #</th><th class="col-ru">Rating</th>' +
-      '<th class="col-ru col-hide-mobile">OFF</th><th class="col-ru col-hide-mobile">DEF</th>' +
+      '<th class="col-ru">Runner-Up</th><th class="col-ru col-od">Rating</th>' +
+      '<th class="col-ru col-hide-mobile col-od">OFF</th><th class="col-ru col-hide-mobile col-od">DEF</th>' +
       '<th class="col-ru col-hide-mobile col-record">W-L</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
     attachLinks(historyTableWrap);
