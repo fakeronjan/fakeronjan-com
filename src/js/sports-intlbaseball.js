@@ -312,7 +312,6 @@
         '<td class="col-rank col-hide-mobile">' + cRank + "</td>" +
         teamTd +
         "<td>" + confederationBadge(t.confederation, !!t.continental_winner) + "</td>" +
-        '<td class="col-record">' + (t.record || "-") + "</td>" +
         "<td>" + ratingBar(t.rating, barSc) + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) +
         (t.last_match_date ? '<div class="sub-line-italic">' + t.last_match_date + "</div>" : "") + "</td>" +
@@ -324,7 +323,7 @@
     standingsTableWrap.innerHTML =
       '<table class="sport-table"><thead><tr>' +
       '<th class="col-rank">OVR #</th><th class="col-hide-mobile col-rank">Conf #</th>' +
-      '<th>Country</th><th>Conf</th><th class="col-record">W-L</th><th>Rating</th>' +
+      '<th>Country</th><th>Conf</th><th>Rating</th>' +
       '<th class="col-last-match">Last Game</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
@@ -877,6 +876,6 @@
     loadChampions();
     loadGoat();
   }).catch(function () {
-    standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
+    standingsTableWrap.innerHTML = '<p class="sport-error">Could not load ratings</p>';
   });
 })();

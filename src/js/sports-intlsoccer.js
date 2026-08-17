@@ -1340,7 +1340,7 @@
     loadGoat();
     loadWcOdds();
   }).catch(function () {
-    standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
+    standingsTableWrap.innerHTML = '<p class="sport-error">Could not load ratings</p>';
   });
 
   buildConfPills("msConfPills", true, state.standingsConf, function (v) { state.standingsConf = v; renderStandings(); });
