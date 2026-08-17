@@ -748,6 +748,8 @@ footer {
 .sport-table .col-od { text-align: center; }
 .sport-table .col-last-match { font-size: 0.8rem; color: var(--muted); white-space: normal; max-width: 240px; }
 .sport-table .team-cell { font-weight: 600; }
+.sport-table .linked { cursor: pointer; }
+.sport-table .linked:hover { color: var(--accent-2); text-decoration: underline; }
 
 .sub-line { font-size: 0.7rem; color: var(--muted); font-weight: 400; line-height: 1.2; }
 .sub-line-italic { font-size: 0.68rem; color: var(--muted); font-style: italic; line-height: 1.2; }
