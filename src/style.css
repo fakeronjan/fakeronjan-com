@@ -624,7 +624,7 @@ footer {
 .sport-week-cell { white-space: nowrap; font-size: 0.85rem; }
 
 .sport-lineage {
-  text-align: center;
+  text-align: left;
   font-size: 0.72rem;
   color: var(--muted);
   font-style: italic;
@@ -778,7 +778,20 @@ footer {
 .finish-badge.finish-runner { background: color-mix(in srgb, var(--fg) 12%, transparent); color: var(--fg); }
 .finish-badge.finish-appearance { background: color-mix(in srgb, var(--fg) 5%, transparent); color: var(--muted); font-weight: 500; }
 .finish-badge.finish-bronze { background: #cd7f32; color: #fff; }
+/* ZIDANE: domestic league + Champions League + domestic cup all won same season */
+.finish-badge.finish-treble {
+  background: linear-gradient(90deg, var(--gold) 0%, #d4af37 50%, #b8860b 100%);
+  color: #1a1a1a;
+  box-shadow: 0 0 4px color-mix(in srgb, var(--gold) 50%, transparent);
+}
 .sport-sel-tag { margin-left: 0.25rem; }
+
+/* ZIDANE's 5 domestic leagues */
+.badge-EPL        { background: #cc0000; color: #fff; }
+.badge-LaLiga     { background: #f5c518; color: #1a1a1a; }
+.badge-Bundesliga { background: #1a1a1a; color: #fff; }
+.badge-SerieA     { background: #00843d; color: #fff; }
+.badge-Ligue1     { background: #0055a4; color: #fff; }
 
 /* International-fleet confederation badges (CARMELO/MESSI-style) - fixed
    geographic colors, not theme accent tokens, since these read as flags. */
