@@ -1,0 +1,84 @@
+---
+layout: base.njk
+permalink: /ncaafb/
+currentSport: ncaafb
+eleventyComputed:
+  title: "College Football | FAKE RONJAN!!"
+---
+
+{% include "fleet-nav.njk" %}
+
+<div class="sport-page" id="sportPage" data-source="https://fakeronjan.github.io/salaam">
+  <h1>SALAAM <span aria-hidden="true">&#127891;&#127944;</span></h1>
+  <p class="sport-subtitle">NCAA Football Power Rankings</p>
+  <p class="sport-model-note">Considers strength of opponent, margin of result, and recency. Reads as approximate point-spread vs avg team. Offense and Defense break Rating into how much each side of the ball contributes (they sum to Rating). ~+10 = contender; ~+20 = elite; ~+30+ = generational (1995 Nebraska = 41.03).</p>
+  <p class="sport-updated">
+    <span>&#128260; Updated daily</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="ncaafbDateRange">Loading...</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="ncaafbRefreshed">Loading...</span>
+  </p>
+  <p class="sport-credit">Data from the <a href="https://collegefootballdata.com" target="_blank" rel="noopener">College Football Data API</a> (collegefootballdata.com). Ratings are derived from this data.</p>
+
+  <nav class="sport-tabs" id="ncaafbTabs">
+    <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
+    <button class="sport-tab" data-tab="team-summary" type="button">Team Summary</button>
+    <button class="sport-tab" data-tab="league-history" type="button">National Champions</button>
+    <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
+  </nav>
+
+  <section class="sport-view active" data-view="standings" id="standings">
+    <div class="sport-controls">
+      <select id="ncaafbSeason" class="sport-select" aria-label="Season"></select>
+      <select id="ncaafbWeek" class="sport-select" aria-label="Week"></select>
+      <div class="pill-group sport-pill-wrap" id="ncaafbConfPills"></div>
+      <span class="sport-count" id="ncaafbCount"></span>
+    </div>
+    <p id="ncaafbWarmup" class="sport-note" hidden>Note: ratings need a 20-week warm-up window, so 1982 has no ratings and 1983's first rating lands mid-season.</p>
+    <div id="ncaafbDisrupted" class="sport-disrupted-note" hidden></div>
+    <div id="ncaafbStandingsTable" class="sport-table-wrap"></div>
+  </section>
+
+  <section class="sport-view" data-view="team-summary" id="team-summary" hidden>
+    <div class="pill-group sport-pill-wrap" id="tsConfPills"></div>
+    <div class="pill-group" id="tsViewPills"></div>
+    <div class="sport-controls">
+      <select id="tsTeamSelect" class="sport-select" aria-label="Team">
+        <option value="">- Select a team -</option>
+      </select>
+      <select id="tsSeasonSelect" class="sport-select" aria-label="Season" hidden></select>
+      <select id="tsDateTypeSelect" class="sport-select" aria-label="Snapshot">
+        <option value="eos">End of playoffs</option>
+        <option value="eor">End of regular season</option>
+      </select>
+    </div>
+    <div id="tsDisruptedTop" class="sport-disrupted-note" hidden></div>
+    <div id="tsChartWrap" class="sport-chart-wrap" hidden><svg id="tsChart"></svg></div>
+    <div id="tsTableWrap" class="sport-table-wrap"><p class="sport-loading">Select a team above</p></div>
+    <div id="tsDisruptedBottom" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+  </section>
+
+  <section class="sport-view" data-view="league-history" id="league-history" hidden>
+    <div class="pill-group sport-pill-wrap" id="historyConfPills"></div>
+    <p class="sport-note">National champion + runner-up per season, 1982-present. Covers the CFP era (2014-present), BCS era (1998-2013), and poll era (1982-1997, including split-championship seasons where AP and Coaches polls disagreed). Conference shown is the team's affiliation in that season - accounts for realignment.</p>
+    <div id="historyTableWrap" class="sport-table-wrap"></div>
+    <div id="championsDisrupted" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+  </section>
+
+  <section class="sport-view" data-view="goat" id="goat" hidden>
+    <p class="sport-note" id="goatNote">Top single-season ratings &middot; end of playoffs, champions only</p>
+    <div class="pill-group" id="goatModePills"></div>
+    <div class="pill-group" id="goatMetricPills"></div>
+    <div class="pill-group sport-pill-wrap" id="goatConfPills"></div>
+    <div id="goatTableWrap" class="sport-table-wrap"></div>
+    <div id="goatDisrupted" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+  </section>
+
+  <p class="sport-lineage">
+    <span class="sport-lineage-label">Model lineage</span>
+    <span>v1.0 SALAAM (named after Rashaan Salaam) &middot; Claude Code &middot; May 8, 2026</span>
+  </p>
+</div>
+
+<script src="/js/sports-ncaafb.js" defer></script>

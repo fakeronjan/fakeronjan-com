@@ -3,7 +3,6 @@ module.exports = [
   { slug: "nba", label: "NBA", target: "https://fakeronjan.github.io/duncan/" },
   { slug: "wnba", label: "WNBA", target: "https://fakeronjan.github.io/lobo/" },
   { slug: "intlbasketball", label: "Intl Basketball", target: "https://fakeronjan.github.io/carmelo/" },
-  { slug: "ncaafb", label: "NCAA Football", target: "https://fakeronjan.github.io/salaam/" },
   { slug: "eurosoccer", label: "Euro Soccer", target: "https://fakeronjan.github.io/zidane/" },
   { slug: "mls", label: "MLS", target: "https://fakeronjan.github.io/cobi/" },
   { slug: "intlsoccer", label: "Intl Soccer", target: "https://fakeronjan.github.io/messi/" },

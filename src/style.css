@@ -574,6 +574,8 @@ footer {
   color: var(--muted);
   margin: 0 0 0.6rem;
 }
+.sport-credit { font-size: 0.75rem; color: var(--muted); margin: 0 0 0.6rem; }
+.sport-credit a { color: var(--accent); }
 .sport-updated {
   font-size: 0.78rem;
   color: var(--muted);
@@ -771,6 +773,16 @@ footer {
 }
 .finish-badge.conf-pill { background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--muted); }
 .finish-badge.finish-champion { background: var(--gold); color: #1a1a1a; }
+.finish-badge.finish-runner { background: color-mix(in srgb, var(--fg) 12%, transparent); color: var(--fg); }
+.finish-badge.finish-appearance { background: color-mix(in srgb, var(--fg) 5%, transparent); color: var(--muted); font-weight: 500; }
+.sport-sel-tag { margin-left: 0.25rem; }
+
+/* National Champions split/co-championship stacking (poll-era disputed titles) */
+.sport-co-champ { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--muted); }
+.sport-champ-name { font-weight: 600; }
+.sport-champ-conf { margin-top: 0.2rem; }
+.col-date { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+.col-honors { font-size: 0.78rem; }
 
 .rating-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 3.2rem; }
 .rating-cell { font-weight: 700; color: var(--accent); }
