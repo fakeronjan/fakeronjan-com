@@ -1,0 +1,118 @@
+---
+layout: base.njk
+permalink: /nba/
+currentSport: nba
+eleventyComputed:
+  title: "NBA | FAKE RONJAN!!"
+---
+
+{% include "fleet-nav.njk" %}
+
+<div class="sport-page" id="sportPage" data-source="https://fakeronjan.github.io/duncan">
+  <h1>DUNCAN <span aria-hidden="true">&#9794;&#65039;&#127936;</span></h1>
+  <p class="sport-subtitle">NBA Power Rankings</p>
+  <p class="sport-model-note">Considers strength of opponent, margin of result, and recency. Reads as approximate point-spread vs avg team. Offense and Defense break Rating into how much each side of the ball contributes (they sum to Rating). +3 = contender; +6 = elite; +10 = generational (1995-96 Bulls = 13.07).</p>
+  <p class="sport-updated">
+    <span>&#128260; Updated daily</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="nbaDateRange">Loading...</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="nbaRefreshed">Loading...</span>
+  </p>
+
+  <nav class="sport-tabs" id="nbaTabs">
+    <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
+    <button class="sport-tab" data-tab="team-summary" type="button">Team Summary</button>
+    <button class="sport-tab" data-tab="league-history" type="button">NBA Finals</button>
+    <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
+  </nav>
+
+  <section class="sport-view active" data-view="standings" id="standings">
+    <div class="sport-controls">
+      <select id="nbaSeason" class="sport-select" aria-label="Season"></select>
+      <select id="nbaDate" class="sport-select" aria-label="Date"></select>
+      <div class="pill-group" id="nbaConfPills"></div>
+      <span class="sport-count" id="nbaCount"></span>
+    </div>
+    <p id="nbaWarmup" class="sport-note" hidden>Note: ratings need a 100 game-day warm-up window, so the 1980 season's first rating is January 27.</p>
+    <div id="nbaDisrupted" class="sport-disrupted-note" hidden></div>
+    <div id="nbaStandingsTable" class="sport-table-wrap"></div>
+  </section>
+
+  <section class="sport-view" data-view="team-summary" id="team-summary" hidden>
+    <div class="pill-group" id="tsConfPills"></div>
+    <div class="pill-group" id="tsViewPills"></div>
+    <div class="sport-controls">
+      <select id="tsTeamSelect" class="sport-select" aria-label="Team">
+        <option value="">- Select a team -</option>
+      </select>
+      <select id="tsSeasonSelect" class="sport-select" aria-label="Season" hidden></select>
+      <select id="tsDateTypeSelect" class="sport-select" aria-label="Snapshot">
+        <option value="eos">End of playoffs</option>
+        <option value="eor">End of regular season</option>
+      </select>
+    </div>
+    <div id="tsDisruptedTop" class="sport-disrupted-note" hidden></div>
+    <div id="tsChartWrap" class="sport-chart-wrap" hidden><svg id="tsChart"></svg></div>
+    <div id="tsTableWrap" class="sport-table-wrap"><p class="sport-loading">Select a team above</p></div>
+    <div id="tsDisruptedBottom" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+  </section>
+
+  <section class="sport-view" data-view="league-history" id="league-history" hidden>
+    <div class="pill-group sport-pill-wrap" id="historyViewPills">
+      <button class="pill active" data-hview="list" type="button">All NBA Finals</button>
+      <button class="pill" data-hview="rankings" data-cat="champion" type="button">Champion Lists</button>
+      <button class="pill" data-hview="rankings" data-cat="runnerup" type="button">Runner-Up Lists</button>
+      <button class="pill" data-hview="rankings" data-cat="matchup" type="button">Matchup Lists</button>
+    </div>
+
+    <div id="historyListView">
+      <p class="sport-note">Counts reflect titles won under the franchise's current city/name. Relocations are treated as separate franchises - e.g., the Minneapolis Lakers' 5 titles (1949-1954) aren't included in the Los Angeles Lakers' count.</p>
+      <div id="historyTableWrap" class="sport-table-wrap"></div>
+      <div id="championsDisrupted" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+    </div>
+
+    <div id="historyRankingsView" hidden>
+      <div class="pill-group sport-pill-wrap" id="historyRankPills">
+        <button class="pill active" data-cat="champion" data-rank="best-champs" type="button">Best champs</button>
+        <button class="pill" data-cat="champion" data-rank="worst-champs" type="button">Worst champs</button>
+        <button class="pill" data-cat="champion" data-rank="best-off-champs" type="button">Best offense champs</button>
+        <button class="pill" data-cat="champion" data-rank="worst-off-champs" type="button">Worst offense champs</button>
+        <button class="pill" data-cat="champion" data-rank="best-def-champs" type="button">Best defense champs</button>
+        <button class="pill" data-cat="champion" data-rank="worst-def-champs" type="button">Worst defense champs</button>
+        <button class="pill" data-cat="champion" data-rank="biggest-leap" type="button">Biggest playoff leap</button>
+        <button class="pill" data-cat="champion" data-rank="biggest-favorites" type="button">Biggest favorites</button>
+        <button class="pill" data-cat="champion" data-rank="longest-shots" type="button">Longest shots</button>
+        <button class="pill" data-cat="champion" data-rank="repeat-champs" type="button">Repeat champs</button>
+        <button class="pill" data-cat="runnerup" data-rank="best-losers" type="button">Best losers</button>
+        <button class="pill" data-cat="runnerup" data-rank="worst-losers" type="button">Worst losers</button>
+        <button class="pill" data-cat="matchup" data-rank="best-matchup" type="button">Best matchup</button>
+        <button class="pill" data-cat="matchup" data-rank="worst-matchup" type="button">Worst matchup</button>
+        <button class="pill" data-cat="matchup" data-rank="closest" type="button">Closest predicted</button>
+        <button class="pill" data-cat="matchup" data-rank="blowout" type="button">Blowout predicted</button>
+        <button class="pill" data-cat="matchup" data-rank="upset" type="button">Upsets</button>
+        <button class="pill" data-cat="matchup" data-rank="rematches" type="button">Rematches</button>
+      </div>
+      <p class="sport-note" id="historyRankNote"></p>
+      <div id="historyRankTableWrap" class="sport-table-wrap"></div>
+    </div>
+  </section>
+
+  <section class="sport-view" data-view="goat" id="goat" hidden>
+    <p class="sport-note" id="goatNote">Top single-season ratings &middot; end of playoffs, champions only</p>
+    <div class="pill-group" id="goatModePills"></div>
+    <div class="pill-group" id="goatMetricPills"></div>
+    <div class="pill-group" id="goatConfPills"></div>
+    <div id="goatTableWrap" class="sport-table-wrap"></div>
+    <div id="goatDisrupted" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+  </section>
+
+  <p class="sport-lineage">
+    <span class="sport-lineage-label">Model lineage</span>
+    <span>v1.0 AWESOME &rarr; LOGAN (named after Steve Logan) &middot; Excel solver &middot; Nov 15, 2013</span>
+    <span>v2.0 LOGAN &middot; Python + Tableau &middot; Mar 9, 2019</span>
+    <span>v3.0 DUNCAN (named after Tim Duncan) &middot; Claude Code &middot; May 6, 2026</span>
+  </p>
+</div>
+
+<script src="/js/sports-nba.js" defer></script>
