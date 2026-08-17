@@ -308,8 +308,8 @@
           "<td>" + ratingBar(t.rating, barSc) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
-          '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) + "</td>" +
-          '<td class="col-hide-mobile col-date">' + (t.last_match_date || "") + "</td>" +
+          '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) +
+          (t.last_match_date ? '<div class="sub-line-italic">' + t.last_match_date + "</div>" : "") + "</td>" +
           '<td class="col-hide-mobile col-honors">' + honorsBadge(t.cfp_status, t.cfp_appearance, t.champ_era, t.title_selectors) + "</td>" +
           "</tr>"
         );
@@ -321,7 +321,7 @@
       '<th class="col-rank">OVR #</th><th class="col-rank col-hide-mobile">Conf #</th><th>Team</th>' +
       '<th class="col-hide-mobile">Conf</th><th class="col-record">W-L (Pct)</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
-      '<th class="col-last-match">Last Game</th><th class="col-hide-mobile col-date">Date</th>' +
+      '<th class="col-last-match">Last Game</th>' +
       '<th class="col-hide-mobile col-honors">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
     attachLinks(standingsTableWrap);

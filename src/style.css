@@ -785,7 +785,6 @@ footer {
 .sport-table tbody tr.sport-split-top td { border-bottom-style: dashed; }
 .sport-champ-name { font-weight: 600; }
 .sport-champ-conf { margin-top: 0.2rem; }
-.col-date { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
 .col-honors { font-size: 0.78rem; }
 
 .rating-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 3.2rem; }
