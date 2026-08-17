@@ -680,6 +680,7 @@ footer {
   font-style: italic;
   margin: -0.25rem 0 0.85rem;
 }
+.sport-note-warn { color: var(--accent-2); }
 .sport-disrupted-note {
   font-size: 0.78rem;
   color: var(--muted);
