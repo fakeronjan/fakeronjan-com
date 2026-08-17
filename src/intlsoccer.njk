@@ -1,0 +1,118 @@
+---
+layout: base.njk
+permalink: /intlsoccer/
+currentSport: intlsoccer
+eleventyComputed:
+  title: "International Soccer | FAKE RONJAN!!"
+---
+
+{% include "fleet-nav.njk" %}
+
+<div class="sport-page" id="sportPage" data-source="https://fakeronjan.github.io/messi">
+  <h1>MESSI <span aria-hidden="true">&#127757;&#9917;</span></h1>
+  <p class="sport-subtitle">International Soccer Power Rankings &middot; Beta</p>
+  <p class="sport-model-note">Considers strength of opponent, margin of result, and recency. Reads as approximate goals-spread vs avg team. +1.7 = contender; +2.4 = elite; +3.2 = generational (Germany 2014 = 3.24).</p>
+  <p class="sport-updated">
+    <span>&#128260; Updated daily</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="msDateRange">Loading...</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="msRefreshed">Loading...</span>
+  </p>
+  <p class="sport-credit">International match results from <a href="https://github.com/martj42/international_results" target="_blank" rel="noopener">martj42/international_results</a> (CC0 public domain). Live World Cup scores during the tournament provided by the <a href="https://www.football-data.org" target="_blank" rel="noopener">Football-Data.org API</a>. Ratings are derived from this data.</p>
+
+  <nav class="sport-tabs" id="msTabs">
+    <button class="sport-tab" data-tab="wc-odds" id="msWcNav" hidden type="button">&#127942; FIFA World Cup</button>
+    <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
+    <button class="sport-tab" data-tab="team-summary" type="button">Country Summary</button>
+    <button class="sport-tab" data-tab="league-history" type="button">Other Tournaments</button>
+    <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
+  </nav>
+
+  <section class="sport-view active" data-view="standings" id="standings">
+    <div class="pill-group sport-pill-wrap" id="msConfPills"></div>
+    <div class="sport-controls">
+      <select id="msSeason" class="sport-select" aria-label="Year"></select>
+      <select id="msDate" class="sport-select" aria-label="Date"></select>
+      <span class="sport-count" id="msCount"></span>
+    </div>
+    <div id="msStandingsTable" class="sport-table-wrap"></div>
+  </section>
+
+  <section class="sport-view" data-view="team-summary" id="team-summary" hidden>
+    <div class="pill-group sport-pill-wrap" id="tsConfPills"></div>
+    <div class="pill-group" id="tsViewPills"></div>
+    <div class="sport-controls">
+      <select id="tsTeamSelect" class="sport-select" aria-label="Country" disabled>
+        <option value="">- Select a country -</option>
+      </select>
+      <select id="tsSeasonSelect" class="sport-select" aria-label="Year" hidden></select>
+      <select id="tsDateTypeSelect" class="sport-select" aria-label="Snapshot">
+        <option value="anchor">End of major tournament</option>
+      </select>
+    </div>
+    <div id="tsChartWrap" class="sport-chart-wrap" hidden><svg id="tsChart"></svg></div>
+    <div id="tsTableWrap" class="sport-table-wrap"><p class="sport-loading">Select a country above</p></div>
+  </section>
+
+  <section class="sport-view" data-view="league-history" id="league-history" hidden>
+    <div class="pill-group sport-pill-wrap" id="historyContinentalPills" style="margin-bottom:0.4rem"></div>
+    <div class="pill-group sport-pill-wrap" id="historyNationsPills"></div>
+    <div id="historyTableWrap" class="sport-table-wrap"><p class="sport-loading">Select a tournament above</p></div>
+  </section>
+
+  <section class="sport-view" data-view="goat" id="goat" hidden>
+    <div class="pill-group sport-pill-wrap" id="goatMetricPills"></div>
+    <div class="pill-group sport-pill-wrap" id="goatConfPills"></div>
+    <p class="sport-note">Top 50 ratings, taken at the end of each major tournament. Eligibility requires winning a major continental trophy (or finishing 2nd in the FIFA World Cup) in that year. Data covers 1990 through the current year. OFF and DEF split each rating into attacking and defending strength, which sum back to Rating; the Offense and Defense tabs rank the best attacking and defending sides.</p>
+    <div id="goatTableWrap" class="sport-table-wrap"></div>
+  </section>
+
+  <section class="sport-view" data-view="wc-odds" id="wc-odds" hidden>
+    <div class="pill-group sport-pill-wrap" id="wcSubviewPills">
+      <button class="pill active" data-wcview="odds" type="button">Knockout Odds</button>
+      <button class="pill" data-wcview="upsets" type="button">Knockout Upsets</button>
+      <button class="pill" data-wcview="bycountry" type="button">History by Country</button>
+      <button class="pill" data-wcview="history" type="button">Historical Podiums</button>
+    </div>
+
+    <div id="wcOddsView">
+      <h2 id="wcOddsTitle" class="sport-subhead"></h2>
+      <p class="sport-note" id="wcOddsNote"></p>
+      <div class="sport-controls" id="wcControls" hidden>
+        <select id="wcTournamentSelect" class="sport-select" aria-label="Edition" hidden></select>
+        <select id="wcDateSelect" class="sport-select" aria-label="Date"></select>
+      </div>
+      <div id="wcOddsStamp" class="wc-stamp"></div>
+      <p class="sport-note wc-calib-note" id="wcCalibNote"></p>
+      <div id="wcOddsWrap" class="sport-table-wrap"><p class="sport-loading">Loading World Cup odds...</p></div>
+    </div>
+
+    <div id="wcUpsetsView" hidden>
+      <p class="sport-note" id="wcUpsetsNote"></p>
+      <div id="wcUpsetsWrap" class="sport-table-wrap"><p class="sport-loading">Loading upsets...</p></div>
+    </div>
+
+    <div id="wcHistoryView" hidden>
+      <p class="sport-note">Every FIFA World Cup podium, with each side's rating and rank as of that tournament</p>
+      <div id="wcHistoryWrap" class="sport-table-wrap"><p class="sport-loading">Loading World Cup history...</p></div>
+    </div>
+
+    <div id="wcBycountryView" hidden>
+      <p class="sport-note">A country's World Cup appearances since 1990 - run, rating evolution, and group/knockout record at each tournament</p>
+      <div class="sport-controls">
+        <select id="wcCountrySelect" class="sport-select" aria-label="Country" disabled>
+          <option value="">- Select a country -</option>
+        </select>
+      </div>
+      <div id="wcBycountryWrap" class="sport-table-wrap"><p class="sport-loading">Select a country above</p></div>
+    </div>
+  </section>
+
+  <p class="sport-lineage">
+    <span class="sport-lineage-label">Model lineage</span>
+    <span>v1.0 MESSI (named after Lionel Messi) &middot; Claude Code &middot; May 6, 2026</span>
+  </p>
+</div>
+
+<script src="/js/sports-intlsoccer.js" defer></script>
