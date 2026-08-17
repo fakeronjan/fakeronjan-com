@@ -653,12 +653,15 @@
       });
   }
 
-  // SAKIC's own Champions/Lists tables show only Rating (no separate OFF/DEF
-  // breakdown, unlike DILLON/DUNCAN/GRIFFEY) - ported faithfully. Rank still
-  // stacks under Rating via fmtOD per the fleet-wide convention, even though
-  // SAKIC's own source used a separate visible Rank column.
+  // SAKIC's own Champions main list showed only Rating (no separate OFF/DEF
+  // breakdown, unlike DILLON/DUNCAN/GRIFFEY's Champions tabs) - the data is
+  // there (ps_end_rating_o/d) since the Lists sub-view already uses it for
+  // the offense/defense champion rankings, so bringing this tab in line with
+  // its sister sites. Rank stacks under Rating via fmtOD per the fleet-wide
+  // convention, even though SAKIC's own source used a separate visible Rank
+  // column.
   function championTeamCell(t, bg, season) {
-    if (!t) return '<td class="' + bg + '" colspan="3">-</td>';
+    if (!t) return '<td class="' + bg + '" colspan="5">-</td>';
     var label = t.display_name || t.team;
     var slug = state.nameToSlug[t.team] || state.nameToSlug[label];
     var teamTd = slug
@@ -667,6 +670,8 @@
     return (
       teamTd +
       '<td class="' + bg + ' rating-cell col-od">' + fmtOD(t.ps_end_rating, t.ps_end_rank) + "</td>" +
+      '<td class="' + bg + ' rating-cell col-od col-hide-mobile" title="' + offTitle + '">' + fmtOD(t.ps_end_rating_o, t.ps_end_rank_o) + "</td>" +
+      '<td class="' + bg + ' rating-cell col-od col-hide-mobile" title="' + defTitle + '">' + fmtOD(t.ps_end_rating_d, t.ps_end_rank_d) + "</td>" +
       '<td class="' + bg + ' col-hide-mobile col-record">' + fmtRecordStacked(t.rs_record, t.rs_pts, t.ps_record) + "</td>"
     );
   }
@@ -686,7 +691,7 @@
         return (
           '<tr class="sport-strike-row">' +
           '<td class="season-cell linked" data-season-link="' + e.season + '">' + (e.season_label || fmtSeason(e.season)) + seasonTag(e.season) + "</td>" +
-          '<td colspan="7" class="sport-strike-note">No Stanley Cup - entire season cancelled by lockout</td>' +
+          '<td colspan="11" class="sport-strike-note">No Stanley Cup - entire season cancelled by lockout</td>' +
           "</tr>"
         );
       }
@@ -705,9 +710,13 @@
       '<table class="sport-table"><thead><tr>' +
       '<th class="col-rank">Season</th><th class="col-champ">Champion</th>' +
       '<th class="col-champ col-od">Rating</th>' +
+      '<th class="col-champ col-hide-mobile col-od" title="' + offTitle + '">OFF</th>' +
+      '<th class="col-champ col-hide-mobile col-od" title="' + defTitle + '">DEF</th>' +
       '<th class="col-champ col-hide-mobile col-record">' + recordHeader() + "</th>" +
       '<th class="divider-col">Series<div class="sub-line">(Last game)</div></th>' +
       '<th class="col-ru">Runner-Up</th><th class="col-ru col-od">Rating</th>' +
+      '<th class="col-ru col-hide-mobile col-od" title="' + offTitle + '">OFF</th>' +
+      '<th class="col-ru col-hide-mobile col-od" title="' + defTitle + '">DEF</th>' +
       '<th class="col-ru col-hide-mobile col-record">' + recordHeader() + "</th>" +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
     attachLinks(historyTableWrap);
