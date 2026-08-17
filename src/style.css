@@ -574,7 +574,7 @@ footer {
   color: var(--muted);
   margin: 0 0 0.6rem;
 }
-.sport-credit { font-size: 0.75rem; color: var(--muted); margin: 0 0 0.6rem; }
+.sport-credit { font-size: 0.75rem; color: var(--muted); margin: 2rem 0 0.6rem; }
 .sport-credit a { color: var(--accent); }
 .sport-updated {
   font-size: 0.78rem;
