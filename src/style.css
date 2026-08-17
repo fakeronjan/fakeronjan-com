@@ -926,31 +926,13 @@ footer {
 .badge-messi-CAF      { background: #3a6499; color: #fff; }
 .badge-messi-OFC      { background: #6a4c93; color: #fff; }
 
-/* Historical Podiums (renderLeagueHistory's wide 13-col table) and History
-   by Country's stairstep-walk table both run wider than fakeronjan-com's
-   960px content column - same full-bleed breakout as #league-history's own
-   table-wrap. Both hug their own content width, centered in the breakout. */
+/* Historical Podiums, History by Country, and Knockout Odds all run wider
+   than fakeronjan-com's 960px content column - same full-bleed breakout as
+   #league-history's own table-wrap. Every one of these hugs its own natural
+   content width (width:auto), centered in the breakout - NEVER stretched to
+   fill it, or it reads as artificially padded (the Super Bowls mistake). */
 #wcHistoryWrap,
-#wcBycountryWrap {
-  width: 100vw;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  padding: 0 1.5rem;
-}
-#wcHistoryWrap table,
-#wcBycountryWrap table {
-  width: auto;
-  max-width: 1340px;
-  margin: 0 auto;
-}
-
-/* Knockout Odds is a dense 10-column grid - forced horizontal scroll inside
-   the 960px column even with narrow columns. Same breakout, but the table
-   fills the breakout width (width:100%, not centered at its own size) since
-   it's a grid meant to use the space, not a narrow table hugging its content. */
+#wcBycountryWrap,
 #wcOddsWrap {
   width: 100vw;
   position: relative;
@@ -960,13 +942,21 @@ footer {
   margin-right: -50vw;
   padding: 0 1.5rem;
 }
+#wcHistoryWrap table,
+#wcBycountryWrap table,
 #wcOddsWrap table {
+  width: auto;
   max-width: 1340px;
   margin: 0 auto;
 }
 
 /* ── World Cup Knockout Odds / Upsets (MESSI) ──────────────────────────── */
-.wc-odds-table { table-layout: fixed; width: 100%; min-width: 980px; }
+/* table-layout:fixed only so the Results column wraps at its own set width
+   instead of auto-sizing to one-line content (mirrors MESSI's own source) -
+   NOT to force the table to any particular overall width. No width/min-width
+   on the table itself: with every other column pinned, table-layout:fixed
+   naturally sizes to the sum of the declared column widths. */
+.wc-odds-table { table-layout: fixed; }
 .wc-odds-table .team-cell { white-space: normal; }
 .wc-heat, .wc-odds-table th.wc-col { width: 4.6rem; padding-left: 0.45rem; padding-right: 0.45rem; }
 .wc-heat {
@@ -977,7 +967,7 @@ footer {
   color: #1a1a1a;
 }
 .wc-champ-cell { font-weight: 800; }
-.wc-results { font-size: 0.78rem; }
+.wc-results { font-size: 0.78rem; width: 15rem; }
 .wc-results-inner { white-space: normal; overflow-wrap: anywhere; line-height: 1.55; }
 .wc-seg { white-space: nowrap; }
 .wc-grp {
