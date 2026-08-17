@@ -879,6 +879,25 @@ footer {
 .sport-prerated-row { background: color-mix(in srgb, var(--fg) 3%, transparent); }
 .sport-table-narrow { width: auto; margin: 0 auto; }
 
+/* GRIFFEY: 1994 strike season - no World Series that year */
+.sport-strike-row { background: color-mix(in srgb, var(--accent-2) 6%, transparent); }
+.sport-strike-note { text-align: center; color: var(--accent-2); font-size: 0.75rem; font-style: italic; }
+
+/* GRIFFEY: doubleheader leg badge (G1/G2) on the Last Game cell */
+.dh-tag {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  color: var(--muted);
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+
 @media (max-width: 640px) {
   .sport-table .col-hide-mobile { display: none; }
   .rating-bar-track { display: none; }
