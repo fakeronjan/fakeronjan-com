@@ -796,6 +796,16 @@ footer {
 .badge-Africa   { background: #00843d; color: #fff; }
 .badge-Other    { background: #555; color: #fff; }
 
+/* ICHIRO's own 5-way confederation split (Asia/Oceania separate, unlike
+   CARMELO's combined Asia-Oceania) - namespaced badge-ib-* so its color
+   choices (e.g. Europe=yellow here vs. CARMELO's Europe=red) don't collide
+   with the identically-named CARMELO classes above. */
+.badge-ib-Asia     { background: #cc0000; color: #fff; }
+.badge-ib-Americas { background: #0055a4; color: #fff; }
+.badge-ib-Europe   { background: #f5c518; color: #1a1a1a; }
+.badge-ib-Africa   { background: #00843d; color: #fff; }
+.badge-ib-Oceania  { background: #7b1fa2; color: #fff; }
+
 /* GOAT-tab FAQ callout (CARMELO's "why isn't X #1" explainer) */
 .sport-explainer {
   background: color-mix(in srgb, var(--fg) 3%, transparent);

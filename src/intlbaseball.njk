@@ -1,0 +1,72 @@
+---
+layout: base.njk
+permalink: /intlbaseball/
+currentSport: intlbaseball
+eleventyComputed:
+  title: "International Baseball | FAKE RONJAN!!"
+---
+
+{% include "fleet-nav.njk" %}
+
+<div class="sport-page" id="sportPage" data-source="https://fakeronjan.github.io/ichiro">
+  <h1>ICHIRO <span aria-hidden="true">&#127757;&#9918;</span></h1>
+  <p class="sport-subtitle">International Baseball Power Rankings &middot; Alpha</p>
+  <p class="sport-model-note">Considers strength of opponent, run margin, and recency, all at neutral venues. Reads as approximate run-spread vs avg team. +2 = contender; +4 = elite; +6 = generational (Cuba 1992 = 8.1).</p>
+  <p class="sport-updated">
+    <span>&#128260; Updated daily</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="ibDateRange">Loading...</span>
+  </p>
+  <p class="sport-credit">Data compiled from <a href="https://en.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a>, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. Ratings are derived from this data and shared under the same license.</p>
+
+  <nav class="sport-tabs" id="ibTabs">
+    <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
+    <button class="sport-tab" data-tab="team-summary" type="button">Country Summary</button>
+    <button class="sport-tab" data-tab="league-history" type="button">Tournaments</button>
+    <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
+  </nav>
+
+  <section class="sport-view active" data-view="standings" id="standings">
+    <div class="pill-group sport-pill-wrap" id="ibConfPills"></div>
+    <div class="sport-controls">
+      <select id="ibSeason" class="sport-select" aria-label="Year"></select>
+      <select id="ibDate" class="sport-select" aria-label="Date"></select>
+      <span class="sport-count" id="ibCount"></span>
+    </div>
+    <div id="ibStandingsTable" class="sport-table-wrap"></div>
+  </section>
+
+  <section class="sport-view" data-view="team-summary" id="team-summary" hidden>
+    <div class="pill-group sport-pill-wrap" id="tsConfPills"></div>
+    <div class="pill-group" id="tsViewPills"></div>
+    <div class="sport-controls">
+      <select id="tsTeamSelect" class="sport-select" aria-label="Country" disabled>
+        <option value="">- Select a country -</option>
+      </select>
+      <select id="tsSeasonSelect" class="sport-select" aria-label="Year" hidden></select>
+      <select id="tsDateTypeSelect" class="sport-select" aria-label="Snapshot">
+        <option value="anchor">End of major tournament</option>
+      </select>
+    </div>
+    <div id="tsChartWrap" class="sport-chart-wrap" hidden><svg id="tsChart"></svg></div>
+    <div id="tsTableWrap" class="sport-table-wrap"><p class="sport-loading">Select a country above</p></div>
+  </section>
+
+  <section class="sport-view" data-view="league-history" id="league-history" hidden>
+    <div class="pill-group sport-pill-wrap" id="historyWorldPills"></div>
+    <div id="historyTableWrap" class="sport-table-wrap"><p class="sport-loading">Select a tournament above</p></div>
+  </section>
+
+  <section class="sport-view" data-view="goat" id="goat" hidden>
+    <div class="pill-group sport-pill-wrap" id="goatConfPills"></div>
+    <p class="sport-note">Top 50 ratings, taken at the end of each Olympics / WBC. Eligibility requires a top-3 finish.</p>
+    <div id="goatTableWrap" class="sport-table-wrap"></div>
+  </section>
+
+  <p class="sport-lineage">
+    <span class="sport-lineage-label">Model lineage</span>
+    <span>v1.0 ICHIRO (named after Ichiro Suzuki) &middot; Claude Code &middot; May 29, 2026</span>
+  </p>
+</div>
+
+<script src="/js/sports-intlbaseball.js" defer></script>
