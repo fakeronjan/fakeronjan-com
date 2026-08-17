@@ -926,10 +926,10 @@ footer {
 .badge-messi-CAF      { background: #3a6499; color: #fff; }
 .badge-messi-OFC      { background: #6a4c93; color: #fff; }
 
-/* Historical Podiums (Knockout Odds tab reuses renderLeagueHistory's wide
-   13-col table) and History by Country's stairstep-walk table both run
-   wider than the 1100px tab column - same full-bleed breakout as
-   #league-history's own table-wrap. */
+/* Historical Podiums (renderLeagueHistory's wide 13-col table) and History
+   by Country's stairstep-walk table both run wider than fakeronjan-com's
+   960px content column - same full-bleed breakout as #league-history's own
+   table-wrap. Both hug their own content width, centered in the breakout. */
 #wcHistoryWrap,
 #wcBycountryWrap {
   width: 100vw;
@@ -943,6 +943,24 @@ footer {
 #wcHistoryWrap table,
 #wcBycountryWrap table {
   width: auto;
+  max-width: 1340px;
+  margin: 0 auto;
+}
+
+/* Knockout Odds is a dense 10-column grid - forced horizontal scroll inside
+   the 960px column even with narrow columns. Same breakout, but the table
+   fills the breakout width (width:100%, not centered at its own size) since
+   it's a grid meant to use the space, not a narrow table hugging its content. */
+#wcOddsWrap {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding: 0 1.5rem;
+}
+#wcOddsWrap table {
   max-width: 1340px;
   margin: 0 auto;
 }
