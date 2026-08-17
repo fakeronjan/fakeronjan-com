@@ -963,7 +963,12 @@ footer {
   text-align: center;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
-  border: 2px solid var(--bg);
+  /* Left/right only, matching the original design's between-column gap - a
+     top/bottom border here used to win the border-collapse conflict against
+     the shared row separator (2px beats 1px), erasing it under every heat
+     column. */
+  border-left: 2px solid var(--bg);
+  border-right: 2px solid var(--bg);
   color: #1a1a1a;
 }
 .wc-champ-cell { font-weight: 800; }
