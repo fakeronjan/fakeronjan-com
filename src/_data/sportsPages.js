@@ -1,6 +1,5 @@
 module.exports = [
   { slug: "sports", label: "All Sports Summary", target: "https://fakeronjan.github.io/sports-ratings/" },
-  { slug: "intlbasketball", label: "Intl Basketball", target: "https://fakeronjan.github.io/carmelo/" },
   { slug: "eurosoccer", label: "Euro Soccer", target: "https://fakeronjan.github.io/zidane/" },
   { slug: "mls", label: "MLS", target: "https://fakeronjan.github.io/cobi/" },
   { slug: "intlsoccer", label: "Intl Soccer", target: "https://fakeronjan.github.io/messi/" },
