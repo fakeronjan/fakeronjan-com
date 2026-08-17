@@ -321,11 +321,13 @@
 
   function populateWeekSelect() {
     var snapshots = state.seasonData.snapshots;
-    weekSelect.innerHTML = snapshots
-      .map(function (s, i) {
-        return '<option value="' + i + '">' + s.date + (s.label ? " | " + s.label : "") + "</option>";
-      })
-      .join("");
+    // value stays the chronological (ascending) index so renderStandings'
+    // prevSnapshot math keeps working - only the displayed option ORDER
+    // reverses, newest week on top, matching DILLON's own [...snaps].reverse().
+    var options = snapshots.map(function (s, i) {
+      return '<option value="' + i + '">' + s.date + (s.label ? " | " + s.label : "") + "</option>";
+    });
+    weekSelect.innerHTML = options.slice().reverse().join("");
     weekSelect.value = String(snapshots.length - 1);
   }
 
