@@ -700,18 +700,15 @@
   }
 
   function championTeamCell(t, bg, season) {
-    if (!t) return '<td class="' + bg + '" colspan="6">-</td>';
+    if (!t) return '<td class="' + bg + '" colspan="5">-</td>';
     var label = t.display_name || t.team;
     var slug = state.nameToSlug[t.team] || state.nameToSlug[label];
-    var rating = t.ps_end_rating != null ? t.ps_end_rating.toFixed(2) : "-";
-    var rank = t.ps_end_rank != null ? String(t.ps_end_rank) : "-";
     var teamTd = slug
       ? '<td class="' + bg + ' team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + label + countStr(t) + "</td>"
       : '<td class="' + bg + ' team-cell">' + label + countStr(t) + "</td>";
     return (
       teamTd +
-      '<td class="' + bg + ' col-hide-mobile" style="color:var(--muted);font-size:0.85em;text-align:center">' + rank + "</td>" +
-      '<td class="' + bg + ' rating-cell">' + rating + "</td>" +
+      '<td class="' + bg + ' rating-cell col-od">' + fmtOD(t.ps_end_rating, t.ps_end_rank) + "</td>" +
       '<td class="' + bg + ' rating-cell col-od col-hide-mobile">' + fmtOD(t.ps_end_rating_o, t.ps_end_rank_o) + "</td>" +
       '<td class="' + bg + ' rating-cell col-od col-hide-mobile">' + fmtOD(t.ps_end_rating_d, t.ps_end_rank_d) + "</td>" +
       '<td class="' + bg + ' col-hide-mobile col-record">' + fmtRecordStacked(t.rs_record, t.ps_record) + "</td>"
@@ -760,14 +757,12 @@
     historyTableWrap.innerHTML =
       '<table class="sport-table"><thead><tr>' +
       '<th class="col-rank">Season</th><th class="col-champ">Champion</th>' +
-      '<th class="col-champ col-hide-mobile col-rank">Rank</th>' +
-      '<th class="col-champ">Rating</th>' +
+      '<th class="col-champ col-od">Rating</th>' +
       '<th class="col-champ col-hide-mobile col-od">BAT</th><th class="col-champ col-hide-mobile col-od">PIT</th>' +
       '<th class="col-champ col-hide-mobile col-record">W-L</th>' +
       '<th class="divider-col">Series<div class="sub-line">(Last game)</div></th>' +
       '<th class="col-ru">Runner-Up</th>' +
-      '<th class="col-ru col-hide-mobile col-rank">Rank</th>' +
-      '<th class="col-ru">Rating</th>' +
+      '<th class="col-ru col-od">Rating</th>' +
       '<th class="col-ru col-hide-mobile col-od">BAT</th><th class="col-ru col-hide-mobile col-od">PIT</th>' +
       '<th class="col-ru col-hide-mobile col-record">W-L</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>" + footnote;
@@ -801,11 +796,10 @@
     var teamTd = slug
       ? '<td class="' + bg + ' team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + label + countStr(t) + "</td>"
       : '<td class="' + bg + ' team-cell">' + label + countStr(t) + "</td>";
-    var ratingClass = sortRating ? bg + " rating-cell sort-col" : bg + " rating-cell";
+    var ratingClass = bg + " rating-cell col-od" + (sortRating ? " sort-col" : "");
     return (
       teamTd +
-      '<td class="' + bg + ' col-hide-mobile" style="color:var(--muted);font-size:0.85em;text-align:center">' + (t.rank != null ? t.rank : "-") + "</td>" +
-      '<td class="' + ratingClass + '">' + (t.rating != null ? t.rating.toFixed(2) : "-") + "</td>" +
+      '<td class="' + ratingClass + '">' + fmtOD(t.rating, t.rank) + "</td>" +
       '<td class="' + bg + ' col-hide-mobile col-record">' + fmtRecordStacked(t.rs_record, t.ps_record) + "</td>"
     );
   }
@@ -826,8 +820,8 @@
     var label = metricLabel || "Rating";
     var sortLeftRating = !isPreWs;
     var leftRatingHeader = sortLeftRating
-      ? '<th class="col-champ sort-col col-rank">' + label + "</th>"
-      : '<th class="col-champ col-rank">' + label + preTag + "</th>";
+      ? '<th class="col-champ col-od sort-col">' + label + "</th>"
+      : '<th class="col-champ col-od">' + label + preTag + "</th>";
 
     var head =
       '<th class="col-rank">#</th><th class="col-rank">Season</th>' +
@@ -836,7 +830,7 @@
       '<th class="col-champ col-hide-mobile col-record">W-L</th>' +
       '<th class="divider-col">Series<div class="sub-line">(Last game)</div></th>' +
       '<th class="col-ru">' + rightLabel + "</th>" +
-      '<th class="col-ru">' + label + preTag + "</th>" +
+      '<th class="col-ru col-od">' + label + preTag + "</th>" +
       '<th class="col-ru col-hide-mobile col-record">W-L</th>' +
       metricHeader;
 
@@ -965,13 +959,11 @@
 
   var PAIR_HEAD =
     '<th class="col-rank">Season</th><th class="col-champ">Champion</th>' +
-    '<th class="col-champ col-hide-mobile col-rank">Rank</th>' +
-    '<th class="col-champ">Rating</th>' +
+    '<th class="col-champ col-od">Rating</th>' +
     '<th class="col-champ col-hide-mobile col-record">W-L</th>' +
     '<th class="divider-col">Series<div class="sub-line">(Last game)</div></th>' +
     '<th class="col-ru">Runner-Up</th>' +
-    '<th class="col-ru col-hide-mobile col-rank">Rank</th>' +
-    '<th class="col-ru">Rating</th>' +
+    '<th class="col-ru col-od">Rating</th>' +
     '<th class="col-ru col-hide-mobile col-record">W-L</th>';
 
   function pairRow(e, isPairEnd) {

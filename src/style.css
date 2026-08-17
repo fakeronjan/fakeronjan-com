@@ -870,7 +870,7 @@ footer {
 .sport-table .sort-col.rating-cell { font-weight: 800; }
 .sport-table tbody tr.row-group-end { border-bottom: 2px solid var(--muted); }
 .sport-table .season-cell { font-weight: 700; color: var(--accent); white-space: nowrap; text-align: center; }
-.divider-col { width: 4rem; text-align: center; font-size: 0.72rem; font-weight: 600; white-space: nowrap; padding: 0.2rem 0.4rem; }
+.sport-table .divider-col { width: 4rem; text-align: center; font-size: 0.72rem; font-weight: 600; white-space: nowrap; padding: 0.2rem 0.4rem; }
 .sport-table th.divider-col { font-size: 0.68rem; }
 .sport-afl-tag { font-weight: 400; font-style: italic; color: var(--muted); }
 .sport-dim-dash { color: color-mix(in srgb, var(--muted) 60%, transparent); text-align: center; }
