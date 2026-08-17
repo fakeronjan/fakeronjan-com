@@ -1,0 +1,15 @@
+<nav class="fleet-nav">
+  <div class="fleet-nav-inner">
+    <a class="fleet-nav-home" href="/sports/">📊 All Sports</a>
+    {% for group in sportsFleet %}
+    <div class="fleet-nav-group">
+      <div class="fleet-nav-category{% if group.leagues | groupHasSlug(currentSport) %} active{% endif %}">{{ group.emoji }} {{ group.category }}</div>
+      <div class="fleet-nav-leagues">
+        {% for league in group.leagues %}
+        <a href="/{{ league.slug }}/"{% if league.slug == currentSport %} class="active"{% endif %}>{{ league.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</nav>

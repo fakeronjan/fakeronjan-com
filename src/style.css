@@ -5,6 +5,7 @@
   --accent: #0891b2;
   --accent-2: #be185d;
   --muted: #666;
+  --gold: #c8a84b;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -169,6 +170,7 @@ h1, h2, h3, h4, h5, h6 {
 nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1.6rem; width: 100%; min-width: 0; }
 nav a { color: var(--fg); text-decoration: none; font-size: 0.95rem; font-weight: 400; }
 nav a:hover { color: var(--accent); }
+nav a.active { color: var(--accent); font-weight: 700; }
 .nav-arrow { font-size: 0.8em; margin-left: 0.15em; }
 
 @media (max-width: 640px) {
@@ -489,4 +491,327 @@ footer {
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+/* ── Cross-site fleet nav (shared reference pattern for every migrated
+   sport page - see DILLON) ────────────────────────────────────────────── */
+.fleet-nav {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  padding: 0;
+  margin-top: -1rem;
+  margin-bottom: 1.75rem;
+  scrollbar-width: none;
+}
+.fleet-nav::-webkit-scrollbar { display: none; }
+.fleet-nav-inner {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  width: max-content;
+}
+.fleet-nav-home {
+  display: flex;
+  align-items: center;
+  color: var(--fg);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-decoration: none;
+  padding: 0 0.7rem;
+  flex-shrink: 0;
+  border-right: 1px solid color-mix(in srgb, var(--fg) 30%, transparent);
+  transition: background 0.15s ease;
+}
+.fleet-nav-home:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.fleet-nav-group {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 0.27rem 0.27rem 0.25rem;
+  border-right: 1px solid color-mix(in srgb, var(--fg) 30%, transparent);
+}
+.fleet-nav-group:last-child { border-right: none; }
+.fleet-nav-category {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.11rem 0.28rem 0.06rem;
+  white-space: nowrap;
+}
+.fleet-nav-category.active { color: var(--accent); }
+.fleet-nav-leagues { display: flex; justify-content: center; gap: 0.05rem; }
+.fleet-nav-leagues a {
+  color: var(--fg);
+  text-decoration: none;
+  padding: 0.08rem 0.28rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.fleet-nav-leagues a:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); }
+.fleet-nav-leagues a.active { color: var(--accent); font-weight: 700; }
+
+.sport-page h1 { margin-bottom: 0; }
+.sport-subtitle {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0.15rem 0 0.75rem;
+}
+.sport-model-note {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0 0 0.6rem;
+}
+.sport-updated {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.sport-updated-sep { opacity: 0.5; }
+
+.sport-tabs {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--muted);
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+}
+.sport-tab {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.6rem 0.1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.sport-tab:hover { color: var(--fg); }
+.sport-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.sport-loading { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
+.sport-chart-wrap {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--muted);
+  border-radius: 8px;
+}
+.sport-chart-wrap svg { width: 100%; height: auto; display: block; }
+
+.sport-pill-wrap { flex-wrap: wrap; }
+
+.sport-week-cell { white-space: nowrap; font-size: 0.85rem; }
+
+.sport-lineage {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-style: italic;
+  margin: 2rem 0 0.5rem;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+}
+.sport-lineage-label { font-style: normal; color: var(--fg); margin-bottom: 0.2rem; }
+
+.sport-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.sport-select {
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1px solid var(--muted);
+  border-radius: 6px;
+  padding: 0.35rem 0.55rem;
+  max-width: 100%;
+}
+.pill-group { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+.sport-controls .pill-group { margin-bottom: 0; }
+.pill {
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--muted);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.pill:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.pill.active {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.sport-count { font-size: 0.8rem; color: var(--muted); margin-left: auto; }
+
+.sport-note {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  margin: -0.25rem 0 0.85rem;
+}
+.sport-disrupted-note {
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--accent-2) 8%, transparent);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  margin: 0 0 0.85rem;
+}
+.short-season-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+  color: var(--accent-2);
+  border: 1px solid var(--accent-2);
+  margin-right: 0.3rem;
+}
+
+/* ── Standings / GOAT-style data tables ─────────────────────────────────── */
+.dim-pct { color: var(--muted); font-size: 0.85em; font-weight: 400; }
+.sport-table-wrap { overflow-x: auto; }
+
+/* Super Bowls tables run 12-14 columns wide - DILLON's own reference widens
+   just this tab (1320px vs the standard 1100px) so it doesn't cramp. Break
+   out of the site's 960px reading column the same way .sports-embed does. */
+#league-history .sport-table-wrap {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding: 0 1.5rem;
+}
+#league-history .sport-table-wrap table {
+  width: auto;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+.sport-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.sport-table th, .sport-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--muted);
+  text-align: left;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.sport-table th {
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+}
+.sport-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+
+.sport-table .col-rank { width: 2.75rem; text-align: center; color: var(--muted); font-weight: 700; }
+.sport-table .col-conf,
+.sport-table .col-od { text-align: center; }
+.sport-table .col-last-match { font-size: 0.8rem; color: var(--muted); white-space: normal; max-width: 240px; }
+.sport-table .team-cell { font-weight: 600; }
+
+.sub-line { font-size: 0.7rem; color: var(--muted); font-weight: 400; line-height: 1.2; }
+.sub-line-italic { font-size: 0.68rem; color: var(--muted); font-style: italic; line-height: 1.2; }
+
+.od-val { line-height: 1.15; }
+.od-rank { line-height: 1.15; color: var(--muted); font-weight: 500; font-size: 0.75em; margin-top: 1px; }
+
+.finish-emoji { font-size: 0.85em; }
+.finish-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.finish-badge.conf-pill { background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--muted); }
+.finish-badge.finish-champion { background: var(--gold); color: #1a1a1a; }
+
+.rating-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 3.2rem; }
+.rating-cell { font-weight: 700; color: var(--accent); }
+.rating-bar-track {
+  width: 3.2rem;
+  height: 5px;
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  border-radius: 3px;
+  position: relative;
+  flex-shrink: 0;
+}
+.rating-bar-center-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 5px;
+  background: var(--muted);
+}
+.rating-bar-fill { position: absolute; height: 5px; border-radius: 3px; top: 0; }
+.bar-pos { background: var(--accent); }
+.bar-neg { background: var(--accent-2); }
+
+.result-W { color: #2e7d32; font-weight: 700; }
+.result-L { color: #c62828; font-weight: 700; }
+.result-W-stale { color: #2e7d32; font-weight: 400; }
+.result-L-stale { color: #c62828; font-weight: 400; }
+
+/* ── Super Bowls (League History) ───────────────────────────────────────── */
+.sport-table .col-champ { background: color-mix(in srgb, var(--gold) 8%, transparent); }
+.sport-table .col-ru { background: color-mix(in srgb, var(--fg) 4%, transparent); }
+.sport-table .sort-col { background: color-mix(in srgb, var(--gold) 22%, transparent) !important; }
+.sport-table thead .sort-col { color: var(--accent) !important; }
+.sport-table .sort-col.rating-cell { font-weight: 800; }
+.sport-table tbody tr.row-group-end { border-bottom: 2px solid var(--muted); }
+.season-cell { font-weight: 700; color: var(--accent); white-space: nowrap; text-align: center; }
+.divider-col { width: 4rem; text-align: center; font-size: 0.72rem; font-weight: 600; white-space: nowrap; padding: 0.2rem 0.4rem; }
+.sport-table th.divider-col { font-size: 0.68rem; }
+.sport-afl-tag { font-weight: 400; font-style: italic; color: var(--muted); }
+.sport-dim-dash { color: color-mix(in srgb, var(--muted) 60%, transparent); text-align: center; }
+.sport-dim-rank { color: var(--muted); font-size: 0.85em; text-align: center; }
+.sport-dagger { color: var(--muted); }
+.sport-prerated-row { background: color-mix(in srgb, var(--fg) 3%, transparent); }
+.sport-table-narrow { width: auto; margin: 0 auto; }
+
+@media (max-width: 640px) {
+  .sport-table .col-hide-mobile { display: none; }
+  .rating-bar-track { display: none; }
 }

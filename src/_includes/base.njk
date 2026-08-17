@@ -30,10 +30,10 @@
       </button>
     </div>
     <nav>
-      <a href="/">Home</a>
-      <a href="/blog/">Blog</a>
-      <a href="/video-games/">Game of the Year</a>
-      <a href="/sports/">Sports Ratings</a>
+      <a href="/"{% if page.url == "/" %} class="active"{% endif %}>Home</a>
+      <a href="/blog/"{% if page.url.startsWith("/blog/") %} class="active"{% endif %}>Blog</a>
+      <a href="/video-games/"{% if page.url == "/video-games/" %} class="active"{% endif %}>Game of the Year</a>
+      <a href="/sports/"{% if page.url == "/sports/" or (page.url | isSportsSection) %} class="active"{% endif %}>Sports Ratings</a>
       <a class="nav-preview" href="https://mariopaintmusicguy.com/" target="_blank" rel="noopener" data-logo="/img/mpmg-avatar.png">Mario Paint Music Guy<span class="nav-arrow">&#8599;</span></a>
       <a class="nav-preview" href="https://fakebasketball.com/" target="_blank" rel="noopener" data-logo="/img/fakebasketball-logo.png">Fake Basketball<span class="nav-arrow">&#8599;</span></a>
     </nav>

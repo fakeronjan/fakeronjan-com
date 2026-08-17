@@ -3,6 +3,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/img");
   eleventyConfig.addPassthroughCopy("src/blog/img");
   eleventyConfig.addPassthroughCopy("src/CNAME");
+  eleventyConfig.addPassthroughCopy("src/js");
 
   eleventyConfig.addCollection("blog", (collectionApi) =>
     collectionApi.getFilteredByGlob("src/blog/*.md").sort(
@@ -44,6 +45,25 @@ module.exports = function (eleventyConfig) {
       next: idx > 0 ? posts[idx - 1] : null,
     };
   });
+
+  // "Sports Ratings" in the main nav lights up on /sports/ itself AND on any
+  // individual sport page (iframed today, native as the fleet migrates) -
+  // sourced from sportsFleet.js (not sportsPages.js, which drops a slug the
+  // moment that sport goes native and gets its own dedicated permalink, e.g.
+  // "nfl" once /nfl/ became a real page instead of a paginated iframe entry).
+  const sportsFleet = require("./src/_data/sportsFleet.js");
+  const sportSlugs = sportsFleet.flatMap((group) => group.leagues.map((l) => l.slug));
+  eleventyConfig.addFilter("isSportsSection", (url) => {
+    const clean = String(url || "").replace(/^\/|\/$/g, "");
+    return sportSlugs.includes(clean);
+  });
+
+  // fleet-nav: a category label (e.g. "Football") lights up teal alongside
+  // its active league link (e.g. "NFL"), so the highlight reads as a
+  // hierarchy - not just "you're here" but "you're here, within this group".
+  eleventyConfig.addFilter("groupHasSlug", (leagues, slug) =>
+    (leagues || []).some((l) => l.slug === slug)
+  );
 
   // cache-buster for style.css so a rebuild always forces a fresh fetch
   eleventyConfig.addGlobalData("buildTime", () => Date.now());
