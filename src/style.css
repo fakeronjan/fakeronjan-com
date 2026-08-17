@@ -687,6 +687,8 @@ footer {
   padding: 0.5rem 0.75rem;
   margin: 0 0 0.85rem;
 }
+.sport-disrupted-note-bottom { margin: 0.85rem 0 0; }
+.sport-error { color: #c62828; padding: 1.25rem; font-size: 0.85rem; text-align: center; }
 .short-season-tag {
   display: inline-block;
   font-size: 0.65rem;
@@ -750,6 +752,7 @@ footer {
 .sport-table .team-cell { font-weight: 600; }
 .sport-table .linked { cursor: pointer; }
 .sport-table .linked:hover { color: var(--accent-2); text-decoration: underline; }
+.sport-table .team-cell.linked, .sport-table .team-link.linked { color: var(--accent); }
 
 .sub-line { font-size: 0.7rem; color: var(--muted); font-weight: 400; line-height: 1.2; }
 .sub-line-italic { font-size: 0.68rem; color: var(--muted); font-style: italic; line-height: 1.2; }

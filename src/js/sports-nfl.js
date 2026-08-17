@@ -123,11 +123,20 @@
     return "";
   }
 
-  function renderLastMatch(raw, isStale) {
+  var LAST_MATCH_RE = /^([WLT])\s+(\d+\s*-\s*\d+)\s+(vs\.?(?:\s*\(N\))?|@)\s+(.+)$/;
+
+  function renderLastMatch(raw, season, isStale) {
     var display = displayMatch(raw);
     if (!display) return "-";
     var rc = resultClass(raw, isStale);
-    return '<span class="' + rc + '">' + display + "</span>";
+    var m = display.match(LAST_MATCH_RE);
+    if (!m) return '<span class="' + rc + '">' + display + "</span>";
+    var letter = m[1], score = m[2], venue = m[3], opponent = m[4];
+    var slug = state.nameToSlug[opponent.trim()];
+    var oppHtml = slug
+      ? '<span class="team-link linked" data-team-slug="' + slug + '" data-season="' + season + '">' + opponent + "</span>"
+      : opponent;
+    return '<span class="' + rc + '">' + letter + " " + score + " " + venue + " " + oppHtml + "</span>";
   }
 
   function seasonTag(season) {
@@ -288,7 +297,7 @@
         var teamTd = slug
           ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + label + "</td>"
           : '<td class="team-cell">' + label + "</td>";
-        var lastGameHtml = renderLastMatch(t.last_match, isStale);
+        var lastGameHtml = renderLastMatch(t.last_match, season, isStale);
         var lastGameCell = t.last_match_date
           ? lastGameHtml + '<div class="sub-line-italic">' + t.last_match_date + "</div>"
           : lastGameHtml;
@@ -340,6 +349,9 @@
         warmupNote.hidden = Number(year) !== 1971;
         updateDisruptedNote("nflDisrupted", [year]);
         renderStandings();
+      })
+      .catch(function () {
+        standingsTableWrap.innerHTML = '<p class="sport-error">Could not load season data</p>';
       });
   }
 
@@ -381,6 +393,9 @@
         });
         buildPills("tsConfPills", state.tsConf, function (v) { state.tsConf = v; populateTeamSelect(); });
         populateTeamSelect();
+      })
+      .catch(function () {
+        tsTeamSelect.innerHTML = "<option>Could not load teams</option>";
       });
   }
 
@@ -393,6 +408,9 @@
       .then(function (data) {
         state.teamCache[slug] = data;
         return finishLoadTeam(slug);
+      })
+      .catch(function () {
+        tsTableWrap.innerHTML = '<p class="sport-error">Could not load team data</p>';
       });
   }
 
@@ -466,7 +484,7 @@
         "<tr>" +
         '<td class="col-rank linked" data-season-link="' + g.season + '">' + seasonCell + (state.tsView !== "single" ? seasonTag(g.season) : "") + "</td>" +
         '<td class="sport-week-cell">' + snapshotCell + "</td>" +
-        '<td class="col-last-match">' + renderLastMatch(g.last_match, !!g._isStale) + "</td>" +
+        '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecordSmart(g.regular_record, g.playoff_record, g.record) + "</td>" +
         '<td class="col-rank">' + g.rank + "</td>" +
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
@@ -619,6 +637,9 @@
       .then(function (data) {
         state.championsData = data;
         renderChampions();
+      })
+      .catch(function () {
+        historyTableWrap.innerHTML = '<p class="sport-error">Could not load champions</p>';
       });
   }
 
@@ -1123,6 +1144,8 @@
         rs: results[0], ps: results[1], rs_o: results[2], rs_d: results[3], ps_o: results[4], ps_d: results[5],
       };
       renderGoat();
+    }).catch(function () {
+      goatTableWrap.innerHTML = '<p class="sport-error">Could not load GOAT table</p>';
     });
   }
 
@@ -1233,5 +1256,7 @@
     loadSeason(data.seasons[0]);
     loadChampions();
     loadGoat();
+  }).catch(function () {
+    standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });
 })();
