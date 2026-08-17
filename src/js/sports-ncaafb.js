@@ -675,7 +675,7 @@
       if (hasCo) {
         return (
           '<tr class="sport-split-top">' + seasonCell + teamCells(e.champion, "col-champ", e.season) + scoreCell + runnerCell + "</tr>" +
-          '<tr class="row-group-end">' + teamCells(e.co_champion, "col-champ", e.season) + "</tr>"
+          "<tr>" + teamCells(e.co_champion, "col-champ", e.season) + "</tr>"
         );
       }
       return "<tr>" + seasonCell + teamCells(e.champion, "col-champ", e.season) + scoreCell + runnerCell + "</tr>";
