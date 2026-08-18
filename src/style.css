@@ -150,6 +150,12 @@ header {
 h1, h2, h3, h4, h5, h6 {
   font-family: "Space Grotesk", sans-serif;
 }
+/* Every sport page's H1 is already teal (.sport-page h1); Home/Blog/GOTY's
+   own H1 was left at the default dark text, so the page title read as a
+   different color than the just-clicked, now-teal nav link right above it.
+   Scoped to h1 only (not h2-h6, which serve structural/subheading roles
+   elsewhere and shouldn't all inherit the page-title treatment). */
+h1 { color: var(--accent); }
 
 .brand a {
   font-weight: 700;
