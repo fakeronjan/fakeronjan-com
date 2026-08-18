@@ -719,10 +719,24 @@ footer {
    Standings, SAKIC Team Summary) were genuinely overflowing their wrap at
    normal desktop width - this gives every table room to breathe if its
    content needs it, without forcing width on tables that don't. */
-#league-history .sport-table-wrap,
-#standings .sport-table-wrap,
-#team-summary .sport-table-wrap,
-#goat .sport-table-wrap {
+/* display:grid with a single max-content column (capped at 1320px) rather
+   than centering the table alone: every direct child - the table AND any
+   sibling .sport-note/.sport-error text the JS renders alongside it -
+   stretches to the SAME column width, so a note above a narrow table lines
+   up with the table's actual left edge instead of sitting flush against the
+   far-left edge of the full-viewport breakout (which is what a bare
+   `table { margin: 0 auto }` rule left every non-table sibling doing - the
+   original bug). Gated on :has(table) so the "no team selected yet" /
+   loading-only state (no table present) never gets pulled into a
+   full-viewport container at all - it just stays in normal document flow at
+   the page's usual content width, left-aligned like the rest of the page. */
+#league-history .sport-table-wrap:has(table),
+#standings .sport-table-wrap:has(table),
+#team-summary .sport-table-wrap:has(table),
+#goat .sport-table-wrap:has(table) {
+  display: grid;
+  grid-template-columns: minmax(0, min(max-content, 1320px));
+  justify-content: center;
   width: 100vw;
   position: relative;
   left: 50%;
@@ -730,14 +744,7 @@ footer {
   margin-left: -50vw;
   margin-right: -50vw;
   padding: 0 1.5rem;
-}
-#league-history .sport-table-wrap table,
-#standings .sport-table-wrap table,
-#team-summary .sport-table-wrap table,
-#goat .sport-table-wrap table {
-  width: auto;
-  max-width: 1320px;
-  margin: 0 auto;
+  box-sizing: border-box;
 }
 .sport-table {
   width: 100%;
