@@ -1,6 +1,6 @@
 <nav class="fleet-nav">
   <div class="fleet-nav-inner">
-    <a class="fleet-nav-home" href="/sports/">📊 All Sports</a>
+    <a class="fleet-nav-home{% if page.url == "/sports/" %} active{% endif %}" href="/sports/">📊 All Sports</a>
     {% for group in sportsFleet %}
     <div class="fleet-nav-group">
       <div class="fleet-nav-category{% if group.leagues | groupHasSlug(currentSport) %} active{% endif %}">{{ group.emoji }} {{ group.category }}</div>

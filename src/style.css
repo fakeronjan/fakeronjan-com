@@ -527,6 +527,7 @@ footer {
   transition: background 0.15s ease;
 }
 .fleet-nav-home:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.fleet-nav-home.active { color: var(--accent); }
 .fleet-nav-group {
   display: flex;
   flex-direction: column;
