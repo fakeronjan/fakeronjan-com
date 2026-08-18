@@ -694,6 +694,15 @@ footer {
   margin: -0.25rem 0 0.85rem;
 }
 .sport-note-warn { color: var(--accent-2); }
+/* .sport-note's -0.25rem top margin is tuned for the fleet-wide convention
+   of a note sitting BEFORE its table (pulls it up snug under the header/
+   controls above, e.g. NHL's own lockout note - nhl.njk - sits above
+   #nhlStandingsTable). The portal's City Droughts version of this same note
+   is the one place in the fleet that puts a .sport-note AFTER its table
+   content instead, so the negative margin pulled it flush against the
+   table's bottom edge rather than giving it breathing room. Override back
+   to a normal positive top margin for this specific after-content case. */
+#city-droughts > .sport-note.sport-note-warn { margin-top: 0.85rem; }
 .sport-disrupted-note {
   font-size: 0.78rem;
   color: var(--muted);
