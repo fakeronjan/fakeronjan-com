@@ -49,8 +49,7 @@
   };
 
   var PALETTE = ["#1a6b8a", "#ff6eb4", "#ef6c00", "#2e7d32", "#6a1b9a", "#c62828", "#00838f", "#5d4037", "#455a64", "#827717", "#0277bd", "#ad1457"];
-  var LEADER_COLOR = "#1a1a1a";
-  var CAREER_PALETTE = { base: "#1a1a1a", hard: "#d97706", clay: "#b91c1c", grass: "#15803d" };
+  var CAREER_PALETTE = { base: "var(--fg)", hard: "#d97706", clay: "#b91c1c", grass: "#15803d" };
   var CAREER_LABELS = { base: "Base", hard: "Hard", clay: "Clay", grass: "Grass" };
 
   var WIKI_TO_SACKMANN = {
@@ -738,12 +737,12 @@
         var grid = "", ylab = "";
         for (var v = Math.ceil(yMin / yTickStep) * yTickStep; v <= yMax + 1e-9; v += yTickStep) {
           var y = py(v);
-          grid += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="#eee" stroke-width="1"/>';
-          ylab += '<text x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" font-size="10" fill="#999" text-anchor="end">' + v.toFixed(yTickStep < 1 ? 1 : 0) + "</text>";
+          grid += '<line class="chart-grid" x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke-width="1"/>';
+          ylab += '<text class="chart-ticklabel" x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" font-size="10" text-anchor="end">' + v.toFixed(yTickStep < 1 ? 1 : 0) + "</text>";
         }
         if (yMin < 0 && yMax > 0) {
           var y0 = py(0);
-          grid += '<line x1="' + padL + '" y1="' + y0.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y0.toFixed(1) + '" stroke="#ccc" stroke-width="1" stroke-dasharray="3,3"/>';
+          grid += '<line class="chart-zero" x1="' + padL + '" y1="' + y0.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y0.toFixed(1) + '" stroke-width="1" stroke-dasharray="3,3"/>';
         }
 
         var firstYr = new Date(tMin).getUTCFullYear();
@@ -755,8 +754,8 @@
           var tYr = Date.UTC(yr, 0, 1);
           if (tYr < tMin || tYr > tMax) continue;
           var x = px(tYr);
-          xtick += '<line x1="' + x.toFixed(1) + '" y1="' + (H - padB) + '" x2="' + x.toFixed(1) + '" y2="' + (H - padB + 4) + '" stroke="#bbb" stroke-width="1"/>';
-          xlab += '<text x="' + x.toFixed(1) + '" y="' + (H - padB + 16) + '" font-size="10" fill="#999" text-anchor="middle">' + yr + "</text>";
+          xtick += '<line class="chart-axis" x1="' + x.toFixed(1) + '" y1="' + (H - padB) + '" x2="' + x.toFixed(1) + '" y2="' + (H - padB + 4) + '" stroke-width="1"/>';
+          xlab += '<text class="chart-ticklabel" x="' + x.toFixed(1) + '" y="' + (H - padB + 16) + '" font-size="10" text-anchor="middle">' + yr + "</text>";
         }
 
         var lines = "", legendHTML = "";
@@ -848,6 +847,7 @@
   function refreshGoatRating(tour) {
     var slug = tour === "m" ? "atp" : "wta";
     var wrap = document.getElementById(tour === "m" ? "goatTableMWrap" : "goatTableWWrap");
+    var footnoteEl = document.getElementById(tour === "m" ? "goatFootnoteM" : "goatFootnoteW");
     var file;
     if (state.goatView === "era") file = "goat_era_" + slug + ".json";
     else if (state.peakSubView === "all") file = "goat_peak_seasons_" + slug + ".json";
@@ -855,6 +855,7 @@
     return fetchRatings(file).then(function (data) {
       if (!data || !data.players) {
         wrap.innerHTML = '<p class="sport-loading">Ratings unavailable</p>';
+        footnoteEl.hidden = true;
         return;
       }
       var rows;
@@ -883,6 +884,8 @@
           "<th>Year</th><th>Surface specialization</th><th>Record</th><th>Titles</th><th>Slams</th>" +
           '<th title="Times the player finished a season ranked #1 by EOY rating">YE #1</th>' +
           "</tr></thead><tbody>" + rows + "</tbody></table>";
+        footnoteEl.hidden = true;
+        footnoteEl.innerHTML = "";
       } else {
         // Players whose career-title count in our data falls more than 5 short
         // of their official total - known Sackmann-era coverage gaps.
@@ -902,13 +905,6 @@
             '<td class="col-od">' + (p.year_end_no1 || "-") + "</td></tr>"
           );
         }).join("");
-        var footnote =
-          '<p class="sport-note footnote data-note"><span class="title-asterisk">*</span> Career titles are derived from ' +
-          '<a href="https://github.com/LuckyLoser91/TennisCourtLog" target="_blank" rel="noopener">TennisCourtLog</a> ' +
-          "ATP / WTA match data (Jeff Sackmann's history + tennis-data.co.uk, 1973+ singles main draws). " +
-          "Pre-1990 ATP and pre-2000 WTA have known coverage gaps for smaller events " +
-          "(Virginia Slims series, Avon Futures, early Grand Prix / WCT); these career totals may undercount the " +
-          "player's official total by 5+ titles. Pre-1973 wins are not included.</p>";
         wrap.innerHTML =
           '<table class="sport-table"><thead><tr>' +
           '<th class="col-rank">#</th><th>Player</th>' +
@@ -918,7 +914,20 @@
           '<th title="Career singles titles (all tour-level events)">Titles</th>' +
           '<th title="Career match record">Record</th>' +
           '<th title="Times the player finished a season ranked #1 by EOY rating">YE #1</th>' +
-          "</tr></thead><tbody>" + rows + "</tbody></table>" + footnote;
+          "</tr></thead><tbody>" + rows + "</tbody></table>";
+        // Kept OUT of the .sport-table-wrap grid (a sibling <p>, not appended
+        // into wrap.innerHTML): that grid shares one max-content column across
+        // all its children, and this footnote's long unwrapped sentence blew
+        // the shared column (and the table stretched to fill it) out to the
+        // full 1320px breakout width even though the table itself is narrow.
+        footnoteEl.innerHTML =
+          '<span class="title-asterisk">*</span> Career titles are derived from ' +
+          '<a href="https://github.com/LuckyLoser91/TennisCourtLog" target="_blank" rel="noopener">TennisCourtLog</a> ' +
+          "ATP / WTA match data (Jeff Sackmann's history + tennis-data.co.uk, 1973+ singles main draws). " +
+          "Pre-1990 ATP and pre-2000 WTA have known coverage gaps for smaller events " +
+          "(Virginia Slims series, Avon Futures, early Grand Prix / WCT); these career totals may undercount the " +
+          "player's official total by 5+ titles. Pre-1973 wins are not included.";
+        footnoteEl.hidden = false;
       }
     });
   }
@@ -1017,8 +1026,8 @@
     var grid = "", ylab = "";
     for (var v = 0; v <= yMax; v += 5) {
       var y = py(v);
-      grid += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="#eee" stroke-width="1"/>';
-      ylab += '<text x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" font-size="10" fill="#999" text-anchor="end">' + v + "</text>";
+      grid += '<line class="chart-grid" x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke-width="1"/>';
+      ylab += '<text class="chart-ticklabel" x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" font-size="10" text-anchor="end">' + v + "</text>";
     }
 
     var xtick = "", xlab = "";
@@ -1032,13 +1041,13 @@
       var x = px(i2);
       if (x - lastLabelX < 40) continue;
       lastLabelX = x;
-      xtick += '<line x1="' + x.toFixed(1) + '" y1="' + (H - padB) + '" x2="' + x.toFixed(1) + '" y2="' + (H - padB + 4) + '" stroke="#bbb" stroke-width="1"/>';
-      xlab += '<text x="' + x.toFixed(1) + '" y="' + (H - padB + 16) + '" font-size="10" fill="#999" text-anchor="middle">' + yr + "</text>";
+      xtick += '<line class="chart-axis" x1="' + x.toFixed(1) + '" y1="' + (H - padB) + '" x2="' + x.toFixed(1) + '" y2="' + (H - padB + 4) + '" stroke-width="1"/>';
+      xlab += '<text class="chart-ticklabel" x="' + x.toFixed(1) + '" y="' + (H - padB + 16) + '" font-size="10" text-anchor="middle">' + yr + "</text>";
     }
 
     var leaderPts = [];
     for (var i3 = xStart; i3 <= xEnd; i3++) leaderPts.push(px(i3).toFixed(1) + "," + py(leader[i3].count).toFixed(1));
-    var leaderLine = '<polyline points="' + leaderPts.join(" ") + '" fill="none" stroke="' + LEADER_COLOR + '" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.75"/>';
+    var leaderLine = '<polyline class="chart-leader-line" points="' + leaderPts.join(" ") + '" fill="none" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.75"/>';
 
     var lines = "", endLabels = "", legendHTML = "";
     players.forEach(function (p, idx) {
@@ -1124,8 +1133,8 @@
     var grid = "", ylab = "";
     for (var v = 0; v >= yMin; v -= 5) {
       var y = py(v);
-      grid += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="' + (v === 0 ? "#bbb" : "#eee") + '" stroke-width="' + (v === 0 ? 1.2 : 1) + '"' + (v === 0 ? ' stroke-dasharray="4,3"' : "") + "/>";
-      ylab += '<text x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" font-size="10" fill="#999" text-anchor="end">' + v + "</text>";
+      grid += '<line class="' + (v === 0 ? "chart-zero" : "chart-grid") + '" x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke-width="' + (v === 0 ? 1.2 : 1) + '"' + (v === 0 ? ' stroke-dasharray="4,3"' : "") + "/>";
+      ylab += '<text class="chart-ticklabel" x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" font-size="10" text-anchor="end">' + v + "</text>";
     }
 
     var xtick = "", xlab = "";
@@ -1139,8 +1148,8 @@
       var x = px(i2);
       if (x - lastLabelX < 40) continue;
       lastLabelX = x;
-      xtick += '<line x1="' + x.toFixed(1) + '" y1="' + (H - padB) + '" x2="' + x.toFixed(1) + '" y2="' + (H - padB + 4) + '" stroke="#bbb" stroke-width="1"/>';
-      xlab += '<text x="' + x.toFixed(1) + '" y="' + (H - padB + 16) + '" font-size="10" fill="#999" text-anchor="middle">' + yr + "</text>";
+      xtick += '<line class="chart-axis" x1="' + x.toFixed(1) + '" y1="' + (H - padB) + '" x2="' + x.toFixed(1) + '" y2="' + (H - padB + 4) + '" stroke-width="1"/>';
+      xlab += '<text class="chart-ticklabel" x="' + x.toFixed(1) + '" y="' + (H - padB + 16) + '" font-size="10" text-anchor="middle">' + yr + "</text>";
     }
 
     var lines = "", endLabels = "";
