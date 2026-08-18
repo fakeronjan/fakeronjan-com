@@ -1520,6 +1520,16 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
   margin-right: 0.1rem;
 }
 
+/* Every chip is display:inline-block already (wraps naturally onto multiple
+   lines when its container allows), but the base .sport-table td rule sets
+   white-space:nowrap on every cell fleet-wide - inherited here too, so a
+   Teams cell with 5-6 chips rendered as one unbroken line, forcing the whole
+   TABLE wide enough to fit them all side by side instead of letting them
+   wrap. Same failure mode already hit (and fixed) for TENNIS's .finish-sub
+   and LAVIN's .finish-cell/.partner-context - should have caught it here
+   too the first time. */
+.sport-table .team-chips-cell { white-space: normal; }
+
 /* Team chip: one per team contributing to a city's Vibe/drought row. Neutral
    by default; .win/.breaker/.runner/.departed layer state on top, matching
    the champion/runner-up/drought-breaker/departed-team distinctions the

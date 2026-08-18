@@ -951,7 +951,7 @@
         "<tr><td class=\"col-rank\">" + (i + 1) + "</td>" +
         '<td class="team-cell linked" data-city-link="' + escapeHtml(m.name) + '">' + escapeHtml(m.name) + meta + "</td>" +
         '<td class="vibe-cell">' + fmtScore(m.vibeZ) + "</td>" +
-        "<td>" + chips + "</td></tr>"
+        '<td class="team-chips-cell">' + chips + "</td></tr>"
       );
     }).join("");
     return (
@@ -1151,7 +1151,7 @@
         '<td class="season-cell linked" data-year-link="' + p.year + '">' + escapeHtml(p.label) + "</td>" +
         '<td class="col-rank">' + p.rank + "</td>" +
         '<td class="vibe-cell">' + fmtScore(p.vibeZ) + "</td>" +
-        "<td>" + chips + "</td></tr>"
+        '<td class="team-chips-cell">' + chips + "</td></tr>"
       );
     }).join("");
     tableEl.innerHTML =
@@ -1218,7 +1218,7 @@
           '<td class="season-cell linked" data-year-link="' + p.year + '">' + p.year + "</td>" +
           '<td class="vibe-cell">' + fmtScore(p.vibeZ) + "</td>" +
           '<td class="finish-sub" style="white-space:nowrap">' + escapeHtml(p.label) + "</td>" +
-          "<td>" + chips + "</td></tr>"
+          '<td class="team-chips-cell">' + chips + "</td></tr>"
         );
       }).join("");
 
@@ -1530,7 +1530,7 @@
           '<tr><td class="col-rank">' + (i + 1) + "</td>" +
           '<td class="team-cell linked" data-city-link="' + escapeHtml(r.city) + '">' + escapeHtml(r.city) + sportsTag + "</td>" +
           lastCell +
-          "<td>" + chipsHtml + "</td>" +
+          '<td class="team-chips-cell">' + chipsHtml + "</td>" +
           '<td class="total-drought-cell">' + r.drought + (r.deadYears > 0 ? ' <span class="champ-note" title="' + r.deadYears + ' years with no team in any sport">(+' + r.deadYears + " gap)</span>" : "") + "</td>" +
           '<td class="team-years-cell">' + r.teamYears + "</td></tr>"
         );
@@ -1711,7 +1711,7 @@
           '<tr><td class="col-rank">' + (i + 1) + "</td>" +
           '<td class="team-cell linked" data-city-link="' + escapeHtml(r.city) + '">' + escapeHtml(r.city) + "</td>" +
           '<td style="white-space:nowrap;vertical-align:top">' + titleLine + sinceLine + "</td>" +
-          '<td style="vertical-align:middle">' + teamsCell + "</td>" +
+          '<td class="team-chips-cell" style="vertical-align:middle">' + teamsCell + "</td>" +
           '<td class="total-drought-cell">' + r.calendarYears + "</td>" +
           '<td class="team-years-cell">' + r.seasonYears + "</td></tr>"
         );
@@ -1856,7 +1856,7 @@
         return (
           '<tr><td class="col-rank">' + (i + 1) + "</td>" + cityCell +
           '<td style="white-space:nowrap;vertical-align:top"><div class="champ-line">' + titleLine + '</div><div class="champ-line">' + sinceLine + "</div></td>" +
-          '<td style="vertical-align:middle">' + detail + "</td>" +
+          '<td class="team-chips-cell" style="vertical-align:middle">' + detail + "</td>" +
           '<td class="total-drought-cell">' + r.drought + gapNote + "</td></tr>"
         );
       }).join("");
@@ -1993,7 +1993,7 @@
         return (
           '<tr><td class="col-rank">' + (i + 1) + "</td>" + cityCell +
           '<td style="vertical-align:top">' + lastChampLine + "</td>" +
-          '<td style="vertical-align:middle">' + detail + "</td>" +
+          '<td class="team-chips-cell" style="vertical-align:middle">' + detail + "</td>" +
           '<td class="total-drought-cell">' + r.drought + gapNote + "</td></tr>"
         );
       }).join("");
