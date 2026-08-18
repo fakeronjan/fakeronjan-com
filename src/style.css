@@ -792,7 +792,10 @@ footer {
 .finish-badge.finish-appearance { background: color-mix(in srgb, var(--fg) 5%, transparent); color: var(--muted); font-weight: 500; }
 .finish-badge.finish-bronze { background: #cd7f32; color: #fff; }
 /* ZIDANE: domestic league + Champions League + domestic cup all won same season */
-.finish-badge.finish-treble {
+/* ZIDANE's Treble (domestic + CL + domestic cup) and COBI's Double
+   (MLS Cup + Supporters' Shield same season) - same gold-gradient treatment. */
+.finish-badge.finish-treble,
+.finish-badge.finish-double {
   background: linear-gradient(90deg, var(--gold) 0%, #d4af37 50%, #b8860b 100%);
   color: #1a1a1a;
   box-shadow: 0 0 4px color-mix(in srgb, var(--gold) 50%, transparent);
