@@ -679,7 +679,7 @@ footer {
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
-.pill:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.pill:hover { background: color-mix(in srgb, var(--accent-2) 8%, transparent); }
 .pill.active {
   color: var(--bg);
   background: var(--accent);
@@ -808,7 +808,7 @@ footer {
   color: var(--accent);
   border-bottom: 2px solid var(--accent);
 }
-.sport-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.sport-table tbody tr:hover { background: color-mix(in srgb, var(--accent-2) 8%, transparent); }
 
 .sport-table .col-rank { width: 2.75rem; text-align: center; color: var(--muted); font-weight: 700; }
 .sport-table .col-conf,
