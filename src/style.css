@@ -1562,8 +1562,15 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
    TABLE wide enough to fit them all side by side instead of letting them
    wrap. Same failure mode already hit (and fixed) for TENNIS's .finish-sub
    and LAVIN's .finish-cell/.partner-context - should have caught it here
-   too the first time. */
-.sport-table .team-chips-cell { white-space: normal; }
+   too the first time. white-space:normal alone only lets it wrap when
+   something else forces the table narrower - with nothing capping the
+   column, table-layout:auto just keeps widening it to fit every chip on one
+   line instead, growing to the full 1320px breakout on big multi-team
+   metros. max-width:22rem matches LAVIN's .finish-cell (same "wrap a chip-
+   heavy cell at a reasonable width" case) so it wraps to ~3-4 chips per
+   line rather than sprawling wide or (a max-width much narrower than this)
+   squeezing to one chip per line. */
+.sport-table .team-chips-cell { white-space: normal; max-width: 22rem; }
 
 /* Team chip: one per team contributing to a city's Vibe/drought row. Neutral
    by default; .win/.breaker/.runner/.departed layer state on top, matching
