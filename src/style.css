@@ -711,8 +711,18 @@ footer {
 
 /* Super Bowls tables run 12-14 columns wide - DILLON's own reference widens
    just this tab (1320px vs the standard 1100px) so it doesn't cramp. Break
-   out of the site's 960px reading column the same way .sports-embed does. */
-#league-history .sport-table-wrap {
+   out of the site's 960px reading column the same way .sports-embed does.
+   Extended to every other data-table tab (Standings/Team Summary/GOAT, plus
+   the international-fleet sites' own tab ids) - most sites' tables already
+   fit inside 912px and render identically here (width:auto hugs their own
+   natural size, never stretched), but a few (ZIDANE Standings/GOAT, MESSI
+   Standings, SAKIC Team Summary) were genuinely overflowing their wrap at
+   normal desktop width - this gives every table room to breathe if its
+   content needs it, without forcing width on tables that don't. */
+#league-history .sport-table-wrap,
+#standings .sport-table-wrap,
+#team-summary .sport-table-wrap,
+#goat .sport-table-wrap {
   width: 100vw;
   position: relative;
   left: 50%;
@@ -721,7 +731,10 @@ footer {
   margin-right: -50vw;
   padding: 0 1.5rem;
 }
-#league-history .sport-table-wrap table {
+#league-history .sport-table-wrap table,
+#standings .sport-table-wrap table,
+#team-summary .sport-table-wrap table,
+#goat .sport-table-wrap table {
   width: auto;
   max-width: 1320px;
   margin: 0 auto;
