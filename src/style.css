@@ -1191,26 +1191,29 @@ footer {
 .pill.active .pill-range { color: var(--bg); opacity: 0.85; }
 
 /* Hand-built SVG line charts (cumulative slams / deficit-to-leader / career
-   rating trajectory). Gridlines/ticks/leader-line use theme-relative colors
-   (mixed off var(--fg) at a fixed low alpha, not literal greys) so they stay
-   equally subtle in light AND dark mode - literal #eee/#bbb/#1a1a1a hex
-   values read as near-white (too loud) or near-invisible against a dark
-   page background. */
+   rating trajectory, and any future site's chart). Gridlines/ticks/leader-line
+   use theme-relative colors (mixed off var(--fg) at a fixed low alpha, not
+   literal greys) so they stay equally subtle in light AND dark mode - literal
+   #eee/#bbb/#1a1a1a hex values read as near-white (too loud) or
+   near-invisible against a dark page background. Scoped under the shared
+   .sport-chart-wrap ancestor (not a per-site chart class) so every site's SVG
+   chart gets this for free just by nesting inside that wrapper. */
 .sport-chart-wrap svg.sport-tennis-chart { width: 100%; height: 22.5rem; display: block; }
 .sport-chart-wrap svg.sport-tennis-chart-small { height: 16.25rem; }
-.sport-tennis-chart .chart-grid, .sport-tennis-chart-small .chart-grid {
+.sport-chart-wrap svg.sport-lavin-chart { width: 100%; height: 12.5rem; display: block; }
+.sport-chart-wrap svg .chart-grid {
   stroke: color-mix(in srgb, var(--fg) 8%, transparent);
 }
-.sport-tennis-chart .chart-zero, .sport-tennis-chart-small .chart-zero {
+.sport-chart-wrap svg .chart-zero {
   stroke: color-mix(in srgb, var(--fg) 25%, transparent);
 }
-.sport-tennis-chart .chart-axis, .sport-tennis-chart-small .chart-axis {
+.sport-chart-wrap svg .chart-axis {
   stroke: color-mix(in srgb, var(--fg) 30%, transparent);
 }
-.sport-tennis-chart .chart-ticklabel, .sport-tennis-chart-small .chart-ticklabel {
+.sport-chart-wrap svg .chart-ticklabel {
   fill: var(--muted);
 }
-.sport-tennis-chart .chart-leader-line, .sport-tennis-chart-small .chart-leader-line {
+.sport-chart-wrap svg .chart-leader-line {
   stroke: var(--fg);
 }
 .sport-chart-legend { display: flex; flex-wrap: wrap; gap: 0.6rem 0.85rem; margin-top: 0.5rem; font-size: 0.68rem; }
@@ -1227,6 +1230,56 @@ footer {
 /* Title-count coverage-gap footnote (GOAT ERA tab) */
 .title-asterisk { color: #c8770e; font-weight: 700; margin-left: 0.05rem; cursor: help; }
 .data-note.footnote { font-size: 0.7rem; color: var(--muted); margin-top: 0.75rem; line-height: 1.5; }
+
+/* LAVIN: Men's/Women's panels shown side by side (not the fleet's usual M/W
+   pill toggle) - Challenge seasons run mixed-gender casts competing in the
+   same season/episode timeline, so seeing both at once lets you compare
+   within a season directly, which a toggle would hide. Used on Standings and
+   GOAT; Champions uses a single 5-column table instead since it's naturally
+   one row per season.
+   Outer .split-tables-wrap does the same full-bleed breakout grid trick as
+   the single-table breakout above, capped at 1100px (the reference site's
+   own already-tuned two-pane width - narrower than the 1320px used for
+   genuinely wide single tables, since two panes at 1320 would be sparse);
+   inner .split-tables is the plain 2-column split. */
+#standings .split-tables-wrap:has(table),
+#goat .split-tables-wrap:has(table) {
+  display: grid;
+  grid-template-columns: minmax(0, min(max-content, 1100px));
+  justify-content: center;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+.split-tables { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+.split-pane { min-width: 0; }
+.split-heading {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 15%, transparent);
+}
+.sport-table .player-cell { width: auto; min-width: 10rem; white-space: nowrap; }
+.sport-table .stat-narrow { width: 3.4rem; text-align: center; }
+.sport-table .partner-context { font-size: 0.7rem; color: var(--muted); white-space: normal; line-height: 1.35; margin-top: 0.1rem; }
+.finish-sub { font-size: 0.7rem; color: var(--muted); }
+.elim-survived, .footnote-marker { color: var(--muted); cursor: help; }
+/* GOAT Component Breakdown: highlight the actively-sorted column */
+.sport-table td.sort-active { background: color-mix(in srgb, var(--gold) 16%, transparent); font-weight: 700; }
+.sport-table th.sort-active { background: var(--accent-2); color: var(--bg); }
+.sport-table tr.mercenary-row { background: color-mix(in srgb, var(--gold) 5%, transparent); }
+.sport-table tr.pre-anchor-row { background: color-mix(in srgb, var(--fg) 3%, transparent); }
+
+@media (max-width: 880px) {
+  .split-tables { grid-template-columns: 1fr; }
+}
 
 @media (max-width: 640px) {
   .sport-table .col-hide-mobile { display: none; }

@@ -1,0 +1,110 @@
+---
+layout: base.njk
+permalink: /thechallenge/
+currentSport: thechallenge
+eleventyComputed:
+  title: "The Challenge | FAKE RONJAN!!"
+---
+
+{% include "fleet-nav.njk" %}
+
+<div class="sport-page" id="sportPage" data-source="https://fakeronjan.github.io/lavin">
+  <h1>LAVIN <span aria-hidden="true">&#128170;&#129323;&#127863;</span></h1>
+  <p class="sport-subtitle">The Challenge Power Rankings &middot; Beta</p>
+  <p class="sport-model-note">Head-to-head WLS ratings derived from elimination wins, daily wins, and finals placements across S5-S41. Rating is a relative strength score - positive = above average, negative = below. <strong>ERA</strong> = cumulative positive rating across career (quality &times; longevity). <strong>PEAK</strong> = highest end-of-season rating.</p>
+  <p class="sport-updated">
+    <span>&#128736;&#65039; Updated manually</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="tcUpdated">Loading...</span>
+  </p>
+
+  <nav class="sport-tabs" id="tcTabs">
+    <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
+    <button class="sport-tab" data-tab="player-summary" type="button">Player Summary</button>
+    <button class="sport-tab" data-tab="champions" type="button">Champions</button>
+    <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
+  </nav>
+
+  <!-- ═══════════════════════════ Standings ═══════════════════════════ -->
+  <section class="sport-view active" data-view="standings" id="standings">
+    <div class="sport-controls">
+      <select id="tcSeasonSelect" class="sport-select" aria-label="Season"></select>
+    </div>
+    <p class="sport-note">Ratings at the end of the selected season, filtered to that season's cast.</p>
+    <div class="split-tables-wrap">
+      <div class="split-tables">
+        <div class="split-pane">
+          <h3 class="split-heading">Men</h3>
+          <div id="standingsTableM" class="sport-table-wrap"><p class="sport-loading">Loading ratings...</p></div>
+        </div>
+        <div class="split-pane">
+          <h3 class="split-heading">Women</h3>
+          <div id="standingsTableF" class="sport-table-wrap"><p class="sport-loading">Loading ratings...</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ Player Summary ═══════════════════════════ -->
+  <section class="sport-view" data-view="player-summary" id="player-summary" hidden>
+    <div class="pill-group" id="playerGenderPills">
+      <button class="pill active" data-gender="all" type="button">All</button>
+      <button class="pill" data-gender="M" type="button">Men</button>
+      <button class="pill" data-gender="F" type="button">Women</button>
+    </div>
+    <div class="pill-group" id="playerScopePills">
+      <button class="pill active" data-scope="3plus" type="button">3+ seasons</button>
+      <button class="pill" data-scope="all" type="button">All players</button>
+    </div>
+    <div class="sport-controls">
+      <select id="playerSelect" class="sport-select" aria-label="Player">
+        <option value="">- Select a player -</option>
+      </select>
+    </div>
+    <div id="playerContent"><p class="sport-loading">Select a player above</p></div>
+  </section>
+
+  <!-- ═══════════════════════════ Champions ═══════════════════════════ -->
+  <section class="sport-view" data-view="champions" id="champions" hidden>
+    <p class="sport-note">Every season's champions, most recent first.</p>
+    <div id="championsTableWrap" class="sport-table-wrap"><p class="sport-loading">Loading champions...</p></div>
+  </section>
+
+  <!-- ═══════════════════════════ GOAT Table ═══════════════════════════ -->
+  <section class="sport-view" data-view="goat" id="goat" hidden>
+    <div class="pill-group sport-pill-wrap" id="goatViewPills">
+      <button class="pill active" data-view="career" type="button">Best Careers (ERA)</button>
+      <button class="pill" data-view="components" type="button">Component Breakdown</button>
+      <button class="pill" data-view="seasons" type="button">Best Single Seasons</button>
+    </div>
+    <div class="pill-group sport-pill-wrap" id="goatSortPills" hidden>
+      <button class="pill active" data-sort="era_rating" type="button">Total</button>
+      <button class="pill" data-sort="era_daily" type="button">Daily</button>
+      <button class="pill" data-sort="era_elim" type="button">Elim</button>
+      <button class="pill" data-sort="era_within" type="button">Won Final</button>
+      <button class="pill" data-sort="era_field" type="button">Made Final</button>
+    </div>
+    <p class="sport-note" id="goatNote">Top 50 careers by sum of positive end-of-season ratings. Rewards quality &times; longevity.</p>
+    <div class="split-tables-wrap">
+      <div class="split-tables">
+        <div class="split-pane">
+          <h3 class="split-heading">Men</h3>
+          <div id="goatTableM" class="sport-table-wrap"><p class="sport-loading">Loading ratings...</p></div>
+        </div>
+        <div class="split-pane">
+          <h3 class="split-heading">Women</h3>
+          <div id="goatTableF" class="sport-table-wrap"><p class="sport-loading">Loading ratings...</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="sport-credit">Data compiled from <a href="https://thechallenge.fandom.com" target="_blank" rel="noopener">The Challenge Wiki</a> on Fandom, available under a <a href="https://www.fandom.com/licensing" target="_blank" rel="noopener">Creative Commons Attribution-ShareAlike license (CC BY-SA)</a>. Ratings are derived from this data and shared under the same license.</p>
+
+  <p class="sport-lineage">
+    <span class="sport-lineage-label">Model lineage</span>
+    <span>v1.0 LAVIN (named after TJ Lavin) &middot; Claude Code &middot; May 12, 2026</span>
+  </p>
+</div>
+
+<script src="/js/sports-thechallenge.js" defer></script>
