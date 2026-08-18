@@ -757,19 +757,27 @@ footer {
 #goat-table .sport-table-wrap:has(table),
 #city-droughts .sport-table-wrap:has(table) {
   display: grid;
-  /* minmax(0, 1320px), NOT minmax(0, min(max-content, 1320px)): a non-fr
-     single track already sizes to its content's max-content by default (the
-     "hug natural width" behavior every table here relies on), so the
-     explicit min(max-content, ...) was redundant - and, discovered live via
-     the Portal's City Droughts table (the first table in the fleet whose
-     own min-content genuinely exceeds 1320px, from long unwrappable
-     team-chip lists), mixing max-content with a length inside min() doesn't
-     reliably clamp in this position: the track resolved to the FULL
-     2068px content width instead of capping at 1320px. Every prior table
-     happened to stay under 1320px, so this was a latent bug, never
-     triggered. Plain minmax(0, 1320px) caps correctly while still hugging
-     narrower content, verified against the same droughts table. */
-  grid-template-columns: minmax(0, 1320px);
+  /* REGRESSION FIXED 2026-08-18: this was briefly `minmax(0, 1320px)`
+     (plain fixed length, no max-content) - that does NOT hug content. A
+     track whose max sizing function is a definite length grows to fill all
+     available free space up to that length during grid's "maximize
+     tracks" step, so with the wrap's 100vw-wide breakout container, every
+     table on every one of the 15 sport sites rendered pinned at 1320px
+     regardless of how few columns/rows it actually had. Confirmed live on
+     DUNCAN Standings, which never needed anywhere near that width.
+     Back to grid-template-columns: minmax(0, max-content) - the track's
+     max is now intrinsic, so it hugs the widest item's own content width
+     with no fixed length in the track function at all. The 1320px cap
+     that City Droughts (own min-content ~2068px, from long unwrappable
+     team-chip lists) actually needs now lives on the ITEMS via max-width
+     below, not the track: intrinsic track sizing clamps an item's
+     max-content contribution by the item's own max-width, so the track
+     still tops out at 1320px for that table without the mixed
+     max-content/length min() that was already tried and didn't reliably
+     clamp (see git history on this rule, 68a1720) - this avoids that
+     min()-inside-grid-template-columns quirk entirely by keeping the cap
+     on a plain box property instead. */
+  grid-template-columns: minmax(0, max-content);
   justify-content: center;
   /* justify-items:start (not the default stretch) so a table whose own
      min-content genuinely exceeds the 1320px cap overflows only on the
@@ -786,6 +794,21 @@ footer {
   margin-right: -50vw;
   padding: 0 1.5rem;
   box-sizing: border-box;
+}
+#league-history .sport-table-wrap:has(table) > *,
+#standings .sport-table-wrap:has(table) > *,
+#team-summary .sport-table-wrap:has(table) > *,
+#goat .sport-table-wrap:has(table) > *,
+#power-rankings .sport-table-wrap:has(table) > *,
+#players .sport-table-wrap:has(table) > *,
+#tournament .sport-table-wrap:has(table) > *,
+#slamchase .sport-table-wrap:has(table) > *,
+#champions .sport-table-wrap:has(table) > *,
+#cross-sport-rankings .sport-table-wrap:has(table) > *,
+#city-history .sport-table-wrap:has(table) > *,
+#goat-table .sport-table-wrap:has(table) > *,
+#city-droughts .sport-table-wrap:has(table) > * {
+  max-width: 1320px;
 }
 .sport-table {
   width: 100%;
