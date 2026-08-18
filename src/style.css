@@ -1317,10 +1317,152 @@ footer {
 .sport-table tr.pre-anchor-row { background: color-mix(in srgb, var(--fg) 3%, transparent); }
 
 @media (max-width: 880px) {
-  .split-tables { grid-template-columns: 1fr; }
+  /* .split-tables switched from grid to flex (see the comment above) - this
+     stacking rule wasn't updated at the time, leaving it dead (flex ignores
+     grid-template-columns), so LAVIN's panes never stacked on mobile. */
+  .split-tables { flex-direction: column; }
 }
 
 @media (max-width: 640px) {
   .sport-table .col-hide-mobile { display: none; }
   .rating-bar-track { display: none; }
 }
+
+/* ── Portal (/sports/): Current Summary card grid ─────────────────────────
+   Distinct component family from every other fleet page - this is the only
+   page built from cards instead of one big table, since it's a directory
+   of 14 sites rather than a single site's own data. */
+.sport-row { margin-bottom: 1.7rem; }
+.sport-row h2 {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem;
+}
+@media (max-width: 900px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+
+.card {
+  background: color-mix(in srgb, var(--fg) 3%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.card-head {
+  background: var(--accent);
+  color: var(--accent-2);
+  padding: 0.7rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; flex: 1; }
+.card-stage {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--bg) 60%, transparent);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.card-arrow { color: color-mix(in srgb, var(--bg) 65%, transparent); font-size: 1rem; transition: color 0.15s, transform 0.15s; }
+.card:hover .card-arrow { color: var(--bg); transform: translateX(2px); }
+
+.card-body { padding: 0.75rem 0.85rem 0.5rem; flex: 1; display: flex; flex-direction: column; }
+.card-section-label {
+  font-size: 0.58rem;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+table.top5 { width: 100%; border-collapse: collapse; font-size: 0.75rem; table-layout: fixed; }
+table.top5 thead th, table.top5 tbody td { text-align: center; padding: 0.3rem 0.25rem; vertical-align: middle; }
+table.top5 thead th {
+  font-size: 0.58rem;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-top: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+}
+table.top5 tbody td { border-bottom: 1px solid color-mix(in srgb, var(--fg) 5%, transparent); }
+table.top5 tbody tr:last-child td { border-bottom: none; }
+table.top5 td.rank, table.top5 th.col-rank { width: 1.3rem; color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; }
+table.top5 td.name, table.top5 th.col-name {
+  text-align: left;
+  font-weight: 600;
+  overflow: hidden;
+  max-width: 1px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.top5-name-inner { display: flex; align-items: center; gap: 0.25rem; min-width: 0; }
+.top5-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1 1 auto; }
+.top5-name-badges { flex: 0 0 auto; white-space: nowrap; }
+table.top5 td.num, table.top5 th.col-num { font-variant-numeric: tabular-nums; width: 2.75rem; }
+table.top5 td.record, table.top5 th.col-record {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  width: 3.75rem;
+  font-size: 0.68rem;
+  white-space: nowrap;
+}
+table.top5 td.last, table.top5 th.col-last {
+  text-align: left;
+  color: var(--muted);
+  font-size: 0.68rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 1px;
+}
+table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; width: 3.1rem; }
+
+.card-badge {
+  font-size: 0.58rem;
+  margin-left: 0.25rem;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: 1px;
+}
+.card-badge-champion { background: color-mix(in srgb, var(--gold) 20%, transparent); color: #8a6d1e; padding: 0 0.25rem; border-radius: 3px; border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); font-weight: 700; }
+.card-badge-runner   { background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--muted); padding: 0 0.25rem; border-radius: 3px; border: 1px solid color-mix(in srgb, var(--fg) 15%, transparent); font-weight: 700; }
+.card-badge-double   { background: var(--accent); color: var(--accent-2); padding: 0 0.25rem; border-radius: 3px; font-weight: 800; }
+.card-badge-shield   { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); padding: 0 0.25rem; border-radius: 3px; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); font-weight: 700; }
+.card-badge-bronze   { background: color-mix(in srgb, #cd7f32 15%, transparent); color: #8a5a1a; padding: 0 0.25rem; border-radius: 3px; border: 1px solid color-mix(in srgb, #cd7f32 35%, transparent); font-weight: 700; }
+.card-badge-appearance { background: color-mix(in srgb, var(--fg) 5%, transparent); color: var(--muted); padding: 0 0.25rem; border-radius: 3px; border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent); font-weight: 600; }
+
+.card-foot {
+  padding: 0.4rem 0.85rem 0.6rem;
+  font-size: 0.65rem;
+  color: var(--muted);
+  border-top: 1px dashed color-mix(in srgb, var(--fg) 10%, transparent);
+  margin-top: auto;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.card-cadence { white-space: nowrap; }
+.card-loading, .card-error { color: var(--muted); font-style: italic; font-size: 0.7rem; padding: 0.5rem 0; }
+.card-error { color: var(--accent-2); }
