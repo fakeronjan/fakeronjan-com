@@ -39,7 +39,7 @@ li:last-child { margin-bottom: 0; }
   color: var(--accent);
   border-bottom: 2px solid var(--accent);
 }
-.goty-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.goty-table tbody tr:hover { background: color-mix(in srgb, var(--accent-2) 8%, transparent); }
 .goty-table td:first-child { font-variant-numeric: tabular-nums; color: var(--muted); width: 4.5rem; }
 .goty-table td:nth-child(2) { font-weight: 700; }
 .goty-table tr.decade-row td {
@@ -1405,7 +1405,12 @@ footer {
   flex-direction: column;
   transition: transform 0.15s, border-color 0.15s;
 }
-.card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-2);
+  background: color-mix(in srgb, var(--accent-2) 6%, transparent);
+  box-shadow: 0 0 0 1px var(--accent-2), 0 6px 20px rgba(0, 0, 0, 0.12);
+}
 /* No solid-fill header bar - matches how every other page on the site
    handles color (plain background, teal text; the fleet-nav strip itself
    has no background fill either). A colored block here would be the only
