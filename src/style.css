@@ -1331,7 +1331,20 @@ footer {
 /* ── Portal (/sports/): Current Summary card grid ─────────────────────────
    Distinct component family from every other fleet page - this is the only
    page built from cards instead of one big table, since it's a directory
-   of 14 sites rather than a single site's own data. */
+   of 14 sites rather than a single site's own data.
+   #currentSummaryView breaks out to 1320px (same width the reference portal
+   used for its own 3-column grid) via the definite-width
+   left:50%+transform:translateX(-50%) technique - the page's normal 960px
+   column made 3 cards per row too cramped to read team names. */
+#currentSummaryView {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  max-width: 1320px;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
 .sport-row { margin-bottom: 1.7rem; }
 .sport-row h2 {
   font-size: 0.72rem;
@@ -1363,24 +1376,29 @@ footer {
   transition: transform 0.15s, border-color 0.15s;
 }
 .card:hover { transform: translateY(-2px); border-color: var(--accent); }
+/* No solid-fill header bar - matches how every other page on the site
+   handles color (plain background, teal text; the fleet-nav strip itself
+   has no background fill either). A colored block here would be the only
+   one on the whole site. */
 .card-head {
-  background: var(--accent);
-  color: var(--accent-2);
-  padding: 0.7rem 0.85rem;
+  background: transparent;
+  border-bottom: 2px solid var(--accent);
+  color: var(--accent);
+  padding: 0.7rem 0.85rem 0.6rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.card-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; flex: 1; }
+.card-title { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; flex: 1; color: var(--accent); }
 .card-stage {
   font-size: 0.68rem;
   font-weight: 600;
-  color: color-mix(in srgb, var(--bg) 60%, transparent);
+  color: var(--muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.card-arrow { color: color-mix(in srgb, var(--bg) 65%, transparent); font-size: 1rem; transition: color 0.15s, transform 0.15s; }
-.card:hover .card-arrow { color: var(--bg); transform: translateX(2px); }
+.card-arrow { color: var(--muted); font-size: 1rem; transition: color 0.15s, transform 0.15s; }
+.card:hover .card-arrow { color: var(--accent-2); transform: translateX(2px); }
 
 .card-body { padding: 0.75rem 0.85rem 0.5rem; flex: 1; display: flex; flex-direction: column; }
 .card-section-label {
