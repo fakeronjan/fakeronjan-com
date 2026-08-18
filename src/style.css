@@ -733,7 +733,11 @@ footer {
 #league-history .sport-table-wrap:has(table),
 #standings .sport-table-wrap:has(table),
 #team-summary .sport-table-wrap:has(table),
-#goat .sport-table-wrap:has(table) {
+#goat .sport-table-wrap:has(table),
+#power-rankings .sport-table-wrap:has(table),
+#players .sport-table-wrap:has(table),
+#tournament .sport-table-wrap:has(table),
+#slamchase .sport-table-wrap:has(table) {
   display: grid;
   grid-template-columns: minmax(0, min(max-content, 1320px));
   justify-content: center;
@@ -1060,6 +1064,137 @@ footer {
 }
 .wc-result b { color: var(--fg); }
 .wc-so { color: var(--accent-2); font-size: 0.68rem; }
+
+/* ── TENNIS (CHANG-CAPRIATI) ─────────────────────────────────────────────── */
+
+.sport-picker-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sub-line-inline { font-size: 0.78em; color: var(--muted); font-weight: 400; margin-left: 0.2rem; }
+.pill-sub { font-weight: 400; font-size: 0.68rem; opacity: 0.75; margin-left: 0.25rem; }
+.pill.active .pill-sub { color: var(--bg); }
+
+/* M/W section toggling, per top-level tab */
+.mw-section[hidden] { display: none; }
+
+/* Surface-specialization mini bullet chart (hard/clay/grass), inline in the
+   Power Rankings / GOAT tables. */
+.surface-deltas { display: inline-flex; gap: 0.3rem; align-items: center; vertical-align: middle; }
+.surface-deltas .sd-cell { display: inline-flex; flex-direction: column; align-items: center; width: 2.6rem; }
+.surface-deltas .sd-label { font-size: 0.62rem; color: var(--muted); font-weight: 600; margin-bottom: 0.1rem; }
+.surface-deltas .sd-bar-track {
+  position: relative;
+  width: 2.35rem;
+  height: 5px;
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  border-radius: 2px;
+}
+.surface-deltas .sd-bar-center { position: absolute; left: 50%; top: 0; width: 1px; height: 5px; background: var(--muted); }
+.surface-deltas .sd-bar-fill { position: absolute; height: 5px; top: 0; border-radius: 2px; }
+.sd-pos { background: var(--accent); }
+.sd-neg { background: var(--accent-2); }
+
+/* Per-slam surface pill under a rating cell: the surface that slam was
+   played on (Roland Garros -> clay, etc). */
+.surface-pill {
+  display: block;
+  width: fit-content;
+  margin: 0.2rem auto 0;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.surface-pill .sp-rank { font-weight: 600; opacity: 0.75; }
+.surface-pill.surface-hard  { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+.surface-pill.surface-clay  { background: color-mix(in srgb, #b5562a 16%, transparent); color: #b5562a; }
+.surface-pill.surface-grass { background: color-mix(in srgb, #2e7d32 14%, transparent); color: #2e7d32; }
+.player-rating-line { font-size: 0.7rem; color: var(--muted); margin-top: 0.15rem; font-variant-numeric: tabular-nums; }
+
+/* Player Summary: stat-tile card */
+.player-card {
+  background: color-mix(in srgb, var(--fg) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 0.9rem;
+}
+.player-card h2 { font-size: 1.25rem; font-weight: 800; color: var(--accent); margin-bottom: 0.2rem; }
+.player-flag-big { font-size: 1.3rem; margin-right: 0.35rem; vertical-align: -2px; }
+.player-meta { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.85rem; }
+.stats-row { display: flex; flex-wrap: nowrap; gap: 0.5rem; overflow-x: auto; }
+.stat-tile { background: color-mix(in srgb, var(--fg) 4%, transparent); border-radius: 6px; padding: 0.6rem 0.65rem; flex: 1 1 0; min-width: 5.6rem; }
+.stat-tile.headline { background: var(--accent); color: var(--bg); }
+.stat-tile.headline .stat-label { color: color-mix(in srgb, var(--bg) 70%, transparent); }
+.stat-tile.headline .stat-value { color: var(--bg); }
+.stat-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.15rem; }
+.stat-value { font-size: 1.35rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--accent); line-height: 1.1; }
+.stat-tile.headline .stat-value { color: var(--bg); }
+.stat-sub { font-size: 0.68rem; color: var(--muted); margin-top: 0.1rem; font-variant-numeric: tabular-nums; }
+
+/* Career-rating chart legend (base + surface lines) */
+.career-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.4rem; font-size: 0.68rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.career-legend span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.legend-swatch { display: inline-block; width: 1.1rem; height: 3px; border-radius: 1px; }
+
+/* Timeline finish grid (Player Summary's year x slam table) */
+.timeline-table td { text-align: center; }
+.timeline-table td.year-cell { text-align: left; font-weight: 700; color: var(--accent); }
+.finish-line { font-weight: 700; }
+.finish-W { color: var(--accent-2); font-weight: 800; }
+.finish-F { color: var(--accent); font-weight: 700; }
+.finish-SF { color: var(--accent); font-weight: 600; opacity: 0.85; }
+.finish-QF { color: var(--fg); font-weight: 600; }
+.finish-round { color: var(--muted); }
+.finish-out { color: color-mix(in srgb, var(--muted) 60%, transparent); }
+.finish-na { color: color-mix(in srgb, var(--muted) 40%, transparent); }
+.winner-num { display: block; color: var(--muted); font-size: 0.68rem; font-weight: 500; margin-top: 0.15rem; }
+
+/* Champions tab: year x slam-code grid of titlists */
+.grid-table td.empty { color: color-mix(in srgb, var(--muted) 50%, transparent); text-align: center; }
+.grid-table .winner-flag { margin-right: 0.1rem; }
+.grid-table .winner-entry { line-height: 1.35; }
+.grid-table .winner-entry + .winner-entry { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed color-mix(in srgb, var(--fg) 12%, transparent); }
+.grid-table .winner-stack { display: flex; flex-direction: column; }
+.grid-table .winner-name { font-weight: 600; }
+.grid-table .winner-num { color: var(--muted); font-size: 0.68rem; }
+.grid-table .winner-rating { color: var(--muted); font-size: 0.68rem; margin-top: 0.1rem; font-variant-numeric: tabular-nums; }
+.grid-table .winner-rating .wr-base { font-weight: 600; color: var(--fg); }
+.grid-table .winner-rating .wr-pos { color: var(--accent); font-weight: 600; }
+.grid-table .winner-rating .wr-neg { color: var(--accent-2); font-weight: 600; }
+.grid-table .winner-rating .wr-surface { color: var(--muted); }
+.grid-table .year-flag { color: var(--accent-2); font-weight: 700; font-size: 0.68rem; margin-left: 0.1rem; }
+
+/* Slam Chase: cohort pills carry a date-range sub-label */
+.pill-range { font-weight: 500; font-size: 0.68rem; opacity: 0.75; margin-left: 0.25rem; font-variant-numeric: tabular-nums; }
+.pill.active .pill-range { color: var(--bg); opacity: 0.85; }
+
+/* Hand-built SVG line charts (cumulative slams / deficit-to-leader) */
+.sport-chart-wrap svg.sport-tennis-chart { width: 100%; height: 22.5rem; display: block; }
+.sport-chart-wrap svg.sport-tennis-chart-small { height: 16.25rem; }
+.sport-chart-legend { display: flex; flex-wrap: wrap; gap: 0.6rem 0.85rem; margin-top: 0.5rem; font-size: 0.68rem; }
+.sport-chart-legend .legend-item { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--fg); }
+.sport-chart-legend .legend-item.linked { cursor: pointer; }
+.sport-chart-legend .legend-item.linked:hover { text-decoration: underline; }
+.sport-chart-legend .legend-swatch.dashed {
+  background: transparent;
+  border-top: 2px dashed currentColor;
+  width: 1.1rem;
+  height: 0;
+}
+
+/* Title-count coverage-gap footnote (GOAT ERA tab) */
+.title-asterisk { color: #c8770e; font-weight: 700; margin-left: 0.05rem; cursor: help; }
+.data-note.footnote { font-size: 0.7rem; color: var(--muted); margin-top: 0.75rem; line-height: 1.5; }
 
 @media (max-width: 640px) {
   .sport-table .col-hide-mobile { display: none; }

@@ -1,0 +1,204 @@
+---
+layout: base.njk
+permalink: /tennis/
+currentSport: tennis
+eleventyComputed:
+  title: "Tennis | FAKE RONJAN!!"
+---
+
+{% include "fleet-nav.njk" %}
+
+<div class="sport-page" id="sportPage" data-source="https://fakeronjan.github.io/tennis">
+  <h1>CHANG-CAPRIATI <span aria-hidden="true">&#127934;</span></h1>
+  <p class="sport-subtitle">Tennis Power Rankings &middot; Beta</p>
+  <p class="sport-model-note">Head-to-head WLS ratings from every ATP and WTA singles set played. Considers opponent strength, set margin, tournament tier, and recency. Each player gets a base rating plus per-surface deltas (hard / clay / grass) showing specialization. +2.5 = current top 10; +3.5 = era-defining peak; +5 = generational (Graf 1988 = 5.04).</p>
+  <p class="sport-updated">
+    <span>&#127934; Updated weekly</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="tnDateRange">Loading...</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="tnRefreshed">Loading...</span>
+  </p>
+
+  <nav class="sport-tabs" id="tnTabs">
+    <button class="sport-tab active" data-tab="power-rankings" type="button">Power Rankings</button>
+    <button class="sport-tab" data-tab="players" type="button">Player Summary</button>
+    <button class="sport-tab" data-tab="tournament" type="button">Champions</button>
+    <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
+    <button class="sport-tab" data-tab="slamchase" type="button">Slam Chase</button>
+  </nav>
+
+  <!-- ═══════════════════════════ Power Rankings ═══════════════════════════ -->
+  <section class="sport-view active" data-view="power-rankings" id="power-rankings">
+    <div class="pill-group" data-mw-target="power-rankings">
+      <button class="pill active" data-mw="m" type="button">Men's</button>
+      <button class="pill" data-mw="w" type="button">Women's</button>
+    </div>
+    <div class="sport-controls">
+      <label class="sport-picker-label">Year <select id="prYearSelect" class="sport-select"></select></label>
+      <label class="sport-picker-label">Timeframe <select id="prSnapSelect" class="sport-select"></select></label>
+    </div>
+    <div class="pill-group sport-pill-wrap" data-mw-target="power-rankings">
+      <button class="pill active" data-surface="all" type="button">All Surfaces</button>
+      <button class="pill" data-surface="hard" type="button">Hard</button>
+      <button class="pill" data-surface="clay" type="button">Clay</button>
+      <button class="pill" data-surface="grass" type="button">Grass</button>
+    </div>
+    <p class="sport-note" id="prAsof">Current top 50 by fakeronjan WLS rating.</p>
+    <div id="prDisrupted" class="sport-disrupted-note" hidden></div>
+
+    <div class="mw-section" data-tab="power-rankings" data-mw="m">
+      <div id="prTableMWrap" class="sport-table-wrap"><p class="sport-loading">Loading ratings...</p></div>
+    </div>
+    <div class="mw-section" data-tab="power-rankings" data-mw="w" hidden>
+      <div id="prTableWWrap" class="sport-table-wrap"><p class="sport-loading">Loading ratings...</p></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ Player Summary ═══════════════════════════ -->
+  <section class="sport-view" data-view="players" id="players" hidden>
+    <div class="pill-group" data-mw-target="players">
+      <button class="pill active" data-mw="m" type="button">Men's</button>
+      <button class="pill" data-mw="w" type="button">Women's</button>
+    </div>
+    <div class="sport-controls">
+      <select id="playerSelectM" class="sport-select" aria-label="Player">
+        <option value="">- Select a player -</option>
+      </select>
+      <select id="playerSelectW" class="sport-select" aria-label="Player" hidden>
+        <option value="">- Select a player -</option>
+      </select>
+    </div>
+
+    <div class="mw-section" data-tab="players" data-mw="m">
+      <div id="playerContentM"><p class="sport-loading">Select a player above</p></div>
+    </div>
+    <div class="mw-section" data-tab="players" data-mw="w" hidden>
+      <div id="playerContentW"><p class="sport-loading">Select a player above</p></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ Champions ═══════════════════════════ -->
+  <section class="sport-view" data-view="tournament" id="tournament" hidden>
+    <div class="pill-group" data-mw-target="tournament">
+      <button class="pill active" data-mw="m" type="button">Men's</button>
+      <button class="pill" data-mw="w" type="button">Women's</button>
+    </div>
+    <p class="sport-note">Each cell shows the winner with their running tournament count and career OE slam count at the time of the title (e.g. "(1 &#x1F1E6;&#x1F1FA;, 7 total)" = 1st AO win, 7th major overall). Empty cells: tournament not held. <span class="footnote">*1977 had two Australian Opens (January and December) as the tournament transitioned scheduling from year-end to year-start. Both editions count as official slams.</span></p>
+
+    <div class="mw-section" data-tab="tournament" data-mw="m">
+      <div id="tournamentTableMWrap" class="sport-table-wrap"></div>
+    </div>
+    <div class="mw-section" data-tab="tournament" data-mw="w" hidden>
+      <div id="tournamentTableWWrap" class="sport-table-wrap"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ GOAT Table ═══════════════════════════ -->
+  <section class="sport-view" data-view="goat" id="goat" hidden>
+    <div class="pill-group" data-mw-target="goat">
+      <button class="pill active" data-mw="m" type="button">Men's</button>
+      <button class="pill" data-mw="w" type="button">Women's</button>
+    </div>
+    <div class="pill-group sport-pill-wrap" id="goatViewPills">
+      <button class="pill active" data-view="peak" type="button">PEAK <span class="pill-sub">best single year</span></button>
+      <button class="pill" data-view="era" type="button">ERA <span class="pill-sub">cumulative quality &times; longevity</span></button>
+    </div>
+    <div class="pill-group sport-pill-wrap" id="peakSubviewPills">
+      <button class="pill active" data-peak-sub="best" type="button">Best per player</button>
+      <button class="pill" data-peak-sub="all" type="button">All seasons</button>
+    </div>
+    <p class="sport-note">
+      <strong>PEAK &middot; Best per player</strong>: each player's single best end-of-year season, ranked above the year's #10 player.
+      <strong>PEAK &middot; All seasons</strong>: top 50 (player, year) combinations - same player can appear multiple times.
+      <strong>ERA</strong>: career sum of positive adjusted EOY ratings (years below the year's #10 don't count).
+      All three require &ge;125 sets played in the season to qualify.
+    </p>
+
+    <div class="mw-section" data-tab="goat" data-mw="m">
+      <div id="goatTableMWrap" class="sport-table-wrap"><p class="sport-loading">Loading ratings...</p></div>
+    </div>
+    <div class="mw-section" data-tab="goat" data-mw="w" hidden>
+      <div id="goatTableWWrap" class="sport-table-wrap"><p class="sport-loading">Loading ratings...</p></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ Slam Chase ═══════════════════════════ -->
+  <section class="sport-view" data-view="slamchase" id="slamchase" hidden>
+    <div class="pill-group" data-mw-target="slamchase">
+      <button class="pill active" data-mw="m" type="button">Men's</button>
+      <button class="pill" data-mw="w" type="button">Women's</button>
+    </div>
+
+    <div class="mw-section" data-tab="slamchase" data-mw="m">
+      <div class="pill-group sport-pill-wrap" id="menCohortPills"></div>
+      <div class="sport-chart-wrap">
+        <p class="sport-subhead">Cumulative slam wins</p>
+        <p class="sport-note" id="menChart1Sub"></p>
+        <svg id="menChart1" class="sport-tennis-chart"></svg>
+        <div class="sport-chart-legend" id="menLegend1"></div>
+      </div>
+      <div class="sport-chart-wrap">
+        <p class="sport-subhead">Slams behind active OE leader</p>
+        <p class="sport-note">Negative values = how far each chaser trails the running all-time OE record-holder</p>
+        <svg id="menChart2" class="sport-tennis-chart sport-tennis-chart-small"></svg>
+        <div class="sport-chart-legend" id="menLegend2"></div>
+      </div>
+      <div class="sport-table-wrap">
+        <table class="sport-table">
+          <thead><tr>
+            <th class="col-rank"></th>
+            <th>Player <span class="sub-line-inline">(first slam - last slam)</span></th>
+            <th class="col-od">Total</th>
+            <th class="col-od" title="Australian Open">&#x1F1E6;&#x1F1FA; AO</th>
+            <th class="col-od" title="French Open">&#x1F1EB;&#x1F1F7; FO</th>
+            <th class="col-od" title="Wimbledon">&#x1F1EC;&#x1F1E7; Wim</th>
+            <th class="col-od" title="US Open">&#x1F1FA;&#x1F1F8; US</th>
+            <th class="col-hide-mobile">Latest</th>
+          </tr></thead>
+          <tbody id="menTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mw-section" data-tab="slamchase" data-mw="w" hidden>
+      <div class="pill-group sport-pill-wrap" id="womenCohortPills"></div>
+      <div class="sport-chart-wrap">
+        <p class="sport-subhead">Cumulative slam wins</p>
+        <p class="sport-note" id="womenChart1Sub"></p>
+        <svg id="womenChart1" class="sport-tennis-chart"></svg>
+        <div class="sport-chart-legend" id="womenLegend1"></div>
+      </div>
+      <div class="sport-chart-wrap">
+        <p class="sport-subhead">Slams behind active OE leader</p>
+        <p class="sport-note">Negative values = how far each chaser trails the running all-time OE record-holder</p>
+        <svg id="womenChart2" class="sport-tennis-chart sport-tennis-chart-small"></svg>
+        <div class="sport-chart-legend" id="womenLegend2"></div>
+      </div>
+      <div class="sport-table-wrap">
+        <table class="sport-table">
+          <thead><tr>
+            <th class="col-rank"></th>
+            <th>Player <span class="sub-line-inline">(first slam - last slam)</span></th>
+            <th class="col-od">Total</th>
+            <th class="col-od" title="Australian Open">&#x1F1E6;&#x1F1FA; AO</th>
+            <th class="col-od" title="French Open">&#x1F1EB;&#x1F1F7; FO</th>
+            <th class="col-od" title="Wimbledon">&#x1F1EC;&#x1F1E7; Wim</th>
+            <th class="col-od" title="US Open">&#x1F1FA;&#x1F1F8; US</th>
+            <th class="col-hide-mobile">Latest</th>
+          </tr></thead>
+          <tbody id="womenTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <p class="sport-credit">Data: <a href="https://github.com/LuckyLoser91/TennisCourtLog" target="_blank" rel="noopener">TennisCourtLog</a>, combining Jeff Sackmann's ATP &amp; WTA match data (<a href="https://www.tennisabstract.com" target="_blank" rel="noopener">Tennis Abstract</a>, 1968&ndash;2024) with <a href="http://www.tennis-data.co.uk" target="_blank" rel="noopener">tennis-data.co.uk</a> live results (2025+), licensed <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>. Ratings are derived from this data.</p>
+
+  <p class="sport-lineage">
+    <span class="sport-lineage-label">Model lineage</span>
+    <span>v1.0 CHANG-CAPRIATI (named after Michael Chang and Jennifer Capriati) &middot; Claude Code &middot; May 9, 2026</span>
+  </p>
+</div>
+
+<script src="/js/sports-tennis.js" defer></script>
