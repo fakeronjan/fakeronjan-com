@@ -12,7 +12,58 @@ eleventyComputed:
   <p class="sport-subtitle">Sports Ratings &amp; Stats</p>
   <p class="sport-model-note">Hobbyist power rankings across basketball, football, soccer, baseball, and hockey that produce ratings that represent points / goals / runs vs. league average. Each sport has a full site with historical and GOAT ratings. Other adds include a similar model for the reality show The Challenge as well as a visualization of tennis Grand Slam championships.</p>
 
-  <div id="currentSummaryView"></div>
+  <nav class="sport-tabs" id="portalTabs">
+    <button class="sport-tab active" data-tab="current-summary" type="button">Current Summary</button>
+    <button class="sport-tab" data-tab="cross-sport-rankings" type="button">Cross-Sport Rankings</button>
+    <button class="sport-tab" data-tab="city-history" type="button">City History</button>
+    <button class="sport-tab" data-tab="goat-table" type="button">GOAT Table</button>
+    <button class="sport-tab" data-tab="city-droughts" type="button">City Droughts</button>
+  </nav>
+
+  <div class="pill-group sport-pill-wrap" id="leagueFilter" hidden>
+    <span class="league-filter-label">Leagues</span>
+    <button class="pill" data-preset="big4" type="button">Historical Big 4</button>
+    <button class="pill" data-preset="big4mls" type="button">Big 4 + MLS</button>
+    <button class="pill active" data-preset="all" type="button">Big 4 + MLS + WNBA</button>
+  </div>
+
+  <section class="sport-view active" data-view="current-summary" id="current-summary">
+    <div id="currentSummaryView"></div>
+  </section>
+
+  <section class="sport-view" data-view="cross-sport-rankings" id="cross-sport-rankings" hidden>
+    <p class="sport-note">VIBE weights titles fully, runners-up half, other strong teams a fifth, then adjusts for market size &middot; Rankings shown at each championship moment, 1980-present (WNBA / MLS contribute from 1997 / 1996 on)</p>
+    <div id="crossSportRankingsContent"><p class="sport-loading">Loading...</p></div>
+  </section>
+
+  <section class="sport-view" data-view="city-history" id="city-history" hidden>
+    <p class="sport-note">VIBE weights titles fully, runners-up half, other strong teams a fifth, then adjusts for market size &middot; One city over time, with &#128081; / &#129352; markers flagging championship moments</p>
+    <div id="cityHistoryContent"><p class="sport-loading">Loading...</p></div>
+  </section>
+
+  <section class="sport-view" data-view="goat-table" id="goat-table" hidden>
+    <p class="sport-note">VIBE weights titles fully, runners-up half, other strong teams a fifth, then adjusts for market size &middot; Top 50 city-year peaks across 1980-present</p>
+    <div id="goatTableContent"><p class="sport-loading">Loading...</p></div>
+  </section>
+
+  <section class="sport-view" data-view="city-droughts" id="city-droughts" hidden>
+    <div class="pill-group sport-pill-wrap" id="droughtModePills">
+      <button class="pill active" data-dmode="active" type="button">Active Droughts</button>
+      <button class="pill" data-dmode="broken" type="button">Drought Breakers</button>
+    </div>
+    <div class="pill-group sport-pill-wrap" id="droughtScopePills">
+      <button class="pill active" data-dscope="city" type="button">By City</button>
+      <button class="pill" data-dscope="team" type="button">By Team</button>
+    </div>
+    <div id="droughtNotes"></div>
+    <div class="pill-group sport-pill-wrap" id="droughtSortPills">
+      <span class="league-filter-label">Sort by</span>
+      <button class="pill active" data-dsort="years" type="button">Years</button>
+      <button class="pill" data-dsort="seasonYears" type="button">Season-Years</button>
+    </div>
+    <div id="cityDroughtsContent"><p class="sport-loading">Loading...</p></div>
+    <p class="sport-note sport-note-warn">Note: the 2004-05 NHL season was cancelled in its entirety due to a lockout. No games were played, no division titles, no Presidents' Trophy, and no Stanley Cup were awarded. That's the source of any +1 gap shown for NHL droughts.</p>
+  </section>
 </div>
 
 <script src="/js/sports-portal.js" defer></script>

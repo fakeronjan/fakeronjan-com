@@ -744,10 +744,33 @@ footer {
 #players .sport-table-wrap:has(table),
 #tournament .sport-table-wrap:has(table),
 #slamchase .sport-table-wrap:has(table),
-#champions .sport-table-wrap:has(table) {
+#champions .sport-table-wrap:has(table),
+#cross-sport-rankings .sport-table-wrap:has(table),
+#city-history .sport-table-wrap:has(table),
+#goat-table .sport-table-wrap:has(table),
+#city-droughts .sport-table-wrap:has(table) {
   display: grid;
-  grid-template-columns: minmax(0, min(max-content, 1320px));
+  /* minmax(0, 1320px), NOT minmax(0, min(max-content, 1320px)): a non-fr
+     single track already sizes to its content's max-content by default (the
+     "hug natural width" behavior every table here relies on), so the
+     explicit min(max-content, ...) was redundant - and, discovered live via
+     the Portal's City Droughts table (the first table in the fleet whose
+     own min-content genuinely exceeds 1320px, from long unwrappable
+     team-chip lists), mixing max-content with a length inside min() doesn't
+     reliably clamp in this position: the track resolved to the FULL
+     2068px content width instead of capping at 1320px. Every prior table
+     happened to stay under 1320px, so this was a latent bug, never
+     triggered. Plain minmax(0, 1320px) caps correctly while still hugging
+     narrower content, verified against the same droughts table. */
+  grid-template-columns: minmax(0, 1320px);
   justify-content: center;
+  /* justify-items:start (not the default stretch) so a table whose own
+     min-content genuinely exceeds the 1320px cap overflows only on the
+     right - left-aligned at the track's start, scrollable via
+     .sport-table-wrap's own overflow-x:auto. Without this, an oversized
+     grid item overflows its track symmetrically on both sides, clipping the
+     Rank/City columns just as much as the far-right content. */
+  justify-items: start;
   width: 100vw;
   position: relative;
   left: 50%;
@@ -1484,3 +1507,109 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .card-cadence { white-space: nowrap; }
 .card-loading, .card-error { color: var(--muted); font-style: italic; font-size: 0.7rem; padding: 0.5rem 0; }
 .card-error { color: var(--accent-2); }
+
+/* ── Portal Phase 2: Sports City Index (Cross-Sport Rankings / City History /
+   GOAT Table / City Droughts) ───────────────────────────────────────────── */
+.league-filter-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  align-self: center;
+  margin-right: 0.1rem;
+}
+
+/* Team chip: one per team contributing to a city's Vibe/drought row. Neutral
+   by default; .win/.breaker/.runner/.departed layer state on top, matching
+   the champion/runner-up/drought-breaker/departed-team distinctions the
+   reference site draws. */
+.team-chip {
+  display: inline-block;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  border-radius: 3px;
+  padding: 0.1rem 0.4rem;
+  margin: 0.05rem 0.15rem 0.05rem 0;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: var(--fg);
+}
+.team-chip .sport-tag {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.05rem 0.3rem;
+  border-radius: 2px;
+  font-weight: 700;
+  font-size: 0.56rem;
+  letter-spacing: 0.03em;
+  margin-right: 0.2rem;
+  vertical-align: 1px;
+}
+.team-chip .yr { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; margin-right: 0.05rem; }
+.team-chip .z { color: var(--muted); font-variant-numeric: tabular-nums; margin-left: 0.2rem; }
+.team-chip.win { background: color-mix(in srgb, var(--gold) 20%, transparent); }
+.team-chip.win .z { color: var(--accent); font-weight: 700; }
+/* Drought-breaking team: light-teal highlight, not gold - the chip's range
+   is the years they did NOT win, so no crown treatment. */
+.team-chip.breaker { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.team-chip.breaker .z { color: var(--accent); font-weight: 700; }
+.team-chip.runner { background: color-mix(in srgb, var(--fg) 10%, transparent); }
+.team-chip.runner .sport-tag { background: var(--muted); }
+/* Departed team (left the market): faded, no rating - the rating no longer
+   applies to a team that isn't there anymore. */
+.team-chip.departed { opacity: 0.5; }
+.team-chip.departed .sport-tag { background: var(--muted); }
+
+.vibe-cell, .total-drought-cell { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); text-align: center; }
+.team-years-cell { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted); text-align: center; }
+.single-sport-tag {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 400;
+  margin-left: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.last-champ-sport {
+  display: inline-block;
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  color: var(--fg);
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+.champ-note { color: var(--muted); font-size: 0.68rem; font-weight: 400; }
+.champ-line { line-height: 1.5; padding: 0.05rem 0; }
+.champ-line + .champ-line { color: var(--muted); font-size: 0.72rem; }
+.champ-line + .champ-line .last-champ-sport { background: color-mix(in srgb, var(--fg) 7%, transparent); }
+
+/* City Droughts: two-line stacked numeric headers (Years / Season-Years) so
+   the Teams column can flex wide; reuses the GOAT Component Breakdown's
+   established .sort-active treatment for whichever column is the current
+   sort (not a bespoke color, since the fleet already solved "highlight the
+   active sortable column header" once for LAVIN). */
+.sport-table th.drought-stack { white-space: normal; line-height: 1.25; width: 6.5rem; min-width: 6.5rem; text-align: center; }
+.sport-table .sort-arrow { margin-left: 0.15rem; }
+.sport-table .th-sub {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.62rem;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 0.2rem;
+}
+.droughts-table td:nth-child(4) { width: auto; }
+
+.city-history-chart-wrap {
+  background: color-mix(in srgb, var(--fg) 3%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.9rem;
+}
+.sport-chart-wrap svg.sport-city-chart { width: 100%; height: 13.75rem; display: block; }
