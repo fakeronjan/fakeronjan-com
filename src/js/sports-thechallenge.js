@@ -262,7 +262,7 @@
             '<td class="player-cell">' + playerLink(s.player) + ctxHtml + "</td>" +
             '<td class="num stat-narrow col-hide-mobile">' + (s.daily_wins || 0) + "</td>" +
             '<td class="num stat-narrow col-hide-mobile">' + fmtElim(s.elim_wins, s.elim_losses, s.elim_loss_survived) + "</td>" +
-            "<td>" + fmtFinish(s) + dagger + "</td>" +
+            '<td class="finish-cell">' + fmtFinish(s) + dagger + "</td>" +
             "<td>" + ratingBar(s.rating) + "</td>" +
             "</tr>"
           );
@@ -360,7 +360,7 @@
           '<td class="finish-sub">' + (ctx || '<span class="sport-dim-dash">-</span>') + "</td>" +
           '<td class="num col-hide-mobile">' + (s.daily_wins || 0) + "</td>" +
           '<td class="num col-hide-mobile">' + fmtElim(s.elim_wins, s.elim_losses, s.elim_loss_survived) + "</td>" +
-          "<td>" + fmtFinish(s) + "</td>" +
+          '<td class="finish-cell">' + fmtFinish(s) + "</td>" +
           '<td class="col-rank">' + fmtRank(s.rank, s.rank_total) + "</td>" +
           "<td>" + ratingBar(s.rating_at_end) + "</td>" +
           "</tr>"
