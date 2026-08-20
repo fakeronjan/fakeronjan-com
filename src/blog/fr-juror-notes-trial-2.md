@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "Juror Notes: Trial #2"
+title: "Juror Notes: Trial #2 (CW: SA)"
 date: 2024-08-01
 original_source: Email
 source_note: personal trial notes, written to myself during jury duty
