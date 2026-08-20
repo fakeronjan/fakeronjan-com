@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "Hitch Your Wagon"
+title: "A Powerful Reminder"
 date: 2017-06-29
 original_source: Facebook
 ---
