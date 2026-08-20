@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "Trial Notes"
+title: "Juror Notes: Trial #2"
 date: 2024-08-01
 original_source: Email
 source_note: personal trial notes, written to myself during jury duty
@@ -8,7 +8,6 @@ source_note: personal trial notes, written to myself during jury duty
 
 # {{ title }}
 
-<p>Victim: Kristen<br>Defendant: Timothy</p>
 <h3>Jury selection (6/26-27)</h3>
 <p>More intense than previous trial. Probably went through 100 juror candidates to get to 12 jurors and 4 alts (of which I am alt #2). Many jurors dismissed because of the case subject matter. Both lawyers had immediate judgments about the jurors who weren't dismissed due to subject matter. We were told by the prosecutor that this will be a very intense case, and the defense attorney made it clear she would go after the victim's credibility. Defense made a point that we are not likely to see the defendant present at any point, and that is his right and we are not to infer anything from his absence. Judge expects trial to start on 7/8 and end on 7/23, with deliberations to follow.</p>
 <h3>Week one (7/8-11)</h3>
