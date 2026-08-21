@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "New Year's Resolution: Be a Better Listener"
+title: "New Year's resolution: be a better listener"
 date: 2017-12-31
 original_source: Facebook
 ---

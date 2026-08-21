@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "Mobile Platform Market Share Over Time"
+title: "Mobile platform market share over time"
 date: 2015-01-20
 original_source: Facebook
 ---

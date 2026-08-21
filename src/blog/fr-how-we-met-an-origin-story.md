@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "How We Met: An Origin Story"
+title: "How we met: an origin story"
 date: 2020-05-12
 original_source: Instagram
 tags: [about-me]
