@@ -295,9 +295,10 @@
       .map(function (t) {
         var isStale = !!(prevSnapshot && t.last_match_date && t.last_match_date <= prevSnapshot.date);
         var slug = state.nameToSlug[t.team];
+        var teamLabel = t.display_name || t.team;
         var teamTd = slug
-          ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + t.team + "</td>"
-          : '<td class="team-cell">' + t.team + "</td>";
+          ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + teamLabel + "</td>"
+          : '<td class="team-cell">' + teamLabel + "</td>";
         return (
           "<tr>" +
           '<td class="col-rank">' + t.rank + "</td>" +
@@ -371,7 +372,10 @@
       ? state.teamsIndex
       : state.teamsIndex.filter(function (t) { return (t.all_conferences || [t.conference]).indexOf(state.tsConf) !== -1; });
     tsTeamSelect.innerHTML = '<option value="">- Select a team -</option>' + filtered.map(function (t) {
-      return '<option value="' + t.slug + '">' + t.name + "</option>";
+      var display = t.display_name || t.name;
+      var priors = t.historical_names || [];
+      var label = priors.length ? display + " (" + priors.join(" / ") + ")" : display;
+      return '<option value="' + t.slug + '">' + label + "</option>";
     }).join("");
   }
 
@@ -381,7 +385,11 @@
       .then(function (data) {
         state.teamsIndex = data;
         state.nameToSlug = {};
-        data.forEach(function (t) { state.nameToSlug[t.name] = t.slug; });
+        data.forEach(function (t) {
+          state.nameToSlug[t.name] = t.slug;
+          if (t.display_name) state.nameToSlug[t.display_name] = t.slug;
+          (t.historical_names || []).forEach(function (h) { state.nameToSlug[h] = t.slug; });
+        });
         buildPills("tsConfPills", state.tsConf, function (v) { state.tsConf = v; populateTeamSelect(); });
         populateTeamSelect();
       })
@@ -619,9 +627,10 @@
       ? ' <span class="dim-pct">(' + t.runner_up_count + " 🥈)</span>"
       : "";
     var slug = state.nameToSlug[t.team];
+    var teamLabel = t.display_name || t.team;
     var nameHtml = slug
-      ? '<span class="team-link linked" data-team-slug="' + slug + '" data-season="' + season + '">' + t.team + "</span>"
-      : t.team;
+      ? '<span class="team-link linked" data-team-slug="' + slug + '" data-season="' + season + '">' + teamLabel + "</span>"
+      : teamLabel;
     return '<div class="sport-champ-name">' + nameHtml + selTag + cnt + "</div><div class=\"sport-champ-conf\">" + conf + "</div>";
   }
 
@@ -748,9 +757,10 @@
 
     var rows = teams.map(function (t) {
       var slug = state.nameToSlug[t.team];
+      var teamLabel = t.display_name || t.team;
       var teamTd = slug
-        ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + t.season + '">' + t.team + "</td>"
-        : '<td class="team-cell">' + t.team + "</td>";
+        ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + t.season + '">' + teamLabel + "</td>"
+        : '<td class="team-cell">' + teamLabel + "</td>";
       var metricCells = GOAT_METRICS.map(function (m) {
         return m.field === pick.field
           ? '<td class="col-od">' + ratingBar(t[m.field], barSc) + "</td>"
