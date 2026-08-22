@@ -455,6 +455,13 @@
 
     drawChart(rows, seasonFilter);
 
+    // Unlike DILLON, SALAAM's canonical join key (data.team) is the bare
+    // school name - it never includes the mascot, so it never equals a
+    // full "School Mascot" display_name even when nothing renamed. Compare
+    // against the team's CURRENT full name instead to detect a real
+    // historical divergence (e.g. "Miami (OH) Redskins" vs today's
+    // "Miami (OH) RedHawks").
+    var currentFull = data.display_name || data.team;
     var isSingle = state.tsView === "single";
     var seasonsList = isSingle ? [seasonFilter] : rows.map(function (g) { return g.season; });
     if (isSingle) {
@@ -468,12 +475,16 @@
     var barSc = barScale(rows.map(function (g) { return g.rating; }));
     var tableRows = rows.slice().reverse().map(function (g) {
       var wkLabel = g.week_label || "";
+      var era = g.display_name && g.display_name !== currentFull ? g.display_name : "";
       var snapshotCell = wkLabel
         ? wkLabel + '<div class="sub-line-italic">' + g.date + "</div>"
         : g.date;
+      var seasonCell = era
+        ? g.season + '<div class="sub-line-italic">' + era + "</div>"
+        : g.season;
       return (
         "<tr>" +
-        '<td class="col-rank linked" data-season-link="' + g.season + '">' + g.season + (state.tsView !== "single" ? seasonTag(g.season) : "") + "</td>" +
+        '<td class="col-rank linked" data-season-link="' + g.season + '">' + seasonCell + (state.tsView !== "single" ? seasonTag(g.season) : "") + "</td>" +
         '<td class="sport-week-cell">' + snapshotCell + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecordSmart(g.regular_record, g.playoff_record, g.record) + "</td>" +
