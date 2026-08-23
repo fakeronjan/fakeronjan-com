@@ -116,6 +116,15 @@ li:last-child { margin-bottom: 0; }
 }
 .methodology { font-size: 0.85rem; color: var(--muted); margin: 0.5rem 0 1rem; }
 
+/* Guards against the sub-pixel horizontal scrollbar that the site's several
+   100vw breakout containers (.sports-embed, .sport-table-wrap:has(table))
+   introduce: 100vw includes the vertical scrollbar's own width, but their
+   `left: 50%` half is computed against the actual (scrollbar-excluded)
+   container, so the two don't cancel out - the breakout ends up a
+   scrollbar-width sliver wider than the visible viewport. Genuinely
+   overflowing content still scrolls via its own overflow-x:auto wrap. */
+html { overflow-x: hidden; }
+
 body {
   font-family: "Manrope", system-ui, sans-serif;
   font-weight: 400;
