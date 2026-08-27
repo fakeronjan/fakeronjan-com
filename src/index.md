@@ -36,6 +36,13 @@ Welcome to my website! This is home base for a lot of my hobbies: writing, ranki
       <span class="site-map-desc">I vibe coded an old-school computer game where you're the commissioner of a basketball league.</span>
     </span>
   </a>
+  <a class="site-map-card" href="https://manjie.org/" target="_blank" rel="noopener">
+    <span class="site-map-title">Manjie Scholarship<span class="nav-arrow">&#8599;</span></span>
+    <span class="site-map-row">
+      <img class="site-map-logo" src="/img/manjie-avatar.jpg" alt="" loading="lazy">
+      <span class="site-map-desc">My younger sister and I have run a scholarship since 2010 to honor the memory of our older sister.</span>
+    </span>
+  </a>
 </div>
 
 ## About me
