@@ -182,8 +182,21 @@ h1 { color: var(--accent); }
   object-fit: cover;
 }
 
-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1.6rem; width: 100%; min-width: 0; }
-nav a { color: var(--fg); text-decoration: none; font-size: 0.95rem; font-weight: 400; }
+nav {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 1.6rem;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  padding-bottom: 2px;
+}
+nav::-webkit-scrollbar { display: none; }
+nav a { flex: none; color: var(--fg); text-decoration: none; font-size: 0.95rem; font-weight: 400; white-space: nowrap; }
 nav a:hover { color: var(--accent); }
 nav a.active { color: var(--accent); font-weight: 700; }
 .nav-arrow { font-size: 0.8em; margin-left: 0.15em; }
@@ -192,17 +205,8 @@ nav a.active { color: var(--accent); font-weight: 700; }
   header { margin-bottom: 1.25rem; gap: 0.5rem; }
   .brand-logo { width: 36px; height: 36px; }
   .brand a { font-size: 1.1rem; }
-  nav {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    overscroll-behavior-x: contain;
-    gap: 1.1rem;
-    padding-bottom: 2px;
-  }
-  nav::-webkit-scrollbar { display: none; }
-  nav a { flex: none; white-space: nowrap; font-size: 0.85rem; }
+  nav { gap: 1.1rem; }
+  nav a { font-size: 0.85rem; }
 }
 
 .nav-preview-overlay {
