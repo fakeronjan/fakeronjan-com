@@ -12,7 +12,7 @@ tags: [movies]
 <p>Now I have to rush something over the finish line. Thankfully, with Christopher Nolan’s <em>The Odyssey</em> releasing recently, I can do what the rest of the nerd-adjacent internet already has.</p>
 <p>I can rank the Nolan films, for the clicks!</p>
 <p>I’ll go through each movie and give some very brief comments on each. If a movie isn’t on the list, I haven’t seen it. Sorry <em>Memento</em>, <em>Dunkirk</em>, and <em>Tenet</em>!</p>
-<p>Just for official record keeping, I won’t be counting this as a birthday retro. On to the next one.</p>
+<p style="font-size: 0.85em; font-style: italic;">Just for official record keeping, I won’t be counting this as a birthday retro. On to the next one.</p>
 <p><strong>#8: <em>The Dark Knight Rises</em></strong> (2012)</p>
 <p>I thought Catwoman was cool. I don’t remember much of the rest of this one, although I did go to college in Pittsburgh and recognized many of the locations.</p>
 <p><strong>#7: <em>Batman Begins</em></strong> (2005)</p>
