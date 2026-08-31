@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Top 10 Frozen Songs"
 date: 2019-12-23
-tags: [music]
+tags: [music, movies]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "Concussion: A Useless Movie Review"
 date: 2015-12-27
 original_source: uselessanalysis.com
+tags: [movies]
 ---
 
 # {{ title }}
