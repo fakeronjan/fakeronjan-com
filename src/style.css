@@ -114,21 +114,28 @@ li:last-child { margin-bottom: 0; }
   font-size: 0.75rem;
   font-style: italic;
 }
-.methodology {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem 1.5rem;
+.methodology-table {
+  border-collapse: collapse;
   margin: 0.75rem 0 1.5rem;
-}
-.methodology-item {
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.85rem;
   color: var(--fg);
 }
-.methodology-item strong {
-  display: block;
+.methodology-table th, .methodology-table td {
+  text-align: left;
+  padding: 0.4rem 1.5rem 0.4rem 0;
+}
+.methodology-table th {
+  font-weight: 500;
   color: var(--accent);
-  margin-bottom: 0.2rem;
+  border-bottom: 1px solid var(--accent);
+}
+.methodology-table td:first-child {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .methodology-table th, .methodology-table td { padding-right: 0.75rem; }
 }
 
 /* Guards against the sub-pixel horizontal scrollbar that the site's several
