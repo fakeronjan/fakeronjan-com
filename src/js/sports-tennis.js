@@ -479,6 +479,12 @@
       renderTable(slug + "Table", tour, cohort);
       renderTournamentGrid(tour);
     });
+    // Deep link from the portal's Women's card (?mw=w) - default both m/w
+    // pill groups to Women's so whichever tab loads first shows it.
+    if (new URLSearchParams(location.search).get("mw") === "w") {
+      applyMW("slamchase", "w");
+      applyMW("tournament", "w");
+    }
   }).catch(function () {
     document.getElementById("menCohortPills").innerHTML = '<p class="sport-error">Could not load Grand Slam data</p>';
   });

@@ -385,7 +385,7 @@
       label: "Tennis Grand Slams (Open Era)",
       cards: [
         { slug: "tennis", title: "Men's ♂️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("M"); } },
-        { slug: "tennis", title: "Women's ♀️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("W"); } },
+        { slug: "tennis", query: "?mw=w", title: "Women's ♀️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("W"); } },
       ],
     },
     {
@@ -429,7 +429,7 @@
     var updatedHtml = payload && !error && payload.updated ? "<span>" + escapeHtml(payload.updated) + "</span>" : "<span></span>";
     var foot = (payload && !error) || cadenceHtml ? '<div class="card-foot">' + cadenceHtml + updatedHtml + "</div>" : "";
     return (
-      '<a class="card" href="' + SQ + "/" + card.slug + '/">' +
+      '<a class="card" href="' + SQ + "/" + card.slug + "/" + (card.query || "") + '">' +
       '<div class="card-head"><span class="card-title">' + card.title + (card.stage ? ' <span class="card-stage">· ' + card.stage + "</span>" : "") + '</span><span class="card-arrow">→</span></div>' +
       '<div class="card-body">' + body + "</div>" +
       foot +
