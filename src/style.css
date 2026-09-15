@@ -1513,6 +1513,7 @@ footer {
 }
 
 .card-mini-chart { display: block; width: 100%; height: auto; margin-bottom: 0.4rem; }
+.card-mini-chart .mini-leader-line { stroke: var(--fg); }
 .card-mini-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; margin-top: auto; }
 .mini-legend-item {
   display: inline-flex;

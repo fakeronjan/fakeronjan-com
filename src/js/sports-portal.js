@@ -236,13 +236,24 @@
     function px(i) { return padL + (i / xEnd) * (W - padL - padR); }
     function py(c) { return padT + (1 - c / yMax) * (H - padT - padB); }
 
+    // running: per-player cumulative count as of each slam index, for the
+    // top-5 lines. leaderArr: the ALL-players running max at each index, for
+    // the dashed "active leader" line - covers the years before any top-5
+    // player has won anything yet (e.g. men's Open Era opens with ~6 years
+    // of Laver/Newcombe/Rosewall/Ashe before Borg's first title in 1974).
     var idxByPlayer = {}, countByPlayer = {};
     top5.forEach(function (p) { idxByPlayer[p[0]] = {}; countByPlayer[p[0]] = {}; });
-    var running = {};
+    var running = {}, leaderArr = [], maxCount = 0;
     slams.forEach(function (r, i) {
       running[r.w] = (running[r.w] || 0) + 1;
+      if (running[r.w] > maxCount) maxCount = running[r.w];
+      leaderArr.push(maxCount);
       if (idxByPlayer[r.w]) { idxByPlayer[r.w][i] = true; countByPlayer[r.w][i] = running[r.w]; }
     });
+
+    var leaderPts = [];
+    for (var li = 0; li <= xEnd; li++) leaderPts.push(px(li).toFixed(1) + "," + py(leaderArr[li]).toFixed(1));
+    var leaderLine = '<polyline class="mini-leader-line" points="' + leaderPts.join(" ") + '" fill="none" stroke-width="1.3" stroke-dasharray="4,3" opacity="0.7"/>';
 
     var lines = "", dots = "";
     top5.forEach(function (pair, idx) {
@@ -262,7 +273,7 @@
       if (lastPt) dots += '<circle cx="' + lastPt.x.toFixed(1) + '" cy="' + lastPt.y.toFixed(1) + '" r="2.5" fill="' + col + '"/>';
     });
 
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="card-mini-chart" preserveAspectRatio="none" aria-hidden="true">' + lines + dots + "</svg>";
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="card-mini-chart" preserveAspectRatio="none" aria-hidden="true">' + leaderLine + lines + dots + "</svg>";
   }
 
   // Tennis has no ratings model - the portal card mirrors the site's own Slam
