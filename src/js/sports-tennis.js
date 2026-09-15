@@ -19,11 +19,11 @@
       { key: "borg", label: "Borg / McEnroe / Lendl", sub: "The 1970s-80s peer set", players: ["Björn Borg", "Jimmy Connors", "John McEnroe", "Ivan Lendl", "Mats Wilander"] },
       { key: "90s", label: "Sampras / Agassi", sub: "The defining 90s rivalry - Sampras rising from 1990, Edberg, Becker, Courier as peers", players: ["Pete Sampras", "Andre Agassi", "Stefan Edberg", "Boris Becker", "Jim Courier"] },
       { key: "sampras", label: "Federer / Nadal / Djokovic", sub: "From Wimbledon 2003 (Federer's 1st): Sampras as the bar at 14 (dashed), then the Big 3 running it down", players: ["Roger Federer", "Rafael Nadal", "Novak Djokovic"], startFromPlayer: "Roger Federer" },
-      { key: "nextgen", label: "Next gen", sub: "Alcaraz and Sinner chasing the all-time OE leader (Djokovic at 24)", players: ["Carlos Alcaraz", "Jannik Sinner"] },
+      { key: "nextgen", label: "Next gen", sub: "Alcaraz and Sinner chasing the all-time Open Era leader (Djokovic at 24)", players: ["Carlos Alcaraz", "Jannik Sinner"] },
     ],
     w: [
       { key: "all", label: "Full Open Era", sub: "Every player with at least 7 Open Era slams (1968 to today)", filter: "top", threshold: 7 },
-      { key: "court", label: "The Court / King era", sub: "The first Open Era leaders. Court reset the bar at 11 OE slams.", players: ["Margaret Smith Court", "Billie Jean Moffitt King", "Evonne Goolagong Cawley", "Virginia Wade", "Chris Evert"] },
+      { key: "court", label: "The Court / King era", sub: "The first Open Era leaders. Court reset the bar at 11 Open Era slams.", players: ["Margaret Smith Court", "Billie Jean Moffitt King", "Evonne Goolagong Cawley", "Virginia Wade", "Chris Evert"] },
       { key: "evert", label: "Evert / Navratilova", sub: "The defining rivalry of the late 70s and 80s", players: ["Chris Evert", "Martina Navratilova", "Hana Mandlíková", "Tracy Austin"] },
       { key: "graf", label: "The Graf era", sub: "Graf passing Evert in 1996; Seles, Sabatini, Sánchez Vicario, Hingis as peers", players: ["Steffi Graf", "Monica Seles", "Gabriela Sabatini", "Arantxa Sánchez Vicario", "Martina Hingis"] },
       { key: "serena", label: "The Williams era", sub: "Serena passing Graf in 2017; Henin, Clijsters, Sharapova, Venus as peers", players: ["Serena Williams", "Venus Williams", "Justine Henin", "Kim Clijsters", "Maria Sharapova"] },
@@ -284,7 +284,7 @@
       if (lastPt) endLabels += '<circle cx="' + lastPt.x.toFixed(1) + '" cy="' + lastPt.y.toFixed(1) + '" r="3" fill="' + col + '"/>';
       legendHTML += '<span class="legend-item" style="color:' + col + '"><span class="legend-swatch" style="background:' + col + '"></span>' + flagPart + escapeHtml(p) + " (" + (lastPt ? lastPt.v : 0) + ")</span>";
     });
-    legendHTML += '<span class="legend-item" style="color:var(--fg)"><span class="legend-swatch dashed"></span>Active OE leader (dashed)</span>';
+    legendHTML += '<span class="legend-item" style="color:var(--fg)"><span class="legend-swatch dashed"></span>Active Open Era leader (dashed)</span>';
 
     svg.innerHTML = grid + ylab + xtick + xlab + leaderLine + lines + endLabels;
     document.getElementById(legendId).innerHTML = legendHTML;
