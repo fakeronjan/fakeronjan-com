@@ -371,10 +371,10 @@
       ],
     },
     {
-      label: "Tennis",
+      label: "Tennis Grand Slams",
       cards: [
-        { slug: "tennis", title: "Men's Tennis: Grand Slams ♂️🎾", sectionLabel: "Slam Leaders", load: function () { return loadTennisCurrent("M"); } },
-        { slug: "tennis", title: "Women's Tennis: Grand Slams ♀️🎾", sectionLabel: "Slam Leaders", load: function () { return loadTennisCurrent("W"); } },
+        { slug: "tennis", title: "Men's ♂️🎾", sectionLabel: "Slam Leaders", load: function () { return loadTennisCurrent("M"); } },
+        { slug: "tennis", title: "Women's ♀️🎾", sectionLabel: "Slam Leaders", load: function () { return loadTennisCurrent("W"); } },
       ],
     },
     {
