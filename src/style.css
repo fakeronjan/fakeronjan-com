@@ -1512,6 +1512,19 @@ footer {
   margin-bottom: 0.35rem;
 }
 
+.card-mini-chart { display: block; width: 100%; height: auto; margin-bottom: 0.4rem; }
+.card-mini-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; margin-top: auto; }
+.mini-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  color: var(--fg);
+  white-space: nowrap;
+}
+.mini-legend-item b { font-variant-numeric: tabular-nums; }
+.mini-legend-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; flex: none; }
+
 table.top5 { width: 100%; border-collapse: collapse; font-size: 0.75rem; table-layout: fixed; }
 table.top5 thead th, table.top5 tbody td { text-align: center; padding: 0.3rem 0.25rem; vertical-align: middle; }
 table.top5 thead th {

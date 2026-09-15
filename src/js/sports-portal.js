@@ -217,15 +217,57 @@
   }
 
   var TENNIS_SLAM_FLAG = { AO: "🇦🇺", FO: "🇫🇷", Wim: "🇬🇧", US: "🇺🇸" };
+  var TENNIS_PALETTE = ["#1a6b8a", "#ff6eb4", "#ef6c00", "#2e7d32", "#6a1b9a"];
 
-  var TENNIS_COLS = [
-    { label: "Player", cls: "name" },
-    { label: "Slams", cls: "num", width: 60 },
-    { label: "Latest", cls: "last" },
-  ];
+  function tennisFlagEmoji(iso) {
+    if (!iso || iso.length !== 2) return "";
+    return String.fromCodePoint(0x1F1E6 + iso.charCodeAt(0) - 65, 0x1F1E6 + iso.charCodeAt(1) - 65);
+  }
+
+  // Mini version of the site's own Slam Chase chart: top-5 career leaders,
+  // cumulative Open Era slam count over the full 1968-today timeline. Fixed
+  // viewBox + CSS width:100% instead of measuring clientWidth (no live-DOM
+  // timing to worry about - the card is built as one HTML string, not an
+  // element the chart renders into after mount).
+  function buildTennisChart(slams, top5) {
+    var W = 300, H = 118, padL = 2, padR = 2, padT = 6, padB = 4;
+    var xEnd = slams.length - 1;
+    var yMax = Math.ceil((top5[0][1] + 1) / 5) * 5;
+    function px(i) { return padL + (i / xEnd) * (W - padL - padR); }
+    function py(c) { return padT + (1 - c / yMax) * (H - padT - padB); }
+
+    var idxByPlayer = {}, countByPlayer = {};
+    top5.forEach(function (p) { idxByPlayer[p[0]] = {}; countByPlayer[p[0]] = {}; });
+    var running = {};
+    slams.forEach(function (r, i) {
+      running[r.w] = (running[r.w] || 0) + 1;
+      if (idxByPlayer[r.w]) { idxByPlayer[r.w][i] = true; countByPlayer[r.w][i] = running[r.w]; }
+    });
+
+    var lines = "", dots = "";
+    top5.forEach(function (pair, idx) {
+      var name = pair[0];
+      var col = TENNIS_PALETTE[idx % TENNIS_PALETTE.length];
+      var cnt = 0, firstI = null, pts = [], lastPt = null;
+      for (var i = 0; i <= xEnd; i++) {
+        if (idxByPlayer[name][i]) cnt = countByPlayer[name][i];
+        if (cnt === 0 && firstI === null) continue;
+        if (firstI === null) firstI = i;
+        var x = px(i), y = py(cnt);
+        pts.push(x.toFixed(1) + "," + y.toFixed(1));
+        lastPt = { x: x, y: y };
+      }
+      if (!pts.length) return;
+      lines += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>';
+      if (lastPt) dots += '<circle cx="' + lastPt.x.toFixed(1) + '" cy="' + lastPt.y.toFixed(1) + '" r="2.5" fill="' + col + '"/>';
+    });
+
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="card-mini-chart" preserveAspectRatio="none" aria-hidden="true">' + lines + dots + "</svg>";
+  }
 
   // Tennis has no ratings model - the portal card mirrors the site's own Slam
-  // Chase leaderboard (career Open Era slam count) instead of a "Current Top 5".
+  // Chase view (cumulative career Open Era slam count) instead of a "Current
+  // Top 5" ratings table.
   var tennisBundlePromise = null;
   function loadTennisBundle() {
     if (!tennisBundlePromise) tennisBundlePromise = fetchJson(GH + "/tennis/data/slams.json");
@@ -237,24 +279,27 @@
     return loadTennisBundle().then(function (bundle) {
       var slams = (bundle && bundle.data && bundle.data[tour]) || [];
       var players = (bundle && bundle.players && bundle.players[tour]) || {};
-      if (!slams.length) return { columns: TENNIS_COLS, rows: [], updated: "" };
-      var totals = {}, latest = {};
-      slams.forEach(function (r) {
-        totals[r.w] = (totals[r.w] || 0) + 1;
-        latest[r.w] = r;
-      });
-      var ranked = Object.keys(totals).map(function (n) { return [n, totals[n]]; })
+      if (!slams.length) return { chartHTML: "", legendHTML: "", updated: "" };
+      var totals = {};
+      slams.forEach(function (r) { totals[r.w] = (totals[r.w] || 0) + 1; });
+      var top5 = Object.keys(totals).map(function (n) { return [n, totals[n]]; })
         .sort(function (a, b) { return b[1] - a[1]; }).slice(0, 5);
-      var rows = ranked.map(function (pair, i) {
+
+      var legendHTML = top5.map(function (pair, idx) {
         var name = pair[0], count = pair[1];
-        var iso = players[name];
-        var flag = iso ? String.fromCodePoint(0x1F1E6 + iso.charCodeAt(0) - 65, 0x1F1E6 + iso.charCodeAt(1) - 65) + " " : "";
-        var l = latest[name];
-        var latestStr = (TENNIS_SLAM_FLAG[l.s] || "") + " " + l.s + " " + l.y;
-        return { rank: i + 1, cells: [flag + escapeHtml(name), count, latestStr] };
-      });
+        var col = TENNIS_PALETTE[idx % TENNIS_PALETTE.length];
+        var flag = tennisFlagEmoji(players[name]);
+        return '<span class="mini-legend-item"><span class="mini-legend-dot" style="background:' + col + '"></span>' +
+          (flag ? flag + " " : "") + escapeHtml(name) + " <b>" + count + "</b></span>";
+      }).join("");
+
       var lastSlam = slams[slams.length - 1];
-      return { columns: TENNIS_COLS, rows: rows, seasonName: "Career Open Era slams", updated: "Last major: " + (TENNIS_SLAM_FLAG[lastSlam.s] || "") + " " + lastSlam.s + " " + lastSlam.y };
+      return {
+        chartHTML: buildTennisChart(slams, top5),
+        legendHTML: legendHTML,
+        seasonName: "Career Open Era slams",
+        updated: "Last major: " + (TENNIS_SLAM_FLAG[lastSlam.s] || "") + " " + lastSlam.s + " " + lastSlam.y,
+      };
     });
   }
 
@@ -347,6 +392,10 @@
     var body;
     if (error) {
       body = '<div class="card-error">Data unavailable</div>';
+    } else if (payload && payload.chartHTML !== undefined) {
+      var chartLabel = payload.seasonName ? card.sectionLabel + ": " + payload.seasonName : card.sectionLabel;
+      body = '<div class="card-section-label">' + escapeHtml(chartLabel) + "</div>" +
+        payload.chartHTML + '<div class="card-mini-legend">' + payload.legendHTML + "</div>";
     } else if (payload) {
       var headers = "<thead><tr><th class=\"col-rank\"></th>" +
         payload.columns.map(function (c) {
