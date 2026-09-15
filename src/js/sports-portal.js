@@ -297,7 +297,7 @@
       return {
         chartHTML: buildTennisChart(slams, top5),
         legendHTML: legendHTML,
-        seasonName: "Career Open Era slams",
+        seasonName: "Career leaders over time",
         updated: "Last major: " + (TENNIS_SLAM_FLAG[lastSlam.s] || "") + " " + lastSlam.s + " " + lastSlam.y,
       };
     });
@@ -373,8 +373,8 @@
     {
       label: "Tennis Grand Slams",
       cards: [
-        { slug: "tennis", title: "Men's ♂️🎾", sectionLabel: "Slam Leaders", load: function () { return loadTennisCurrent("M"); } },
-        { slug: "tennis", title: "Women's ♀️🎾", sectionLabel: "Slam Leaders", load: function () { return loadTennisCurrent("W"); } },
+        { slug: "tennis", title: "Men's ♂️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("M"); } },
+        { slug: "tennis", title: "Women's ♀️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("W"); } },
       ],
     },
     {
