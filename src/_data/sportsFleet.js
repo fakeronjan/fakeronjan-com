@@ -47,7 +47,7 @@ module.exports = [
   {
     category: "Tennis",
     emoji: "🎾",
-    leagues: [{ slug: "tennis", label: "Player Ratings" }],
+    leagues: [{ slug: "tennis", label: "Grand Slams" }],
   },
   {
     category: "Reality TV",

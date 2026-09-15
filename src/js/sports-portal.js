@@ -217,41 +217,44 @@
   }
 
   var TENNIS_SLAM_FLAG = { AO: "🇦🇺", FO: "🇫🇷", Wim: "🇬🇧", US: "🇺🇸" };
-  var TENNIS_SLAM_NAME = { AO: "Australian Open", FO: "Roland Garros", Wim: "Wimbledon", US: "US Open" };
-
-  function fmtFullDate(iso) {
-    if (!iso) return "";
-    var d = new Date(iso + "T00:00:00Z");
-    return (d.getUTCMonth() + 1) + "/" + d.getUTCDate() + "/" + d.getUTCFullYear();
-  }
 
   var TENNIS_COLS = [
     { label: "Player", cls: "name" },
-    { label: "Titles", cls: "num", width: 50 },
-    { label: "Slams", cls: "num", width: 90 },
-    { label: "Rating", cls: "rating" },
+    { label: "Slams", cls: "num", width: 60 },
+    { label: "Latest", cls: "last" },
   ];
 
+  // Tennis has no ratings model - the portal card mirrors the site's own Slam
+  // Chase leaderboard (career Open Era slam count) instead of a "Current Top 5".
+  var tennisBundlePromise = null;
+  function loadTennisBundle() {
+    if (!tennisBundlePromise) tennisBundlePromise = fetchJson(GH + "/tennis/data/slams.json");
+    return tennisBundlePromise;
+  }
+
   function loadTennisCurrent(gender) {
-    var slug = gender === "M" ? "atp" : "wta";
-    return fetchJson(GH + "/tennis/data/power_rankings_history_" + slug + ".json").then(function (data) {
-      var snaps = (data && data.snapshots) || null;
-      var snap = null;
-      if (snaps) {
-        var keys = Object.keys(snaps);
-        snap = snaps["Today"] || (keys.length ? snaps[keys[keys.length - 1]] : null);
-      }
-      if (!snap) return { columns: TENNIS_COLS, rows: [], updated: "" };
-      var rows = snap.players.slice(0, 5).map(function (p) {
-        var flag = p.country ? p.country + " " : "";
-        var slams = (p.slams_won || []).map(function (c) { return TENNIS_SLAM_FLAG[c] || ""; }).filter(Boolean).join(" ") || "-";
-        return { rank: p.rank, cells: [flag + escapeHtml(p.player), p.titles || 0, slams, p.base.toFixed(2)] };
+    var tour = gender === "M" ? "m" : "w";
+    return loadTennisBundle().then(function (bundle) {
+      var slams = (bundle && bundle.data && bundle.data[tour]) || [];
+      var players = (bundle && bundle.players && bundle.players[tour]) || {};
+      if (!slams.length) return { columns: TENNIS_COLS, rows: [], updated: "" };
+      var totals = {}, latest = {};
+      slams.forEach(function (r) {
+        totals[r.w] = (totals[r.w] || 0) + 1;
+        latest[r.w] = r;
       });
-      var seasonName;
-      if (snap.type === "slam") seasonName = "Through " + (TENNIS_SLAM_NAME[snap.code] || (snap.label || "").replace(/^After\s+/, "")) + " " + snap.year;
-      else if (snap.type === "eoy") seasonName = "End of " + snap.year;
-      else seasonName = "Through " + fmtFullDate(snap.window_end);
-      return { columns: TENNIS_COLS, rows: rows, seasonName: seasonName, updated: "Last matches added: " + (snap.date || "").slice(0, 10) };
+      var ranked = Object.keys(totals).map(function (n) { return [n, totals[n]]; })
+        .sort(function (a, b) { return b[1] - a[1]; }).slice(0, 5);
+      var rows = ranked.map(function (pair, i) {
+        var name = pair[0], count = pair[1];
+        var iso = players[name];
+        var flag = iso ? String.fromCodePoint(0x1F1E6 + iso.charCodeAt(0) - 65, 0x1F1E6 + iso.charCodeAt(1) - 65) + " " : "";
+        var l = latest[name];
+        var latestStr = (TENNIS_SLAM_FLAG[l.s] || "") + " " + l.s + " " + l.y;
+        return { rank: i + 1, cells: [flag + escapeHtml(name), count, latestStr] };
+      });
+      var lastSlam = slams[slams.length - 1];
+      return { columns: TENNIS_COLS, rows: rows, seasonName: "Career Open Era slams", updated: "Last major: " + (TENNIS_SLAM_FLAG[lastSlam.s] || "") + " " + lastSlam.s + " " + lastSlam.y };
     });
   }
 
@@ -281,7 +284,7 @@
     eurosoccer: "daily", mls: "daily", intlsoccer: "daily",
     mlb: "daily", nhl: "daily",
     intlbasketball: "daily", intlbaseball: "daily", intlhockey: "daily",
-    tennis: "daily", thechallenge: "manual",
+    tennis: "manual", thechallenge: "manual",
   };
 
   var SECTIONS = [
@@ -325,8 +328,8 @@
     {
       label: "Tennis",
       cards: [
-        { slug: "tennis", title: "Men's Tennis: CHANG ♂️🎾", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadTennisCurrent("M"); } },
-        { slug: "tennis", title: "Women's Tennis: CAPRIATI ♀️🎾", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadTennisCurrent("W"); } },
+        { slug: "tennis", title: "Men's Tennis: Grand Slams ♂️🎾", sectionLabel: "Slam Leaders", load: function () { return loadTennisCurrent("M"); } },
+        { slug: "tennis", title: "Women's Tennis: Grand Slams ♀️🎾", sectionLabel: "Slam Leaders", load: function () { return loadTennisCurrent("W"); } },
       ],
     },
     {
