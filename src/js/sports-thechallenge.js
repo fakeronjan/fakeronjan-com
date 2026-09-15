@@ -630,6 +630,14 @@
   });
 
   // ── Init ──
+
+  // Deep link from a portal card, e.g. /thechallenge/?tab=goat&gender=F -
+  // jump straight to the tab (and gender's pane) the card advertised instead
+  // of always landing on the default Season Results / both-panes view.
+  var deepLinkParams = new URLSearchParams(location.search);
+  var deepLinkTab = deepLinkParams.get("tab");
+  if (deepLinkTab) activateTab(deepLinkTab);
+
   fetchJSON("seasons_index.json").then(function (seasonIdx) {
     var latest = seasonIdx[0];
     var stamp = latest.finale_aired || String(latest.year);
@@ -638,6 +646,11 @@
 
   loadPlayer().then(function () {
     return Promise.all([loadStandings(), loadChampions(), loadGoat()]);
+  }).then(function () {
+    if (deepLinkParams.get("gender") === "F") {
+      var pane = document.getElementById(deepLinkTab === "goat" ? "goatTableF" : "standingsTableF").closest(".split-pane");
+      if (pane) pane.scrollIntoView({ block: "nearest" });
+    }
   }).catch(function () {
     document.getElementById("standingsTableM").innerHTML = '<p class="sport-error">Could not load ratings</p>';
   });

@@ -391,8 +391,8 @@
     {
       label: "The Challenge",
       cards: [
-        { slug: "thechallenge", title: "Men's Challenge: LAVIN 💪🤫🍷", stage: "Beta", sectionLabel: "GOAT Top 5", load: function () { return loadLAVINGoat("M"); } },
-        { slug: "thechallenge", title: "Women's Challenge: LAVIN 💪🤫🍷", stage: "Beta", sectionLabel: "GOAT Top 5", load: function () { return loadLAVINGoat("F"); } },
+        { slug: "thechallenge", query: "?tab=goat", title: "Men's Challenge: LAVIN 💪🤫🍷", stage: "Beta", sectionLabel: "GOAT Top 5", load: function () { return loadLAVINGoat("M"); } },
+        { slug: "thechallenge", query: "?tab=goat&gender=F", title: "Women's Challenge: LAVIN 💪🤫🍷", stage: "Beta", sectionLabel: "GOAT Top 5", load: function () { return loadLAVINGoat("F"); } },
       ],
     },
   ];
