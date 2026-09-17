@@ -892,6 +892,10 @@ footer {
 .od-val { line-height: 1.15; }
 .od-rank { line-height: 1.15; color: var(--muted); font-weight: 500; font-size: 0.75em; margin-top: 1px; }
 
+.rank-move { font-size: 0.72em; font-weight: 700; margin-left: 0.1rem; }
+.rank-move-up { color: var(--accent); }
+.rank-move-down { color: var(--accent-2); }
+
 .finish-emoji { font-size: 0.85em; }
 .finish-badge {
   display: inline-block;

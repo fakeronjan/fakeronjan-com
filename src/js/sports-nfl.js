@@ -11,6 +11,7 @@
     seasonsIndex: null,
     disruptedSeasons: {},
     seasonData: null,
+    prevSeasonFinalRankByTeam: null,
     standingsConf: "ALL",
     teamsIndex: null,
     nameToSlug: {},
@@ -87,6 +88,14 @@
     var value = parseFloat(displayed) >= 100 ? "100%" : displayed + "%";
     if (rank == null) return value;
     return '<div class="od-val">' + value + '</div><div class="od-rank">' + rank + "</div>";
+  }
+
+  function fmtRankMove(rank, prevRank) {
+    if (prevRank == null || prevRank === rank) return String(rank);
+    var delta = prevRank - rank;
+    var cls = delta > 0 ? "rank-move-up" : "rank-move-down";
+    var arrow = delta > 0 ? "&#9650;" : "&#9660;";
+    return rank + ' <span class="rank-move ' + cls + '">' + arrow + Math.abs(delta) + "</span>";
   }
 
   function barScale(ratings) {
@@ -279,6 +288,12 @@
     var snapshot = state.seasonData.snapshots[Number(weekSelect.value)];
     var idx = Number(weekSelect.value);
     var prevSnapshot = idx > 0 ? state.seasonData.snapshots[idx - 1] : null;
+    var prevRankByTeam = {};
+    if (prevSnapshot) {
+      prevSnapshot.teams.forEach(function (t) { prevRankByTeam[t.team] = t.rank; });
+    } else if (state.prevSeasonFinalRankByTeam) {
+      prevRankByTeam = state.prevSeasonFinalRankByTeam;
+    }
     var teams = snapshot.teams.filter(function (t) {
       return state.standingsConf === "ALL" || t.conference === state.standingsConf;
     });
@@ -303,7 +318,7 @@
           : lastGameHtml;
         return (
           "<tr>" +
-          '<td class="col-rank">' + t.rank + "</td>" +
+          '<td class="col-rank">' + fmtRankMove(t.rank, prevRankByTeam[t.team]) + "</td>" +
           teamTd +
           '<td class="col-hide-mobile col-conf">' + confDivBadge(t.conference, t.division, t.division_winner, t.sb_status) + "</td>" +
           '<td class="col-record">' + fmtRecordSmart(t.regular_record, t.playoff_record, t.record) + "</td>" +
@@ -340,11 +355,26 @@
     weekSelect.value = String(snapshots.length - 1);
   }
 
-  function loadSeason(year) {
-    return fetch(BASE + "/seasons/" + year + ".json")
-      .then(function (r) { return r.json(); })
+  function loadPrevSeasonFinalRank(year) {
+    return fetch(BASE + "/seasons/" + (year - 1) + ".json")
+      .then(function (r) { if (!r.ok) throw new Error("no prior season"); return r.json(); })
       .then(function (data) {
-        state.seasonData = data;
+        var finalSnapshot = data.snapshots[data.snapshots.length - 1];
+        var map = {};
+        finalSnapshot.teams.forEach(function (t) { map[t.team] = t.rank; });
+        return map;
+      })
+      .catch(function () { return null; });
+  }
+
+  function loadSeason(year) {
+    return Promise.all([
+      fetch(BASE + "/seasons/" + year + ".json").then(function (r) { return r.json(); }),
+      loadPrevSeasonFinalRank(year)
+    ])
+      .then(function (results) {
+        state.seasonData = results[0];
+        state.prevSeasonFinalRankByTeam = results[1];
         populateWeekSelect();
         warmupNote.hidden = Number(year) !== 1971;
         updateDisruptedNote("nflDisrupted", [year]);
