@@ -475,6 +475,14 @@
           prevLastMatch = g.last_match;
         });
       });
+      var prevSeasonGames = data.seasons[String(Number(seasonFilter) - 1)];
+      rows.forEach(function (g, i) {
+        if (i > 0) {
+          g._prevRank = rows[i - 1].rank;
+        } else if (prevSeasonGames && prevSeasonGames.length) {
+          g._prevRank = prevSeasonGames[prevSeasonGames.length - 1].rank;
+        }
+      });
     } else {
       seasonFilter = "all";
       var flag = tsDateTypeSelect.value === "eor" ? 1 : 2;
@@ -516,7 +524,7 @@
         '<td class="sport-week-cell">' + snapshotCell + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecordSmart(g.regular_record, g.playoff_record, g.record) + "</td>" +
-        '<td class="col-rank">' + g.rank + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
