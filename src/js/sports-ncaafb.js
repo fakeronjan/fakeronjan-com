@@ -21,6 +21,7 @@
     seasonsIndex: null,
     disruptedSeasons: {},
     seasonData: null,
+    prevSeasonFinalRankByTeam: null,
     standingsConf: "all",
     teamsIndex: null,
     nameToSlug: {},
@@ -96,6 +97,14 @@
     var r = rating.toFixed(2);
     if (rank == null) return '<div class="od-val">' + r + "</div>";
     return '<div class="od-val">' + r + '</div><div class="od-rank">' + rank + "</div>";
+  }
+
+  function fmtRankMove(rank, prevRank) {
+    if (prevRank == null || prevRank === rank) return String(rank);
+    var delta = prevRank - rank;
+    var cls = delta > 0 ? "rank-move-up" : "rank-move-down";
+    var arrow = delta > 0 ? "&#9650;" : "&#9660;";
+    return rank + ' <span class="rank-move ' + cls + '">' + arrow + Math.abs(delta) + "</span>";
   }
 
   function barScale(ratings) {
@@ -282,6 +291,12 @@
     var snapshot = state.seasonData.snapshots[Number(weekSelect.value)];
     var idx = Number(weekSelect.value);
     var prevSnapshot = idx > 0 ? state.seasonData.snapshots[idx - 1] : null;
+    var prevRankByTeam = {};
+    if (prevSnapshot) {
+      prevSnapshot.teams.forEach(function (t) { prevRankByTeam[t.team] = t.rank; });
+    } else if (state.prevSeasonFinalRankByTeam) {
+      prevRankByTeam = state.prevSeasonFinalRankByTeam;
+    }
     var teams = snapshot.teams.filter(function (t) {
       return state.standingsConf === "all" || t.conference === state.standingsConf;
     });
@@ -301,7 +316,7 @@
           : '<td class="team-cell">' + teamLabel + "</td>";
         return (
           "<tr>" +
-          '<td class="col-rank">' + t.rank + "</td>" +
+          '<td class="col-rank">' + fmtRankMove(t.rank, prevRankByTeam[t.team]) + "</td>" +
           '<td class="col-rank col-hide-mobile">' + (t.conf_rank != null ? t.conf_rank : '<span class="sport-dim-dash">-</span>') + "</td>" +
           teamTd +
           '<td class="col-hide-mobile">' + confBadge(t.conference_raw || t.conference, !!t.conference_champ) + "</td>" +
@@ -337,11 +352,26 @@
     weekSelect.value = String(snapshots.length - 1);
   }
 
-  function loadSeason(year) {
-    return fetch(BASE + "/seasons/" + year + ".json")
-      .then(function (r) { return r.json(); })
+  function loadPrevSeasonFinalRank(year) {
+    return fetch(BASE + "/seasons/" + (year - 1) + ".json")
+      .then(function (r) { if (!r.ok) throw new Error("no prior season"); return r.json(); })
       .then(function (data) {
-        state.seasonData = data;
+        var finalSnapshot = data.snapshots[data.snapshots.length - 1];
+        var map = {};
+        finalSnapshot.teams.forEach(function (t) { map[t.team] = t.rank; });
+        return map;
+      })
+      .catch(function () { return null; });
+  }
+
+  function loadSeason(year) {
+    return Promise.all([
+      fetch(BASE + "/seasons/" + year + ".json").then(function (r) { return r.json(); }),
+      loadPrevSeasonFinalRank(year)
+    ])
+      .then(function (results) {
+        state.seasonData = results[0];
+        state.prevSeasonFinalRankByTeam = results[1];
         populateWeekSelect();
         warmupNote.hidden = Number(year) !== 1983;
         updateDisruptedNote("ncaafbDisrupted", [year]);
@@ -443,6 +473,14 @@
           prevLastMatch = g.last_match;
         });
       });
+      var prevSeasonGames = data.seasons[String(Number(seasonFilter) - 1)];
+      rows.forEach(function (g, i) {
+        if (i > 0) {
+          g._prevRank = rows[i - 1].rank;
+        } else if (prevSeasonGames && prevSeasonGames.length) {
+          g._prevRank = prevSeasonGames[prevSeasonGames.length - 1].rank;
+        }
+      });
     } else {
       seasonFilter = "all";
       var flag = tsDateTypeSelect.value === "eor" ? 1 : 2;
@@ -488,7 +526,7 @@
         '<td class="sport-week-cell">' + snapshotCell + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecordSmart(g.regular_record, g.playoff_record, g.record) + "</td>" +
-        '<td class="col-rank">' + g.rank + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
         '<td class="col-rank col-hide-mobile">' + (g.conf_rank != null ? g.conf_rank : '<span class="sport-dim-dash">-</span>') + "</td>" +
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
