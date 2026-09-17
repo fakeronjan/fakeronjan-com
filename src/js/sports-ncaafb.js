@@ -291,11 +291,13 @@
     var snapshot = state.seasonData.snapshots[Number(weekSelect.value)];
     var idx = Number(weekSelect.value);
     var prevSnapshot = idx > 0 ? state.seasonData.snapshots[idx - 1] : null;
-    var prevRankByTeam = {};
+    var prevByTeam = {};
     if (prevSnapshot) {
-      prevSnapshot.teams.forEach(function (t) { prevRankByTeam[t.team] = t.rank; });
+      prevSnapshot.teams.forEach(function (t) {
+        prevByTeam[t.team] = { rank: t.rank, confRank: t.conf_rank, conf: t.conference_raw || t.conference };
+      });
     } else if (state.prevSeasonFinalRankByTeam) {
-      prevRankByTeam = state.prevSeasonFinalRankByTeam;
+      prevByTeam = state.prevSeasonFinalRankByTeam;
     }
     var teams = snapshot.teams.filter(function (t) {
       return state.standingsConf === "all" || t.conference === state.standingsConf;
@@ -314,10 +316,13 @@
         var teamTd = slug
           ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + teamLabel + "</td>"
           : '<td class="team-cell">' + teamLabel + "</td>";
+        var prev = prevByTeam[t.team];
+        var curConf = t.conference_raw || t.conference;
+        var prevConfRank = prev && prev.conf === curConf ? prev.confRank : null;
         return (
           "<tr>" +
-          '<td class="col-rank">' + fmtRankMove(t.rank, prevRankByTeam[t.team]) + "</td>" +
-          '<td class="col-rank col-hide-mobile">' + (t.conf_rank != null ? t.conf_rank : '<span class="sport-dim-dash">-</span>') + "</td>" +
+          '<td class="col-rank">' + fmtRankMove(t.rank, prev ? prev.rank : null) + "</td>" +
+          '<td class="col-rank col-hide-mobile">' + (t.conf_rank != null ? fmtRankMove(t.conf_rank, prevConfRank) : '<span class="sport-dim-dash">-</span>') + "</td>" +
           teamTd +
           '<td class="col-hide-mobile">' + confBadge(t.conference_raw || t.conference, !!t.conference_champ) + "</td>" +
           '<td class="col-record">' + fmtRecordSmart(t.regular_record, t.playoff_record, t.record) + "</td>" +
@@ -358,7 +363,9 @@
       .then(function (data) {
         var finalSnapshot = data.snapshots[data.snapshots.length - 1];
         var map = {};
-        finalSnapshot.teams.forEach(function (t) { map[t.team] = t.rank; });
+        finalSnapshot.teams.forEach(function (t) {
+          map[t.team] = { rank: t.rank, confRank: t.conf_rank, conf: t.conference_raw || t.conference };
+        });
         return map;
       })
       .catch(function () { return null; });
@@ -474,12 +481,14 @@
         });
       });
       var prevSeasonGames = data.seasons[String(Number(seasonFilter) - 1)];
+      var prevSeasonFinal = prevSeasonGames && prevSeasonGames.length ? prevSeasonGames[prevSeasonGames.length - 1] : null;
       rows.forEach(function (g, i) {
-        if (i > 0) {
-          g._prevRank = rows[i - 1].rank;
-        } else if (prevSeasonGames && prevSeasonGames.length) {
-          g._prevRank = prevSeasonGames[prevSeasonGames.length - 1].rank;
-        }
+        var prevRow = i > 0 ? rows[i - 1] : prevSeasonFinal;
+        if (!prevRow) return;
+        g._prevRank = prevRow.rank;
+        var curConf = g.conference_raw || g.conference;
+        var prevConf = prevRow.conference_raw || prevRow.conference;
+        if (prevConf === curConf) g._prevConfRank = prevRow.conf_rank;
       });
     } else {
       seasonFilter = "all";
@@ -527,7 +536,7 @@
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecordSmart(g.regular_record, g.playoff_record, g.record) + "</td>" +
         '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
-        '<td class="col-rank col-hide-mobile">' + (g.conf_rank != null ? g.conf_rank : '<span class="sport-dim-dash">-</span>') + "</td>" +
+        '<td class="col-rank col-hide-mobile">' + (g.conf_rank != null ? fmtRankMove(g.conf_rank, g._prevConfRank) : '<span class="sport-dim-dash">-</span>') + "</td>" +
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
