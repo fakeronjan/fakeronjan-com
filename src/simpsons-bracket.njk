@@ -3,8 +3,9 @@ permalink: "/simpsons-bracket/"
 layout: base.njk
 title: "Simpsons Episode Bracket | FAKE RONJAN!!"
 ---
-<div class="sports-embed"><div class="sports-embed-inner">
+<div class="sports-embed"><div class="sports-embed-inner" style="max-width: none;">
 <iframe
+  id="bracket-frame"
   src="https://fakeronjan.github.io/simpsons-bracket/"
   width="100%"
   height="2400"
@@ -12,3 +13,10 @@ title: "Simpsons Episode Bracket | FAKE RONJAN!!"
   loading="lazy"
 ></iframe>
 </div></div>
+<script>
+window.addEventListener('message', function (e) {
+  if (e.origin !== 'https://fakeronjan.github.io') return;
+  if (!e.data || e.data.type !== 'fakeronjan-resize') return;
+  document.getElementById('bracket-frame').style.setProperty('height', (e.data.height + 8) + 'px', 'important');
+});
+</script>
