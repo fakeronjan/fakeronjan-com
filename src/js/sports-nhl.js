@@ -86,6 +86,14 @@
     return html;
   }
 
+  function fmtRankMove(rank, prevRank) {
+    if (prevRank == null || prevRank === rank) return String(rank);
+    var delta = prevRank - rank;
+    var cls = delta > 0 ? "rank-move-up" : "rank-move-down";
+    var arrow = delta > 0 ? "&#9650;" : "&#9660;";
+    return rank + ' <span class="rank-move ' + cls + '">' + arrow + Math.abs(delta) + "</span>";
+  }
+
   function finishBadge(finalsStatus) {
     if (finalsStatus === 2) return '<span class="finish-emoji" title="Stanley Cup Champion">👑</span>';
     if (finalsStatus === 1) return '<span class="finish-emoji" title="Stanley Cup Runner-Up">🥈</span>';
@@ -300,6 +308,12 @@
     var snapshot = state.seasonData.snapshots[Number(weekSelect.value)];
     var idx = Number(weekSelect.value);
     var prevSnapshot = idx > 0 ? state.seasonData.snapshots[idx - 1] : null;
+    var prevRankByTeam = {};
+    if (prevSnapshot) {
+      prevSnapshot.teams.forEach(function (t) { prevRankByTeam[t.team] = t.rank; });
+    } else if (state.prevSeasonFinalRankByTeam) {
+      prevRankByTeam = state.prevSeasonFinalRankByTeam;
+    }
     var teams = snapshot.teams.filter(function (t) {
       return state.standingsConf === "ALL" || t.conference === state.standingsConf;
     });
@@ -324,7 +338,7 @@
           : lastGameHtml;
         return (
           "<tr>" +
-          '<td class="col-rank">' + t.rank + "</td>" +
+          '<td class="col-rank">' + fmtRankMove(t.rank, prevRankByTeam[t.team]) + "</td>" +
           teamTd +
           '<td class="col-hide-mobile col-conf">' + confBadge(t.conference, t.finals_status, t.division, t.division_winner) + "</td>" +
           '<td class="col-record">' + fmtRecordSmart(t.regular_record, t.regular_pts, t.playoff_record, t.record) + "</td>" +
@@ -361,11 +375,26 @@
     weekSelect.value = String(snapshots.length - 1);
   }
 
-  function loadSeason(year) {
-    return fetch(BASE + "/seasons/" + year + ".json")
-      .then(function (r) { return r.json(); })
+  function loadPrevSeasonFinalRank(year) {
+    return fetch(BASE + "/seasons/" + (year - 1) + ".json")
+      .then(function (r) { if (!r.ok) throw new Error("no prior season"); return r.json(); })
       .then(function (data) {
-        state.seasonData = data;
+        var finalSnapshot = data.snapshots[data.snapshots.length - 1];
+        var map = {};
+        finalSnapshot.teams.forEach(function (t) { map[t.team] = t.rank; });
+        return map;
+      })
+      .catch(function () { return null; });
+  }
+
+  function loadSeason(year) {
+    return Promise.all([
+      fetch(BASE + "/seasons/" + year + ".json").then(function (r) { return r.json(); }),
+      loadPrevSeasonFinalRank(year)
+    ])
+      .then(function (results) {
+        state.seasonData = results[0];
+        state.prevSeasonFinalRankByTeam = results[1];
         populateWeekSelect();
         warmupNote.hidden = Number(year) !== 1980;
         strikeNote.hidden = Number(year) !== 2005;
@@ -466,6 +495,14 @@
           prevLastMatch = g.last_match;
         });
       });
+      var prevSeasonGames = data.seasons[String(Number(seasonFilter) - 1)];
+      rows.forEach(function (g, i) {
+        if (i > 0) {
+          g._prevRank = rows[i - 1].rank;
+        } else if (prevSeasonGames && prevSeasonGames.length) {
+          g._prevRank = prevSeasonGames[prevSeasonGames.length - 1].rank;
+        }
+      });
     } else {
       seasonFilter = "all";
       var flag = tsDateTypeSelect.value === "eor" ? 1 : 2;
@@ -505,7 +542,7 @@
         '<td class="col-hide-mobile">' + dateCell + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecordSmart(g.regular_record, g.regular_pts, g.playoff_record, g.record) + "</td>" +
-        '<td class="col-rank">' + g.rank + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="' + offTitle + '">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="' + defTitle + '">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +

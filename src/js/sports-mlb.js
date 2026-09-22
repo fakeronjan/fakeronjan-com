@@ -88,6 +88,14 @@
     return html;
   }
 
+  function fmtRankMove(rank, prevRank) {
+    if (prevRank == null || prevRank === rank) return String(rank);
+    var delta = prevRank - rank;
+    var cls = delta > 0 ? "rank-move-up" : "rank-move-down";
+    var arrow = delta > 0 ? "&#9650;" : "&#9660;";
+    return rank + ' <span class="rank-move ' + cls + '">' + arrow + Math.abs(delta) + "</span>";
+  }
+
   function finishBadge(finalsStatus) {
     if (finalsStatus === 2) return '<span class="finish-emoji" title="World Series Champion">👑</span>';
     if (finalsStatus === 1) return '<span class="finish-emoji" title="World Series Runner-Up">🥈</span>';
@@ -331,6 +339,12 @@
     var idx = -1;
     snaps.forEach(function (s, i) { if (s.date === state.currentSnapshot.date) idx = i; });
     var prevDate = idx > 0 ? snaps[idx - 1].date : null;
+    var prevRankByTeam = {};
+    if (idx > 0) {
+      snaps[idx - 1].teams.forEach(function (t) { prevRankByTeam[t.team] = t.rank; });
+    } else if (state.prevSeasonFinalRankByTeam) {
+      prevRankByTeam = state.prevSeasonFinalRankByTeam;
+    }
     var season = state.seasonData.season;
 
     countEl.textContent = teams.length + " team" + (teams.length !== 1 ? "s" : "");
@@ -352,7 +366,7 @@
           : lastGameHtml;
         return (
           "<tr>" +
-          '<td class="col-rank">' + t.rank + "</td>" +
+          '<td class="col-rank">' + fmtRankMove(t.rank, prevRankByTeam[t.team]) + "</td>" +
           teamTd +
           '<td class="col-hide-mobile col-conf">' + leagueBadge(t.league, t.finals_status, t.division, t.division_winner) + "</td>" +
           '<td class="col-record">' + fmtRecordSmart(t.regular_record, t.playoff_record) + "</td>" +
@@ -394,16 +408,31 @@
     renderStandings();
   }
 
-  function loadSeason(year) {
-    return fetch(BASE + "/seasons/" + year + ".json")
-      .then(function (r) { return r.json(); })
+  function loadPrevSeasonFinalRank(year) {
+    return fetch(BASE + "/seasons/" + (year - 1) + ".json")
+      .then(function (r) { if (!r.ok) throw new Error("no prior season"); return r.json(); })
       .then(function (data) {
-        state.seasonData = data;
+        var finalSnapshot = data.snapshots[data.snapshots.length - 1];
+        var map = {};
+        finalSnapshot.teams.forEach(function (t) { map[t.team] = t.rank; });
+        return map;
+      })
+      .catch(function () { return null; });
+  }
+
+  function loadSeason(year) {
+    return Promise.all([
+      fetch(BASE + "/seasons/" + year + ".json").then(function (r) { return r.json(); }),
+      loadPrevSeasonFinalRank(year)
+    ])
+      .then(function (results) {
+        state.seasonData = results[0];
+        state.prevSeasonFinalRankByTeam = results[1];
         populateDateSelect();
-        var snaps = data.snapshots;
+        var snaps = state.seasonData.snapshots;
         // Default: end-of-postseason for completed seasons, latest snapshot
         // for the current calendar year (in-progress).
-        var isCurrentYear = data.season === new Date().getFullYear();
+        var isCurrentYear = state.seasonData.season === new Date().getFullYear();
         var psSnap = snaps.filter(function (s) { return s.is_ps_end; })[0];
         var defaultDate = (!isCurrentYear && psSnap) ? psSnap.date : snaps[snaps.length - 1].date;
         selectSnapshot(defaultDate);
@@ -512,6 +541,14 @@
           }
         });
       });
+      var prevSeasonGames = data.seasons[String(Number(seasonFilter) - 1)];
+      rows.forEach(function (g, i) {
+        if (i > 0) {
+          g._prevRank = rows[i - 1].rank;
+        } else if (prevSeasonGames && prevSeasonGames.length) {
+          g._prevRank = prevSeasonGames[prevSeasonGames.length - 1].rank;
+        }
+      });
     } else {
       seasonFilter = "all";
       var flag = tsDateTypeSelect.value === "eor" ? 1 : 2;
@@ -554,7 +591,7 @@
         '<td class="col-hide-mobile">' + dateCell + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecordSmart(g.regular_record, g.playoff_record) + "</td>" +
-        '<td class="col-rank">' + g.rank + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="' + batTitle + '">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="' + pitTitle + '">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
