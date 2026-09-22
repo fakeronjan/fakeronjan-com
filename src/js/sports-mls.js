@@ -65,6 +65,15 @@
   // Gold "East 🏆"/"West 🏆" only when the MLS Cup's two finalists came from
   // different conferences - years where both finalists were from the same
   // conference don't earn the conference-champion badge (mirrors LOBO).
+  function fmtRankMove(rank, prevRank) {
+    if (rank == null) return "-";
+    if (prevRank == null || prevRank === rank) return String(rank);
+    var delta = prevRank - rank;
+    var cls = delta > 0 ? "rank-move-up" : "rank-move-down";
+    var arrow = delta > 0 ? "&#9650;" : "&#9660;";
+    return rank + ' <span class="rank-move ' + cls + '">' + arrow + Math.abs(delta) + "</span>";
+  }
+
   function confBadge(conf, isCupConfFinalist) {
     if (!conf) return "";
     if (isCupConfFinalist) {
@@ -301,6 +310,14 @@
     var idx = -1;
     snaps.forEach(function (s, i) { if (s.date === state.currentSnapshot.date) idx = i; });
     var prevDate = idx > 0 ? snaps[idx - 1].date : null;
+    var prevByTeam = {};
+    if (idx > 0) {
+      snaps[idx - 1].teams.forEach(function (t) {
+        prevByTeam[t.team] = { rank: t.rank, confRank: t.conf_rank, conf: t.conference };
+      });
+    } else if (state.prevSeasonFinalRankByTeam) {
+      prevByTeam = state.prevSeasonFinalRankByTeam;
+    }
     var season = state.seasonData.season;
 
     countEl.textContent = teams.length + " team" + (teams.length !== 1 ? "s" : "");
@@ -315,12 +332,14 @@
       var teamTd = slug
         ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + label + "</td>"
         : '<td class="team-cell">' + label + "</td>";
+      var prev = prevByTeam[t.team];
+      var prevConfRank = prev && prev.conf === t.conference ? prev.confRank : null;
       // Last Match + Date merged into one column - fleet-wide override;
       // COBI's own source keeps them split.
       return (
         "<tr>" +
-        '<td class="col-rank">' + t.rank + "</td>" +
-        '<td class="col-rank col-hide-mobile">' + (t.conf_rank != null ? t.conf_rank : "-") + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(t.rank, prev ? prev.rank : null) + "</td>" +
+        '<td class="col-rank col-hide-mobile">' + fmtRankMove(t.conf_rank, prevConfRank) + "</td>" +
         teamTd +
         "<td>" + confBadge(t.conference, t.mls_cup_conf_finalist) + "</td>" +
         '<td class="col-record">' + fmtRecordStacked(t.regular_record, t.playoff_record) + "</td>" +
@@ -377,11 +396,28 @@
     renderStandings();
   }
 
-  function loadSeason(season) {
-    return fetch(BASE + "/seasons/" + season + ".json")
-      .then(function (r) { return r.json(); })
+  function loadPrevSeasonFinalRank(season) {
+    return fetch(BASE + "/seasons/" + (Number(season) - 1) + ".json")
+      .then(function (r) { if (!r.ok) throw new Error("no prior season"); return r.json(); })
       .then(function (data) {
-        state.seasonData = data;
+        var finalSnapshot = data.snapshots[data.snapshots.length - 1];
+        var map = {};
+        finalSnapshot.teams.forEach(function (t) {
+          map[t.team] = { rank: t.rank, confRank: t.conf_rank, conf: t.conference };
+        });
+        return map;
+      })
+      .catch(function () { return null; });
+  }
+
+  function loadSeason(season) {
+    return Promise.all([
+      fetch(BASE + "/seasons/" + season + ".json").then(function (r) { return r.json(); }),
+      loadPrevSeasonFinalRank(season)
+    ])
+      .then(function (results) {
+        state.seasonData = results[0];
+        state.prevSeasonFinalRankByTeam = results[1];
         populateDateSelect();
       })
       .catch(function () {
@@ -484,6 +520,14 @@
           prevLastMatch = g.last_match;
         });
       });
+      var prevSeasonGames = data.seasons[String(Number(seasonFilter) - 1)];
+      var prevSeasonFinal = prevSeasonGames && prevSeasonGames.length ? prevSeasonGames[prevSeasonGames.length - 1] : null;
+      rows.forEach(function (g, i) {
+        var prevRow = i > 0 ? rows[i - 1] : prevSeasonFinal;
+        if (!prevRow) return;
+        g._prevRank = prevRow.rank;
+        if (prevRow.conference === g.conference) g._prevConfRank = prevRow.conf_rank;
+      });
     } else {
       // Cross-season summary: one snapshot per season (end of regular season
       // or end of playoffs, per the date-type select).
@@ -522,8 +566,8 @@
         '<td class="col-hide-mobile">' + dateCell + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecordStacked(g.regular_record, g.playoff_record) + "</td>" +
-        '<td class="col-rank">' + (g.rank != null ? g.rank : "-") + "</td>" +
-        '<td class="col-rank col-hide-mobile">' + (g.conf_rank != null ? g.conf_rank : "-") + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
+        '<td class="col-rank col-hide-mobile">' + fmtRankMove(g.conf_rank, g._prevConfRank) + "</td>" +
         "<td>" + (g.rank != null ? ratingBar(g.rating, barSc) : '<span style="color:var(--muted)">-</span>') + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
