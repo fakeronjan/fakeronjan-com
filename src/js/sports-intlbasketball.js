@@ -52,6 +52,29 @@
   var CONF_BADGE_CLS = { Europe: "badge-Europe", Americas: "badge-Americas", "Asia/Oceania": "badge-AsiaOce", Africa: "badge-Africa" };
   var CONF_BADGE_LABEL = { Europe: "🇪🇺 Europe", Americas: "🌎 Americas", "Asia/Oceania": "🌏 Asia/Oceania", Africa: "🌍 Africa" };
 
+  function fmtRankMove(rank, prevRank) {
+    if (rank == null) return "-";
+    if (prevRank == null || prevRank === rank) return String(rank);
+    var delta = prevRank - rank;
+    var cls = delta > 0 ? "rank-move-up" : "rank-move-down";
+    var arrow = delta > 0 ? "&#9650;" : "&#9660;";
+    return rank + ' <span class="rank-move ' + cls + '">' + arrow + Math.abs(delta) + "</span>";
+  }
+
+  // Confederation rank isn't a stored field on the standings snapshot (only
+  // on the per-team Team Summary rows) - compute it the same way the
+  // existing confRankMap does: position within confederation, in the order
+  // teams already appear in the snapshot (sorted by OVR rank).
+  function confRanksFor(snapshotTeams) {
+    var map = {};
+    var counter = {};
+    snapshotTeams.forEach(function (t) {
+      counter[t.confederation] = (counter[t.confederation] || 0) + 1;
+      map[t.team] = counter[t.confederation];
+    });
+    return map;
+  }
+
   function confederationBadge(confed, wonContinental) {
     if (!confed) return "";
     if (wonContinental) {
@@ -279,12 +302,7 @@
     var confed = state.standingsConf;
 
     // Confederation rank: position within each confederation (sorted by OVR rank)
-    var confRankMap = {};
-    var confCounter = {};
-    state.currentSnapshot.teams.forEach(function (t) {
-      confCounter[t.confederation] = (confCounter[t.confederation] || 0) + 1;
-      confRankMap[t.team] = confCounter[t.confederation];
-    });
+    var confRankMap = confRanksFor(state.currentSnapshot.teams);
 
     var teams = state.currentSnapshot.teams;
     if (confed !== "all") teams = teams.filter(function (t) { return t.confederation === confed; });
@@ -293,6 +311,15 @@
     var idx = -1;
     snaps.forEach(function (s, i) { if (s.date === state.currentSnapshot.date) idx = i; });
     var prevDate = idx > 0 ? snaps[idx - 1].date : null;
+    var prevByTeam = {};
+    if (idx > 0) {
+      var prevConfRankMap = confRanksFor(snaps[idx - 1].teams);
+      snaps[idx - 1].teams.forEach(function (t) {
+        prevByTeam[t.team] = { rank: t.rank, confRank: prevConfRankMap[t.team] };
+      });
+    } else if (state.prevSeasonFinalRankByTeam) {
+      prevByTeam = state.prevSeasonFinalRankByTeam;
+    }
     var season = state.seasonData.season;
 
     countEl.textContent = teams.length + " team" + (teams.length !== 1 ? "s" : "");
@@ -307,10 +334,11 @@
       var teamTd = slug
         ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + cellInner + "</td>"
         : '<td class="team-cell">' + cellInner + "</td>";
+      var prev = prevByTeam[t.team];
       return (
         "<tr>" +
-        '<td class="col-rank">' + (t.rank != null ? t.rank : "-") + "</td>" +
-        '<td class="col-rank col-hide-mobile">' + cRank + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(t.rank, prev ? prev.rank : null) + "</td>" +
+        '<td class="col-rank col-hide-mobile">' + fmtRankMove(typeof cRank === "number" ? cRank : null, prev ? prev.confRank : null) + "</td>" +
         teamTd +
         "<td>" + confederationBadge(t.confederation, !!t.continental_winner) + "</td>" +
         "<td>" + ratingBar(t.rating, barSc) + "</td>" +
@@ -358,11 +386,29 @@
     renderStandings();
   }
 
-  function loadSeason(year) {
-    return fetch(BASE + "/seasons/" + year + ".json")
-      .then(function (r) { return r.json(); })
+  function loadPrevSeasonFinalRank(year) {
+    return fetch(BASE + "/seasons/" + (year - 1) + ".json")
+      .then(function (r) { if (!r.ok) throw new Error("no prior season"); return r.json(); })
       .then(function (data) {
-        state.seasonData = data;
+        var finalSnapshot = data.snapshots[data.snapshots.length - 1];
+        var confRanks = confRanksFor(finalSnapshot.teams);
+        var map = {};
+        finalSnapshot.teams.forEach(function (t) {
+          map[t.team] = { rank: t.rank, confRank: confRanks[t.team] };
+        });
+        return map;
+      })
+      .catch(function () { return null; });
+  }
+
+  function loadSeason(year) {
+    return Promise.all([
+      fetch(BASE + "/seasons/" + year + ".json").then(function (r) { return r.json(); }),
+      loadPrevSeasonFinalRank(year)
+    ])
+      .then(function (results) {
+        state.seasonData = results[0];
+        state.prevSeasonFinalRankByTeam = results[1];
         populateDateSelect();
       })
       .catch(function () {
@@ -530,6 +576,14 @@
           prevLastMatch = g.last_match;
         });
       });
+      var prevSeasonGames = data.seasons[String(Number(seasonFilter) - 1)];
+      var prevSeasonFinal = prevSeasonGames && prevSeasonGames.length ? prevSeasonGames[prevSeasonGames.length - 1] : null;
+      rows.forEach(function (g, i) {
+        var prevRow = i > 0 ? rows[i - 1] : prevSeasonFinal;
+        if (!prevRow) return;
+        g._prevRank = prevRow.rank;
+        g._prevConfRank = prevRow.conf_rank;
+      });
     } else if (state.tsView === "olympics") {
       seasonFilter = "all";
       seasons.forEach(function (s) {
@@ -568,8 +622,8 @@
         (isOly ? "" : '<td class="col-hide-mobile">' + dateCell + "</td>") +
         (isOly ? wcWalkCell(g.oly_record && g.oly_record.team_walk) + wcMatchesCell(g) : '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>") +
         (isOly ? '<td class="col-record">' + fmtOlyRecord(g.oly_record, g.tournament_finishes) + "</td>" : "") +
-        '<td class="col-rank">' + (g.rank != null ? g.rank : "-") + "</td>" +
-        '<td class="col-rank col-hide-mobile">' + (g.conf_rank != null ? g.conf_rank : "-") + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
+        '<td class="col-rank col-hide-mobile">' + fmtRankMove(g.conf_rank, g._prevConfRank) + "</td>" +
         "<td>" + (g.rank != null ? ratingBar(g.rating, barSc) : '<span style="color:var(--muted)">-</span>') + "</td>" +
         '<td class="col-hide-mobile col-conf">' + confBadge(data.confederation, g.continental_winner) + "</td>" +
         (isOly ? "" : '<td class="col-hide-mobile">' + finishBadge(g.tournament_finishes) + "</td>") +
