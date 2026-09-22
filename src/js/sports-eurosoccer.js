@@ -71,6 +71,27 @@
   var LEAGUE_BADGE_CLS = { EPL: "badge-EPL", "La Liga": "badge-LaLiga", Bundesliga: "badge-Bundesliga", "Serie A": "badge-SerieA", "Ligue 1": "badge-Ligue1" };
   var LEAGUE_BADGE_LABEL = { EPL: "🏴󠁧󠁢󠁥󠁮󠁧󠁿 EPL", "La Liga": "🇪🇸 La Liga", Bundesliga: "🇩🇪 BL", "Serie A": "🇮🇹 Serie A", "Ligue 1": "🇫🇷 Ligue 1" };
 
+  function fmtRankMove(rank, prevRank) {
+    if (rank == null) return "-";
+    if (prevRank == null || prevRank === rank) return String(rank);
+    var delta = prevRank - rank;
+    var cls = delta > 0 ? "rank-move-up" : "rank-move-down";
+    var arrow = delta > 0 ? "&#9650;" : "&#9660;";
+    return rank + ' <span class="rank-move ' + cls + '">' + arrow + Math.abs(delta) + "</span>";
+  }
+
+  // Chronologically-prior season label ("2024-25" -> "2023-24"), looked up
+  // from seasonsIndex's own ordered list rather than string arithmetic -
+  // safe against whatever format quirks the label carries. Newest-first
+  // array, so the previous season is the next index. Null at either end
+  // (index not found, or already the earliest season).
+  function prevSeasonLabel(season) {
+    var seasons = state.seasonsIndex && state.seasonsIndex.seasons;
+    if (!seasons) return null;
+    var idx = seasons.indexOf(season);
+    return idx >= 0 && idx + 1 < seasons.length ? seasons[idx + 1] : null;
+  }
+
   function leagueBadge(league, dom) {
     if (!league) return "";
     var lg = LEAGUE_SHORT[league] || league;
@@ -324,13 +345,6 @@
     if (!state.currentSnapshot) return;
     var league = state.standingsLeague;
 
-    var lgRankMap = {};
-    var lgCounter = {};
-    state.currentSnapshot.teams.forEach(function (t) {
-      lgCounter[t.league] = (lgCounter[t.league] || 0) + 1;
-      lgRankMap[t.team] = lgCounter[t.league];
-    });
-
     var teams = state.currentSnapshot.teams;
     if (league !== "all") teams = teams.filter(function (t) { return t.league === league; });
 
@@ -338,6 +352,12 @@
     var idx = -1;
     snaps.forEach(function (s, i) { if (s.date === state.currentSnapshot.date) idx = i; });
     var prevDate = idx > 0 ? snaps[idx - 1].date : null;
+    var prevByTeam = {};
+    if (idx > 0) {
+      snaps[idx - 1].teams.forEach(function (t) { prevByTeam[t.team] = { rank: t.rank, lgRank: t.lg_rank }; });
+    } else if (state.prevSeasonFinalRankByTeam) {
+      prevByTeam = state.prevSeasonFinalRankByTeam;
+    }
     var season = state.seasonData.season;
 
     countEl.textContent = teams.length + " team" + (teams.length !== 1 ? "s" : "");
@@ -346,18 +366,18 @@
     var barSc = barScale(teams.map(function (t) { return t.rating; }));
 
     var rows = teams.map(function (t) {
-      var lgRank = lgRankMap[t.team] || "-";
       var isStale = !!(prevDate && t.last_match_date && t.last_match_date <= prevDate);
       var slug = state.nameToSlug[t.team];
       var teamTd = slug
         ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + t.team + "</td>"
         : '<td class="team-cell">' + t.team + "</td>";
+      var prev = prevByTeam[t.team];
       // Last Match + Date merged into one column - fleet-wide override;
       // ZIDANE's own source keeps them split.
       return (
         "<tr>" +
-        '<td class="col-rank">' + t.rank + "</td>" +
-        '<td class="col-rank col-hide-mobile">' + lgRank + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(t.rank, prev ? prev.rank : null) + "</td>" +
+        '<td class="col-rank col-hide-mobile">' + fmtRankMove(t.lg_rank, prev ? prev.lgRank : null) + "</td>" +
         teamTd +
         "<td>" + leagueBadge(t.league, t.domestic_finish) + "</td>" +
         '<td class="col-record">' + fmtRecord(t.record) + "</td>" +
@@ -404,11 +424,28 @@
     renderStandings();
   }
 
-  function loadSeason(season) {
-    return fetch(BASE + "/seasons/" + season + ".json")
-      .then(function (r) { return r.json(); })
+  function loadPrevSeasonFinalRank(season) {
+    var prevSeason = prevSeasonLabel(season);
+    if (!prevSeason) return Promise.resolve(null);
+    return fetch(BASE + "/seasons/" + prevSeason + ".json")
+      .then(function (r) { if (!r.ok) throw new Error("no prior season"); return r.json(); })
       .then(function (data) {
-        state.seasonData = data;
+        var finalSnapshot = data.snapshots[data.snapshots.length - 1];
+        var map = {};
+        finalSnapshot.teams.forEach(function (t) { map[t.team] = { rank: t.rank, lgRank: t.lg_rank }; });
+        return map;
+      })
+      .catch(function () { return null; });
+  }
+
+  function loadSeason(season) {
+    return Promise.all([
+      fetch(BASE + "/seasons/" + season + ".json").then(function (r) { return r.json(); }),
+      loadPrevSeasonFinalRank(season)
+    ])
+      .then(function (results) {
+        state.seasonData = results[0];
+        state.prevSeasonFinalRankByTeam = results[1];
         populateDateSelect();
       })
       .catch(function () {
@@ -502,6 +539,14 @@
           prevLastMatch = g.last_match;
         });
       });
+      var prevSeasonGames = data.seasons[prevSeasonLabel(seasonFilter)];
+      var prevSeasonFinal = prevSeasonGames && prevSeasonGames.length ? prevSeasonGames[prevSeasonGames.length - 1] : null;
+      rows.forEach(function (g, i) {
+        var prevRow = i > 0 ? rows[i - 1] : prevSeasonFinal;
+        if (!prevRow) return;
+        g._prevRank = prevRow.rank;
+        g._prevLgRank = prevRow.lg_rank;
+      });
     } else {
       // Cross-season summary: one snapshot per season, per the selected anchor.
       //   'dom' -> team's last domestic-league game
@@ -545,8 +590,8 @@
         '<td class="col-hide-mobile">' + dateCell + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
         '<td class="col-record">' + fmtRecord(g.record) + "</td>" +
-        '<td class="col-rank">' + (g.rank != null ? g.rank : "-") + "</td>" +
-        '<td class="col-rank col-hide-mobile">' + (g.lg_rank != null ? g.lg_rank : "-") + "</td>" +
+        '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
+        '<td class="col-rank col-hide-mobile">' + fmtRankMove(g.lg_rank, g._prevLgRank) + "</td>" +
         "<td>" + (g.rank != null ? ratingBar(g.rating, barSc) : '<span style="color:var(--muted)">-</span>') + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
