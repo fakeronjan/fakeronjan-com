@@ -1222,8 +1222,8 @@
   // ═══════════════════════════════ WNBA Playoffs ═══════════════════════════
   // Knockout odds, ported from MESSI's World Cup grid. Data: per-season
   // snapshots from the end of the regular season on (playoff_odds/<season>.json).
-  // The tab shows once the current season's regular season is over and stays
-  // until the next season starts.
+  // The tab always shows, defaulting to the newest postseason with data (the
+  // current one once its regular season is over, else last year's).
 
   var poNav = document.getElementById("wnbaPoNav");
   var poTitle = document.getElementById("poTitle");
@@ -1239,15 +1239,16 @@
       .then(function (r) { return r.json(); })
       .then(function (idx) {
         state.poIndex = idx;
-        if (!idx.seasons.length || idx.seasons[0] !== idx.current_season) return;
+        if (!idx.seasons.length) return;
         poNav.hidden = false;
         poSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
         poSeasonSelect.onchange = function () { loadPoSeason(Number(poSeasonSelect.value), null); };
         return loadPoSeason(idx.seasons[0], null).then(function () {
-          // Land here while the current playoffs are undecided.
+          // Land here while the current season's playoffs are undecided.
           var snaps = state.poSeasons[idx.seasons[0]].snapshots;
           var last = snaps[snaps.length - 1];
-          if (last.stage !== "Champion" && !state.userPickedTab) activateTab("playoff-odds");
+          var live = idx.seasons[0] === idx.current_season && last.stage !== "Champion";
+          if (live && !state.userPickedTab) activateTab("playoff-odds");
         });
       })
       .catch(function () {});
