@@ -159,6 +159,8 @@
     return '<div class="od-val">' + v + '</div><div class="od-rank">' + rank + "</div>";
   }
 
+  var cupOddsTitle = "Probability of winning MLS Cup, from simulating the rest of the regular season and the playoff bracket with current ratings. League-wide probabilities sum to 100%.";
+
   // Cup Odds: 0% (eliminated) and rounds-to-0.0% render as '-'; 100% drops the decimal.
   function fmtTitleOdds(odds, rank) {
     if (odds == null) return "-";
@@ -356,7 +358,7 @@
         "<td>" + ratingBar(t.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Attacking strength: goals scored vs an average opponent. Sums with Defense to Rating.">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Defending strength: goals prevented vs an average opponent. Sums with Offense to Rating.">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
-        '<td class="rating-cell col-od col-hide-mobile">' + fmtTitleOdds(t.title_odds, t.title_odds_rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile" title="' + cupOddsTitle + '">' + fmtTitleOdds(t.title_odds, t.title_odds_rank) + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) +
         (t.last_match_date ? '<div class="sub-line-italic">' + t.last_match_date + "</div>" : "") + "</td>" +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(t) + "</td>" +
@@ -383,7 +385,7 @@
       "<th>Team</th><th>Conf</th>" +
       '<th class="col-record">' + recordHeader + "</th><th>Rating</th>" +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
-      '<th class="col-hide-mobile col-od">Cup Odds</th>' +
+      '<th class="col-hide-mobile col-od" title="' + cupOddsTitle + '">Cup Odds</th>' +
       '<th class="col-last-match">Last Match</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
@@ -583,7 +585,7 @@
         "<td>" + (g.rank != null ? ratingBar(g.rating, barSc) : '<span style="color:var(--muted)">-</span>') + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
-        '<td class="rating-cell col-od col-hide-mobile">' + fmtTitleOdds(g.title_odds, g.title_odds_rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile" title="' + cupOddsTitle + '">' + fmtTitleOdds(g.title_odds, g.title_odds_rank) + "</td>" +
         '<td class="col-hide-mobile">' + confBadge(g.conference || data.conference, g.mls_cup_conf_finalist) + "</td>" +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(g) + "</td>" +
         "</tr>"
@@ -598,7 +600,7 @@
       '<th class="col-rank">OVR #</th><th class="col-hide-mobile col-rank">Conf #</th>' +
       "<th>Rating</th>" +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
-      '<th class="col-hide-mobile col-od">Cup Odds</th>' +
+      '<th class="col-hide-mobile col-od" title="' + cupOddsTitle + '">Cup Odds</th>' +
       '<th class="col-hide-mobile">Conf</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";
