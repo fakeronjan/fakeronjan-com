@@ -1081,7 +1081,8 @@ footer {
    fill it, or it reads as artificially padded (the Super Bowls mistake). */
 #wcHistoryWrap,
 #wcBycountryWrap,
-#wcOddsWrap {
+#wcOddsWrap,
+#poWrap {
   width: 100vw;
   position: relative;
   left: 50%;
@@ -1092,7 +1093,8 @@ footer {
 }
 #wcHistoryWrap table,
 #wcBycountryWrap table,
-#wcOddsWrap table {
+#wcOddsWrap table,
+#poWrap table {
   width: auto;
   max-width: 1340px;
   margin: 0 auto;
