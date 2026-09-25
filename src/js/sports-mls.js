@@ -244,6 +244,7 @@
   document.getElementById("mlsTabs").addEventListener("click", function (e) {
     var btn = e.target.closest(".sport-tab");
     if (!btn) return;
+    state.userPickedTab = true;
     activateTab(btn.dataset.tab);
   });
 
@@ -916,6 +917,163 @@
     { value: "defense", label: "Defense only" },
   ], state.goatMetric, function (v) { state.goatMetric = v; renderGoat(); });
 
+  // ═══════════════════════════════ MLS Cup Playoffs ═══════════════════════════
+  // Knockout odds, ported from MESSI's World Cup grid (same code as sports-wnba.js,
+  // plus match scores and penalties for single-match rounds). Data: per-season
+  // snapshots from the end of the regular season on (playoff_odds/<season>.json).
+  // The tab always shows, defaulting to the newest postseason with data (the
+  // current one once its regular season is over, else last year's).
+
+  var poNav = document.getElementById("mlsPoNav");
+  var poTitle = document.getElementById("poTitle");
+  var poNote = document.getElementById("poNote");
+  var poSeasonSelect = document.getElementById("poSeasonSelect");
+  var poDateSelect = document.getElementById("poDateSelect");
+  var poStamp = document.getElementById("poStamp");
+  var poWrap = document.getElementById("poWrap");
+  state.poSeasons = {};
+
+  function loadPlayoffOdds() {
+    return fetch(BASE + "/playoff_odds/index.json")
+      .then(function (r) { return r.json(); })
+      .then(function (idx) {
+        state.poIndex = idx;
+        if (!idx.seasons.length) return;
+        poNav.hidden = false;
+        poSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
+        poSeasonSelect.onchange = function () { loadPoSeason(Number(poSeasonSelect.value), null); };
+        return loadPoSeason(idx.seasons[0], null).then(function () {
+          // Land here while the current season's playoffs are undecided.
+          var snaps = state.poSeasons[idx.seasons[0]].snapshots;
+          var last = snaps[snaps.length - 1];
+          var live = idx.seasons[0] === idx.current_season && last.stage !== "Champion";
+          if (live && !state.userPickedTab) activateTab("playoff-odds");
+        });
+      })
+      .catch(function () {});
+  }
+
+  function loadPoSeason(season, date) {
+    var have = state.poSeasons[season];
+    var p = have ? Promise.resolve(have) : fetch(BASE + "/playoff_odds/" + season + ".json").then(function (r) { return r.json(); });
+    return p.then(function (d) {
+      state.poSeasons[season] = d;
+      state.poSeason = season;
+      poSeasonSelect.value = String(season);
+      var snaps = d.snapshots;
+      poDateSelect.innerHTML = snaps.slice().reverse().map(function (s) {
+        return '<option value="' + s.date + '">' + s.date + " | " + s.stage + "</option>";
+      }).join("");
+      poDateSelect.value = date || snaps[snaps.length - 1].date;
+      poDateSelect.onchange = function () { renderPlayoffOdds(); };
+      renderPlayoffOdds();
+    });
+  }
+
+  function renderPlayoffOdds() {
+    var d = state.poSeasons[state.poSeason];
+    if (!d) return;
+    var view = d.snapshots.filter(function (s) { return s.date === poDateSelect.value; })[0] || d.snapshots[d.snapshots.length - 1];
+    var short = d.rounds_short;
+    var nR = short.length;
+    poTitle.textContent = d.season + " MLS Cup Playoffs 🏆 Win Probability";
+    poNote.textContent = (view.n_sims || state.poIndex.n_sims || 0).toLocaleString() + " Monte Carlo simulations · each column is the chance to advance past that round";
+
+    if (view.results && view.results.length) {
+      poStamp.innerHTML = '<span class="wc-md-label">Results · ' + view.date + "</span>" + view.results.map(function (g) {
+        var so = g.pens ? ' <span class="wc-so">(pens)</span>' : "";
+        return '<span class="wc-result">' + g.home + " <b>" + g.hp + "-" + g.vp + "</b> " + g.away + so + "</span>";
+      }).join("");
+    } else {
+      poStamp.innerHTML = '<span class="wc-md-label">' + view.stage + "</span>";
+    }
+
+    var teams = view.teams.map(function (t) {
+      var byRound = {};
+      t.series.forEach(function (x) { byRound[x.round] = x; });
+      return Object.assign({}, t, { _by: byRound, _depth: t.series.filter(function (x) { return x.done; }).length });
+    });
+    var ordered = teams.slice().sort(function (a, b) {
+      if (!a.eliminated !== !b.eliminated) return a.eliminated ? 1 : -1;
+      if (!a.eliminated) return b.adv[nR - 1] - a.adv[nR - 1];
+      return (b._depth - a._depth) || (b.rating - a.rating);
+    });
+
+    function pct(v) { return v * 100 < 1 ? "&lt;1%" : Math.round(v * 100) + "%"; }
+    var MAXA = 0.70;
+    var alive = teams.filter(function (t) { return !t.eliminated; });
+    var range = short.map(function (rd, k) {
+      var vs = alive.filter(function (t) { return !(t._by[rd] && t._by[rd].done) && k + 1 >= t.enter; }).map(function (t) { return t.adv[k]; });
+      return [vs.length ? Math.min.apply(null, vs) : Infinity, vs.length ? Math.max.apply(null, vs) : -Infinity];
+    });
+    function heat(v, r) {
+      var lo = r[0], hi = r[1];
+      if (!isFinite(lo) || hi <= lo) return "background:color-mix(in srgb, var(--accent) 6%, #fff)";
+      var x = Math.max(0, Math.min(1, (v - lo) / (hi - lo)));
+      if (x >= 0.5) return "background:color-mix(in srgb, var(--accent) " + ((x - 0.5) * 2 * MAXA * 100).toFixed(1) + "%, #fff)";
+      return "background:color-mix(in srgb, var(--accent-2) " + ((0.5 - x) * 2 * MAXA * 100).toFixed(1) + "%, #fff)";
+    }
+    function cell(t, k) {
+      var rd = short[k];
+      var cls = "col-od wc-heat" + (k === nR - 1 ? " wc-champ-cell" : "") + (k < nR - 2 ? " col-hide-mobile" : "");
+      var x = t._by[rd];
+      if (x && x.done) return '<td class="' + cls + '"><span class="' + (x.won ? "wc-w" : "wc-l") + ' wc-wl">' + (x.won ? "W" : "L") + "</span></td>";
+      if (k + 1 < t.enter) return '<td class="' + cls + '"><span style="color:var(--muted)">bye</span></td>';
+      if (t.eliminated) return '<td class="' + cls + '"><span style="color:var(--muted)">-</span></td>';
+      // Series under way: its score sits under the odds until it's clinched.
+      var inner = x && (x.w || x.l)
+        ? '<div class="od-val">' + pct(t.adv[k]) + '</div><div class="od-rank" style="color:inherit;opacity:0.75">' + x.w + "-" + x.l + "</div>"
+        : pct(t.adv[k]);
+      return '<td class="' + cls + '" style="' + heat(t.adv[k], range[k]) + '">' + inner + "</td>";
+    }
+    function resultsCell(t) {
+      var lines = t.series.slice().reverse().map(function (x) {
+        var rd = '<span class="wc-rd">' + x.round + "</span>";
+        var opp = '<span class="wc-vs">vs. ' + x.opp + "</span>";
+        if (!x.w && !x.l) return rd + " " + opp;
+        if (x.score) {
+          var p = x.pens ? ' <span class="wc-so">p</span>' : "";
+          return rd + ' <span class="' + (x.won ? "wc-w" : "wc-l") + '">' + (x.won ? "W" : "L") + " " + x.score + p + "</span> " + opp;
+        }
+        // Best-of-3 Round One: a series record, labeled so it doesn't read as a score.
+        var score = x.w + "-" + x.l + (x.best_of === 3 ? " series" : "");
+        if (!x.done) return rd + " <b>" + score + "</b> " + opp;
+        return rd + ' <span class="' + (x.won ? "wc-w" : "wc-l") + '">' + (x.won ? "W" : "L") + " " + score + "</span> " + opp;
+      });
+      var body = lines.length
+        ? lines.map(function (p) { return '<div class="wc-seg">' + p + "</div>"; }).join("")
+        : '<span style="color:var(--muted)">-</span>';
+      return '<td class="wc-results"><div class="wc-results-inner">' + body + "</div></td>";
+    }
+    var rows = ordered.map(function (t) {
+      var slug = state.nameToSlug[t.team];
+      var teamTd = slug
+        ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + d.season + '">' + t.team + "</td>"
+        : '<td class="team-cell">' + t.team + "</td>";
+      return "<tr>" +
+        '<td class="col-rank">' + t.seed + "</td>" + teamTd +
+        '<td class="col-od rating-cell">' + fmtOD(t.rating, t.rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
+        resultsCell(t) +
+        short.map(function (_, k) { return cell(t, k); }).join("") +
+        "</tr>";
+    }).join("");
+    var heads = short.map(function (rd, k) {
+      var label = k === nR - 1 ? rd + " 🏆" : rd;
+      return '<th class="col-od wc-col' + (k < nR - 2 ? " col-hide-mobile" : "") + '">' + label + "</th>";
+    }).join("");
+    poWrap.innerHTML =
+      '<table class="sport-table wc-odds-table"><thead><tr>' +
+      '<th style="text-align:center;width:56px">Seed</th><th style="width:152px">Team</th>' +
+      '<th class="col-od" style="width:60px">Rating</th>' +
+      '<th class="col-hide-mobile col-od" style="width:56px">OFF</th>' +
+      '<th class="col-hide-mobile col-od" style="width:56px">DEF</th>' +
+      "<th>Results</th>" + heads +
+      "</tr></thead><tbody>" + rows + "</tbody></table>";
+    attachLinks(poWrap);
+  }
+
   // ═══════════════════════════════ init ═══════════════════════════════
 
   buildConfPills("tsConfPills", state.tsConf, function (v) { state.tsConf = v; populateTeams(); });
@@ -950,6 +1108,7 @@
     loadSeason(data.seasons[0]);
     loadChampions();
     loadGoat();
+    loadPlayoffOdds();
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });
