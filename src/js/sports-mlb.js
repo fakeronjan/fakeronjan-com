@@ -398,7 +398,10 @@
   function populateDateSelect() {
     var snaps = state.seasonData.snapshots;
     var options = snaps.map(function (s) {
-      return '<option value="' + s.date + '">' + (s.label ? s.date + " | " + s.label : s.date) + "</option>";
+      // MLB says "postseason"; the stored label keeps "End of playoffs" because
+      // the portal and City Index history key off that exact text.
+      var label = s.label ? s.label.replace("End of playoffs", "End of postseason") : "";
+      return '<option value="' + s.date + '">' + (label ? s.date + " | " + label : s.date) + "</option>";
     });
     dateSelect.innerHTML = options.slice().reverse().join("");
   }
@@ -584,7 +587,7 @@
         : g.season + badgeStr;
       var dateLabel = isStrike ? "Strike began Aug 12, 1994"
         : g.season_flag === 1 ? "End of regular season"
-        : g.season_flag === 2 ? "End of playoffs" : "";
+        : g.season_flag === 2 ? "End of postseason" : "";
       var dateCell = dateLabel ? g.date + '<div class="sub-line-italic">' + dateLabel + "</div>" : g.date;
       return (
         "<tr>" +
@@ -936,19 +939,19 @@
     switch (rankType) {
       case "best-champs":
         sorted = rows.slice().sort(function (a, b) { return b.champ.rating - a.champ.rating; }).slice(0, 10);
-        note = "Top 10 champions by end-of-playoffs rating. The strongest teams ever to win a World Series.";
+        note = "Top 10 champions by end-of-postseason rating. The strongest teams ever to win a World Series.";
         mode = "team-vs-opp"; break;
       case "worst-champs":
         sorted = rows.slice().sort(function (a, b) { return a.champ.rating - b.champ.rating; }).slice(0, 10);
-        note = "Bottom 10 champions by end-of-playoffs rating. The weakest teams ever to win a World Series.";
+        note = "Bottom 10 champions by end-of-postseason rating. The weakest teams ever to win a World Series.";
         mode = "team-vs-opp"; break;
       case "best-losers":
         sorted = rows.slice().sort(function (a, b) { return b.loser.rating - a.loser.rating; }).slice(0, 10);
-        note = "Top 10 runner-ups by end-of-playoffs rating. The strongest teams ever to lose a World Series.";
+        note = "Top 10 runner-ups by end-of-postseason rating. The strongest teams ever to lose a World Series.";
         mode = "loser-vs-champ"; break;
       case "worst-losers":
         sorted = rows.slice().sort(function (a, b) { return a.loser.rating - b.loser.rating; }).slice(0, 10);
-        note = "Bottom 10 runner-ups by end-of-playoffs rating. The weakest teams ever to lose a World Series.";
+        note = "Bottom 10 runner-ups by end-of-postseason rating. The weakest teams ever to lose a World Series.";
         mode = "loser-vs-champ"; break;
       case "best-bat-champs":
         sorted = rows.slice().sort(function (a, b) { return b.champ.rating - a.champ.rating; }).slice(0, 10);
@@ -1104,7 +1107,7 @@
       .sort(function (a, b) { return b.leap - a.leap; })
       .slice(0, 10);
 
-    historyRankNote.textContent = "Top 10 champions by rating gained from end of regular season to end of playoffs. The teams that leveled up the most over their title run.";
+    historyRankNote.textContent = "Top 10 champions by rating gained from end of regular season to end of postseason. The teams that leveled up the most over their title run.";
     if (!rows.length) {
       historyRankTableWrap.innerHTML = '<p class="sport-loading">No data</p>';
       return;
@@ -1131,7 +1134,7 @@
     historyRankTableWrap.innerHTML =
       '<table class="sport-table sport-table-narrow"><thead><tr>' +
       '<th class="col-rank">#</th><th class="col-rank">Season</th><th>Champion</th><th class="col-hide-mobile col-record">W-L</th>' +
-      '<th>Rating<div class="sub-line">Season &rarr; Playoffs</div></th><th class="sort-col">Rating Increase</th>' +
+      '<th>Rating<div class="sub-line">Season &rarr; Postseason</div></th><th class="sort-col">Rating Increase</th>' +
       "</tr></thead><tbody>" + body + "</tbody></table>";
     attachLinks(historyRankTableWrap);
   }
@@ -1259,7 +1262,7 @@
     var data = pick.data;
     if (!data) return;
     goatNoteEl.textContent = "Top " + data.length + " single-season ratings · " +
-      (state.goatMode === "rs" ? "end of regular season, all teams" : "end of playoffs, champions only");
+      (state.goatMode === "rs" ? "end of regular season, all teams" : "end of postseason, champions only");
     var teams = state.goatConf === "ALL" ? data : data.filter(function (t) { return t.league === state.goatConf; });
     updateDisruptedNote("goatDisrupted", teams.map(function (t) { return t.season; }));
     var barSc = barScale(teams.map(function (t) { return t[pick.field]; }));
@@ -1308,7 +1311,7 @@
     { value: "react", label: "Rating (overall)" }, { value: "o", label: "Batting only" }, { value: "d", label: "Pitching only" },
   ]);
   buildPills("goatModePills", state.goatMode, function (v) { state.goatMode = v; renderGoat(); }, [
-    { value: "rs", label: "End of regular season" }, { value: "ps", label: "End of playoffs" },
+    { value: "rs", label: "End of regular season" }, { value: "ps", label: "End of postseason" },
   ]);
 
   // ═══════════════════════════════ MLB Postseason ═══════════════════════════
