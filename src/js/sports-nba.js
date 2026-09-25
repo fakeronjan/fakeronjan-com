@@ -1313,12 +1313,16 @@
     var teams = view.teams.map(function (t) {
       var byRound = {};
       t.series.forEach(function (x) { byRound[x.round] = x; });
-      return Object.assign({}, t, { _by: byRound, _depth: t.series.filter(function (x) { return x.done; }).length });
+      // Round the team was knocked out in (latest lost matchup). Counting
+      // matchups played instead misorders brackets with byes or play-ins.
+      var out = -1;
+      t.series.forEach(function (x) { if (x.done && !x.won) out = Math.max(out, short.indexOf(x.round)); });
+      return Object.assign({}, t, { _by: byRound, _out: out });
     });
     var ordered = teams.slice().sort(function (a, b) {
       if (!a.eliminated !== !b.eliminated) return a.eliminated ? 1 : -1;
       if (!a.eliminated) return b.adv[nR - 1] - a.adv[nR - 1];
-      return (b._depth - a._depth) || (b.rating - a.rating);
+      return (b._out - a._out) || (b.rating - a.rating);
     });
 
     function pct(v) { return v * 100 < 1 ? "&lt;1%" : Math.round(v * 100) + "%"; }
