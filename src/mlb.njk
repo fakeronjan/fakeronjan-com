@@ -22,7 +22,8 @@ eleventyComputed:
   <nav class="sport-tabs" id="mlbTabs">
     <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
     <button class="sport-tab" data-tab="team-summary" type="button">Team Summary</button>
-    <button class="sport-tab" data-tab="league-history" type="button">World Series</button>
+    <button class="sport-tab" data-tab="playoff-odds" id="mlbPoNav" hidden type="button">&#127942; MLB Postseason</button>
+    <button class="sport-tab" data-tab="league-history" type="button">&#128081; World Series</button>
     <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
   </nav>
 
@@ -104,6 +105,17 @@ eleventyComputed:
     <div class="pill-group" id="goatConfPills"></div>
     <div id="goatTableWrap" class="sport-table-wrap"></div>
     <div id="goatDisrupted" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+  </section>
+
+  <section class="sport-view" data-view="playoff-odds" id="playoff-odds" hidden>
+    <h2 id="poTitle" class="sport-subhead"></h2>
+    <p class="sport-note" id="poNote"></p>
+    <div class="sport-controls">
+      <select id="poSeasonSelect" class="sport-select" aria-label="Season"></select>
+      <select id="poDateSelect" class="sport-select" aria-label="Date"></select>
+    </div>
+    <div id="poStamp" class="wc-stamp"></div>
+    <div id="poWrap" class="sport-table-wrap"><p class="sport-loading">Loading playoff odds...</p></div>
   </section>
 
   <p class="sport-credit">Data: historical results courtesy of <a href="https://www.retrosheet.org" target="_blank" rel="noopener">Retrosheet</a>; current-season results from the MLB Stats API (&copy; MLB Advanced Media). Ratings are derived from this data. The information used here was obtained free of charge from and is copyrighted by Retrosheet. Interested parties may contact Retrosheet at <a href="https://www.retrosheet.org" target="_blank" rel="noopener">www.retrosheet.org</a>.</p>
