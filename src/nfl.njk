@@ -22,6 +22,7 @@ eleventyComputed:
 
   <nav class="sport-tabs" id="nflTabs">
     <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
+    <button class="sport-tab" data-tab="weekly-matchups" id="nflWmNav" hidden type="button">Weekly Matchups</button>
     <button class="sport-tab" data-tab="team-summary" type="button">Team Summary</button>
     <button class="sport-tab" data-tab="playoff-odds" id="nflPoNav" hidden type="button">&#127942; NFL Playoffs</button>
     <button class="sport-tab" data-tab="league-history" type="button">&#128081; Super Bowls</button>
@@ -106,6 +107,17 @@ eleventyComputed:
     <div class="pill-group" id="goatConfPills"></div>
     <div id="goatTableWrap" class="sport-table-wrap"></div>
     <div id="goatDisrupted" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+  </section>
+
+  <section class="sport-view" data-view="weekly-matchups" id="weekly-matchups" hidden>
+    <h2 id="wmTitle" class="sport-subhead"></h2>
+    <p class="sport-note" id="wmNote"></p>
+    <div class="sport-controls">
+      <select id="wmSeasonSelect" class="sport-select" aria-label="Season"></select>
+      <select id="wmWeekSelect" class="sport-select" aria-label="Week"></select>
+    </div>
+    <div id="wmStamp" class="wc-stamp"></div>
+    <div id="wmWrap" class="sport-table-wrap"></div>
   </section>
 
   <section class="sport-view" data-view="playoff-odds" id="playoff-odds" hidden>

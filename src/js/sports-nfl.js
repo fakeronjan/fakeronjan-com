@@ -1260,6 +1260,183 @@
     { value: "rs", label: "End of regular season" }, { value: "ps", label: "End of playoffs" },
   ]);
 
+  // ═══════════════════════════════ Weekly Matchups ════════════════════════
+  // Every game of a week, previewed from DILLON's ratings going into it: win
+  // probability, line, projected score, and the stakes (each team's playoff
+  // and Super Bowl odds with a win vs a loss, from simulations of the rest of
+  // the season split by that game's result). Results + DILLON's record once
+  // played. Data: weekly_matchups/<season>.json. Purely for fun.
+
+  var wmNav = document.getElementById("nflWmNav");
+  var wmTitle = document.getElementById("wmTitle");
+  var wmNote = document.getElementById("wmNote");
+  var wmSeasonSelect = document.getElementById("wmSeasonSelect");
+  var wmWeekSelect = document.getElementById("wmWeekSelect");
+  var wmStamp = document.getElementById("wmStamp");
+  var wmWrap = document.getElementById("wmWrap");
+  state.wmSeasons = {};
+
+  var WM_QUALITY_TITLE = "How good and how even the matchup is: the weaker team's rating and how close DILLON has the game. 0-100, ranked against every game.";
+  var WM_STAKES_TITLE = "How much the result swings both teams' playoff and Super Bowl odds. 0-100, ranked against every game.";
+  var WM_JUICE_TITLE = "Quality and Stakes combined (their geometric mean). A game needs both to score high.";
+  var WM_PS_WEEKS = { 101: "Wild Card", 102: "Divisional Round", 103: "Conference Championships", 104: "Super Bowl" };
+  function wmWeekLabel(w) { return WM_PS_WEEKS[w] || "Week " + w; }
+  function wmNick(name) {
+    if (/Football Team$/.test(name)) return "Washington";
+    var parts = name.split(" ");
+    return parts[parts.length - 1];
+  }
+  function wmPct(v) {
+    if (v == null) return "-";
+    var x = v * 100;
+    if (x > 0 && x < 1) return "&lt;1%";
+    if (x < 100 && x > 99) return "&gt;99%";
+    return Math.round(x) + "%";
+  }
+  function wmSwing(s) { return s.po_win == null ? 0 : s.po_win - s.po_loss; }
+
+  function wmPick(g) {
+    var home = g.p_home >= 0.5;
+    return { team: home ? g.home : g.away, p: home ? g.p_home : 1 - g.p_home, home: home };
+  }
+  function wmLine(g) {
+    if (Math.abs(g.line) < 0.25) return "Pick'em";
+    return wmNick(g.line > 0 ? g.home : g.away) + " by " + Math.abs(g.line);
+  }
+  function wmCorrect(g) {
+    if (!g.result || g.result.home === g.result.away) return null;
+    return (g.p_home >= 0.5) === (g.result.home > g.result.away);
+  }
+  function wmPctOf(rec) {
+    var m = rec.match(/^(\d+)-(\d+)(?:-(\d+))?$/);
+    if (!m) return 0;
+    var w = +m[1], l = +m[2], t = +(m[3] || 0), n = w + l + t;
+    return n ? (w + 0.5 * t) / n : 0.5;
+  }
+
+  function loadWeeklyMatchups() {
+    return fetch(BASE + "/weekly_matchups/index.json")
+      .then(function (r) { return r.json(); })
+      .then(function (idx) {
+        state.wmIndex = idx;
+        if (!idx.seasons.length) return;
+        wmNav.hidden = false;
+        wmSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
+        wmSeasonSelect.onchange = function () { loadWmSeason(Number(wmSeasonSelect.value)); };
+        wmWeekSelect.onchange = renderWeeklyMatchups;
+        return loadWmSeason(idx.seasons[0]);
+      })
+      .catch(function () {});
+  }
+
+  function loadWmSeason(season) {
+    var have = state.wmSeasons[season];
+    var p = have ? Promise.resolve(have) : fetch(BASE + "/weekly_matchups/" + season + ".json").then(function (r) { return r.json(); });
+    return p.then(function (d) {
+      state.wmSeasons[season] = d;
+      state.wmSeason = season;
+      wmSeasonSelect.value = String(season);
+      // Default: the first week with games still to play, else the last week.
+      var cur = d.weeks.filter(function (w) { return w.games.some(function (g) { return !g.result; }); })[0] || d.weeks[d.weeks.length - 1];
+      wmWeekSelect.innerHTML = d.weeks.slice().reverse().map(function (w) {
+        return '<option value="' + w.week + '">' + wmWeekLabel(w.week) + "</option>";
+      }).join("");
+      wmWeekSelect.value = String(cur.week);
+      renderWeeklyMatchups();
+    });
+  }
+
+  function wmTeamLink(name, season) {
+    var slug = state.nameToSlug[name];
+    return slug ? '<span class="team-link linked" data-team-slug="' + slug + '" data-season="' + season + '">' + name + "</span>" : name;
+  }
+
+  function wmStakesLines(g, key, ps) {
+    return ["away", "home"].map(function (side) {
+      var s = g.stakes[side];
+      if (key === "po") {
+        if (s.po_win == null) return "";
+        return '<div class="wm-stake">' + wmPct(s.po_win) + ' <span class="wm-dim">/</span> ' + wmPct(s.po_loss) + "</div>";
+      }
+      return '<div class="wm-stake">' + wmPct(s.sb_win) + ' <span class="wm-dim">/</span> ' + (ps ? "out" : wmPct(s.sb_loss)) + "</div>";
+    }).join("");
+  }
+
+  function wmResult(g) {
+    if (!g.result) return '<span class="wm-dim">-</span>';
+    var ok = wmCorrect(g);
+    var mark = ok == null ? "" : (ok ? ' <span class="wc-w">&#10003;</span>' : ' <span class="wc-l">&#10007;</span>');
+    return wmNick(g.away) + " " + g.result.away + ", " + wmNick(g.home) + " " + g.result.home + mark;
+  }
+
+  function renderWeeklyMatchups() {
+    var d = state.wmSeasons[state.wmSeason];
+    if (!d) return;
+    var week = Number(wmWeekSelect.value);
+    var wk = d.weeks.filter(function (w) { return w.week === week; })[0];
+    var ps = week >= 100;
+    wmTitle.textContent = d.season + " " + wmWeekLabel(week);
+    wmNote.textContent = "Win probability, line and projected score for every game, from DILLON's ratings going into the week. " +
+      "Stakes show each team's playoff and Super Bowl odds with a win and with a loss.";
+
+    // DILLON's record picking winners: this week, and the season through it.
+    function tally(weeks) {
+      var w = 0, l = 0;
+      weeks.forEach(function (x) { x.games.forEach(function (g) { var c = wmCorrect(g); if (c === true) w++; else if (c === false) l++; }); });
+      return [w, l];
+    }
+    var thisWk = tally([wk]);
+    var season = tally(d.weeks.filter(function (w) { return w.week <= week; }));
+    var stamp = '<span class="wc-md-label">DILLON pick record</span>';
+    if (thisWk[0] + thisWk[1]) stamp += '<span class="wc-result">' + wmWeekLabel(week) + " <b>" + thisWk[0] + "-" + thisWk[1] + "</b></span>";
+    if (season[0] + season[1]) stamp += '<span class="wc-result">' + d.season + " season <b>" + season[0] + "-" + season[1] + "</b></span>";
+    wmStamp.innerHTML = stamp;
+
+    var games = wk.games.slice().sort(function (a, b) { return (b.juice || 0) - (a.juice || 0); });
+
+    // Markers: the game of the week (top Juice, the table's first row)
+    // and upset-watch picks (DILLON favors the team with the worse record).
+    var gotw = games[0];
+    function isUpset(g) {
+      if (ps) return false;
+      var pk = wmPick(g);
+      return wmPctOf(pk.home ? g.home_record : g.away_record) < wmPctOf(pk.home ? g.away_record : g.home_record);
+    }
+    var nUpset = games.filter(isUpset).length;
+    wmStamp.innerHTML += '<span class="wm-legend">&#11088; Game of the week</span>' +
+      (nUpset ? '<span class="wm-legend" title="DILLON favors the team with the worse record">&#9889; Upset watch</span>' : "");
+
+    var rows = games.map(function (g) {
+      var pk = wmPick(g);
+      var mark = (g === gotw ? "&#11088;" : "") + (isUpset(g) ? "&#9889;" : "");
+      return '<tr' + (g === gotw ? ' class="wm-gotw"' : "") + ">" +
+        '<td class="wm-mark">' + mark + "</td>" +
+        '<td class="wm-matchup"><div><span class="wm-at"></span><span class="wm-rank">' + (g.away_rank || "") + "</span>" + wmTeamLink(g.away, d.season) + ' <span class="wm-dim">' + g.away_record + "</span></div>" +
+        '<div><span class="wm-at">' + (g.neutral ? "vs." : "@") + '</span><span class="wm-rank">' + (g.home_rank || "") + "</span>" + wmTeamLink(g.home, d.season) + ' <span class="wm-dim">' + g.home_record + "</span></div></td>" +
+        '<td class="col-od col-hide-mobile">' + g.quality + "</td>" +
+        '<td class="col-od col-hide-mobile">' + g.stakes_score + "</td>" +
+        '<td class="col-od wm-juice">' + g.juice + "</td>" +
+        '<td class="col-od"><div class="od-val">' + wmNick(pk.team) + '</div><div class="od-rank">' + wmPct(pk.p) + "</div></td>" +
+        '<td class="col-hide-mobile">' + wmLine(g) + "</td>" +
+        '<td class="col-hide-mobile">' + wmNick(g.away) + " " + g.proj_away + "<div>" + wmNick(g.home) + " " + g.proj_home + "</div></td>" +
+        (ps ? "" : "<td>" + wmStakesLines(g, "po", ps) + "</td>") +
+        '<td class="' + (ps ? "" : "col-hide-mobile") + '">' + wmStakesLines(g, "sb", ps) + "</td>" +
+        '<td class="wm-result">' + wmResult(g) + "</td>" +
+        "</tr>";
+    }).join("");
+    wmWrap.innerHTML =
+      '<table class="sport-table wm-table"><thead><tr>' +
+      '<th class="wm-mark"></th>' + "<th>Matchup</th>" +
+      '<th class="col-od col-hide-mobile" title="' + WM_QUALITY_TITLE + '">Quality</th>' +
+      '<th class="col-od col-hide-mobile" title="' + WM_STAKES_TITLE + '">Stakes</th>' +
+      '<th class="col-od" title="' + WM_JUICE_TITLE + '">Juice</th>' +
+      "<th class=\"col-od\">DILLON pick</th><th class=\"col-hide-mobile\">DILLON Line</th><th class=\"col-hide-mobile\">Projected</th>" +
+      (ps ? "" : '<th title="Playoff odds with a win / with a loss">Playoff odds (W/L)</th>') +
+      '<th class="' + (ps ? "" : "col-hide-mobile") + '" title="Super Bowl odds with a win / with a loss">Super Bowl odds (W/L)</th>' +
+      "<th>Result</th></tr></thead><tbody>" + rows + "</tbody></table>";
+    attachLinks(wmWrap);
+  }
+
   // ═══════════════════════════════ NFL Playoffs ═══════════════════════════
   // Knockout odds, ported from MESSI's World Cup grid (same code as sports-wnba.js,
   // plus match scores and penalties for single-match rounds). Data: per-season
@@ -1457,6 +1634,7 @@
     loadChampions();
     loadGoat();
     loadPlayoffOdds();
+    loadWeeklyMatchups();
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });

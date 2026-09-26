@@ -1082,7 +1082,8 @@ footer {
 #wcHistoryWrap,
 #wcBycountryWrap,
 #wcOddsWrap,
-#poWrap {
+#poWrap,
+#wmWrap {
   width: 100vw;
   position: relative;
   left: 50%;
@@ -1094,7 +1095,8 @@ footer {
 #wcHistoryWrap table,
 #wcBycountryWrap table,
 #wcOddsWrap table,
-#poWrap table {
+#poWrap table,
+#wmWrap table {
   width: auto;
   max-width: 1340px;
   margin: 0 auto;
@@ -1735,3 +1737,16 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 /* .sport-note's negative top margin is for notes under a heading; under a
    table it pulled the text into the table's bottom border. */
 .cfp-cut-note { margin-top: 0.75rem; }
+
+/* DILLON Weekly Matchups */
+.wm-dim { color: var(--muted); }
+.wm-mark { width: 2.2rem; text-align: center; padding-left: 0.2rem; padding-right: 0.2rem; white-space: nowrap; }
+.wm-gotw td { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+.wm-legend { font-size: 0.75rem; color: var(--muted); }
+.wm-table td { vertical-align: middle; }
+.wm-matchup { white-space: nowrap; }
+.wm-at { display: inline-block; width: 1.5rem; color: var(--muted); }
+.wm-rank { display: inline-block; min-width: 1.4rem; margin-right: 0.3rem; text-align: right; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wm-stake { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.wm-result { white-space: nowrap; }
+.wm-juice { font-weight: 700; }
