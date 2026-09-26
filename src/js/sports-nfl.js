@@ -1376,7 +1376,7 @@
     var wk = d.weeks.filter(function (w) { return w.week === week; })[0];
     var ps = week >= 100;
     wmTitle.textContent = d.season + " " + wmWeekLabel(week);
-    wmNote.textContent = "Win probability, line and projected score for every game, from DILLON's ratings going into the week. " +
+    wmNote.textContent = "Win probability, line and O/U for every game, from DILLON's ratings going into the week. " +
       "Stakes show each team's playoff and Super Bowl odds with a win and with a loss.";
 
     // DILLON's record picking winners: this week, and the season through it.
@@ -1418,7 +1418,7 @@
         '<td class="col-od wm-juice">' + g.juice + "</td>" +
         '<td class="col-od"><div class="od-val">' + wmNick(pk.team) + '</div><div class="od-rank">' + wmPct(pk.p) + "</div></td>" +
         '<td class="col-hide-mobile">' + wmLine(g) + "</td>" +
-        '<td class="col-hide-mobile">' + wmNick(g.away) + " " + g.proj_away + "<div>" + wmNick(g.home) + " " + g.proj_home + "</div></td>" +
+        '<td class="col-od col-hide-mobile">' + (g.total != null ? g.total.toFixed(1) : "-") + "</td>" +
         (ps ? "" : "<td>" + wmStakesLines(g, "po", ps) + "</td>") +
         '<td class="' + (ps ? "" : "col-hide-mobile") + '">' + wmStakesLines(g, "sb", ps) + "</td>" +
         '<td class="wm-result">' + wmResult(g) + "</td>" +
@@ -1430,9 +1430,9 @@
       '<th class="col-od col-hide-mobile" title="' + WM_QUALITY_TITLE + '">Quality</th>' +
       '<th class="col-od col-hide-mobile" title="' + WM_STAKES_TITLE + '">Stakes</th>' +
       '<th class="col-od" title="' + WM_JUICE_TITLE + '">Juice</th>' +
-      "<th class=\"col-od\">DILLON pick</th><th class=\"col-hide-mobile\">DILLON Line</th><th class=\"col-hide-mobile\">Projected</th>" +
-      (ps ? "" : '<th title="Playoff odds with a win / with a loss">Playoff odds (W/L)</th>') +
-      '<th class="' + (ps ? "" : "col-hide-mobile") + '" title="Super Bowl odds with a win / with a loss">Super Bowl odds (W/L)</th>' +
+      "<th class=\"col-od\">DILLON pick</th><th class=\"col-hide-mobile\">DILLON Line</th><th class=\"col-od col-hide-mobile\">DILLON O/U</th>" +
+      (ps ? "" : '<th title="Playoff odds with a win / with a loss">Playoff Odds (W/L)</th>') +
+      '<th class="' + (ps ? "" : "col-hide-mobile") + '" title="Super Bowl odds with a win / with a loss">SB Odds (W/L)</th>' +
       "<th>Result</th></tr></thead><tbody>" + rows + "</tbody></table>";
     attachLinks(wmWrap);
   }
