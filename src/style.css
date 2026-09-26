@@ -1729,3 +1729,6 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
   margin-bottom: 0.9rem;
 }
 .sport-chart-wrap svg.sport-city-chart { width: 100%; height: 13.75rem; display: block; }
+
+/* SALAAM CFP race: dashed line under the projected cut (4th / 12th team). */
+.cfp-cut-row td { border-bottom: 2px dashed var(--accent); }

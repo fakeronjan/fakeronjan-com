@@ -5,6 +5,7 @@
 
   var BAR_D = 20, BAR_CAP = 48;
   var PLACEHOLDER_LM = ["No match yet", "No competitive match yet", "No Game", "Bye / No Game"];
+  var CFP_FIRST_SEASON = 2014;
   var CONFERENCES = ["ACC", "Big Ten", "Big 12", "Pac-12", "SEC", "Big East", "Other"];
 
   // Historical conference names → compact badge label (realignment-aware).
@@ -98,6 +99,18 @@
     if (rank == null) return '<div class="od-val">' + r + "</div>";
     return '<div class="od-val">' + r + '</div><div class="od-rank">' + rank + "</div>";
   }
+
+  // Odds cell: value over league-wide rank (DILLON's fmtSBOdds). 2014+ only.
+  function fmtOdds(odds, rank) {
+    if (odds == null) return '<span class="sport-dim-dash">-</span>';
+    var displayed = (odds * 100).toFixed(1);
+    if (displayed === "0.0") return "-";
+    var value = parseFloat(displayed) >= 100 ? "100%" : displayed + "%";
+    if (rank == null) return value;
+    return '<div class="od-val">' + value + '</div><div class="od-rank">' + rank + "</div>";
+  }
+  var CFP_ODDS_TITLE = "Probability of making the College Football Playoff, from simulating the rest of the season, the conference title games and the selection committee's choices with current ratings.";
+  var TITLE_ODDS_TITLE = "Probability of winning the national championship, from simulating the rest of the season, the selection committee and the playoff with current ratings. League-wide probabilities sum to 100%.";
 
   function fmtRankMove(rank, prevRank) {
     if (prevRank == null || prevRank === rank) return String(rank);
@@ -274,6 +287,7 @@
   document.getElementById("ncaafbTabs").addEventListener("click", function (e) {
     var btn = e.target.closest(".sport-tab");
     if (!btn) return;
+    state.userPickedTab = true;
     activateTab(btn.dataset.tab);
   });
 
@@ -307,6 +321,7 @@
     countEl.textContent = teams.length + " team" + (teams.length !== 1 ? "s" : "");
 
     var barSc = barScale(teams.map(function (t) { return t.rating; }));
+    var hasOdds = season >= CFP_FIRST_SEASON;
 
     var rows = teams
       .map(function (t) {
@@ -329,6 +344,8 @@
           "<td>" + ratingBar(t.rating, barSc) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
+          (hasOdds ? '<td class="rating-cell col-od col-hide-mobile">' + fmtOdds(t.cfp_odds, t.cfp_odds_rank) + "</td>" +
+            '<td class="rating-cell col-od col-hide-mobile">' + fmtOdds(t.title_odds, t.title_odds_rank) + "</td>" : "") +
           '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) +
           (t.last_match_date ? '<div class="sub-line-italic">' + t.last_match_date + "</div>" : "") + "</td>" +
           '<td class="col-hide-mobile col-honors">' + honorsBadge(t.cfp_status, t.cfp_appearance, t.champ_era, t.title_selectors) + "</td>" +
@@ -342,6 +359,8 @@
       '<th class="col-rank">OVR #</th><th class="col-rank col-hide-mobile">Conf #</th><th>Team</th>' +
       '<th class="col-hide-mobile">Conf</th><th class="col-record">W-L (Pct)</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
+      (hasOdds ? '<th class="col-hide-mobile col-od" title="' + CFP_ODDS_TITLE + '">CFP Odds</th>' +
+        '<th class="col-hide-mobile col-od" title="' + TITLE_ODDS_TITLE + '">Title Odds</th>' : "") +
       '<th class="col-last-match">Last Game</th>' +
       '<th class="col-hide-mobile col-honors">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
@@ -540,6 +559,8 @@
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOdds(g.cfp_odds, g.cfp_odds_rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOdds(g.title_odds, g.title_odds_rank) + "</td>" +
         '<td class="col-hide-mobile">' + confBadge(g.conference_raw || g.conference, !!g.conference_champ) + "</td>" +
         '<td class="col-hide-mobile col-honors">' + honorsBadge(g.cfp_status, g.cfp_appearance, g.champ_era, g.title_selectors) + "</td>" +
         "</tr>"
@@ -551,6 +572,8 @@
       '<th class="col-rank">Season</th><th>Week</th><th class="col-last-match">Last Game</th>' +
       '<th class="col-record">W-L (Pct)</th><th class="col-rank">OVR #</th><th class="col-rank col-hide-mobile">Conf #</th>' +
       "<th>Rating</th><th class=\"col-hide-mobile col-od\">OFF</th><th class=\"col-hide-mobile col-od\">DEF</th>" +
+      '<th class="col-hide-mobile col-od" title="' + CFP_ODDS_TITLE + '">CFP Odds</th>' +
+      '<th class="col-hide-mobile col-od" title="' + TITLE_ODDS_TITLE + '">Title Odds</th>' +
       '<th class="col-hide-mobile">Conf</th><th class="col-hide-mobile col-honors">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";
     attachLinks(tsTableWrap);
@@ -860,6 +883,228 @@
   ]);
   buildPills("historyConfPills", state.historyConf, function (v) { state.historyConf = v; renderChampions(); });
 
+  // ═══════════════════════════════ CFP ═══════════════════════════════════
+  // Before selection day: the CFP race (every team at 1%+ to make the field),
+  // from the season's weekly standings files. From selection day on: the
+  // knockout grid (same code as sports-nfl.js), from playoff_odds/<season>.json.
+  // Lands here while the current season's playoff is under way.
+
+  var cfpTitle = document.getElementById("cfpTitle");
+  var cfpNote = document.getElementById("cfpNote");
+  var cfpSeasonSelect = document.getElementById("cfpSeasonSelect");
+  var cfpDateSelect = document.getElementById("cfpDateSelect");
+  var cfpStamp = document.getElementById("cfpStamp");
+  var poWrap = document.getElementById("poWrap");
+  var POWER_CONFS = ["SEC", "Big Ten", "Big 12", "ACC"];
+  state.cfpSeasons = {};
+  state.poIndex = null;
+
+  function fieldSize(season) { return season >= 2024 ? 12 : 4; }
+  function cfpPct(v) { return v * 100 < 1 ? "&lt;1%" : Math.round(v * 100) + "%"; }
+  function cfpHeat(v, lo, hi) {
+    var MAXA = 0.70;
+    if (!isFinite(lo) || hi <= lo) return "background:color-mix(in srgb, var(--accent) 6%, #fff)";
+    var x = Math.max(0, Math.min(1, (v - lo) / (hi - lo)));
+    if (x >= 0.5) return "background:color-mix(in srgb, var(--accent) " + ((x - 0.5) * 2 * MAXA * 100).toFixed(1) + "%, #fff)";
+    return "background:color-mix(in srgb, var(--accent-2) " + ((0.5 - x) * 2 * MAXA * 100).toFixed(1) + "%, #fff)";
+  }
+
+  function loadCfp(seasonsIndex) {
+    var seasons = seasonsIndex.seasons.filter(function (y) { return y >= CFP_FIRST_SEASON; });
+    cfpSeasonSelect.innerHTML = seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
+    cfpSeasonSelect.onchange = function () { loadCfpSeason(Number(cfpSeasonSelect.value)); };
+    cfpDateSelect.onchange = renderCfp;
+    return fetch(BASE + "/playoff_odds/index.json")
+      .then(function (r) { return r.json(); })
+      .catch(function () { return { seasons: [], n_sims: 10000 }; })
+      .then(function (idx) {
+        state.poIndex = idx;
+        return loadCfpSeason(seasons[0]);
+      })
+      .then(function () {
+        var d = state.cfpSeasons[seasons[0]];
+        var last = d.bracket && d.bracket.snapshots[d.bracket.snapshots.length - 1];
+        if (last && last.stage !== "Champion" && !state.userPickedTab) activateTab("cfp");
+      });
+  }
+
+  function loadCfpSeason(season) {
+    var have = state.cfpSeasons[season];
+    var p = have ? Promise.resolve(have) : Promise.all([
+      fetch(BASE + "/seasons/" + season + ".json").then(function (r) { return r.json(); }),
+      state.poIndex.seasons.indexOf(season) !== -1
+        ? fetch(BASE + "/playoff_odds/" + season + ".json").then(function (r) { return r.json(); })
+        : Promise.resolve(null),
+    ]).then(function (res) {
+      // Weekly race snapshots up to selection day, then one per playoff game day.
+      var br = res[1] ? res[1].snapshots : [];
+      var sel = br.length ? br[0].date : "9999";
+      var views = res[0].snapshots.filter(function (s) {
+        return s.date < sel && s.teams.some(function (t) { return t.cfp_odds != null; });
+      }).map(function (s) { return { date: s.date, label: s.label || "", race: s }; });
+      br.forEach(function (s, i) {
+        views.push({ date: s.date, label: i === 0 ? "Selection day" : s.stage, bracket: s });
+      });
+      return { season: season, views: views, bracket: res[1] };
+    });
+    return p.then(function (d) {
+      state.cfpSeasons[season] = d;
+      state.cfpSeason = season;
+      cfpSeasonSelect.value = String(season);
+      cfpDateSelect.innerHTML = d.views.map(function (v, i) {
+        return '<option value="' + i + '">' + v.date + (v.label ? " | " + v.label : "") + "</option>";
+      }).reverse().join("");
+      cfpDateSelect.value = String(d.views.length - 1);
+      renderCfp();
+    });
+  }
+
+  function renderCfp() {
+    var d = state.cfpSeasons[state.cfpSeason];
+    if (!d) return;
+    var v = d.views[Number(cfpDateSelect.value)];
+    if (v.bracket) renderCfpBracket(d, v.bracket);
+    else renderCfpRace(d, v.race);
+  }
+
+  function renderCfpRace(d, snap) {
+    var season = d.season;
+    var n = fieldSize(season);
+    var twelve = n === 12;
+    cfpTitle.textContent = season + " College Football Playoff Race";
+    cfpNote.textContent = (state.poIndex.n_sims || 10000).toLocaleString() +
+      " Monte Carlo simulations of the rest of the season, the conference title games, the selection committee and the playoff · teams with a 1%+ chance to make the field";
+    var teams = snap.teams.filter(function (t) { return t.cfp_odds != null && t.cfp_odds >= 0.01; })
+      .sort(function (a, b) { return (b.cfp_odds - a.cfp_odds) || (b.title_odds - a.title_odds); });
+    var g6Label = season >= 2026 ? "Group of 6" : "Group of 5";
+    var g6 = snap.teams.filter(function (t) {
+      var c = t.conference_raw || t.conference;
+      return t.cfp_odds && POWER_CONFS.indexOf(c) === -1 && c !== "FBS Independents" && !(c === "Pac-12" && season < 2024);
+    }).sort(function (a, b) { return b.cfp_odds - a.cfp_odds; }).slice(0, 4).filter(function (t) { return t.cfp_odds >= 0.01; });
+    cfpStamp.innerHTML = '<span class="wc-md-label">' + (snap.label || snap.date) + "</span>" +
+      (twelve && g6.length ? '<span class="wc-md-label">' + g6Label + " bid</span>" + g6.map(function (t) {
+        return '<span class="wc-result">' + (t.display_name || t.team) + " <b>" + cfpPct(t.cfp_odds) + "</b></span>";
+      }).join("") : "");
+
+    function range(key) {
+      var vs = teams.map(function (t) { return t[key]; }).filter(function (v) { return v != null; });
+      return [Math.min.apply(null, vs), Math.max.apply(null, vs)];
+    }
+    var cols = [["conf_odds", "Conf Title"], ["cfp_odds", "CFP"]];
+    if (twelve) cols.push(["bye_odds", "Bye"]);
+    cols.push(["title_odds", "Title 🏆"]);
+    var ranges = cols.map(function (c) { return range(c[0]); });
+    var rows = teams.map(function (t, i) {
+      var slug = state.nameToSlug[t.team];
+      var label = t.display_name || t.team;
+      var teamTd = slug
+        ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + season + '">' + label + "</td>"
+        : '<td class="team-cell">' + label + "</td>";
+      var cells = cols.map(function (c, k) {
+        var v = t[c[0]];
+        var cls = "col-od wc-heat" + (k === cols.length - 1 ? " wc-champ-cell" : "") + (c[0] === "conf_odds" || c[0] === "bye_odds" ? " col-hide-mobile" : "");
+        if (v == null || (c[0] === "conf_odds" && !v)) return '<td class="' + cls + '"><span style="color:var(--muted)">-</span></td>';
+        // One-sided shade (0 = white): the long tail of 1-5% teams would
+        // otherwise turn the whole table the low-end color.
+        var a = ranges[k][1] > 0 ? Math.min(1, v / ranges[k][1]) * 70 : 0;
+        return '<td class="' + cls + '" style="background:color-mix(in srgb, var(--accent) ' + a.toFixed(1) + '%, #fff)">' + cfpPct(v) + "</td>";
+      }).join("");
+      var cut = i === n - 1 && teams.length > n ? ' class="cfp-cut-row"' : "";
+      return "<tr" + cut + ">" +
+        '<td class="col-rank">' + (i + 1) + "</td>" + teamTd +
+        '<td class="col-hide-mobile">' + confBadge(t.conference_raw || t.conference, false) + "</td>" +
+        '<td class="col-record">' + fmtRecord(t.regular_record || t.record) + "</td>" +
+        '<td class="col-od rating-cell">' + fmtOD(t.rating, t.rank) + "</td>" +
+        cells + "</tr>";
+    }).join("");
+    poWrap.innerHTML =
+      '<table class="sport-table wc-odds-table"><thead><tr>' +
+      '<th style="text-align:center;width:44px">#</th><th style="width:176px">Team</th>' +
+      '<th class="col-hide-mobile" style="width:76px">Conf</th>' +
+      '<th class="col-record" style="width:104px">W-L (Pct)</th>' +
+      '<th class="col-od" style="width:60px">Rating</th>' +
+      cols.map(function (c) {
+        return '<th class="col-od wc-col' + (c[0] === "conf_odds" || c[0] === "bye_odds" ? " col-hide-mobile" : "") + '">' + c[1] + "</th>";
+      }).join("") +
+      "</tr></thead><tbody>" + rows + "</tbody></table>" +
+      (teams.length > n ? '<p class="sport-note">Line = projected cut: the ' + n + " likeliest teams to make the field</p>" : "");
+    attachLinks(poWrap);
+  }
+
+  function renderCfpBracket(d, view) {
+    var short = d.bracket.rounds_short;
+    var nR = short.length;
+    cfpTitle.textContent = d.season + " College Football Playoff 🏆 Win Probability";
+    cfpNote.textContent = (view.n_sims || state.poIndex.n_sims || 0).toLocaleString() + " Monte Carlo simulations · each column is the chance to advance past that round";
+    cfpStamp.innerHTML = '<span class="wc-md-label">' + view.stage + "</span>";
+
+    var teams = view.teams.map(function (t) {
+      var byRound = {};
+      t.series.forEach(function (x) { byRound[x.round] = x; });
+      var out = -1;
+      t.series.forEach(function (x) { if (x.done && !x.won) out = Math.max(out, short.indexOf(x.round)); });
+      return Object.assign({}, t, { _by: byRound, _out: out });
+    });
+    var ordered = teams.slice().sort(function (a, b) {
+      if (!a.eliminated !== !b.eliminated) return a.eliminated ? 1 : -1;
+      if (!a.eliminated) return (b.adv[nR - 1] - a.adv[nR - 1]) || (a.seed - b.seed);
+      return (b._out - a._out) || (b.rating - a.rating);
+    });
+    var alive = teams.filter(function (t) { return !t.eliminated; });
+    var range = short.map(function (rd, k) {
+      var vs = alive.filter(function (t) { return !(t._by[rd] && t._by[rd].done) && k + 1 >= t.enter; }).map(function (t) { return t.adv[k]; });
+      return [vs.length ? Math.min.apply(null, vs) : Infinity, vs.length ? Math.max.apply(null, vs) : -Infinity];
+    });
+    function cell(t, k) {
+      var rd = short[k];
+      var cls = "col-od wc-heat" + (k === nR - 1 ? " wc-champ-cell" : "") + (k < nR - 2 ? " col-hide-mobile" : "");
+      var x = t._by[rd];
+      if (x && x.done) return '<td class="' + cls + '"><span class="' + (x.won ? "wc-w" : "wc-l") + ' wc-wl">' + (x.won ? "W" : "L") + "</span></td>";
+      if (k + 1 < t.enter) return '<td class="' + cls + '"><span style="color:var(--muted)">bye</span></td>';
+      if (t.eliminated) return '<td class="' + cls + '"><span style="color:var(--muted)">-</span></td>';
+      return '<td class="' + cls + '" style="' + cfpHeat(t.adv[k], range[k][0], range[k][1]) + '">' + cfpPct(t.adv[k]) + "</td>";
+    }
+    function resultsCell(t) {
+      var lines = t.series.slice().reverse().map(function (x) {
+        var rd = '<span class="wc-rd">' + x.round + "</span>";
+        var opp = '<span class="wc-vs">vs. ' + x.opp + "</span>";
+        if (!x.done) return rd + " " + opp;
+        return rd + ' <span class="' + (x.won ? "wc-w" : "wc-l") + '">' + (x.won ? "W" : "L") + " " + x.score + "</span> " + opp;
+      });
+      var body = lines.length
+        ? lines.map(function (p) { return '<div class="wc-seg">' + p + "</div>"; }).join("")
+        : '<span style="color:var(--muted)">-</span>';
+      return '<td class="wc-results"><div class="wc-results-inner">' + body + "</div></td>";
+    }
+    var rows = ordered.map(function (t) {
+      var slug = state.nameToSlug[t.team];
+      var teamTd = slug
+        ? '<td class="team-cell linked" data-team-slug="' + slug + '" data-season="' + d.season + '">' + t.team + "</td>"
+        : '<td class="team-cell">' + t.team + "</td>";
+      return "<tr>" +
+        '<td class="col-rank">' + t.seed + "</td>" + teamTd +
+        '<td class="col-od rating-cell">' + fmtOD(t.rating, t.rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
+        resultsCell(t) +
+        short.map(function (_, k) { return cell(t, k); }).join("") +
+        "</tr>";
+    }).join("");
+    var heads = short.map(function (rd, k) {
+      var label = k === nR - 1 ? rd + " 🏆" : rd;
+      return '<th class="col-od wc-col' + (k < nR - 2 ? " col-hide-mobile" : "") + '">' + label + "</th>";
+    }).join("");
+    poWrap.innerHTML =
+      '<table class="sport-table wc-odds-table"><thead><tr>' +
+      '<th style="text-align:center;width:56px">Seed</th><th style="width:176px">Team</th>' +
+      '<th class="col-od" style="width:60px">Rating</th>' +
+      '<th class="col-hide-mobile col-od" style="width:56px">OFF</th>' +
+      '<th class="col-hide-mobile col-od" style="width:56px">DEF</th>' +
+      "<th>Results</th>" + heads +
+      "</tr></thead><tbody>" + rows + "</tbody></table>";
+    attachLinks(poWrap);
+  }
+
   // ═══════════════════════════════ init ═══════════════════════════════
 
   buildPills("tsViewPills", state.tsView, function (v) {
@@ -893,6 +1138,7 @@
     loadSeason(data.seasons[0]);
     loadChampions();
     loadGoat();
+    loadCfp(data);
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });
