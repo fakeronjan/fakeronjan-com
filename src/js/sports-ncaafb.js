@@ -895,6 +895,7 @@
   var cfpDateSelect = document.getElementById("cfpDateSelect");
   var cfpStamp = document.getElementById("cfpStamp");
   var poWrap = document.getElementById("poWrap");
+  var cfpFoot = document.getElementById("cfpFoot");
   var POWER_CONFS = ["SEC", "Big Ten", "Big 12", "ACC"];
   state.cfpSeasons = {};
   state.poIndex = null;
@@ -1026,8 +1027,9 @@
       cols.map(function (c) {
         return '<th class="col-od wc-col' + (c[0] === "conf_odds" || c[0] === "bye_odds" ? " col-hide-mobile" : "") + '">' + c[1] + "</th>";
       }).join("") +
-      "</tr></thead><tbody>" + rows + "</tbody></table>" +
-      (teams.length > n ? '<p class="sport-note">Line = projected cut: the ' + n + " likeliest teams to make the field</p>" : "");
+      "</tr></thead><tbody>" + rows + "</tbody></table>";
+    cfpFoot.hidden = teams.length <= n;
+    cfpFoot.textContent = "Line = projected cut: the " + n + " likeliest teams to make the field";
     attachLinks(poWrap);
   }
 
@@ -1037,6 +1039,7 @@
     cfpTitle.textContent = d.season + " College Football Playoff 🏆 Win Probability";
     cfpNote.textContent = (view.n_sims || state.poIndex.n_sims || 0).toLocaleString() + " Monte Carlo simulations · each column is the chance to advance past that round";
     cfpStamp.innerHTML = '<span class="wc-md-label">' + view.stage + "</span>";
+    cfpFoot.hidden = true;
 
     var teams = view.teams.map(function (t) {
       var byRound = {};

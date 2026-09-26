@@ -1732,3 +1732,6 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 
 /* SALAAM CFP race: dashed line under the projected cut (4th / 12th team). */
 .cfp-cut-row td { border-bottom: 2px dashed var(--accent); }
+/* .sport-note's negative top margin is for notes under a heading; under a
+   table it pulled the text into the table's bottom border. */
+.cfp-cut-note { margin-top: 0.75rem; }
