@@ -1376,7 +1376,7 @@
     var wk = d.weeks.filter(function (w) { return w.week === week; })[0];
     var ps = week >= 100;
     wmTitle.textContent = d.season + " " + wmWeekLabel(week);
-    wmNote.textContent = "Win probability, line and O/U for every game, from DILLON's ratings going into the week. " +
+    wmNote.textContent = "Win probability, line, and O/U for every game from DILLON's ratings going into the week. " +
       "Stakes show each team's playoff and Super Bowl odds with a win and with a loss.";
 
     // DILLON's record picking winners: this week, and the season through it.
