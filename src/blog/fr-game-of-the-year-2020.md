@@ -78,6 +78,7 @@ tags: [game-of-the-year]
 <p>It had us make new friends, like the ostrich Phoebe, my island bestie and someone I made sure to talk to every day.</p>
 <figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2020/animal-crossing-5.jpg"/></figure>
 <p>It inspired creativity, leading to an in-game performance of <em>Hamilton</em> among countless other pop culture references.</p>
+<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=PLaZHtji9M_fsRKUkBfFnUpFDx76MMGW45" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
 <p>It was even a fascinating view into the innate materialistic urges we all have, as we all took island paradises and molded them into the modern society we simultaneously miss and want to escape.</p>
 <figure><img alt="" loading="lazy" src="/blog/img/fr/game-of-the-year-2020/animal-crossing-6.jpg"/></figure>
 <p>More than anything, this game gave us a reason to smile, to press on, to get through this pandemic to the other side.</p>
