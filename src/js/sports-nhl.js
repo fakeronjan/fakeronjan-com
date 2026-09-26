@@ -1288,7 +1288,7 @@
         state.poIndex = idx;
         if (!idx.seasons.length) return;
         poNav.hidden = false;
-        poSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + fmtSeason(y) + "</option>"; }).join("");
+        poSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
         poSeasonSelect.onchange = function () { loadPoSeason(Number(poSeasonSelect.value), null); };
         return loadPoSeason(idx.seasons[0], null).then(function () {
           // Land here while the current season's playoffs are undecided.
@@ -1324,7 +1324,7 @@
     var view = d.snapshots.filter(function (s) { return s.date === poDateSelect.value; })[0] || d.snapshots[d.snapshots.length - 1];
     var short = d.rounds_short;
     var nR = short.length;
-    poTitle.textContent = fmtSeason(d.season) + " Stanley Cup Playoffs 🏆 Win Probability";
+    poTitle.textContent = d.season + " Stanley Cup Playoffs 🏆 Win Probability";
     poNote.textContent = (view.n_sims || state.poIndex.n_sims || 0).toLocaleString() + " Monte Carlo simulations · each column is the chance to advance past that round";
 
     if (view.results && view.results.length) {
