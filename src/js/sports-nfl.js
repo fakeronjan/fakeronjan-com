@@ -81,6 +81,7 @@
   }
 
   // 0% (eliminated) and rounds-to-0.0% render as '-'; 100% drops the decimal.
+  var PLAYOFF_ODDS_TITLE = "Probability of making the playoffs, from simulating the rest of the regular season with current ratings.";
   function fmtSBOdds(odds, rank) {
     if (odds == null) return "-";
     var displayed = (odds * 100).toFixed(1);
@@ -326,6 +327,7 @@
           "<td>" + ratingBar(t.rating, barSc) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
+          '<td class="rating-cell col-od col-hide-mobile">' + fmtSBOdds(t.playoff_odds, t.playoff_odds_rank) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtSBOdds(t.sb_odds, t.sb_odds_rank) + "</td>" +
           '<td class="col-last-match">' + lastGameCell + "</td>" +
           "</tr>"
@@ -339,6 +341,7 @@
       '<th class="col-rank">Rank</th><th>Team</th><th class="col-hide-mobile col-conf">Conf</th>' +
       '<th class="col-record">W-L (Pct)</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
+      '<th class="col-hide-mobile col-od" title="' + PLAYOFF_ODDS_TITLE + '">Playoff Odds</th>' +
       '<th class="col-hide-mobile col-od" title="' + sbOddsTitle + '">SB Odds</th><th class="col-last-match">Last Game</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
     attachLinks(standingsTableWrap);
@@ -529,6 +532,7 @@
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtSBOdds(g.playoff_odds, g.playoff_odds_rank) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtSBOdds(g.sb_odds, g.sb_odds_rank) + "</td>" +
         '<td class="col-hide-mobile col-conf">' + confDivBadge(g.conference || data.conference, g.division || data.division, g.division_winner, g.sb_status) + "</td>" +
         "</tr>"
@@ -541,6 +545,7 @@
       '<th class="col-rank">Season</th><th>Week</th><th class="col-last-match">Last Game</th>' +
       '<th class="col-record">W-L (Pct)</th><th class="col-rank">Rank</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
+      '<th class="col-hide-mobile col-od" title="' + PLAYOFF_ODDS_TITLE + '">Playoff Odds</th>' +
       '<th class="col-hide-mobile col-od" title="' + sbOddsTitle + '">SB Odds</th><th class="col-hide-mobile col-conf">Conf</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";
     attachLinks(tsTableWrap);
