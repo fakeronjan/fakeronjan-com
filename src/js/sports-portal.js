@@ -1,4 +1,14 @@
 (function () {
+  // Odds display, fleet-wide: whole percent; non-zero under 0.5% is "<1%",
+  // 99.5% up to (not incl.) 100% is ">99%"; 0 renders as '-'.
+  function oddsPct(v) {
+    if (v == null) return "-";
+    var x = v * 100;
+    if (x <= 0) return "-";
+    if (x < 0.5) return "&lt;1%";
+    if (x >= 99.5 && x < 100) return "&gt;99%";
+    return Math.round(x) + "%";
+  }
   var GH = "https://fakeronjan.github.io";
   var SQ = "https://fakeronjan.com";
 
@@ -177,8 +187,7 @@
           var odds = titleOdds(t);
           if (odds == null) cells.push("-");
           else {
-            var pct = (odds * 100).toFixed(1);
-            cells.push(pct === "0.0" ? "-" : pct + "%");
+            cells.push(oddsPct(odds));
           }
         }
         if (showLast) cells.push(escapeHtml(fmtLast(t.last_match)));

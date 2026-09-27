@@ -1,4 +1,14 @@
 (function () {
+  // Odds display, fleet-wide: whole percent; non-zero under 0.5% is "<1%",
+  // 99.5% up to (not incl.) 100% is ">99%"; 0 renders as '-'.
+  function oddsPct(v) {
+    if (v == null) return "-";
+    var x = v * 100;
+    if (x <= 0) return "-";
+    if (x < 0.5) return "&lt;1%";
+    if (x >= 99.5 && x < 100) return "&gt;99%";
+    return Math.round(x) + "%";
+  }
   var page = document.getElementById("sportPage");
   var SOURCE = page.dataset.source;
   var BASE = SOURCE + "/data";
@@ -1109,7 +1119,7 @@
       var slug = state.nameToSlug[name];
       return slug ? '<span class="team-link linked" data-team-slug="' + slug + '" data-ts-view="worldcup">' + (flag || "") + " " + name + "</span>" : (flag || "") + " " + name;
     }
-    function pct(v) { return v * 100 < 1 ? "&lt;1%" : Math.round(v * 100) + "%"; }
+    function pct(v) { return oddsPct(v); }
     var A_LO = 0.16, A_HI = 0.70;
     var vs = ups.map(function (u) { return u.win_prob; });
     var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs);
@@ -1265,7 +1275,7 @@
     }
     wcOddsStamp.innerHTML = stampHtml;
 
-    function pct(v) { return v * 100 < 1 ? "&lt;1%" : Math.round(v * 100) + "%"; }
+    function pct(v) { return oddsPct(v); }
     var MAXA = 0.70;
     var KO_COL = { R32: "r16", R16: "qf", QF: "sf", SF: "final", Final: "champ" };
     teams.forEach(function (t) {

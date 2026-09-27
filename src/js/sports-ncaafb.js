@@ -1,4 +1,14 @@
 (function () {
+  // Odds display, fleet-wide: whole percent; non-zero under 0.5% is "<1%",
+  // 99.5% up to (not incl.) 100% is ">99%"; 0 renders as '-'.
+  function oddsPct(v) {
+    if (v == null) return "-";
+    var x = v * 100;
+    if (x <= 0) return "-";
+    if (x < 0.5) return "&lt;1%";
+    if (x >= 99.5 && x < 100) return "&gt;99%";
+    return Math.round(x) + "%";
+  }
   var page = document.getElementById("sportPage");
   var SOURCE = page.dataset.source;
   var BASE = SOURCE + "/data";
@@ -103,9 +113,7 @@
   // Odds cell: value over league-wide rank (DILLON's fmtSBOdds). 2014+ only.
   function fmtOdds(odds, rank) {
     if (odds == null) return '<span class="sport-dim-dash">-</span>';
-    var displayed = (odds * 100).toFixed(1);
-    if (displayed === "0.0") return "-";
-    var value = parseFloat(displayed) >= 100 ? "100%" : displayed + "%";
+    var value = oddsPct(odds);
     if (rank == null) return value;
     return '<div class="od-val">' + value + '</div><div class="od-rank">' + rank + "</div>";
   }
@@ -901,7 +909,7 @@
   state.poIndex = null;
 
   function fieldSize(season) { return season >= 2024 ? 12 : 4; }
-  function cfpPct(v) { return v * 100 < 1 ? "&lt;1%" : Math.round(v * 100) + "%"; }
+  function cfpPct(v) { return oddsPct(v); }
   function cfpHeat(v, lo, hi) {
     var MAXA = 0.70;
     if (!isFinite(lo) || hi <= lo) return "background:color-mix(in srgb, var(--accent) 6%, #fff)";

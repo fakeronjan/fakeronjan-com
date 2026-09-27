@@ -1,4 +1,14 @@
 (function () {
+  // Odds display, fleet-wide: whole percent; non-zero under 0.5% is "<1%",
+  // 99.5% up to (not incl.) 100% is ">99%"; 0 renders as '-'.
+  function oddsPct(v) {
+    if (v == null) return "-";
+    var x = v * 100;
+    if (x <= 0) return "-";
+    if (x < 0.5) return "&lt;1%";
+    if (x >= 99.5 && x < 100) return "&gt;99%";
+    return Math.round(x) + "%";
+  }
   var page = document.getElementById("sportPage");
   var SOURCE = page.dataset.source;
   var BASE = SOURCE + "/data";
@@ -63,9 +73,9 @@
 
   function fmtTitleOdds(odds, rank) {
     if (odds == null) return "-";
-    var pct = odds < 0.001 ? "<0.1%" : (odds * 100).toFixed(1) + "%";
-    if (rank == null) return pct;
-    return '<div class="od-val">' + pct + '</div><div class="od-rank">' + rank + "</div>";
+    var value = oddsPct(odds);
+    if (rank == null) return value;
+    return '<div class="od-val">' + value + '</div><div class="od-rank">' + rank + "</div>";
   }
 
   // Two side-by-side pills: league pill (highlighted if pennant won), and
@@ -1168,7 +1178,7 @@
         teamTd +
         '<td class="col-hide-mobile col-record">' + fmtRecordStacked(c.rs_record, c.ps_record) + "</td>" +
         '<td class="col-hide-mobile col-rank sport-dim-rank">' + oddsRank + "</td>" +
-        '<td class="sort-col rating-cell">' + (r.odds * 100).toFixed(1) + "%</td>" +
+        '<td class="sort-col rating-cell">' + oddsPct(r.odds) + "</td>" +
         "</tr>"
       );
     }).join("");
@@ -1398,7 +1408,7 @@
       return (b._out - a._out) || (b.rating - a.rating);
     });
 
-    function pct(v) { return v * 100 < 1 ? "&lt;1%" : Math.round(v * 100) + "%"; }
+    function pct(v) { return oddsPct(v); }
     var MAXA = 0.70;
     var alive = teams.filter(function (t) { return !t.eliminated; });
     var range = short.map(function (rd, k) {
