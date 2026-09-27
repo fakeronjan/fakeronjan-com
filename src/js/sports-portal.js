@@ -162,7 +162,7 @@
       if (showRecord) columns.push({ label: recordLabel, cls: "record", width: recordWidth });
       if (isSoccer && showRecord) columns.push({ label: "Pts", cls: "num" });
       if (showPlayoffs) columns.push({ label: "Playoffs", cls: "record" });
-      else if (showTitleOdds) columns.push({ label: "Title %", cls: "record" });
+      else if (showTitleOdds) columns.push({ label: "Champ %", cls: "record" });
       if (showLast) columns.push({ label: "Last", cls: "last" });
       columns.push({ label: "Rating", cls: "rating" });
 
