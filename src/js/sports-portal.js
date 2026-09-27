@@ -158,7 +158,7 @@
       var recordLabel = isSoccer ? "W-D-L" : (isHockey ? "W-L-OTL" : "W-L");
       var recordWidth = (isSoccer || isHockey) ? 60 : null;
 
-      var columns = [{ label: "Team", cls: "name" }];
+      var columns = [{ label: opts.nameLabel || "Team", cls: "name" }];
       if (showRecord) columns.push({ label: recordLabel, cls: "record", width: recordWidth });
       if (isSoccer && showRecord) columns.push({ label: "Pts", cls: "num" });
       if (showPlayoffs) columns.push({ label: "Playoffs", cls: "record" });
@@ -358,7 +358,7 @@
       cards: [
         { slug: "nba", title: "NBA: DUNCAN ♂️🏀", sectionLabel: "Current Top 5", load: function () { return loadWLS("duncan", badgeDUNCAN); } },
         { slug: "wnba", title: "WNBA: LOBO ♀️🏀", sectionLabel: "Current Top 5", load: function () { return loadWLS("lobo", badgeLOBO); } },
-        { slug: "intlbasketball", title: "Men Intl: CARMELO 🌍🏀", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("carmelo", badgeCARMELO, { showLast: true, hideRecord: true }); } },
+        { slug: "intlbasketball", title: "Men Intl: CARMELO 🌍🏀", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("carmelo", badgeCARMELO, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
       ],
     },
     {
@@ -373,21 +373,21 @@
       cards: [
         { slug: "eurosoccer", title: "Euro: ZIDANE 🇪🇺⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("zidane", badgeZIDANE); } },
         { slug: "mls", title: "MLS: COBI 🇺🇸⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("cobi", badgeCOBI); } },
-        { slug: "intlsoccer", title: "Men Intl: MESSI 🌍⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("messi", badgeMESSI, { showLast: true }); } },
+        { slug: "intlsoccer", title: "Men Intl: MESSI 🌍⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("messi", badgeMESSI, { nameLabel: "Country", showLast: true }); } },
       ],
     },
     {
       label: "Baseball",
       cards: [
         { slug: "mlb", title: "MLB: GRIFFEY ⚾", sectionLabel: "Current Top 5", load: function () { return loadWLS("griffey", badgeGRIFFEY); } },
-        { slug: "intlbaseball", title: "Men Intl: ICHIRO 🌍⚾", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("ichiro", badgeICHIRO, { showLast: true, hideRecord: true }); } },
+        { slug: "intlbaseball", title: "Men Intl: ICHIRO 🌍⚾", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("ichiro", badgeICHIRO, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
       ],
     },
     {
       label: "Hockey",
       cards: [
         { slug: "nhl", title: "NHL: SAKIC 🥅🏒", sectionLabel: "Current Top 5", load: function () { return loadWLS("sakic", badgeSAKIC); } },
-        { slug: "intlhockey", title: "Men Intl: FORSBERG 🌍🏒", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("forsberg", badgeFORSBERG, { showLast: true, hideRecord: true }); } },
+        { slug: "intlhockey", title: "Men Intl: FORSBERG 🌍🏒", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("forsberg", badgeFORSBERG, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
       ],
     },
     {
