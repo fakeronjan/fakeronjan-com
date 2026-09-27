@@ -1154,6 +1154,7 @@ footer {
 .wc-when { color: var(--muted); font-variant-numeric: tabular-nums; }
 .wc-w { color: var(--accent); font-weight: 700; }
 .wc-l { color: var(--accent-2); font-weight: 700; }
+.wc-t { color: var(--muted); font-weight: 700; }
 .wc-heat .wc-wl { font-size: 0.8rem; font-weight: 800; }
 
 .wc-stamp { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; margin: 0.1rem 0 0.9rem; font-size: 0.78rem; }

@@ -1411,7 +1411,11 @@
     var mark = ok == null ? "&nbsp;" : (ok ? '<span class="wc-w">&#10003;</span>' : '<span class="wc-l">&#10007;</span>');
     // Three lines that mirror the Matchup cell: away, home, then the pick
     // mark on the kickoff line's row.
-    return "<div>" + g.away + " " + g.result.away + "</div><div>" + g.home + " " + g.result.home + "</div>" +
+    function wlt(us, them) {
+      return us > them ? ' <span class="wc-w">W</span>' : us < them ? ' <span class="wc-l">L</span>' : ' <span class="wc-t">T</span>';
+    }
+    return "<div>" + g.away + " " + g.result.away + wlt(g.result.away, g.result.home) + "</div>" +
+      "<div>" + g.home + " " + g.result.home + wlt(g.result.home, g.result.away) + "</div>" +
       (wmKickoff(g) ? '<div class="wm-mark-line sub-line-italic">' + mark + "</div>" : "");
   }
 
