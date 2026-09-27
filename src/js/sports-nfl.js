@@ -1285,6 +1285,22 @@
   var wmNote = document.getElementById("wmNote");
   var wmSeasonSelect = document.getElementById("wmSeasonSelect");
   var wmWeekSelect = document.getElementById("wmWeekSelect");
+  var wmSortPills = document.getElementById("wmSortPills");
+  // Sort choice persists across weeks/seasons and visits (per device).
+  state.wmSort = "juice";
+  try { if (localStorage.getItem("dillonWmSort") === "kickoff") state.wmSort = "kickoff"; } catch (e) {}
+  function syncWmSortPills() {
+    wmSortPills.querySelectorAll(".pill").forEach(function (p) { p.classList.toggle("active", p.dataset.wmsort === state.wmSort); });
+  }
+  syncWmSortPills();
+  wmSortPills.addEventListener("click", function (e) {
+    var btn = e.target.closest(".pill");
+    if (!btn || btn.dataset.wmsort === state.wmSort) return;
+    state.wmSort = btn.dataset.wmsort;
+    try { localStorage.setItem("dillonWmSort", state.wmSort); } catch (err) {}
+    syncWmSortPills();
+    renderWeeklyMatchups();
+  });
   var wmStamp = document.getElementById("wmStamp");
   var wmWrap = document.getElementById("wmWrap");
   state.wmSeasons = {};
@@ -1419,11 +1435,20 @@
     if (season[0] + season[1]) stamp += '<span class="wc-result">' + d.season + " season <b>" + season[0] + "-" + season[1] + "</b></span>";
     wmStamp.innerHTML = stamp;
 
-    var games = wk.games.slice().sort(function (a, b) { return (b.juice || 0) - (a.juice || 0); });
+    var byJuice = function (a, b) { return (b.juice || 0) - (a.juice || 0); };
+    var games = wk.games.slice().sort(byJuice);
 
-    // Markers: the game of the week (top Juice, the table's first row)
-    // and upset-watch picks (DILLON favors the team with the worse record).
+    // Markers: the game of the week (top Juice) and upset-watch picks
+    // (DILLON favors the team with the worse record). Set before any
+    // re-sort so both sorts mark the same games.
     var gotw = games[0];
+    if (state.wmSort === "kickoff") {
+      // Earliest first; same kickoff (or same date when no time) by Juice.
+      games.sort(function (a, b) {
+        var ka = a.kickoff || (a.date ? a.date + "T" : ""), kb = b.kickoff || (b.date ? b.date + "T" : "");
+        return ka < kb ? -1 : ka > kb ? 1 : byJuice(a, b);
+      });
+    }
     function isUpset(g) {
       if (ps) return false;
       var pk = wmPick(g);
