@@ -1304,6 +1304,22 @@
     if (v === 0) return "0%";
     return oddsPct(v);
   }
+  // Kickoff in the viewer's own time zone (data is UTC); M/D/YYYY per fleet
+  // style. Games with no listed time show just the day and date.
+  function wmKickoff(g) {
+    if (g.kickoff) {
+      var d = new Date(g.kickoff);
+      return d.toLocaleDateString("en-US", { weekday: "short" }) + " " +
+        d.toLocaleDateString("en-US", { month: "numeric", day: "numeric", year: "numeric" }) + ", " +
+        d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+    }
+    if (g.date) {
+      var p = g.date.split("-");
+      var dd = new Date(+p[0], +p[1] - 1, +p[2]);
+      return dd.toLocaleDateString("en-US", { weekday: "short" }) + " " + (+p[1]) + "/" + (+p[2]) + "/" + p[0];
+    }
+    return "";
+  }
   function wmSwing(s) { return s.po_win == null ? 0 : s.po_win - s.po_loss; }
 
   function wmPick(g) {
@@ -1423,7 +1439,8 @@
       return '<tr' + (g === gotw ? ' class="wm-gotw"' : "") + ">" +
         '<td class="wm-mark">' + mark + "</td>" +
         '<td class="wm-matchup"><div><span class="wm-at"></span><span class="wm-rank">' + (g.away_rank || "") + "</span>" + wmTeamLink(g.away, d.season) + ' <span class="wm-dim">' + g.away_record + "</span></div>" +
-        '<div><span class="wm-at">' + (g.neutral ? "vs." : "@") + '</span><span class="wm-rank">' + (g.home_rank || "") + "</span>" + wmTeamLink(g.home, d.season) + ' <span class="wm-dim">' + g.home_record + "</span></div></td>" +
+        '<div><span class="wm-at">' + (g.neutral ? "vs." : "@") + '</span><span class="wm-rank">' + (g.home_rank || "") + "</span>" + wmTeamLink(g.home, d.season) + ' <span class="wm-dim">' + g.home_record + "</span></div>" +
+          (wmKickoff(g) ? '<div class="wm-kick sub-line-italic">' + wmKickoff(g) + "</div>" : "") + "</td>" +
         '<td class="col-od col-hide-mobile">' + g.quality + "</td>" +
         '<td class="col-od col-hide-mobile">' + g.stakes_score + "</td>" +
         '<td class="col-od wm-juice">' + g.juice + "</td>" +
