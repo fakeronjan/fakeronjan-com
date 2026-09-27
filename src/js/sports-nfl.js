@@ -1408,8 +1408,11 @@
   function wmResult(g) {
     if (!g.result) return '<span class="wm-dim">-</span>';
     var ok = wmCorrect(g);
-    var mark = ok == null ? "" : (ok ? ' <span class="wc-w">&#10003;</span>' : ' <span class="wc-l">&#10007;</span>');
-    return wmNick(g.away) + " " + g.result.away + ", " + wmNick(g.home) + " " + g.result.home + mark;
+    var mark = ok == null ? "&nbsp;" : (ok ? '<span class="wc-w">&#10003;</span>' : '<span class="wc-l">&#10007;</span>');
+    // Three lines that mirror the Matchup cell: away, home, then the pick
+    // mark on the kickoff line's row.
+    return "<div>" + g.away + " " + g.result.away + "</div><div>" + g.home + " " + g.result.home + "</div>" +
+      (wmKickoff(g) ? '<div class="wm-mark-line sub-line-italic">' + mark + "</div>" : "");
   }
 
   function renderWeeklyMatchups() {

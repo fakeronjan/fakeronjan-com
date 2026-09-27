@@ -1746,6 +1746,7 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .wm-at { display: inline-block; width: 1.5rem; color: var(--muted); }
 #wmSortPills { align-items: center; }
 #wmSortPills .wc-md-label { margin-right: 0.1rem; }
+.wm-mark-line { margin-top: 0.15rem; font-style: normal; font-weight: 700; }  /* same box as .wm-kick */
 .wm-kick { padding-left: 3.2rem; margin-top: 0.15rem; }  /* lines up under the team names (.wm-at + .wm-rank) */
 .wm-rank { display: inline-block; min-width: 1.4rem; margin-right: 0.3rem; text-align: right; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .wm-stake { white-space: nowrap; font-variant-numeric: tabular-nums; }
