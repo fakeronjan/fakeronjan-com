@@ -1305,7 +1305,7 @@
   var wmWrap = document.getElementById("wmWrap");
   state.wmSeasons = {};
 
-  var WM_QUALITY_TITLE = "How good and how even the matchup is: the weaker team's rating and how close DILLON has the game. 0-100, ranked against every game.";
+  var WM_QUALITY_TITLE = "How good and how even the matchup is: both teams' ratings and how close DILLON has the game. 0-100, ranked against every game.";
   var WM_STAKES_TITLE = "How much the result swings both teams' playoff and Super Bowl odds. 0-100, ranked against every game.";
   var WM_JUICE_TITLE = "Quality and Stakes combined (their geometric mean). A game needs both to score high.";
   var WM_PS_WEEKS = { 101: "Wild Card", 102: "Divisional Round", 103: "Conference Championships", 104: "Super Bowl" };
