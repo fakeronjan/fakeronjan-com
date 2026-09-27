@@ -11,7 +11,7 @@ eleventyComputed:
 <div class="sport-page" id="sportPage" data-source="https://fakeronjan.github.io/zidane">
   <h1>ZIDANE <span aria-hidden="true">&#127466;&#127482;&#9917;</span></h1>
   <p class="sport-subtitle">European Club Soccer Power Rankings &middot; Beta</p>
-  <p class="sport-model-note">EPL + La Liga + Bundesliga + Serie A + Ligue 1, calibrated through Champions League and Europa League. Considers strength of opponent, margin of result, and recency. Reads as approximate goal-spread vs avg team. +1.0 = contender; +2.0 = elite; +2.5 = generational (Bayern 2019-20 = 2.98).</p>
+  <p class="sport-model-note">EPL + La Liga + Bundesliga + Serie A + Ligue 1, calibrated through Champions League and Europa League. Considers strength of opponent, margin of result, and recency. Reads as approximate goal-spread vs avg club. +1.0 = contender; +2.0 = elite; +2.5 = generational (Bayern 2019-20 = 2.98).</p>
   <p class="sport-updated">
     <span>&#128260; Updated daily</span>
     <span class="sport-updated-sep">|</span>
@@ -22,7 +22,7 @@ eleventyComputed:
 
   <nav class="sport-tabs" id="zdTabs">
     <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
-    <button class="sport-tab" data-tab="team-summary" type="button">Team Summary</button>
+    <button class="sport-tab" data-tab="team-summary" type="button">Club Summary</button>
     <button class="sport-tab" data-tab="league-history" type="button">League Winners</button>
     <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
   </nav>
@@ -42,8 +42,8 @@ eleventyComputed:
     <div class="pill-group sport-pill-wrap" id="tsLeaguePills"></div>
     <div class="pill-group" id="tsViewPills"></div>
     <div class="sport-controls">
-      <select id="tsTeamSelect" class="sport-select" aria-label="Team" disabled>
-        <option value="">- Select a team -</option>
+      <select id="tsTeamSelect" class="sport-select" aria-label="Club" disabled>
+        <option value="">- Select a club -</option>
       </select>
       <select id="tsSeasonSelect" class="sport-select" aria-label="Season" hidden></select>
       <select id="tsDateTypeSelect" class="sport-select" aria-label="Snapshot">
@@ -53,7 +53,7 @@ eleventyComputed:
     </div>
     <div id="tsDisruptedTop" class="sport-disrupted-note" hidden></div>
     <div id="tsChartWrap" class="sport-chart-wrap" hidden><svg id="tsChart"></svg></div>
-    <div id="tsTableWrap" class="sport-table-wrap"><p class="sport-loading">Select a team above</p></div>
+    <div id="tsTableWrap" class="sport-table-wrap"><p class="sport-loading">Select a club above</p></div>
     <div id="tsDisruptedBottom" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
   </section>
 

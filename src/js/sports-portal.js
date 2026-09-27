@@ -371,7 +371,7 @@
     {
       label: "Soccer",
       cards: [
-        { slug: "eurosoccer", title: "Euro: ZIDANE 🇪🇺⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("zidane", badgeZIDANE); } },
+        { slug: "eurosoccer", title: "Euro: ZIDANE 🇪🇺⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("zidane", badgeZIDANE, { nameLabel: "Club" }); } },
         { slug: "mls", title: "MLS: COBI 🇺🇸⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("cobi", badgeCOBI); } },
         { slug: "intlsoccer", title: "Men Intl: MESSI 🌍⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("messi", badgeMESSI, { nameLabel: "Country", showLast: true }); } },
       ],

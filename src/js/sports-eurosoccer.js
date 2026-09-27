@@ -289,7 +289,7 @@
       state.tsLeague = v;
       populateTeams(v);
       tsChartWrap.hidden = true;
-      tsTableWrap.innerHTML = '<p class="sport-loading">Select a team above</p>';
+      tsTableWrap.innerHTML = '<p class="sport-loading">Select a club above</p>';
       tsSeasonSelect.innerHTML = "";
     });
     populateTeams(state.tsLeague);
@@ -360,7 +360,7 @@
     }
     var season = state.seasonData.season;
 
-    countEl.textContent = teams.length + " team" + (teams.length !== 1 ? "s" : "");
+    countEl.textContent = teams.length + " club" + (teams.length !== 1 ? "s" : "");
     updateDisruptedNote("zdDisrupted", [season]);
 
     var barSc = barScale(teams.map(function (t) { return t.rating; }));
@@ -394,7 +394,7 @@
     standingsTableWrap.innerHTML =
       '<table class="sport-table"><thead><tr>' +
       '<th class="col-rank">OVR #</th><th class="col-hide-mobile col-rank">LG #</th>' +
-      "<th>Team</th><th>League</th>" +
+      "<th>Club</th><th>League</th>" +
       '<th class="col-record">League W-D-L (Pts)</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
       '<th class="col-last-match">Last Match</th>' +
@@ -470,7 +470,7 @@
   var tsTableWrap = document.getElementById("tsTableWrap");
 
   function populateTeams(league) {
-    tsTeamSelect.innerHTML = '<option value="">- Select a team -</option>';
+    tsTeamSelect.innerHTML = '<option value="">- Select a club -</option>';
     if (!league || !state.teamsIndex) { tsTeamSelect.disabled = true; return; }
     state.teamsIndex.filter(function (t) { return t.league === league; }).forEach(function (t) {
       tsTeamSelect.innerHTML += '<option value="' + t.slug + '">' + t.name + "</option>";
@@ -487,14 +487,14 @@
         data.forEach(function (t) { state.nameToSlug[t.name] = t.slug; });
       })
       .catch(function () {
-        tsTeamSelect.innerHTML = "<option>Could not load teams</option>";
+        tsTeamSelect.innerHTML = "<option>Could not load clubs</option>";
       });
   }
 
   function loadTeam(slug) {
     if (!slug) return Promise.resolve();
     if (state.teamCache[slug]) return finishLoadTeam(slug);
-    tsTableWrap.innerHTML = '<p class="sport-loading">Loading team data...</p>';
+    tsTableWrap.innerHTML = '<p class="sport-loading">Loading club data...</p>';
     return fetch(BASE + "/teams/" + slug + ".json")
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -502,7 +502,7 @@
         return finishLoadTeam(slug);
       })
       .catch(function () {
-        tsTableWrap.innerHTML = '<p class="sport-error">Could not load team data</p>';
+        tsTableWrap.innerHTML = '<p class="sport-error">Could not load club data</p>';
       });
   }
 
@@ -880,7 +880,7 @@
       '<table class="sport-table"><thead><tr>' +
       '<th style="text-align:center">All time rank</th>' +
       '<th style="text-align:center">Season</th>' +
-      "<th>Team</th><th>League</th>" +
+      "<th>Club</th><th>League</th>" +
       '<th class="col-hide-mobile col-record">League W-D-L (Pts)</th>' +
       metricHeaders +
       '<th class="col-hide-mobile">Honors</th>' +
@@ -901,7 +901,7 @@
     state.tsLeague = v;
     populateTeams(v);
     tsChartWrap.hidden = true;
-    tsTableWrap.innerHTML = '<p class="sport-loading">Select a team above</p>';
+    tsTableWrap.innerHTML = '<p class="sport-loading">Select a club above</p>';
     tsSeasonSelect.innerHTML = "";
   });
   buildPillsFromOpts("tsViewPills", [
