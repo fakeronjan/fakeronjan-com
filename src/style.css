@@ -1564,20 +1564,16 @@ table.top5 td.record, table.top5 th.col-record {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
   width: 3.75rem;
-  font-size: 0.68rem;
   white-space: nowrap;
 }
 table.top5 td.last, table.top5 th.col-last {
   text-align: left;
   color: var(--muted);
-  font-size: 0.68rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 1px;
 }
-/* the record/last cell font-size above is for data cells; headers stay at the thead size */
-table.top5 thead th.col-record, table.top5 thead th.col-last { font-size: 0.58rem; }
 table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; width: 3.1rem; }
 
 .card-badge {
