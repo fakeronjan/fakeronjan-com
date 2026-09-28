@@ -524,8 +524,8 @@
       var era = g.display_name && g.display_name !== canonical ? g.display_name : "";
       var badge = finishBadge(g.sb_status);
       var badgeStr = badge ? " " + badge : "";
-      // The team's own game day; the week's date only on rows it sat out.
-      var rowDate = (!g._isStale && g.last_match_date) || g.date;
+      // The team's own game day; the week's date on rows it sat out.
+      var rowDate = g.game_date || g.date;
       var snapshotCell = wkLabel
         ? wkLabel + '<div class="sub-line-italic">' + rowDate + "</div>"
         : rowDate;
