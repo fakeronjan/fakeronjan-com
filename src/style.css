@@ -1103,13 +1103,13 @@ footer {
 }
 
 /* ── World Cup Knockout Odds / Upsets (MESSI) ──────────────────────────── */
-/* table-layout:fixed only so the Results column wraps at its own set width
-   instead of auto-sizing to one-line content (mirrors MESSI's own source) -
-   NOT to force the table to any particular overall width. No width/min-width
-   on the table itself: with every other column pinned, table-layout:fixed
-   naturally sizes to the sum of the declared column widths. */
-.wc-odds-table { table-layout: fixed; }
-.wc-odds-table .team-cell { white-space: normal; }
+/* Auto layout so Team and Results size to their longest one-line entry:
+   a team name or a result line never wraps (the fixed layout pinned Team
+   at 152px and broke names like "Minnesota Timberwolves" in two). The
+   seed and odds columns keep their set widths; on phones the table
+   scrolls inside .sport-table-wrap. */
+.wc-odds-table { table-layout: auto; }
+.wc-odds-table .team-cell { white-space: nowrap; }
 .wc-heat, .wc-odds-table th.wc-col { width: 4.6rem; padding-left: 0.45rem; padding-right: 0.45rem; }
 .wc-heat {
   text-align: center;
@@ -1125,7 +1125,7 @@ footer {
 }
 .wc-champ-cell { font-weight: 800; }
 .wc-results { font-size: 0.78rem; width: 15rem; }
-.wc-results-inner { overflow-wrap: anywhere; }
+.wc-results-inner { overflow-wrap: normal; }
 .wc-seg { display: block; white-space: nowrap; line-height: 1.5; margin-bottom: 2px; }
 .wc-seg:last-child { margin-bottom: 0; }
 .wc-grp {
