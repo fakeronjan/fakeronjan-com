@@ -550,9 +550,11 @@
     var tableRows = rows.slice().reverse().map(function (g) {
       var wkLabel = g.week_label || "";
       var era = g.display_name && g.display_name !== currentFull ? g.display_name : "";
+      // The team's own game day; the week's date only on rows it sat out.
+      var rowDate = (!g._isStale && g.last_match_date) || g.date;
       var snapshotCell = wkLabel
-        ? wkLabel + '<div class="sub-line-italic">' + g.date + "</div>"
-        : g.date;
+        ? wkLabel + '<div class="sub-line-italic">' + rowDate + "</div>"
+        : rowDate;
       var seasonCell = era
         ? g.season + '<div class="sub-line-italic">' + era + "</div>"
         : g.season;
