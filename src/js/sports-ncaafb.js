@@ -1118,6 +1118,229 @@
     attachLinks(poWrap);
   }
 
+  // ═══════════════════════════════ Weekly Matchups ════════════════════════
+  // Port of DILLON's tab (sports-nfl.js). Every FBS game of a week, previewed
+  // from SALAAM's ratings going into it: win probability, line, O/U, and the
+  // stakes (each team's CFP and title odds with a win vs a loss, from
+  // simulations of the rest of the season split by that game's result).
+  // Bowls outside the CFP have no stakes. Data: weekly_matchups/<season>.json.
+
+  var wmNav = document.getElementById("ncaafbWmNav");
+  var wmTitle = document.getElementById("wmTitle");
+  var wmNote = document.getElementById("wmNote");
+  var wmSeasonSelect = document.getElementById("wmSeasonSelect");
+  var wmWeekSelect = document.getElementById("wmWeekSelect");
+  var wmSortPills = document.getElementById("wmSortPills");
+  var wmStamp = document.getElementById("wmStamp");
+  var wmWrap = document.getElementById("wmWrap");
+  state.wmSeasons = {};
+  // Sort choice persists across weeks/seasons and visits (per device).
+  state.wmSort = "juice";
+  try { if (localStorage.getItem("salaamWmSort") === "kickoff") state.wmSort = "kickoff"; } catch (e) {}
+  function syncWmSortPills() {
+    wmSortPills.querySelectorAll(".pill").forEach(function (p) { p.classList.toggle("active", p.dataset.wmsort === state.wmSort); });
+  }
+  syncWmSortPills();
+  wmSortPills.addEventListener("click", function (e) {
+    var btn = e.target.closest(".pill[data-wmsort]");
+    if (!btn || btn.dataset.wmsort === state.wmSort) return;
+    state.wmSort = btn.dataset.wmsort;
+    try { localStorage.setItem("salaamWmSort", state.wmSort); } catch (err) {}
+    syncWmSortPills();
+    renderWeeklyMatchups();
+  });
+
+  var WM_QUALITY_TITLE = "How good and how even the matchup is: both teams' ratings and how close SALAAM has the game. 0-100, ranked against every game.";
+  var WM_STAKES_TITLE = "How much the result swings both teams' CFP and title odds. 0-100, ranked against every game.";
+  var WM_JUICE_TITLE = "Quality and Stakes combined (their geometric mean). A game needs both to score high.";
+  var WM_BOWLS = 101;
+  function wmPct(v) {
+    if (v == null) return "-";
+    if (v === 0) return "0%";
+    return oddsPct(v);
+  }
+  // Kickoff in the viewer's own time zone (data is UTC); M/D/YYYY per fleet
+  // style. Games with no listed time show just the day and date.
+  function wmKickoff(g) {
+    if (g.kickoff) {
+      var d = new Date(g.kickoff);
+      return d.toLocaleDateString("en-US", { weekday: "short" }) + " " +
+        d.toLocaleDateString("en-US", { month: "numeric", day: "numeric", year: "numeric" }) + ", " +
+        d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+    }
+    if (g.date) {
+      var p = g.date.split("-");
+      var dd = new Date(+p[0], +p[1] - 1, +p[2]);
+      return dd.toLocaleDateString("en-US", { weekday: "short" }) + " " + (+p[1]) + "/" + (+p[2]) + "/" + p[0];
+    }
+    return "";
+  }
+  function wmPick(g) {
+    var home = g.p_home >= 0.5;
+    return { school: home ? g.home_school : g.away_school, p: home ? g.p_home : 1 - g.p_home, home: home };
+  }
+  function wmLine(g) {
+    if (Math.abs(g.line) < 0.25) return "Pick'em";
+    return (g.line > 0 ? g.home_school : g.away_school) + " by " + Math.abs(g.line);
+  }
+  function wmCorrect(g) {
+    if (!g.result || g.result.home === g.result.away) return null;
+    return (g.p_home >= 0.5) === (g.result.home > g.result.away);
+  }
+  function wmPctOf(rec) {
+    var m = rec.match(/^(\d+)-(\d+)(?:-(\d+))?$/);
+    if (!m) return 0;
+    var w = +m[1], l = +m[2], t = +(m[3] || 0), n = w + l + t;
+    return n ? (w + 0.5 * t) / n : 0.5;
+  }
+
+  function loadWeeklyMatchups() {
+    return fetch(BASE + "/weekly_matchups/index.json")
+      .then(function (r) { return r.json(); })
+      .then(function (idx) {
+        state.wmIndex = idx;
+        if (!idx.seasons.length) return;
+        wmNav.hidden = false;
+        wmSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
+        wmSeasonSelect.onchange = function () { loadWmSeason(Number(wmSeasonSelect.value)); };
+        wmWeekSelect.onchange = renderWeeklyMatchups;
+        return loadWmSeason(idx.seasons[0]);
+      })
+      .catch(function () {});
+  }
+
+  function loadWmSeason(season) {
+    var have = state.wmSeasons[season];
+    var p = have ? Promise.resolve(have) : fetch(BASE + "/weekly_matchups/" + season + ".json").then(function (r) { return r.json(); });
+    return p.then(function (d) {
+      state.wmSeasons[season] = d;
+      state.wmSeason = season;
+      wmSeasonSelect.value = String(season);
+      // Default: the first week with games still to play, else the last week.
+      var cur = d.weeks.filter(function (w) { return w.games.some(function (g) { return !g.result; }); })[0] || d.weeks[d.weeks.length - 1];
+      wmWeekSelect.innerHTML = d.weeks.slice().reverse().map(function (w) {
+        return '<option value="' + w.week + '">' + w.label + "</option>";
+      }).join("");
+      wmWeekSelect.value = String(cur.week);
+      renderWeeklyMatchups();
+    });
+  }
+
+  function wmTeamLink(name, season) {
+    var slug = state.nameToSlug[name];
+    return slug ? '<span class="team-link linked" data-team-slug="' + slug + '" data-season="' + season + '">' + name + "</span>" : name;
+  }
+
+  function wmStakesLines(g, key, ps) {
+    return ["away", "home"].map(function (side) {
+      var s = g.stakes[side];
+      if (key === "cfp") {
+        if (s.cfp_win == null) return "";
+        return '<div class="wm-stake">' + wmPct(s.cfp_win) + ' <span class="wm-dim">/</span> ' + wmPct(s.cfp_loss) + "</div>";
+      }
+      return '<div class="wm-stake">' + wmPct(s.title_win) + ' <span class="wm-dim">/</span> ' + (ps ? "out" : wmPct(s.title_loss)) + "</div>";
+    }).join("");
+  }
+
+  function wmResult(g) {
+    if (!g.result) return '<span class="wm-dim">-</span>';
+    var ok = wmCorrect(g);
+    var mark = ok == null ? "&nbsp;" : (ok ? '<span class="wc-w">&#10003;</span>' : '<span class="wc-l">&#10007;</span>');
+    // Three lines that mirror the Matchup cell: away, home, then the pick
+    // mark on the kickoff line's row.
+    function wlt(us, them) {
+      return us > them ? ' <span class="wc-w">W</span>' : us < them ? ' <span class="wc-l">L</span>' : ' <span class="wc-t">T</span>';
+    }
+    return "<div>" + g.away_school + " " + g.result.away + wlt(g.result.away, g.result.home) + "</div>" +
+      "<div>" + g.home_school + " " + g.result.home + wlt(g.result.home, g.result.away) + "</div>" +
+      (wmKickoff(g) ? '<div class="wm-mark-line sub-line-italic">' + mark + "</div>" : "");
+  }
+
+  function renderWeeklyMatchups() {
+    var d = state.wmSeasons[state.wmSeason];
+    if (!d) return;
+    var week = Number(wmWeekSelect.value);
+    var wk = d.weeks.filter(function (w) { return w.week === week; })[0];
+    var bowls = week === WM_BOWLS;
+    var ps = week > WM_BOWLS;              // CFP rounds
+    wmTitle.textContent = d.season + " " + wk.label;
+    wmNote.textContent = bowls
+      ? "Win probability, line, and O/U for every bowl outside the CFP from SALAAM's ratings going into bowl season. These games don't change anyone's CFP or title odds, so they have no Stakes."
+      : "Win probability, line, and O/U for every FBS game from SALAAM's ratings going into the week. " +
+        "Stakes show each team's CFP and title odds with a win and with a loss.";
+
+    // SALAAM's record picking winners: this week, and the season through it.
+    function tally(weeks) {
+      var w = 0, l = 0;
+      weeks.forEach(function (x) { x.games.forEach(function (g) { var c = wmCorrect(g); if (c === true) w++; else if (c === false) l++; }); });
+      return [w, l];
+    }
+    var thisWk = tally([wk]);
+    var season = tally(d.weeks.filter(function (w) { return w.week <= week; }));
+    var stamp = '<span class="wc-md-label">SALAAM pick record</span>';
+    if (thisWk[0] + thisWk[1]) stamp += '<span class="wc-result">' + wk.label + " <b>" + thisWk[0] + "-" + thisWk[1] + "</b></span>";
+    if (season[0] + season[1]) stamp += '<span class="wc-result">' + d.season + " season <b>" + season[0] + "-" + season[1] + "</b></span>";
+    wmStamp.innerHTML = stamp;
+
+    // Bowls have no Juice: rank them by Quality.
+    var score = function (g) { return bowls ? g.quality || 0 : g.juice || 0; };
+    var byJuice = function (a, b) { return score(b) - score(a); };
+    var games = wk.games.slice().sort(byJuice);
+
+    // Markers: the game of the week (top Juice) and upset-watch picks
+    // (SALAAM favors the team with the worse record). Set before any
+    // re-sort so both sorts mark the same games.
+    var gotw = games[0];
+    if (state.wmSort === "kickoff") {
+      // Earliest first; same kickoff (or same date when no time) by Juice.
+      games.sort(function (a, b) {
+        var ka = a.kickoff || (a.date ? a.date + "T" : ""), kb = b.kickoff || (b.date ? b.date + "T" : "");
+        return ka < kb ? -1 : ka > kb ? 1 : byJuice(a, b);
+      });
+    }
+    function isUpset(g) {
+      if (bowls || ps) return false;
+      var pk = wmPick(g);
+      return wmPctOf(pk.home ? g.home_record : g.away_record) < wmPctOf(pk.home ? g.away_record : g.home_record);
+    }
+    var nUpset = games.filter(isUpset).length;
+    wmStamp.innerHTML += '<span class="wm-legend">&#11088; Game of the week</span>' +
+      (nUpset ? '<span class="wm-legend" title="SALAAM favors the team with the worse record">&#9889; Upset watch</span>' : "");
+
+    var dash = '<span class="wm-dim">-</span>';
+    var rows = games.map(function (g) {
+      var pk = wmPick(g);
+      var mark = (g === gotw ? "&#11088;" : "") + (isUpset(g) ? "&#9889;" : "");
+      return '<tr' + (g === gotw ? ' class="wm-gotw"' : "") + ">" +
+        '<td class="wm-mark">' + mark + "</td>" +
+        '<td class="wm-matchup"><div><span class="wm-at"></span><span class="wm-rank">' + (g.away_rank || "") + "</span>" + wmTeamLink(g.away, d.season) + ' <span class="wm-dim">' + g.away_record + "</span></div>" +
+        '<div><span class="wm-at">' + (g.neutral ? "vs." : "@") + '</span><span class="wm-rank">' + (g.home_rank || "") + "</span>" + wmTeamLink(g.home, d.season) + ' <span class="wm-dim">' + g.home_record + "</span></div>" +
+          (wmKickoff(g) ? '<div class="wm-kick sub-line-italic">' + wmKickoff(g) + "</div>" : "") + "</td>" +
+        '<td class="col-od col-hide-mobile">' + g.quality + "</td>" +
+        '<td class="col-od col-hide-mobile">' + (g.stakes_score != null ? g.stakes_score : dash) + "</td>" +
+        '<td class="col-od wm-juice">' + (g.juice != null ? g.juice : dash) + "</td>" +
+        '<td class="col-od"><div class="od-val">' + pk.school + '</div><div class="od-rank">' + wmPct(pk.p) + "</div></td>" +
+        '<td class="col-hide-mobile">' + wmLine(g) + "</td>" +
+        '<td class="col-od col-hide-mobile">' + (g.total != null ? g.total.toFixed(1) : "-") + "</td>" +
+        (ps || bowls ? "" : "<td>" + wmStakesLines(g, "cfp", ps) + "</td>") +
+        (bowls ? "" : '<td class="' + (ps ? "" : "col-hide-mobile") + '">' + wmStakesLines(g, "title", ps) + "</td>") +
+        '<td class="wm-result">' + wmResult(g) + "</td>" +
+        "</tr>";
+    }).join("");
+    wmWrap.innerHTML =
+      '<table class="sport-table wm-table"><thead><tr>' +
+      '<th class="wm-mark"></th>' + "<th>Matchup</th>" +
+      '<th class="col-od col-hide-mobile" title="' + WM_QUALITY_TITLE + '">Quality</th>' +
+      '<th class="col-od col-hide-mobile" title="' + WM_STAKES_TITLE + '">Stakes</th>' +
+      '<th class="col-od" title="' + WM_JUICE_TITLE + '">Juice</th>' +
+      "<th class=\"col-od\">SALAAM pick</th><th class=\"col-hide-mobile\">SALAAM Line</th><th class=\"col-od col-hide-mobile\">SALAAM O/U</th>" +
+      (ps || bowls ? "" : '<th title="CFP odds with a win / with a loss">CFP Odds (W/L)</th>') +
+      (bowls ? "" : '<th class="' + (ps ? "" : "col-hide-mobile") + '" title="Title odds with a win / with a loss">Title Odds (W/L)</th>') +
+      "<th>Result</th></tr></thead><tbody>" + rows + "</tbody></table>";
+    attachLinks(wmWrap);
+  }
+
+
   // ═══════════════════════════════ init ═══════════════════════════════
 
   buildPills("tsViewPills", state.tsView, function (v) {
@@ -1152,6 +1375,7 @@
     loadChampions();
     loadGoat();
     loadCfp(data);
+    loadWeeklyMatchups();
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });
