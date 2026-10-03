@@ -112,13 +112,28 @@
   function fmtProj(t) {
     if (!t.proj) return "-";
     var n = t.proj_games;
-    var at = function (w) { return (w / n * 100).toFixed(2) + "%"; };
     return '<div class="od-val">' + t.proj[1] + "-" + (n - t.proj[1]) + "</div>" +
-      '<div class="proj-bar" aria-label="' + t.proj[0] + " to " + t.proj[2] + ' wins">' +
-      '<span class="proj-band" style="left:' + at(t.proj[0]) + ";width:" + at(t.proj[2] - t.proj[0]) + '"></span>' +
-      '<span class="proj-med" style="left:calc(' + at(t.proj[1]) + ' - 1px)"></span></div>';
+      projBar(t.proj, n, "wins");
   }
-  var PROJ_TITLE = "Median record from simulating the rest of the regular season with current ratings. The bar shows the 20th to 80th percentile of wins.";
+
+  // The Proj bar: band = 10th-90th percentile, tick = median, with the low
+  // and high totals under the band's ends. Labels too close to read spread
+  // apart around the band's middle; a single value shows once.
+  function projBar(q, n, unit) {
+    var pct = function (v) { return Math.max(0, Math.min(100, v / n * 100)); };
+    var lo = pct(q[0]), hi = pct(q[2]), MIN = 26;
+    var a = lo, b = hi;
+    if (b - a < MIN) {
+      var mid = (a + b) / 2;
+      a = Math.max(0, Math.min(100 - MIN, mid - MIN / 2)); b = a + MIN;
+    }
+    var lab = function (x, v) { return '<span class="proj-lab" style="left:' + x.toFixed(2) + '%">' + v + "</span>"; };
+    return '<div class="proj-wrap"><div class="proj-bar" aria-label="' + q[0] + " to " + q[2] + " " + unit + '">' +
+      '<span class="proj-band" style="left:' + lo.toFixed(2) + "%;width:" + (hi - lo).toFixed(2) + '%"></span>' +
+      '<span class="proj-med" style="left:calc(' + pct(q[1]).toFixed(2) + '% - 1px)"></span></div>' +
+      '<div class="proj-labs">' + (q[0] === q[2] ? lab((lo + hi) / 2, q[0]) : lab(a, q[0]) + lab(b, q[2])) + "</div></div>";
+  }
+  var PROJ_TITLE = "Median record from simulating the rest of the regular season with current ratings. The bar shows the 10th to 90th percentile of wins.";
   var PO_ODDS_TITLE = "Probability of making the playoff, from simulating the rest of the regular season with current ratings.";
 
   function barScale(ratings) {
@@ -549,6 +564,8 @@
 
     var canonical = data.team;
     var barSc = barScale(rows.map(function (g) { return g.rating; }));
+    // Proj column only when a row in this view is from before its regular season ended.
+    var hasProj = rows.some(function (g) { return g.proj; });
     var tableRows = rows.slice().reverse().map(function (g) {
       var era = g.display_name && g.display_name !== canonical ? g.display_name : "";
       var seasonCellRaw = isSingle ? fmtSeason(g.season) : fmtSeason(g.season) + seasonTag(g.season);
@@ -565,6 +582,7 @@
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
+        (hasProj ? '<td class="rating-cell col-od col-hide-mobile">' + fmtProj(g) + "</td>" : "") +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(g.playoff_odds, g.playoff_odds_rank, g.title_odds, g.title_odds_rank) + "</td>" +
         '<td class="col-hide-mobile col-conf">' + confBadge(g.conference || data.conference, g.finals_status) + "</td>" +
         '<td class="col-hide-mobile" style="white-space:nowrap">' + finishBadge(g.finals_status, g.cup_status) + "</td>" +
@@ -577,6 +595,7 @@
       '<th class="col-rank">Season</th><th class="col-hide-mobile">Date</th><th class="col-last-match">Last Game</th>' +
       '<th class="col-record">W-L (Pct)</th><th class="col-rank">Rank</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
+      (hasProj ? '<th class="col-hide-mobile col-od" title="' + PROJ_TITLE + '">Proj Record</th>' : "") +
       '<th class="col-hide-mobile col-od" title="' + PO_ODDS_TITLE + " " + titleOddsTitle + '">Playoff / Title Odds</th><th class="col-hide-mobile col-conf">Conf</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";

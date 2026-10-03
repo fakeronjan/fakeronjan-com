@@ -124,13 +124,28 @@
   function fmtProj(t) {
     if (!t.proj) return '<span class="sport-dim-dash">-</span>';
     var n = t.proj_games;
-    var at = function (w) { return (w / n * 100).toFixed(2) + "%"; };
     return '<div class="od-val">' + t.proj[1] + "-" + (n - t.proj[1]) + "</div>" +
-      '<div class="proj-bar" aria-label="' + t.proj[0] + " to " + t.proj[2] + ' wins">' +
-      '<span class="proj-band" style="left:' + at(t.proj[0]) + ";width:" + at(t.proj[2] - t.proj[0]) + '"></span>' +
-      '<span class="proj-med" style="left:calc(' + at(t.proj[1]) + ' - 1px)"></span></div>';
+      projBar(t.proj, n, "wins");
   }
-  var PROJ_TITLE = "Median record from simulating the rest of the regular season with current ratings. The bar shows the 20th to 80th percentile of wins.";
+
+  // The Proj bar: band = 10th-90th percentile, tick = median, with the low
+  // and high totals under the band's ends. Labels too close to read spread
+  // apart around the band's middle; a single value shows once.
+  function projBar(q, n, unit) {
+    var pct = function (v) { return Math.max(0, Math.min(100, v / n * 100)); };
+    var lo = pct(q[0]), hi = pct(q[2]), MIN = 26;
+    var a = lo, b = hi;
+    if (b - a < MIN) {
+      var mid = (a + b) / 2;
+      a = Math.max(0, Math.min(100 - MIN, mid - MIN / 2)); b = a + MIN;
+    }
+    var lab = function (x, v) { return '<span class="proj-lab" style="left:' + x.toFixed(2) + '%">' + v + "</span>"; };
+    return '<div class="proj-wrap"><div class="proj-bar" aria-label="' + q[0] + " to " + q[2] + " " + unit + '">' +
+      '<span class="proj-band" style="left:' + lo.toFixed(2) + "%;width:" + (hi - lo).toFixed(2) + '%"></span>' +
+      '<span class="proj-med" style="left:calc(' + pct(q[1]).toFixed(2) + '% - 1px)"></span></div>' +
+      '<div class="proj-labs">' + (q[0] === q[2] ? lab((lo + hi) / 2, q[0]) : lab(a, q[0]) + lab(b, q[2])) + "</div></div>";
+  }
+  var PROJ_TITLE = "Median record from simulating the rest of the regular season with current ratings. The bar shows the 10th to 90th percentile of wins.";
   var CFP_ODDS_TITLE = "Probability of making the College Football Playoff, from simulating the rest of the season, the conference title games and the selection committee's choices with current ratings.";
   var TITLE_ODDS_TITLE = "Probability of winning the national championship, from simulating the rest of the season, the selection committee and the playoff with current ratings. League-wide probabilities sum to 100%.";
 
@@ -563,6 +578,8 @@
     }
 
     var barSc = barScale(rows.map(function (g) { return g.rating; }));
+    // Proj column only when a row in this view is from before its regular season ended.
+    var hasProj = rows.some(function (g) { return g.proj; });
     var tableRows = rows.slice().reverse().map(function (g) {
       var wkLabel = g.week_label || "";
       var era = g.display_name && g.display_name !== currentFull ? g.display_name : "";
@@ -585,6 +602,7 @@
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
+        (hasProj ? '<td class="rating-cell col-od col-hide-mobile">' + fmtProj(g) + "</td>" : "") +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(g.cfp_odds, g.cfp_odds_rank, g.title_odds, g.title_odds_rank) + "</td>" +
         '<td class="col-hide-mobile">' + confBadge(g.conference_raw || g.conference, !!g.conference_champ) + "</td>" +
         '<td class="col-hide-mobile col-honors">' + honorsBadge(g.cfp_status, g.cfp_appearance, g.champ_era, g.title_selectors) + "</td>" +
@@ -597,6 +615,7 @@
       '<th class="col-rank">Season</th><th>Week</th><th class="col-last-match">Last Game</th>' +
       '<th class="col-record">W-L (Pct)</th><th class="col-rank">OVR #</th><th class="col-rank col-hide-mobile">Conf #</th>' +
       "<th>Rating</th><th class=\"col-hide-mobile col-od\">OFF</th><th class=\"col-hide-mobile col-od\">DEF</th>" +
+      (hasProj ? '<th class="col-hide-mobile col-od" title="' + PROJ_TITLE + '">Proj Record</th>' : "") +
       '<th class="col-hide-mobile col-od" title="' + CFP_ODDS_TITLE + " " + TITLE_ODDS_TITLE + '">CFP / Title Odds</th>' +
       '<th class="col-hide-mobile">Conf</th><th class="col-hide-mobile col-honors">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";
