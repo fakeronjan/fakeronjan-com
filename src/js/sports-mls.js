@@ -171,13 +171,30 @@
 
   var cupOddsTitle = "Probability of winning MLS Cup, from simulating the rest of the regular season and the playoff bracket with current ratings. League-wide probabilities sum to 100%.";
 
-  // Cup Odds: 0% (eliminated) and rounds-to-0.0% render as '-'; 100% drops the decimal.
-  function fmtTitleOdds(odds, rank) {
-    if (odds == null) return "-";
-    var value = oddsPct(odds);
-    if (rank == null) return value;
-    return '<div class="od-val">' + value + '</div><div class="od-rank">' + rank + "</div>";
+
+  // Playoff and cup odds in one cell: both values, then both ranks (DILLON's fmtOddsPair).
+  function fmtOddsPair(po, poRank, title, titleRank) {
+    if (po == null && title == null) return "-";
+    var sep = ' <span class="odds-sep">|</span> ';
+    var rk = function (r) { return r == null ? "-" : r; };
+    return '<div class="od-val">' + oddsPct(po) + sep + oddsPct(title) + '</div>' +
+      '<div class="od-rank">' + rk(poRank) + sep + rk(titleRank) + "</div>";
   }
+
+  // Projected points (DILLON's fmtProj, in points): median simulated points
+  // over a bar from 0 to the most points possible (band = 20th-80th
+  // percentile, tick = median).
+  function fmtProj(t) {
+    if (!t.proj) return "-";
+    var n = t.proj_max;
+    var at = function (w) { return (w / n * 100).toFixed(2) + "%"; };
+    return '<div class="od-val">' + t.proj[1] + " pts</div>" +
+      '<div class="proj-bar" aria-label="' + t.proj[0] + " to " + t.proj[2] + ' points">' +
+      '<span class="proj-band" style="left:' + at(t.proj[0]) + ";width:" + at(t.proj[2] - t.proj[0]) + '"></span>' +
+      '<span class="proj-med" style="left:calc(' + at(t.proj[1]) + ' - 1px)"></span></div>';
+  }
+  var PROJ_TITLE = "Median points from simulating the rest of the regular season with current ratings. The bar shows the 20th to 80th percentile of points.";
+  var PO_ODDS_TITLE = "Probability of making the playoff, from simulating the rest of the regular season with current ratings.";
 
   // ── Disrupted-season helpers (established fleet pattern) ──────────────────
 
@@ -346,6 +363,8 @@
 
     var barSc = barScale(teams.map(function (t) { return t.rating; }));
 
+    // Projection only while the regular season is still going.
+    var hasProj = teams.some(function (t) { return t.proj; });
     var rows = teams.map(function (t) {
       var isStale = !!(prevDate && t.last_match_date && t.last_match_date <= prevDate);
       var slug = state.nameToSlug[t.team];
@@ -367,7 +386,8 @@
         "<td>" + ratingBar(t.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Attacking strength: goals scored vs an average opponent. Sums with Defense to Rating.">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Defending strength: goals prevented vs an average opponent. Sums with Offense to Rating.">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
-        '<td class="rating-cell col-od col-hide-mobile" title="' + cupOddsTitle + '">' + fmtTitleOdds(t.title_odds, t.title_odds_rank) + "</td>" +
+        (hasProj ? '<td class="rating-cell col-od col-hide-mobile">' + fmtProj(t) + "</td>" : "") +
+          '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(t.playoff_odds, t.playoff_odds_rank, t.title_odds, t.title_odds_rank) + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) +
         (t.last_match_date ? '<div class="sub-line-italic">' + t.last_match_date + "</div>" : "") + "</td>" +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(t) + "</td>" +
@@ -394,7 +414,8 @@
       "<th>Team</th><th>Conf</th>" +
       '<th class="col-record">' + recordHeader + "</th><th>Rating</th>" +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
-      '<th class="col-hide-mobile col-od" title="' + cupOddsTitle + '">Cup Odds</th>' +
+      (hasProj ? '<th class="col-hide-mobile col-od" title="' + PROJ_TITLE + '">Proj Points</th>' : "") +
+      '<th class="col-hide-mobile col-od" title="' + PO_ODDS_TITLE + " " + cupOddsTitle + '">Playoff / Cup Odds</th>' +
       '<th class="col-last-match">Last Match</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
@@ -594,7 +615,7 @@
         "<td>" + (g.rank != null ? ratingBar(g.rating, barSc) : '<span style="color:var(--muted)">-</span>') + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
-        '<td class="rating-cell col-od col-hide-mobile" title="' + cupOddsTitle + '">' + fmtTitleOdds(g.title_odds, g.title_odds_rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(g.playoff_odds, g.playoff_odds_rank, g.title_odds, g.title_odds_rank) + "</td>" +
         '<td class="col-hide-mobile">' + confBadge(g.conference || data.conference, g.mls_cup_conf_finalist) + "</td>" +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(g) + "</td>" +
         "</tr>"
@@ -609,7 +630,7 @@
       '<th class="col-rank">OVR #</th><th class="col-hide-mobile col-rank">Conf #</th>' +
       "<th>Rating</th>" +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
-      '<th class="col-hide-mobile col-od" title="' + cupOddsTitle + '">Cup Odds</th>' +
+      '<th class="col-hide-mobile col-od" title="' + PO_ODDS_TITLE + " " + cupOddsTitle + '">Playoff / Cup Odds</th>' +
       '<th class="col-hide-mobile">Conf</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";

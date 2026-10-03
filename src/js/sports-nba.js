@@ -97,13 +97,29 @@
     return '<div class="od-val">' + r + '</div><div class="od-rank">' + rank + "</div>";
   }
 
-  // 0% (eliminated) and rounds-to-0.0% render as '-'; 100% drops the decimal.
-  function fmtTitleOdds(odds, rank) {
-    if (odds == null) return "-";
-    var value = oddsPct(odds);
-    if (rank == null) return value;
-    return '<div class="od-val">' + value + '</div><div class="od-rank">' + rank + "</div>";
+
+  // Playoff and title odds in one cell: both values, then both ranks (DILLON's fmtOddsPair).
+  function fmtOddsPair(po, poRank, title, titleRank) {
+    if (po == null && title == null) return "-";
+    var sep = ' <span class="odds-sep">|</span> ';
+    var rk = function (r) { return r == null ? "-" : r; };
+    return '<div class="od-val">' + oddsPct(po) + sep + oddsPct(title) + '</div>' +
+      '<div class="od-rank">' + rk(poRank) + sep + rk(titleRank) + "</div>";
   }
+
+  // Projected record (DILLON's fmtProj): median simulated record over a
+  // 0-to-season-length wins bar (band = 20th-80th percentile, tick = median).
+  function fmtProj(t) {
+    if (!t.proj) return "-";
+    var n = t.proj_games;
+    var at = function (w) { return (w / n * 100).toFixed(2) + "%"; };
+    return '<div class="od-val">' + t.proj[1] + "-" + (n - t.proj[1]) + "</div>" +
+      '<div class="proj-bar" aria-label="' + t.proj[0] + " to " + t.proj[2] + ' wins">' +
+      '<span class="proj-band" style="left:' + at(t.proj[0]) + ";width:" + at(t.proj[2] - t.proj[0]) + '"></span>' +
+      '<span class="proj-med" style="left:calc(' + at(t.proj[1]) + ' - 1px)"></span></div>';
+  }
+  var PROJ_TITLE = "Median record from simulating the rest of the regular season with current ratings. The bar shows the 20th to 80th percentile of wins.";
+  var PO_ODDS_TITLE = "Probability of making the playoff, from simulating the rest of the regular season with current ratings.";
 
   function barScale(ratings) {
     var m = 0;
@@ -319,6 +335,8 @@
 
     var barSc = barScale(teams.map(function (t) { return t.rating; }));
 
+    // Projection only while the regular season is still going.
+    var hasProj = teams.some(function (t) { return t.proj; });
     var rows = teams
       .map(function (t) {
         var isStale = !!(prevDate && t.last_match_date && t.last_match_date <= prevDate);
@@ -340,7 +358,8 @@
           "<td>" + ratingBar(t.rating, barSc) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
-          '<td class="rating-cell col-od col-hide-mobile">' + fmtTitleOdds(t.title_odds, t.title_odds_rank) + "</td>" +
+          (hasProj ? '<td class="rating-cell col-od col-hide-mobile">' + fmtProj(t) + "</td>" : "") +
+          '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(t.playoff_odds, t.playoff_odds_rank, t.title_odds, t.title_odds_rank) + "</td>" +
           '<td class="col-last-match">' + lastGameCell + "</td>" +
           '<td class="col-hide-mobile" style="text-align:center;white-space:nowrap">' + finishBadge(t.finals_status, t.cup_status) + "</td>" +
           "</tr>"
@@ -353,7 +372,8 @@
       '<th class="col-rank">Rank</th><th>Team</th><th class="col-hide-mobile col-conf">Conf</th>' +
       '<th class="col-record">W-L (Pct)</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
-      '<th class="col-hide-mobile col-od" title="' + titleOddsTitle + '">Title Odds</th><th class="col-last-match">Last Game</th>' +
+      (hasProj ? '<th class="col-hide-mobile col-od" title="' + PROJ_TITLE + '">Proj Record</th>' : "") +
+      '<th class="col-hide-mobile col-od" title="' + PO_ODDS_TITLE + " " + titleOddsTitle + '">Playoff / Title Odds</th><th class="col-last-match">Last Game</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
     attachLinks(standingsTableWrap);
@@ -545,7 +565,7 @@
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
-        '<td class="rating-cell col-od col-hide-mobile">' + fmtTitleOdds(g.title_odds, g.title_odds_rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(g.playoff_odds, g.playoff_odds_rank, g.title_odds, g.title_odds_rank) + "</td>" +
         '<td class="col-hide-mobile col-conf">' + confBadge(g.conference || data.conference, g.finals_status) + "</td>" +
         '<td class="col-hide-mobile" style="white-space:nowrap">' + finishBadge(g.finals_status, g.cup_status) + "</td>" +
         "</tr>"
@@ -557,7 +577,7 @@
       '<th class="col-rank">Season</th><th class="col-hide-mobile">Date</th><th class="col-last-match">Last Game</th>' +
       '<th class="col-record">W-L (Pct)</th><th class="col-rank">Rank</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
-      '<th class="col-hide-mobile col-od" title="' + titleOddsTitle + '">Title Odds</th><th class="col-hide-mobile col-conf">Conf</th>' +
+      '<th class="col-hide-mobile col-od" title="' + PO_ODDS_TITLE + " " + titleOddsTitle + '">Playoff / Title Odds</th><th class="col-hide-mobile col-conf">Conf</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";
     attachLinks(tsTableWrap);
