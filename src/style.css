@@ -877,10 +877,13 @@ footer {
 }
 .sport-table tbody tr:hover { background: color-mix(in srgb, var(--accent-2) 8%, transparent); }
 
-.sport-table .col-rank { width: 2.75rem; text-align: center; color: var(--muted); font-weight: 700; }
+/* Column look applies to cells only; headers keep .sport-table th's accent color and size */
+.sport-table .col-rank { width: 2.75rem; text-align: center; }
+.sport-table td.col-rank { color: var(--muted); font-weight: 700; }
 .sport-table .col-conf,
 .sport-table .col-od { text-align: center; }
-.sport-table .col-last-match { font-size: 0.8rem; color: var(--muted); white-space: normal; max-width: 240px; }
+.sport-table .col-last-match { white-space: normal; max-width: 240px; }
+.sport-table td.col-last-match { font-size: 0.8rem; color: var(--muted); }
 .sport-table .team-cell { font-weight: 600; }
 .sport-table .linked { cursor: pointer; }
 .sport-table .linked:hover { color: var(--accent-2); text-decoration: underline; }
