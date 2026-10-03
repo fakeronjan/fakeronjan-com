@@ -110,13 +110,27 @@
     return '<div class="od-val">' + r + '</div><div class="od-rank">' + rank + "</div>";
   }
 
-  // Odds cell: value over league-wide rank (DILLON's fmtSBOdds). 2014+ only.
-  function fmtOdds(odds, rank) {
-    if (odds == null) return '<span class="sport-dim-dash">-</span>';
-    var value = oddsPct(odds);
-    if (rank == null) return value;
-    return '<div class="od-val">' + value + '</div><div class="od-rank">' + rank + "</div>";
+  // CFP and title odds in one cell: both values, then both ranks (DILLON's fmtOddsPair).
+  function fmtOddsPair(cfp, cfpRank, title, titleRank) {
+    if (cfp == null && title == null) return '<span class="sport-dim-dash">-</span>';
+    var sep = ' <span class="odds-sep">|</span> ';
+    var rk = function (r) { return r == null ? "-" : r; };
+    return '<div class="od-val">' + oddsPct(cfp) + sep + oddsPct(title) + '</div>' +
+      '<div class="od-rank">' + rk(cfpRank) + sep + rk(titleRank) + "</div>";
   }
+
+  // Projected regular-season record (DILLON's fmtProj): median simulated
+  // record over a 0-to-games wins bar (band = 20th-80th percentile, tick = median).
+  function fmtProj(t) {
+    if (!t.proj) return '<span class="sport-dim-dash">-</span>';
+    var n = t.proj_games;
+    var at = function (w) { return (w / n * 100).toFixed(2) + "%"; };
+    return '<div class="od-val">' + t.proj[1] + "-" + (n - t.proj[1]) + "</div>" +
+      '<div class="proj-bar" aria-label="' + t.proj[0] + " to " + t.proj[2] + ' wins">' +
+      '<span class="proj-band" style="left:' + at(t.proj[0]) + ";width:" + at(t.proj[2] - t.proj[0]) + '"></span>' +
+      '<span class="proj-med" style="left:calc(' + at(t.proj[1]) + ' - 1px)"></span></div>';
+  }
+  var PROJ_TITLE = "Median record from simulating the rest of the regular season with current ratings. The bar shows the 20th to 80th percentile of wins.";
   var CFP_ODDS_TITLE = "Probability of making the College Football Playoff, from simulating the rest of the season, the conference title games and the selection committee's choices with current ratings.";
   var TITLE_ODDS_TITLE = "Probability of winning the national championship, from simulating the rest of the season, the selection committee and the playoff with current ratings. League-wide probabilities sum to 100%.";
 
@@ -330,6 +344,8 @@
 
     var barSc = barScale(teams.map(function (t) { return t.rating; }));
     var hasOdds = season >= CFP_FIRST_SEASON;
+    // Proj Record only while the regular season is still going.
+    var hasProj = snapshot.teams.some(function (t) { return t.proj; });
 
     var rows = teams
       .map(function (t) {
@@ -352,8 +368,8 @@
           "<td>" + ratingBar(t.rating, barSc) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
           '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
-          (hasOdds ? '<td class="rating-cell col-od col-hide-mobile">' + fmtOdds(t.cfp_odds, t.cfp_odds_rank) + "</td>" +
-            '<td class="rating-cell col-od col-hide-mobile">' + fmtOdds(t.title_odds, t.title_odds_rank) + "</td>" : "") +
+          (hasProj ? '<td class="rating-cell col-od col-hide-mobile">' + fmtProj(t) + "</td>" : "") +
+          (hasOdds ? '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(t.cfp_odds, t.cfp_odds_rank, t.title_odds, t.title_odds_rank) + "</td>" : "") +
           '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) +
           (t.last_match_date ? '<div class="sub-line-italic">' + t.last_match_date + "</div>" : "") + "</td>" +
           '<td class="col-hide-mobile col-honors">' + honorsBadge(t.cfp_status, t.cfp_appearance, t.champ_era, t.title_selectors) + "</td>" +
@@ -367,8 +383,8 @@
       '<th class="col-rank">OVR #</th><th class="col-rank col-hide-mobile">Conf #</th><th>Team</th>' +
       '<th class="col-hide-mobile">Conf</th><th class="col-record">W-L (Pct)</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
-      (hasOdds ? '<th class="col-hide-mobile col-od" title="' + CFP_ODDS_TITLE + '">CFP Odds</th>' +
-        '<th class="col-hide-mobile col-od" title="' + TITLE_ODDS_TITLE + '">Title Odds</th>' : "") +
+      (hasProj ? '<th class="col-hide-mobile col-od" title="' + PROJ_TITLE + '">Proj Record</th>' : "") +
+      (hasOdds ? '<th class="col-hide-mobile col-od" title="' + CFP_ODDS_TITLE + " " + TITLE_ODDS_TITLE + '">CFP / Title Odds</th>' : "") +
       '<th class="col-last-match">Last Game</th>' +
       '<th class="col-hide-mobile col-honors">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
@@ -569,8 +585,7 @@
         "<td>" + ratingBar(g.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
-        '<td class="rating-cell col-od col-hide-mobile">' + fmtOdds(g.cfp_odds, g.cfp_odds_rank) + "</td>" +
-        '<td class="rating-cell col-od col-hide-mobile">' + fmtOdds(g.title_odds, g.title_odds_rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(g.cfp_odds, g.cfp_odds_rank, g.title_odds, g.title_odds_rank) + "</td>" +
         '<td class="col-hide-mobile">' + confBadge(g.conference_raw || g.conference, !!g.conference_champ) + "</td>" +
         '<td class="col-hide-mobile col-honors">' + honorsBadge(g.cfp_status, g.cfp_appearance, g.champ_era, g.title_selectors) + "</td>" +
         "</tr>"
@@ -582,8 +597,7 @@
       '<th class="col-rank">Season</th><th>Week</th><th class="col-last-match">Last Game</th>' +
       '<th class="col-record">W-L (Pct)</th><th class="col-rank">OVR #</th><th class="col-rank col-hide-mobile">Conf #</th>' +
       "<th>Rating</th><th class=\"col-hide-mobile col-od\">OFF</th><th class=\"col-hide-mobile col-od\">DEF</th>" +
-      '<th class="col-hide-mobile col-od" title="' + CFP_ODDS_TITLE + '">CFP Odds</th>' +
-      '<th class="col-hide-mobile col-od" title="' + TITLE_ODDS_TITLE + '">Title Odds</th>' +
+      '<th class="col-hide-mobile col-od" title="' + CFP_ODDS_TITLE + " " + TITLE_ODDS_TITLE + '">CFP / Title Odds</th>' +
       '<th class="col-hide-mobile">Conf</th><th class="col-hide-mobile col-honors">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";
     attachLinks(tsTableWrap);
