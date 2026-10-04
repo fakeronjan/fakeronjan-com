@@ -358,7 +358,7 @@
       cards: [
         { slug: "nba", title: "NBA: DUNCAN ♂️🏀", sectionLabel: "Current Top 5", load: function () { return loadWLS("duncan", badgeDUNCAN); } },
         { slug: "wnba", title: "WNBA: LOBO ♀️🏀", sectionLabel: "Current Top 5", load: function () { return loadWLS("lobo", badgeLOBO); } },
-        { slug: "intlbasketball", title: "Men Intl: CARMELO 🌍🏀", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("carmelo", badgeCARMELO, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
+        { slug: "intlbasketball", hidden: true, title: "Men Intl: CARMELO 🌍🏀", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("carmelo", badgeCARMELO, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
       ],
     },
     {
@@ -380,14 +380,14 @@
       label: "Baseball",
       cards: [
         { slug: "mlb", title: "MLB: GRIFFEY ⚾", sectionLabel: "Current Top 5", load: function () { return loadWLS("griffey", badgeGRIFFEY); } },
-        { slug: "intlbaseball", title: "Men Intl: ICHIRO 🌍⚾", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("ichiro", badgeICHIRO, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
+        { slug: "intlbaseball", hidden: true, title: "Men Intl: ICHIRO 🌍⚾", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("ichiro", badgeICHIRO, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
       ],
     },
     {
       label: "Hockey",
       cards: [
         { slug: "nhl", title: "NHL: SAKIC 🥅🏒", sectionLabel: "Current Top 5", load: function () { return loadWLS("sakic", badgeSAKIC); } },
-        { slug: "intlhockey", title: "Men Intl: FORSBERG 🌍🏒", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("forsberg", badgeFORSBERG, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
+        { slug: "intlhockey", hidden: true, title: "Men Intl: FORSBERG 🌍🏒", stage: "Alpha", sectionLabel: "Current Top 5", load: function () { return loadWLS("forsberg", badgeFORSBERG, { nameLabel: "Country", showLast: true, hideRecord: true }); } },
       ],
     },
     {
@@ -445,6 +445,11 @@
       "</a>"
     );
   }
+
+  // hidden: true keeps a card off the portal (its page stays live at its URL);
+  // CARMELO / ICHIRO / FORSBERG are hidden outside their big international
+  // tournaments (2026-10-04). Delete the flag to bring one back.
+  SECTIONS.forEach(function (sec) { sec.cards = sec.cards.filter(function (c) { return !c.hidden; }); });
 
   var currentSummaryView = document.getElementById("currentSummaryView");
   currentSummaryView.innerHTML = SECTIONS.map(function (sec) {

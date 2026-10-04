@@ -1,6 +1,9 @@
 // Cross-site "fleet nav" grouping - mirrors the DILLON reference's own fleet-nav
 // banner exactly (same groups, order, and league labels), so this becomes the
 // shared reference pattern every migrated sport page reuses going forward.
+// hidden: true keeps a league out of the navbar (its page stays live at its URL).
+// CARMELO / ICHIRO / FORSBERG are hidden outside their big international
+// tournaments (2026-10-04); delete the flag to bring one back.
 module.exports = [
   {
     category: "Basketball",
@@ -8,7 +11,7 @@ module.exports = [
     leagues: [
       { slug: "nba", label: "NBA" },
       { slug: "wnba", label: "WNBA" },
-      { slug: "intlbasketball", label: "Men Intl" },
+      { slug: "intlbasketball", label: "Men Intl", hidden: true },
     ],
   },
   {
@@ -33,7 +36,7 @@ module.exports = [
     emoji: "⚾",
     leagues: [
       { slug: "mlb", label: "MLB" },
-      { slug: "intlbaseball", label: "Men Intl" },
+      { slug: "intlbaseball", label: "Men Intl", hidden: true },
     ],
   },
   {
@@ -41,7 +44,7 @@ module.exports = [
     emoji: "🏒",
     leagues: [
       { slug: "nhl", label: "NHL" },
-      { slug: "intlhockey", label: "Men Intl" },
+      { slug: "intlhockey", label: "Men Intl", hidden: true },
     ],
   },
   {
