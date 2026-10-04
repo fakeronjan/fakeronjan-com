@@ -1451,19 +1451,10 @@ footer {
    Distinct component family from every other fleet page - this is the only
    page built from cards instead of one big table, since it's a directory
    of 14 sites rather than a single site's own data.
-   #currentSummaryView breaks out to 1320px (same width the reference portal
-   used for its own 3-column grid) via the definite-width
-   left:50%+transform:translateX(-50%) technique - the page's normal 960px
-   column made 3 cards per row too cramped to read team names. */
-#currentSummaryView {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  max-width: 1320px;
-  padding: 0 1.5rem;
-  box-sizing: border-box;
-}
+   Two cards per row sit in the page's normal column, so section headers,
+   their lines and the cards share the tabs' left and right edges. (It used
+   to break out to 1320px, which three cards per row needed to read team
+   names; two per row don't.) */
 .sport-row { margin-bottom: 1.7rem; }
 .sport-row h2 {
   font-size: 0.72rem;
@@ -1477,10 +1468,8 @@ footer {
 }
 .card-grid {
   display: grid;
-  /* two wide at most, each up to 30rem: every Top 5 row fits on one line
-     from 26rem, so wider cards only stretched the team-name column */
-  grid-template-columns: repeat(2, minmax(0, 30rem));
-  justify-content: center;
+  /* two wide at most (every Top 5 row fits on one line from 26rem) */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.9rem;
 }
 @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
