@@ -1480,7 +1480,7 @@ footer {
   /* two wide at most, each up to 30rem: every Top 5 row fits on one line
      from 26rem, so wider cards only stretched the team-name column */
   grid-template-columns: repeat(2, minmax(0, 30rem));
-  justify-content: start;
+  justify-content: center;
   gap: 0.9rem;
 }
 @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
