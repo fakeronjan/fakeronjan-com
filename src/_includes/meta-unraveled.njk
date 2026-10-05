@@ -1,9 +1,9 @@
 {% raw %}
 <div class="mu">
 <style>
-.mu { --panel: #ffffff; --ink: var(--fg); --ink-2: #4a4a4a; --ink-3: #6b6b6b; --rule: #e4e4e4; --grid: #efefef; --lane: #dcdfe4; --lane-ink: #2a2f38; --hatch: #cdd1d7; --cell-empty: #f0f0f0; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --focus: #2a78d6; --f-display: "Space Grotesk", system-ui, sans-serif; --f-body: "Manrope", system-ui, sans-serif; --f-data: "Manrope", system-ui, sans-serif; font-size: 15px; line-height: 1.5; color: var(--ink); margin-top: 2.5rem; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mu { --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane: #35353e; --lane-ink: #e2e2e6; --hatch: #42424c; --cell-empty: #24242a; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --focus: #6da7ec; } }
-:root[data-theme="dark"] .mu { --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane: #35353e; --lane-ink: #e2e2e6; --hatch: #42424c; --cell-empty: #24242a; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --focus: #6da7ec; }
+.mu { --bg: #f3f4f6; --panel: #ffffff; --ink: var(--fg); --ink-2: #4a4a4a; --ink-3: #6b6b6b; --rule: #e4e4e4; --grid: #efefef; --lane: #dcdfe4; --lane-ink: #2a2f38; --hatch: #cdd1d7; --cell-empty: #f0f0f0; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --focus: #2a78d6; --f-display: "Space Grotesk", system-ui, sans-serif; --f-body: "Manrope", system-ui, sans-serif; --f-data: "Manrope", system-ui, sans-serif; font-size: 15px; line-height: 1.5; color: var(--ink); margin-top: 2.5rem; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mu { --bg: #2a2a31; --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane: #35353e; --lane-ink: #e2e2e6; --hatch: #42424c; --cell-empty: #24242a; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --focus: #6da7ec; } }
+:root[data-theme="dark"] .mu { --bg: #2a2a31; --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane: #35353e; --lane-ink: #e2e2e6; --hatch: #42424c; --cell-empty: #24242a; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --focus: #6da7ec; }
 .mu * { box-sizing: border-box; }
 .mu h2, .mu h3 {font-family: var(--f-display); text-wrap: balance; margin: 0;}
 .mu h2 {font-size: 24px; font-weight: 700; letter-spacing: -0.01em;}
@@ -115,6 +115,8 @@
 .mu a { color: var(--accent-2); }
 .mu nav.toc a { color: var(--ink-2); }
 .mu .method-notes { text-align: left; border-top: 1px solid var(--rule); padding-top: 22px; }
+.mu .tags3 { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.mu .tags3 div { grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 12px; padding: 13px 16px; }
 .mu .yt { font-size: 11.5px; }
 .mu .yt th, .mu .yt td { padding: 5px 3px; }
 .mu .yt th:first-child, .mu .yt td:first-child { padding-right: 8px; white-space: normal; min-width: 8.5em; }
