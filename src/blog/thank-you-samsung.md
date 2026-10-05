@@ -20,4 +20,4 @@ tags: [about-me, career]
 <p>I got that here.</p>
 <p>Thank you for the experience, the challenge, the lessons, the magical moments of collaboration, the life-changing trip to Suwon, for all of it. I’m thankful to have known each of you.</p>
 <p>While Friday is my last day as a Samsung colleague, I expect we will stay in touch as friends for years to come.</p>
-<figure><img alt="" loading="lazy" src="/blog/img/thank-you-samsung/badge.png"/></figure>
+<figure><img alt="" loading="lazy" src="/blog/img/thank-you-samsung/badge.png"/><figcaption>The badge that swiped in 5x a week</figcaption></figure>
