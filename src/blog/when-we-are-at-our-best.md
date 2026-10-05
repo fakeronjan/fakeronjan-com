@@ -4,7 +4,7 @@ title: When we are at our best, we serve as the voice of the people
 date: 2018-04-27
 original_source: Reinventing Research, an internal Nielsen blog
 source_short: internal Nielsen blog
-tags: [about-me]
+tags: [about-me, career]
 ---
 
 # {{ title }}
