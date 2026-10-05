@@ -1,0 +1,207 @@
+{% raw %}
+<div class="mu">
+<style>
+.mu { --panel: #ffffff; --ink: var(--fg); --ink-2: #4a4a4a; --ink-3: #6b6b6b; --rule: #e4e4e4; --grid: #efefef; --lane: #dcdfe4; --lane-ink: #2a2f38; --hatch: #cdd1d7; --cell-empty: #f0f0f0; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --focus: #2a78d6; --f-display: "Space Grotesk", system-ui, sans-serif; --f-body: "Manrope", system-ui, sans-serif; --f-data: "Manrope", system-ui, sans-serif; font-size: 15px; line-height: 1.5; color: var(--ink); margin-top: 2.5rem; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mu { --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane: #35353e; --lane-ink: #e2e2e6; --hatch: #42424c; --cell-empty: #24242a; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --focus: #6da7ec; } }
+:root[data-theme="dark"] .mu { --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane: #35353e; --lane-ink: #e2e2e6; --hatch: #42424c; --cell-empty: #24242a; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --focus: #6da7ec; }
+.mu * { box-sizing: border-box; }
+.mu h2, .mu h3 {font-family: var(--f-display); text-wrap: balance; margin: 0;}
+.mu h2 {font-size: 24px; font-weight: 700; letter-spacing: -0.01em;}
+.mu h3 {font-size: 15px; font-weight: 700; font-family: var(--f-body);}
+.mu p {margin: 0;}
+.mu .num, .mu td.n, .mu .mono {font-family: var(--f-data); font-variant-numeric: tabular-nums;}
+.mu nav.toc {display: flex; flex-wrap: nowrap; gap: 6px; overflow-x: auto; scrollbar-width: none; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; margin-inline: -4px; padding-inline: 4px; border-bottom: 1px solid var(--rule);}
+.mu nav.toc::-webkit-scrollbar {display: none;}
+.mu nav.toc a {flex: 0 0 auto; white-space: nowrap; color: var(--ink-2); text-decoration: none; font-size: 13px; font-weight: 500; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--rule); background: var(--panel);}
+.mu nav.toc a:hover {color: var(--ink); border-color: var(--ink-3);}
+.mu section {display: grid; gap: 14px; padding-block: 44px 8px; scroll-margin-top: 56px;}
+.mu .panel {background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 18px; min-width: 0;}
+.mu .scroll-x {overflow-x: auto;}
+.mu .scroll-x > svg {min-width: 720px;}
+.mu svg {display: block; width: 100%; height: auto; overflow: visible;}
+.mu svg text {fill: var(--ink-3); font-family: var(--f-data); font-size: 11px;}
+.mu svg .lbl-ink {fill: var(--ink-2);}
+.mu svg .lane-txt {fill: var(--lane-ink); font-family: var(--f-body); font-size: 11px; font-weight: 600;}
+.mu .legend {display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2);}
+.mu .legend i {display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px;}
+.mu .grid2 {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;}
+.mu .grid3 {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;}
+.mu .note {font-size: 13px; color: var(--ink-3);}
+.mu .panel h3 + .note {margin-top: 2px;}
+.mu .panel > * + * {margin-top: 12px;}
+.mu table {border-collapse: collapse; width: 100%; font-size: 13.5px;}
+.mu th {text-align: left; font-weight: 600; color: var(--ink-3); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 8px; border-bottom: 1px solid var(--rule);}
+.mu td {padding: 7px 8px; border-bottom: 1px solid var(--grid); vertical-align: middle;}
+.mu td.n, .mu th.n {text-align: right;}
+.mu td.rank {color: var(--ink-3); font-family: var(--f-data); width: 2.5em;}
+.mu .splitbar {display: flex; height: 10px; gap: 2px; min-width: 80px;}
+.mu .splitbar span {display: block; height: 100%; border-radius: 2px;}
+.mu .tabs {display: flex; gap: 4px; flex-wrap: nowrap; overflow-x: auto;}
+.mu .tabs button {font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--rule); background: transparent; color: var(--ink-2); cursor: pointer; white-space: nowrap;}
+.mu .tabs button[aria-pressed="true"] {background: var(--ink); color: var(--panel); border-color: var(--ink);}
+.mu .tabs button:focus-visible, .mu nav.toc a:focus-visible, .mu input:focus-visible, .mu summary:focus-visible {outline: 2px solid var(--focus); outline-offset: 2px;}
+.mu .wordlist {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 20px;}
+.mu .word {display: grid; grid-template-columns: 7.5em 1fr 3em; align-items: center; gap: 8px; font-size: 13.5px; min-width: 0;}
+.mu .word .w {overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.mu .word .b {height: 8px; border-radius: 0 3px 3px 0; background: var(--s1);}
+.mu .word .c {text-align: right; color: var(--ink-3); font-family: var(--f-data); font-size: 12px;}
+.mu .emoji-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px;}
+.mu .emoji-grid div {display: grid; justify-items: center; gap: 2px; padding: 8px 4px; border-radius: 8px; background: var(--bg);}
+.mu .emoji-grid .e {font-size: 24px; line-height: 1.1;}
+.mu .emoji-grid .c {font-family: var(--f-data); font-size: 11.5px; color: var(--ink-3);}
+.mu .chips {display: flex; flex-wrap: wrap; gap: 6px;}
+.mu .chip {font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: var(--bg); border: 1px solid var(--rule); color: var(--ink-2);}
+.mu .chip.both {border-color: var(--s1); color: var(--ink);}
+.mu input[type="search"] {font: inherit; font-size: 14px; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); width: min(320px, 100%);}
+.mu details {font-size: 13px; color: var(--ink-2);}
+.mu details summary {cursor: pointer; color: var(--ink-3);}
+.mu details table {margin-top: 8px;}
+.mu .callout {display: flex; flex-wrap: wrap; gap: 10px 28px;}
+.mu .callout div {display: grid;}
+.mu .callout b {font-family: var(--f-data); font-weight: 500; font-size: 20px; font-variant-numeric: tabular-nums;}
+.mu .callout span {font-size: 13px; color: var(--ink-2);}
+.mu .method-notes {margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--rule); display: grid; gap: 10px; font-size: 13px; color: var(--ink-2);}
+.mu .method-notes ul {margin: 0; padding-left: 18px; display: grid; gap: 4px;}
+.mu #tip {position: fixed; pointer-events: none; z-index: 20; background: var(--ink); color: var(--panel); font-size: 12.5px; line-height: 1.45; padding: 8px 10px; border-radius: 8px; max-width: 260px; opacity: 0; transition: opacity .08s;}
+.mu #tip b {font-weight: 600;}
+.mu #tip .row {display: flex; justify-content: space-between; gap: 14px; font-family: var(--f-data); font-size: 12px;}
+.mu #tip .row i {display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px;}
+.mu .hit {fill: transparent; cursor: crosshair;}
+.mu .hit:hover {fill: var(--ink); fill-opacity: 0.05;}
+@media (max-width: 760px) {
+.mu .grid2, .mu .grid3, .mu .wordlist {grid-template-columns: minmax(0, 1fr);}
+}
+@media (prefers-reduced-motion: reduce) {
+.mu #tip {transition: none;}
+}
+.mu .yt {font-size: 12px;}
+.mu .yt th, .mu .yt td {text-align: right; padding: 6px 4px; white-space: nowrap; font-family: var(--f-data); font-variant-numeric: tabular-nums;}
+.mu .yt th {text-transform: none; letter-spacing: 0; font-size: 12px;}
+.mu .yt th:first-child, .mu .yt td:first-child {text-align: left; font-family: var(--f-body); position: sticky; left: 0; background: var(--panel); z-index: 1; padding-right: 14px;}
+.mu .yt td:first-child i {display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; vertical-align: -0.5px;}
+.mu .yt tr.sub td {color: var(--ink-3); font-size: 12px;}
+.mu .yt tr.sub td:first-child {padding-left: 30px;}
+.mu .yt tr.total td {font-weight: 600; border-top: 1px solid var(--rule); border-bottom: none;}
+.mu .yt td.zero {color: var(--rule);}
+.mu .oi {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 28px;}
+.mu .oi .r {display: grid; grid-template-columns: 1.6em 7.5em 3em 1fr 5.6em; gap: 8px; align-items: center; font-size: 13.5px; padding-block: 3px; border-bottom: 1px solid var(--grid); min-width: 0;}
+.mu .oi .k {color: var(--ink-3); font-family: var(--f-data); font-size: 12px;}
+.mu .oi .w {overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;}
+.mu .oi .n {text-align: right; color: var(--ink-3); font-family: var(--f-data); font-size: 12px;}
+.mu .oi .b {height: 8px; border-radius: 0 3px 3px 0; background: var(--s1);}
+.mu .oi .x {text-align: right; font-family: var(--f-data); font-size: 12.5px;}
+.mu .oi-head {display: grid; grid-template-columns: 1.6em 7.5em 3em 1fr 5.6em; gap: 8px; white-space: nowrap; font-size: 11.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;}
+.mu .oi-heads {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 28px;}
+.mu .tags3 {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;}
+.mu .tags3 div {background: var(--bg); border-radius: 8px; padding: 12px 14px; display: grid; gap: 2px; min-width: 0;}
+.mu .tags3 b {font-weight: 600; overflow-wrap: anywhere;}
+.mu .tags3 span {font-family: var(--f-data); font-size: 12px; color: var(--ink-3);}
+.mu .method-notes a, .mu .note a {color: var(--s1); text-underline-offset: 2px;}
+.mu .acct-key {list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 20px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums;}
+.mu .acct-key li {margin: 0;}
+@media (max-width: 760px) {
+.mu .acct-key {grid-template-columns: minmax(0, 1fr);}
+}
+.mu #emoji {grid-template-columns: repeat(5, minmax(0, 1fr));}
+@media (max-width: 760px) {
+.mu .oi, .mu .oi-heads {grid-template-columns: minmax(0, 1fr);}
+.mu .oi-heads > :last-child {display: none;}
+.mu .tags3 {grid-template-columns: minmax(0, 1fr);}
+}
+.mu nav.toc { position: static; background: none; border-bottom: 1px solid var(--rule); border-top: 1px solid var(--rule); }
+.mu section { padding-block: 40px 4px; }
+.mu h2 { font-size: 1.5rem; color: var(--fg); }
+.mu .method-notes { margin-top: 48px; }
+.mu a { color: var(--accent-2); }
+.mu nav.toc a { color: var(--ink-2); }
+.mu .method-notes { text-align: left; border-top: 1px solid var(--rule); padding-top: 22px; }
+.mu .yt { font-size: 11.5px; }
+.mu .yt th, .mu .yt td { padding: 5px 3px; }
+.mu .yt th:first-child, .mu .yt td:first-child { padding-right: 8px; white-space: normal; min-width: 8.5em; }
+.mu .yt tr.sub td:first-child { padding-left: 22px; }
+</style>
+  <nav class="toc" aria-label="Sections">
+    <a href="#timeline">Timeline</a><a href="#shift">Platform shift</a><a href="#photos">Photos and videos</a><a href="#when">Posting times</a>
+    <a href="#consume">Creating vs. consuming</a><a href="#words">Words</a><a href="#method">Method</a>
+  </nav>
+  <section id="timeline">
+    <h2>Month-by-month posting history</h2>
+    <div class="panel">
+      <div class="legend" id="legend-series"></div>
+      <div class="scroll-x"><svg id="chart-timeline" role="img" aria-label="Monthly posts by type, 2008 to 2026, with account lifespans underneath"></svg></div>
+      <ul class="acct-key" id="acct-key"></ul>
+    </div>
+    <div class="panel">
+      <h3>Yearly totals</h3>
+      <p class="note">Facebook posts cover the main timeline, friends' walls, and groups. Comments are counted separately.</p>
+      <div class="scroll-x" id="table-yearly"></div>
+    </div>
+  </section>
+  <section id="shift">
+    <h2>Platform shift</h2>
+    <div class="panel">
+      <div class="legend" id="legend-series-2"></div>
+      <div class="scroll-x"><svg id="chart-shift" role="img" aria-label="Share of each year's posts by type"></svg></div>
+    </div>
+  </section>
+  <section id="photos">
+    <h2>Photo and video sharing</h2>
+    <div class="panel">
+      <div class="legend"><span><i style="background:var(--s1)"></i>Facebook photos</span><span><i style="background:var(--s2)"></i>Instagram post photos</span><span><i style="background:var(--s3)"></i>Instagram story photos</span><span><i style="background:var(--s4)"></i>All videos</span></div>
+      <div class="scroll-x"><svg id="chart-photos" role="img" aria-label="Photos and videos shared per year by source"></svg></div>
+      <p class="note">Includes profile and cover photos. Each photo in a multi-photo post counts separately. Cross-posts count once. Photos sent in messages are excluded.</p>
+    </div>
+    <div class="panel">
+      <h3>Posts with a photo or video</h3>
+      <p class="note">Share of each year's posts with at least one photo or video. Instagram items always carry one. Link previews don't count.</p>
+      <div class="scroll-x"><svg id="chart-withmedia" role="img" aria-label="Share of posts with a photo or video by year"></svg></div>
+    </div>
+  </section>
+  <section id="when">
+    <h2>Weekday and weekend posting times</h2>
+    <div class="panel">
+      <div class="legend"><span><i style="background:var(--s1)"></i>Weekdays</span><span><i style="background:var(--s2)"></i>Weekends</span></div>
+      <div class="scroll-x"><svg id="chart-hours" role="img" aria-label="Share of weekday and weekend posts by hour"></svg></div>
+      <p class="note">Share of each group's posts by hour in Eastern time across all years. Weekdays are Monday through Friday.</p>
+    </div>
+  </section>
+  <section id="consume">
+    <h2>Creating vs. consuming</h2>
+    <div class="panel">
+      <div class="legend"><span><i style="background:var(--s1)"></i>Posts and stories</span><span><i style="background:var(--s2)"></i>Comments</span><span><i style="background:var(--s3)"></i>Likes and reactions</span></div>
+      <div class="scroll-x"><svg id="chart-consume" role="img" aria-label="Posts, comments, and likes given per year"></svg></div>
+    </div>
+    <div class="panel">
+      <h3>Likes given per post</h3>
+      <p class="note">Likes and reactions given on other people's posts and comments divided by posts, stories, reels, and threads. Comments count in neither. Years under 30 posts are excluded.</p>
+      <div class="scroll-x"><svg id="chart-ratio" role="img" aria-label="Likes given per post by year"></svg></div>
+    </div>
+  </section>
+  <section id="words">
+    <h2>Words</h2>
+    <div class="panel">
+      <h3>Most overused words</h3>
+      <p class="note" id="oi-note"></p>
+            <div class="oi-heads"><div class="oi-head"><span></span><span>Word</span><span style="text-align:right">Uses</span><span></span><span style="text-align:right">× typical</span></div><div class="oi-head"><span></span><span>Word</span><span style="text-align:right">Uses</span><span></span><span style="text-align:right">× typical</span></div></div>
+      <div class="oi" id="oi"></div>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Top hashtags</h3>
+        <div class="tags3" id="tags"></div>
+      </div>
+      <div class="panel">
+        <h3>Top emoji</h3>
+        <div class="emoji-grid" id="emoji"></div>
+      </div>
+    </div>
+  </section>
+  <section id="method" class="method-notes">
+    <h2>Method</h2>
+    <ul id="method-list"></ul>
+  </section>
+<div id="tip" role="tooltip"></div>
+<script src="/js/meta-unraveled-data.js"></script>
+<script src="/js/meta-unraveled.js"></script>
+</div>
+{% endraw %}
