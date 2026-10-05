@@ -1,6 +1,7 @@
 module.exports = [
   { slug: "about-me", label: "About Me" },
   { slug: "birthday-retro", label: "Birthday Retro" },
+  { slug: "career", label: "Career" },
   { slug: "game-of-the-year", label: "Game of the Year" },
   { slug: "game-rankings", label: "Game Rankings" },
   { slug: "movies", label: "Movies" },

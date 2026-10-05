@@ -4,7 +4,7 @@ title: "Thank you, Nielsen"
 date: 2022-03-04
 original_source: Email
 source_note: sent as a farewell email to Nielsen colleagues
-tags: [about-me]
+tags: [about-me, career]
 ---
 
 # {{ title }}
