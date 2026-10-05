@@ -4,7 +4,7 @@ title: "Thank you, Samsung"
 date: 2026-10-02
 original_source: Email
 source_note: sent as a farewell email to Samsung colleagues
-tags: [about-me, career]
+tags: [career]
 ---
 
 # {{ title }}
