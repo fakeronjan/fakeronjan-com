@@ -1219,9 +1219,11 @@
     var teams = (state.wcOddsData && state.wcOddsData.teams) || [];
     if (!teams.length) { wcNav.hidden = true; return; }
     wcNav.hidden = false;
-    // Land on the FIFA World Cup tab by default when an edition is live/just
-    // finished, unless the visitor has already navigated elsewhere.
-    if (!state.userPickedTab) activateTab("wc-odds");
+    // Land on the FIFA World Cup tab by default while an edition is live or
+    // just finished, until the first match after its Final is played.
+    var d = state.wcOddsData;
+    var postWc = d.complete && d.latest_matchday && state.lastMatchDate > d.latest_matchday.date;
+    if (!postWc && !state.userPickedTab) activateTab("wc-odds");
     wcBuildControls();
     renderWcView();
   }
@@ -1395,6 +1397,7 @@
     loadTeamsIndex(),
   ]).then(function (results) {
     var data = results[0];
+    state.lastMatchDate = data.last_date;
     dateRangeEl.textContent = "Ratings include matches from " + fmtDate(data.first_date) + " to " + fmtDate(data.last_date);
     if (data.generated_at) {
       var refreshed = new Date(data.generated_at);
