@@ -108,8 +108,10 @@
     if (!t.proj) return "-";
     var n = t.proj_games, ties = t.proj_ties || 0;
     var rec = function (w) { return w + "-" + (n - w - ties) + (ties ? "-" + ties : ""); };
+    // The bar and its labels count a tie as half a win, like the standings.
+    var half = ties / 2;
     return '<div class="od-val">' + rec(t.proj[1]) + "</div>" +
-      projBar(t.proj, n, "wins");
+      projBar(t.proj.map(function (w) { return w + half; }), n, "wins");
   }
 
   // The Proj bar: band = 10th-90th percentile, tick = median, with the low
