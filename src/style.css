@@ -1754,8 +1754,9 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 #wmSortPills { align-items: center; }
 #wmSortPills .wc-md-label { margin-right: 0.1rem; }
 #dmSortPills .wc-md-label { margin-right: 0.1rem; }
-.dm-day-nav { display: inline-flex; align-items: center; gap: 0.3rem; }
-.dm-day-nav .pill:disabled { opacity: 0.35; cursor: default; }
+/* Prev/next arrows around a day or week dropdown (Daily / Weekly Matchups) */
+.step-nav { display: inline-flex; align-items: center; gap: 0.3rem; }
+.step-nav .pill:disabled { opacity: 0.35; cursor: default; }
 .wm-mark-line { margin-top: 0.15rem; font-style: normal; font-weight: 700; font-size: inherit; line-height: 0.816rem; }  /* glyph at cell size, line box = .wm-kick's (0.68rem x 1.2) */
 .wm-kick { padding-left: 3.2rem; margin-top: 0.15rem; }  /* lines up under the team names (.wm-at + .wm-rank) */
 .wm-rank { display: inline-block; min-width: 1.4rem; margin-right: 0.3rem; text-align: right; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }

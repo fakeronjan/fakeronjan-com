@@ -1413,6 +1413,8 @@
         wmSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
         wmSeasonSelect.onchange = function () { loadWmSeason(Number(wmSeasonSelect.value)); };
         wmWeekSelect.onchange = renderWeeklyMatchups;
+        wmPrev.onclick = function () { stepWmWeek(-1); };
+        wmNext.onclick = function () { stepWmWeek(1); };
         return loadWmSeason(idx.seasons[0]);
       })
       .catch(function () {});
@@ -1465,11 +1467,23 @@
       (wmKickoff(g) ? '<div class="wm-mark-line sub-line-italic">' + mark + "</div>" : "");
   }
 
+  // Week options run newest first, so "next week" is one option up.
+  var wmPrev = document.getElementById("wmPrev");
+  var wmNext = document.getElementById("wmNext");
+  function stepWmWeek(dir) {
+    var i = wmWeekSelect.selectedIndex - dir;
+    if (i < 0 || i >= wmWeekSelect.options.length) return;
+    wmWeekSelect.selectedIndex = i;
+    renderWeeklyMatchups();
+  }
+
   function renderWeeklyMatchups() {
     var d = state.wmSeasons[state.wmSeason];
     if (!d) return;
     var week = Number(wmWeekSelect.value);
     var wk = d.weeks.filter(function (w) { return w.week === week; })[0];
+    wmPrev.disabled = wmWeekSelect.selectedIndex >= wmWeekSelect.options.length - 1;
+    wmNext.disabled = wmWeekSelect.selectedIndex <= 0;
     var ps = week >= 100;
     wmTitle.textContent = d.season + " " + wmWeekLabel(week);
     wmNote.textContent = "Win probability, line, and O/U for every game from DILLON's ratings going into the week. " +

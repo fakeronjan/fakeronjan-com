@@ -64,7 +64,11 @@ eleventyComputed:
     <p class="sport-note" id="wmNote"></p>
     <div class="sport-controls">
       <select id="wmSeasonSelect" class="sport-select" aria-label="Season"></select>
-      <select id="wmWeekSelect" class="sport-select" aria-label="Week"></select>
+      <div class="step-nav">
+        <button class="pill" id="wmPrev" type="button" aria-label="Previous week">&#9664;</button>
+        <select id="wmWeekSelect" class="sport-select" aria-label="Week"></select>
+        <button class="pill" id="wmNext" type="button" aria-label="Next week">&#9654;</button>
+      </div>
       <div class="pill-group" id="wmSortPills" role="group" aria-label="Sort">
         <span class="wc-md-label">Sort</span>
         <button class="pill active" data-wmsort="juice" type="button">Juice</button>
