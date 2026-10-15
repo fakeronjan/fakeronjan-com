@@ -22,6 +22,7 @@ eleventyComputed:
 
   <nav class="sport-tabs" id="nbaTabs">
     <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
+    <button class="sport-tab" data-tab="daily-matchups" id="nbaDmNav" hidden type="button">Daily Matchups</button>
     <button class="sport-tab" data-tab="team-summary" type="button">Team Summary</button>
     <button class="sport-tab" data-tab="playoff-odds" id="nbaPoNav" hidden type="button">&#127942; NBA Playoffs</button>
     <button class="sport-tab" data-tab="league-history" type="button">&#128081; NBA Finals</button>
@@ -106,6 +107,26 @@ eleventyComputed:
     <div class="pill-group" id="goatConfPills"></div>
     <div id="goatTableWrap" class="sport-table-wrap"></div>
     <div id="goatDisrupted" class="sport-disrupted-note sport-disrupted-note-bottom" hidden></div>
+  </section>
+
+  <section class="sport-view" data-view="daily-matchups" id="daily-matchups" hidden>
+    <h2 id="dmTitle" class="sport-subhead"></h2>
+    <p class="sport-note" id="dmNote"></p>
+    <div class="sport-controls">
+      <select id="dmSeasonSelect" class="sport-select" aria-label="Season"></select>
+      <div class="dm-day-nav">
+        <button class="pill" id="dmPrev" type="button" aria-label="Previous game day">&#9664;</button>
+        <select id="dmDaySelect" class="sport-select" aria-label="Day"></select>
+        <button class="pill" id="dmNext" type="button" aria-label="Next game day">&#9654;</button>
+      </div>
+      <div class="pill-group" id="dmSortPills" role="group" aria-label="Sort">
+        <span class="wc-md-label">Sort</span>
+        <button class="pill active" data-dmsort="juice" type="button">Juice</button>
+        <button class="pill" data-dmsort="tipoff" type="button">Tip-off</button>
+      </div>
+    </div>
+    <div id="dmStamp" class="wc-stamp"></div>
+    <div id="dmWrap" class="sport-table-wrap"></div>
   </section>
 
   <section class="sport-view" data-view="playoff-odds" id="playoff-odds" hidden>
