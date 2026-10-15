@@ -1640,9 +1640,10 @@
     var season = tally(d.days.filter(function (x) { return x.date <= date && !x.playoffs; }));
     var playoffs = tally(d.days.filter(function (x) { return x.date <= date && x.playoffs; }));
     var stamp = '<span class="wc-md-label">DUNCAN pick record</span>';
-    if (thisDay[0] + thisDay[1]) stamp += '<span class="wc-result">' + dmDayLabel(date) + " <b>" + thisDay[0] + "-" + thisDay[1] + "</b></span>";
+    // Broadest first: season (or regular season), playoffs, then this day.
     if (season[0] + season[1]) stamp += '<span class="wc-result">' + fmtSeason(d.season) + (ps ? " regular season" : " season") + " <b>" + season[0] + "-" + season[1] + "</b></span>";
     if (ps && playoffs[0] + playoffs[1]) stamp += '<span class="wc-result">' + fmtSeason(d.season) + " playoffs <b>" + playoffs[0] + "-" + playoffs[1] + "</b></span>";
+    if (thisDay[0] + thisDay[1]) stamp += '<span class="wc-result">' + dmDayLabel(date) + " <b>" + thisDay[0] + "-" + thisDay[1] + "</b></span>";
     dmStamp.innerHTML = stamp;
 
     var byJuice = function (a, b) { return (b.juice == null ? -1 : b.juice) - (a.juice == null ? -1 : a.juice); };
