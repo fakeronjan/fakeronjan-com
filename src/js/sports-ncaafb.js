@@ -1309,10 +1309,14 @@
       return [w, l];
     }
     var thisWk = tally([wk]);
-    var season = tally(d.weeks.filter(function (w) { return w.week <= week; }));
+    // Regular season (championship week and bowls included) and CFP split
+    // once the view reaches the CFP.
+    var season = tally(d.weeks.filter(function (w) { return w.week <= week && w.week <= WM_BOWLS; }));
+    var cfp = tally(d.weeks.filter(function (w) { return w.week <= week && w.week > WM_BOWLS; }));
     var stamp = '<span class="wc-md-label">SALAAM pick record</span>';
     if (thisWk[0] + thisWk[1]) stamp += '<span class="wc-result">' + wk.label + " <b>" + thisWk[0] + "-" + thisWk[1] + "</b></span>";
-    if (season[0] + season[1]) stamp += '<span class="wc-result">' + d.season + " season <b>" + season[0] + "-" + season[1] + "</b></span>";
+    if (season[0] + season[1]) stamp += '<span class="wc-result">' + d.season + (ps ? " regular season" : " season") + " <b>" + season[0] + "-" + season[1] + "</b></span>";
+    if (ps && cfp[0] + cfp[1]) stamp += '<span class="wc-result">' + d.season + " CFP <b>" + cfp[0] + "-" + cfp[1] + "</b></span>";
     wmStamp.innerHTML = stamp;
 
     // Bowls have no Juice: rank them by Quality.
