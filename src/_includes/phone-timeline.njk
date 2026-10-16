@@ -64,6 +64,29 @@
 .pt #pt-tip .m {opacity: .75;}
 .pt #pt-tip .d {font-family: var(--f-data); font-variant-numeric: tabular-nums; font-size: 12px; opacity: .85;}
 .pt #pt-tip .body {display: grid; gap: 2px; align-content: start; min-width: 0;}
+.pt .favs {display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px;}
+.pt .fav {display: grid; gap: 6px; align-content: start; cursor: pointer; outline: none; border-radius: 8px;}
+.pt .fav:focus-visible {outline: 2px solid var(--focus); outline-offset: 3px;}
+.pt .fav .ph {height: 170px; padding: 10px; border: 1px solid var(--rule);}
+.pt .fav b {font-weight: 700; font-size: 14.5px; line-height: 1.3;}
+.pt .fav .d {font-family: var(--f-data); font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--ink-3);}
+.pt .fav .q {font-size: 13px; color: var(--ink-2);}
+.pt .pref {display: grid; gap: 10px; padding-block: 16px; border-top: 1px solid var(--rule);}
+.pt .pref:first-of-type {border-top: 0; padding-top: 4px;}
+.pt .pref svg {min-width: 0;}
+.pt .pref .strip {overflow-x: auto;}
+.pt .pref .strip svg {min-width: 760px;}
+.pt .cats {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 28px;}
+.pt .cat {display: grid; grid-template-columns: 12px minmax(0, 9.5em) minmax(0, 1fr) 3em 5.5em 4.2em; gap: 8px; align-items: center; font-size: 13.5px;}
+.pt .cat .sw {width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12);}
+.pt .cat .nm {white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.pt .cat .bar {height: 8px; border-radius: 0 3px 3px 0; background: var(--ink-3); opacity: .55;}
+.pt .cat .v {font-family: var(--f-data); font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-2); font-size: 12.5px;}
+.pt .cat .v.dim {color: var(--ink-3);}
+.pt .cathead {display: grid; grid-template-columns: 12px minmax(0, 9.5em) minmax(0, 1fr) 3em 5.5em 4.2em; gap: 8px; font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em;}
+.pt .cathead span:nth-child(n+4) {text-align: right;}
+@media (max-width: 760px) { .pt .cats {grid-template-columns: minmax(0, 1fr);} .pt .cats > div + div .cathead {display: none;} .pt .pref .strip svg {min-width: 0;} }
+@media (max-width: 520px) { .pt .cat, .pt .cathead {grid-template-columns: 12px minmax(0, 1fr) 3em 3.6em 3.6em;} .pt .cat > span:nth-child(3), .pt .cathead > span:nth-child(3) {display: none;} }
 @media (max-width: 640px) {
   .pt .ends {grid-template-columns: minmax(0, 1fr);}
   .pt .rrow {grid-template-columns: 1.6em 30px minmax(0, 1fr) 5.5em; row-gap: 3px;}
@@ -74,7 +97,7 @@
 }
 </style>
   <nav class="toc" aria-label="Sections">
-    <a href="#pt-timeline">Timeline</a><a href="#pt-longest">Longest held</a><a href="#pt-ended">How each phone ended</a><a href="#pt-method">Method</a>
+    <a href="#pt-timeline">Timeline</a><a href="#pt-prefs">Preferences</a><a href="#pt-favs">Favorites</a><a href="#pt-longest">Longest held</a><a href="#pt-ended">How each phone ended</a><a href="#pt-method">Method</a>
   </nav>
   <section id="pt-timeline">
     <h2>Timeline</h2>
@@ -82,6 +105,14 @@
       <div class="legend" id="pt-legend"></div>
       <div class="scroll-x" id="pt-scroll"><svg id="pt-chart" role="img" aria-label="Timeline of every phone from 2008 to 2026 in Personal and Work lanes, with employers underneath and short stints as pins on a Tried row"></svg></div>
     </div>
+  </section>
+  <section id="pt-prefs">
+    <h2>Preferences</h2>
+    <div class="panel" id="pt-prefs-body"></div>
+  </section>
+  <section id="pt-favs">
+    <h2>Favorites</h2>
+    <div class="panel"><div class="favs" id="pt-favs-body"></div></div>
   </section>
   <section id="pt-longest">
     <h2>Longest held</h2>
@@ -101,6 +132,8 @@
   <section id="pt-method" class="method-notes">
     <h2>Method</h2>
     <ul>
+      <li>Preferences use personal-phone days: each day counts toward the phone that was the personal phone that day, including work phones that doubled as personal. Phones under 30 days only count on days no other phone covered.</li>
+      <li>Favorites are the phones rated 3 out of 3.</li>
       <li>Photos are official renders in the owned color, from Apple, Samsung, and GSMArena.</li>
     </ul>
   </section>

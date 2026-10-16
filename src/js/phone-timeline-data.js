@@ -5,6 +5,18 @@ window.PT_DATA = {
   snapshot: '10/16/2026',
   employers: [['Nielsen', '8/9/2004', '3/4/2022'], ['Meta', '3/7/2022', '5/24/2023'], ['2K Games', '5/30/2023', '1/13/2025'], ['Samsung', '4/14/2025', '10/2/2026'], ['Rentrak', '10/19/2026', null]],
   next: { name: 'iPhone Duo', use: 'Personal', maker: 'Apple', color: 'Star White', img: 'iphone-duo', start: '11/1/2026', note: 'Preordered 10/16/2026, 512 GB. Arrives in November and replaces the Z Fold 7' },
+  // approximate finish colors for the color strip, and the color family each one falls in
+  finish: {
+    'iphone-3g': ['#1b1b1d', 'Black'], 'droid-incredible': ['#1e1e1e', 'Black'], 'iphone-4': ['#f2f2f0', 'White or cream'], 'droid-charge': ['#232323', 'Black'],
+    'droid-razr-maxx': ['#1f1f1f', 'Black'], 'iphone-5s': ['#4d4f52', 'Gray'], 'iphone-4s': ['#f2f2f0', 'White or cream'], 'galaxy-s6-edge': ['#1c2230', 'Black'],
+    'galaxy-s7': ['#1a1a1c', 'Black'], 'iphone-7-plus': ['#2a2a2c', 'Black'], 'pixel-3': ['#f2dcd5', 'Pink'], 'iphone-xr': ['#4aa3df', 'Blue'],
+    'surface-duo': ['#e8ecee', 'White or cream'], 'iphone-12-pro': ['#2f4f5f', 'Blue'], 'galaxy-s10e': ['#1c1f2a', 'Black'], 'z-flip-3': ['#4f6b62', 'Green'],
+    'iphone-13-pro-sierra': ['#9bb5ce', 'Blue'], 'iphone-13-pro-graphite': ['#54524f', 'Gray'], 'iphone-14-pro': ['#594f63', 'Purple'], 'pixel-7': ['#e3e6c4', 'Green'],
+    'iphone-14': ['#232a31', 'Black'], 'razr-plus': ['#b7cfd6', 'Blue'], 'iphone-15-pro-max': ['#bab4a9', 'Silver or titanium'], 'z-flip-6': ['#a9c0e6', 'Blue'],
+    'iphone-13-pro-max': ['#54524f', 'Gray'], 'z-fold-6': ['#b8bbbd', 'Silver or titanium'], 'z-fold-7': ['#1c1c1e', 'Black'], 'z-fold-8-ultra': ['#efe9dc', 'White or cream'],
+  },
+  // form factor by image id; everything else is a slab
+  form: { 'z-flip-3': 'Flip', 'razr-plus': 'Flip', 'z-flip-6': 'Flip', 'surface-duo': 'Fold', 'z-fold-6': 'Fold', 'z-fold-7': 'Fold', 'z-fold-8-ultra': 'Fold' },
   phones: [
     ['iPhone 3G', 'Personal', 'Apple', 'Black', '7/11/2008', '7/8/2010', 3, 'First smartphone, waited in line at Apple', '', 'iphone-3g', 'Switched', '', null, ''],
     ['HTC Droid Incredible', 'Personal', 'HTC', 'Black', '7/8/2010', '6/25/2011', 2, 'Wanted to try Android ecosystem', 'Stolen while changing flat tire', 'droid-incredible', 'Lost or stolen', '', null, ''],

@@ -161,6 +161,77 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   requestAnimationFrame(() => { const sc = $('#pt-scroll'); sc.scrollLeft = sc.scrollWidth; });
 })();
 
+// ---------- preferences ----------
+(function () {
+  // which phone was the personal phone each day: daily drivers first, short stints only to fill gaps
+  const covers = (p, t) => p.segs.some((g) => (g.r === 'P' || g.r === 'PW') && g.start.getTime() <= t && t < g.end.getTime());
+  const daily = phones.filter((p) => !p.trial), trials = phones.filter((p) => p.trial);
+  const days = [];
+  for (let t = phones[0].start.getTime(); t < TODAY.getTime(); t += DAY) {
+    const pick = (list) => list.filter((p) => covers(p, t)).sort((a, b) => b.start - a.start)[0];
+    days.push({ t, p: pick(daily) || pick(trials) || null });
+  }
+  const total = days.filter((d) => d.p).length;
+  const FIN = D.finish, FORM = D.form;
+  const attrs = [
+    { key: 'OS', of: (p) => p.maker === 'Apple' ? 'iOS' : 'Android', color: (c) => c === 'iOS' ? 'var(--apple)' : 'var(--samsung)' },
+    { key: 'Manufacturer', of: (p) => p.maker, color: (c) => col(c) },
+    { key: 'Color', of: (p) => FIN[p.img][1], color: (c, p) => p ? FIN[p.img][0] : ({ 'Black': '#1c1c1e', 'Gray': '#54524f', 'White or cream': '#efede6', 'Blue': '#6f9fd0', 'Green': '#7d9a74', 'Silver or titanium': '#b9b8b3', 'Pink': '#f2dcd5', 'Purple': '#594f63' })[c] },
+    { key: 'Form factor', of: (p) => FORM[p.img] || 'Slab', color: (c) => ({ Slab: 'var(--ink-3)', Flip: 'var(--motorola)', Fold: 'var(--apple)' })[c] },
+    { key: 'Who paid', of: (p) => p.paid ? 'Employer' : 'Bought', color: (c) => c === 'Employer' ? 'var(--htc)' : 'var(--ink-3)' },
+  ];
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+  const W = 900, LEFT = 78, RIGHT = 74, X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1);
+  const x = (t) => LEFT + (t - X0) / (X1 - X0) * (W - LEFT - RIGHT);
+  const body = $('#pt-prefs-body');
+  const head = '<div class="cathead"><span></span><span></span><span></span><span>Days</span><span>Phones</span><span>Rating</span></div>';
+  for (const a of attrs) {
+    const sec = document.createElement('div'); sec.className = 'pref';
+    sec.innerHTML = `<h3>${a.key}</h3><div class="strip"><svg viewBox="0 0 ${W} 34" role="img" aria-label="${a.key} of the personal phone over time"></svg></div>`;
+    body.appendChild(sec);
+    const svg = sec.querySelector('svg');
+    for (let yr = 2008; yr <= 2027; yr++) { const xx = x(new Date(yr, 0, 1)); el('line', { x1: xx, x2: xx, y1: 0, y2: 18, class: 'gridline' }, svg);
+      if (yr % 2 === 0) { const t = el('text', { x: xx, y: 31, 'text-anchor': 'middle', class: 'axis' }, svg); t.textContent = yr; } }
+    // runs of consecutive days with the same phone
+    let i = 0;
+    while (i < days.length) {
+      let j = i; while (j + 1 < days.length && days[j + 1].p === days[i].p) j++;
+      const p = days[i].p;
+      if (p) {
+        const g = el('g', { class: 'mark' }, svg);
+        el('rect', { x: x(days[i].t), y: 2, width: Math.max(1, x(days[j].t + DAY) - x(days[i].t)), height: 14, fill: a.color(a.of(p), a.key === 'Color' ? p : null) }, g);
+        bindTip(g, p);
+      }
+      i = j + 1;
+    }
+    // breakdown: share of personal days, phone count, average rating
+    const cats = {};
+    for (const d of days) if (d.p) { const c = a.of(d.p); (cats[c] ||= { d: 0, n: 0, r: 0 }).d++; }
+    for (const p of phones) { const c = a.of(p); const o = (cats[c] ||= { d: 0, n: 0, r: 0 }); o.n++; o.r += p.rating; }
+    const rows = Object.entries(cats).sort((m, n) => n[1].d - m[1].d || n[1].n - m[1].n);
+    const maxPct = Math.max(...rows.map(([, o]) => o.d)) / total;
+    const half = Math.ceil(rows.length / 2);
+    const cols = rows.length > 3 ? [rows.slice(0, half), rows.slice(half)] : [rows];
+    const list = document.createElement('div'); list.className = 'cats';
+    list.innerHTML = cols.map((cr) => `<div>${head}${cr.map(([c, o]) => {
+      const pct = o.d / total;
+      return `<div class="cat"><span class="sw" style="background:${a.color(c)}"></span><span class="nm">${c}</span>
+        <span><span class="bar" style="display:block;width:${pct / maxPct * 100}%"></span></span><span class="v">${pct >= 0.995 ? '>99' : pct > 0 && pct < 0.005 ? '<1' : Math.round(pct * 100)}%</span>
+        <span class="v dim">${o.n}</span><span class="v dim">${(o.r / o.n).toFixed(1)}</span></div>`;
+    }).join('')}</div>`).join('');
+    sec.appendChild(list);
+  }
+})();
+
+// ---------- favorites ----------
+(function () {
+  const favs = phones.filter((p) => p.rating === 3).sort((a, b) => b.start - a.start);
+  const B = $('#pt-favs-body');
+  B.innerHTML = favs.map((p) => `<div class="fav" data-i="${phones.indexOf(p)}"><span class="ph">${pic(p)}</span><b>${label(p)}</b>
+    <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}, ${p.days.toLocaleString('en-US')} days</span><span class="q">${p.reason}</span></div>`).join('');
+  B.querySelectorAll('[data-i]').forEach((n) => bindTip(n, phones[+n.dataset.i]));
+})();
+
 // ---------- longest held ----------
 (function () {
   const daily = phones.filter((p) => !p.trial).sort((a, b) => b.days - a.days);
