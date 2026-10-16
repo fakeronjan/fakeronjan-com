@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: 'Phone timeline'
+title: 'My Smartphone History'
 date: 2026-10-16
 tags: []
 ---
