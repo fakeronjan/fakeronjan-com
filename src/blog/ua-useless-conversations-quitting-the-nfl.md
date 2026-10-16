@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "\ufeffUseless Conversations: Quitting the NFL"
+title: "Useless Conversations: Quitting the NFL"
 date: 2017-01-06
 original_source: uselessanalysis.com
 tags: [sports-memories]

@@ -14,7 +14,7 @@ tags: [music, game-rankings]
 <p>As a brief tribute to this incredible band, I thought I’d share my top 8 released works of theirs today. (So I won’t be including <em>Song of Storms</em>, <em>Pollyanna</em>, and <em>Dolphin Shoals</em>, even though they played them last night.) No science behind this list - it’s just how I feel about them right now. On to the list!</p>
 <p><strong>#8: <em>Snake Eater</em></strong></p>
 <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/sGuFZ_a7RU0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
-<p><em>﻿</em>I never played Metal Gear so I learned about this classic specifically from The 8-Bit Big Band. Tiffany Mann’s stunning vocals perfectly complement the Bondiest non-Bond song that ever Bonded, and it’s an utter delight (and, as I learned last night, a true crowd favorite).</p>
+<p>I never played Metal Gear so I learned about this classic specifically from The 8-Bit Big Band. Tiffany Mann’s stunning vocals perfectly complement the Bondiest non-Bond song that ever Bonded, and it’s an utter delight (and, as I learned last night, a true crowd favorite).</p>
 <p><strong>#7: <em>Bubblegum K.K.</em></strong></p>
 <div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/g_WVnope2SE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
 <p>When I needed something to smile about, both The 8-Bit Big Band and <em>Animal Crossing</em> were there for me. This incredible rendition was recorded remotely, but you’d never know it from how much fun everyone is having play it together.</p>
