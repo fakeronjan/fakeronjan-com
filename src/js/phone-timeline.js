@@ -326,7 +326,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
 // ---------- stories timeline ----------
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () {
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
-  const COLOR = { 'Next phone up': 'var(--s-next)', 'Greener grass': 'var(--s-grass)', 'Flipped out': 'var(--s-flip)', 'Loved and Lost': 'var(--s-loved)',
+  const COLOR = { 'Next phone up': 'var(--s-next)', 'Greener grass': 'var(--s-grass)', 'Flipped out': 'var(--s-flip)', 'Loved and lost': 'var(--s-loved)',
     "Don't let the door hit you": 'var(--s-door)', 'Return to sender': 'var(--s-return)', 'Company phone': 'var(--s-company)', 'Pinch hitter': 'var(--s-other)', 'Pre-market test': 'var(--s-other)' };
   const W = 960, LEFT = 190, RIGHT = 134, BAR = 12, TIER = 14, X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1);
   const x = (d) => LEFT + (d - X0) / (X1 - X0) * (W - LEFT - RIGHT);
@@ -359,7 +359,8 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   let y = 0;
   for (const r of rows) {
     const barY = y + r.h - BAR - 7;
-    const t = el('text', { x: 0, y: barY + BAR - 1, class: 'srow' }, svg); t.textContent = r.st;
+    const t = el('text', { x: 0, y: barY + 1, class: 'srow' }, svg); t.textContent = r.st;
+    const dn = el('text', { x: 0, y: barY + 15, class: 'sdesc' }, svg); dn.textContent = D.storyNotes[r.st];
     el('line', { x1: 0, x2: W - RIGHT, y1: y + r.h, y2: y + r.h, stroke: 'var(--rule)' }, svg);
     for (const it of r.items) {
       const { p } = it, cur = r.st === 'Current';
@@ -387,7 +388,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
       .sort((a, b) => a.from.start - b.from.start);
     if (!list.length) continue;
     const sec = document.createElement('div'); sec.className = 'panel story';
-    sec.innerHTML = `<h3>${name}</h3><div class="cards">${list.map(({ from, to, detail }) => {
+    sec.innerHTML = `<h3>${name}</h3><p class="sdesc">${D.storyNotes[name]}</p><div class="cards">${list.map(({ from, to, detail }) => {
       const f = from;
       const when = span(f);
       return `<div class="scard">
