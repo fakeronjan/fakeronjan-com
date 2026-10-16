@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "How high can the Warriors fly?\ufeff"
+title: "How high can the Warriors fly?"
 date: 2015-11-30
 original_source: uselessanalysis.com
 ---
