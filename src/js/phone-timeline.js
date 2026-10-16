@@ -63,16 +63,80 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   '<span><i class="paid"></i>Paid for by employer</span><span><i class="pin"></i>Under 30 days</span><span><i class="dash"></i>Coming soon</span>';
 
 // ---------- timeline ----------
-(function () {
+// waits for fonts so label widths are measured with the real face
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(function () {
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
-  const W = 900, LEFT = 78, RIGHT = 74, BH = 34, LG = 8;
+  const W = 900, LEFT = 78, RIGHT = 74, BH = 34, LG = 8, TIER = 15;
   const X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1);
   const x = (d) => LEFT + (d - X0) / (X1 - X0) * (W - LEFT - RIGHT);
   const daily = phones.filter((p) => !p.trial), trials = phones.filter((p) => p.trial).sort((a, b) => a.start - b.start);
-  const tTop = 30, tH = 70, base = tTop + tH - 4;
-  const pY = base + 22, wY = pY + BH + LG, eY = wY + BH + 22, H = eY + 16 + 34;
-  const band = { P: [pY, pY + BH], W: [wY, wY + BH], PW: [pY, wY + BH] };
   const svg = $('#pt-chart');
+  const measure = (() => { const t = el('text', { class: 'lbl', x: -999, y: -999 }, svg); return (s) => { t.textContent = s; return t.getComputedTextLength(); }; })();
+
+  // ---- shapes, in lane-relative coordinates (Personal lane top = 0) ----
+  // Layers: when several phones share a lane at once, the lane splits into stacked slots for that stretch.
+  // Each phone is one connected shape whose top and bottom edges step as its role or slot changes.
+  const LANES = { P: ['P'], W: ['W'], PW: ['P', 'W'] };
+  const laneTop = { P: 0, W: BH + LG };
+  // trim overlaps of a few days (a handoff, not two phones in use) so they don't split a lane
+  const bySlot = { P: [], W: [] };
+  for (const p of daily) for (const g of p.segs) for (const l of LANES[g.r]) bySlot[l].push({ p, g });
+  for (const l in bySlot) {
+    const L = bySlot[l].sort((a, b) => a.g.start - b.g.start);
+    for (let i = 1; i < L.length; i++) { const prev = L[i - 1].g, cur = L[i].g;
+      if (prev.end > cur.start && (prev.end - cur.start) / DAY <= 3 && prev.end <= cur.end) prev.end = cur.start; }
+  }
+  const active = (l, t) => bySlot[l].filter(({ g }) => g.start.getTime() <= t && t < g.end.getTime()).map(({ p }) => p).sort((a, b) => a.start - b.start);
+  const cuts = [...new Set(daily.flatMap((p) => p.segs.flatMap((g) => [g.start.getTime(), g.end.getTime()])))].sort((a, b) => a - b);
+  function pieces(p) {
+    const out = [];
+    for (const g of p.segs) {
+      const pts = [g.start.getTime(), ...cuts.filter((t) => t > g.start.getTime() && t < g.end.getTime()), g.end.getTime()];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const ys = LANES[g.r].map((l) => { const A = active(l, pts[i]), k = Math.max(1, A.length), j = Math.max(0, A.indexOf(p));
+          return [laneTop[l] + j * BH / k, laneTop[l] + (j + 1) * BH / k]; });
+        const y1 = ys[0][0], y2 = ys.at(-1)[1], last = out.at(-1);
+        if (last && last.end === pts[i] && last.y1 === y1 && last.y2 === y2) last.end = pts[i + 1];
+        else out.push({ start: pts[i], end: pts[i + 1], y1, y2 });
+      }
+    }
+    return out;
+  }
+
+  // ---- labels: inside the bar when the name fits, otherwise a callout on a leader line ----
+  const items = daily.map((p) => {
+    const pcs = pieces(p);
+    const score = (s) => (x(s.end) - x(s.start)) * Math.min(1, (s.y2 - s.y1) / BH);
+    const big = pcs.reduce((a, b) => score(b) > score(a) ? b : a);
+    const w = measure(p.short);
+    const inside = w + 14 <= x(big.end) - x(big.start) && big.y2 - big.y1 >= 15;
+    return { p, pcs, big, w, inside, side: p.use === 'Work' ? 'bottom' : 'top' };
+  });
+  const tiers = { top: [], bottom: [] };
+  for (const side of ['top', 'bottom']) {
+    // Labels run right from their leader. Placing right to left, a label sits one tier above every leader it covers,
+    // so leaders never cross a label (a staircase that steps down toward the newer phones).
+    const outs = items.filter((it) => !it.inside && it.side === side);
+    for (const it of outs) {
+      const s = it.big; it.ax = Math.max(x(s.start) + 1.5, Math.min(x(s.end) - 1.5, (x(s.start) + x(s.end)) / 2));
+      const right = it.ax + 4 + it.w <= W - 2;
+      it.x1 = right ? it.ax + 4 : it.ax - 4 - it.w; it.x2 = it.x1 + it.w; it.anchor = right ? 'start' : 'end';
+    }
+    outs.sort((a, b) => b.ax - a.ax);
+    const placed = [];
+    for (const it of outs) {
+      let k = Math.max(0, ...placed.filter((o) => it.x1 - 3 <= o.ax && o.ax <= it.x2 + 3).map((o) => o.k + 1));
+      while (placed.some((o) => (o.k === k && it.x1 - 8 < o.x2 && o.x1 < it.x2 + 8) || (o.k < k && o.x1 - 3 <= it.ax && it.ax <= o.x2 + 3))) k++;
+      it.k = k; placed.push(it);
+    }
+    tiers[side] = placed;
+  }
+  const nTop = Math.max(0, ...tiers.top.map((i) => i.k + 1)), nBot = Math.max(0, ...tiers.bottom.map((i) => i.k + 1));
+
+  // ---- vertical layout ----
+  const tTop = 30, tH = 70, base = tTop + tH - 4;
+  const pY = base + 16 + nTop * TIER + (nTop ? 6 : 0), wY = pY + BH + LG;
+  const botEdge = wY + BH, eY = botEdge + 12 + nBot * TIER + (nBot ? 4 : 0), H = eY + 16 + 34;
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
   // striped fill per maker for employer-paid phones
@@ -96,7 +160,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   const levels = [-Infinity, -Infinity, -Infinity];
   trials.forEach((p, i) => {
     const g = el('g', { class: 'mark', 'aria-label': label(p) }, svg); const cx = x(p.start), cy = base - 10;
-    const text = `${p.short} (${p.days}d)`, lw = text.length * 6.3;
+    const text = `${p.short} (${p.days}d)`, lw = measure(text);
     const nextCx = trials[i + 1] ? x(trials[i + 1].start) : Infinity;
     let lv = (cx + 9 + lw > nextCx - 8 || cx - 4 <= levels[0]) ? 1 : 0; if (lv === 1 && cx - 4 <= levels[1]) lv = 2;
     levels[lv] = cx + 9 + lw; const ly = cy + 4 - lv * 16;
@@ -107,60 +171,35 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     bindTip(g, p);
   });
 
-  // lane labels
   [['Personal', pY], ['Work', wY]].forEach(([l, y]) => { const t = el('text', { x: 0, y: y + BH / 2 + 4, class: 'lane' }, svg); t.textContent = l; });
 
-  // Layers: when several phones share a lane at once, the lane splits into stacked slots for that stretch.
-  // Each phone is still one connected shape whose top and bottom edges step as its role or slot changes.
-  const LANES = { P: ['P'], W: ['W'], PW: ['P', 'W'] };
-  const laneTop = { P: pY, W: wY };
-  // trim overlaps of a few days (a handoff, not two phones in use) so they don't split a lane
-  const bySlot = { P: [], W: [] };
-  for (const p of daily) for (const g of p.segs) for (const l of LANES[g.r]) bySlot[l].push({ p, g });
-  for (const l in bySlot) {
-    const L = bySlot[l].sort((a, b) => a.g.start - b.g.start);
-    for (let i = 1; i < L.length; i++) { const prev = L[i - 1].g, cur = L[i].g;
-      if (prev.end > cur.start && (prev.end - cur.start) / DAY <= 3 && prev.end <= cur.end) prev.end = cur.start; }
-  }
-  const active = (l, t) => bySlot[l].filter(({ g }) => g.start.getTime() <= t && t < g.end.getTime()).map(({ p }) => p).sort((a, b) => a.start - b.start);
-  const cuts = [...new Set(daily.flatMap((p) => p.segs.flatMap((g) => [g.start.getTime(), g.end.getTime()])))].sort((a, b) => a - b);
-  function pieces(p) {
-    const out = [];
-    for (const g of p.segs) {
-      const pts = [g.start.getTime(), ...cuts.filter((t) => t > g.start.getTime() && t < g.end.getTime()), g.end.getTime()];
-      for (let i = 0; i < pts.length - 1; i++) {
-        const mid = pts[i];
-        const ys = LANES[g.r].map((l) => { const A = active(l, mid), k = Math.max(1, A.length), j = Math.max(0, A.indexOf(p));
-          return [laneTop[l] + j * BH / k, laneTop[l] + (j + 1) * BH / k]; });
-        const y1 = ys[0][0], y2 = ys.at(-1)[1];
-        const last = out.at(-1);
-        if (last && last.end === pts[i] && last.y1 === y1 && last.y2 === y2) last.end = pts[i + 1];
-        else out.push({ start: pts[i], end: pts[i + 1], y1, y2 });
-      }
-    }
-    return out;
-  }
   function shape(L) {
-    L = L.map((s) => ({ x1: x(s.start), x2: x(s.end), y1: s.y1 + (s.y2 - s.y1 < BH ? 1 : 0), y2: s.y2 - (s.y2 - s.y1 < BH ? 1 : 0) }));
+    L = L.map((s) => ({ x1: x(s.start), x2: x(s.end), y1: pY + s.y1 + (s.y2 - s.y1 < BH ? 1 : 0), y2: pY + s.y2 - (s.y2 - s.y1 < BH ? 1 : 0) }));
     L[0].x1 += 1; L[L.length - 1].x2 = Math.max(L[L.length - 1].x2 - 1, L[0].x1 + 2);
     let d = `M${L[0].x1} ${L[0].y1}`;
     L.forEach((s, i) => { if (i) d += ` L${s.x1} ${s.y1}`; d += ` L${s.x2} ${s.y1}`; });
     for (let i = L.length - 1; i >= 0; i--) d += ` L${L[i].x2} ${L[i].y2} L${L[i].x1} ${L[i].y2}`;
     return d + ' Z';
   }
-  for (const p of daily) {
+  for (const it of items) {
+    const { p, pcs, big } = it;
     const g = el('g', { class: 'mark', 'aria-label': label(p) }, svg);
-    const pcs = pieces(p);
     const runs = []; let cur = [];
     pcs.forEach((s, i) => { if (i && s.start !== pcs[i - 1].end) { runs.push(cur); cur = []; } cur.push(s); });
     runs.push(cur);
     runs.forEach((r) => el('path', { d: shape(r), fill: fillOf(p), stroke: 'transparent', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g));
-    if (p.current) { const last = pcs.at(-1); el('rect', { x: x(last.end), y: last.y1, width: 6, height: last.y2 - last.y1, rx: 2, fill: col(p.maker), 'fill-opacity': 0.35 }, g); }
-    // label the widest full-height stretch if the name fits inside it
-    const big = pcs.reduce((a, b) => (x(b.end) - x(b.start)) * Math.min(1, (b.y2 - b.y1) / BH) > (x(a.end) - x(a.start)) * Math.min(1, (a.y2 - a.y1) / BH) ? b : a);
-    const t = el('text', { x: x(big.start) + 7, y: (big.y1 + big.y2) / 2 + 4, class: 'lbl' }, g); t.textContent = p.short;
-    t.style.fill = ['Google', 'Microsoft'].includes(p.maker) ? '#122014' : '#fff';
-    if (t.getComputedTextLength() + 14 > x(big.end) - x(big.start) || big.y2 - big.y1 < 15) t.remove();
+    if (p.current) { const last = pcs.at(-1); el('rect', { x: x(last.end), y: pY + last.y1, width: 6, height: last.y2 - last.y1, rx: 2, fill: col(p.maker), 'fill-opacity': 0.35 }, g); }
+    if (it.inside) {
+      const t = el('text', { x: x(big.start) + 7, y: pY + (big.y1 + big.y2) / 2 + 4, class: 'lbl' }, g); t.textContent = p.short;
+      t.style.fill = ['Google', 'Microsoft'].includes(p.maker) ? '#122014' : '#fff';
+    } else {
+      const top = it.side === 'top';
+      const ly = top ? pY - 8 - it.k * TIER : botEdge + 16 + it.k * TIER;
+      const edge = top ? pY + big.y1 : pY + big.y2;
+      el('line', { x1: it.ax, x2: it.ax, y1: top ? ly + 3 : ly - 10, y2: edge, stroke: 'var(--ink-3)', 'stroke-width': 1 }, g);
+      el('rect', { x: it.x1 - 2, y: ly - 11, width: it.w + 4, height: 14, fill: 'transparent' }, g);
+      const t = el('text', { x: it.anchor === 'start' ? it.x1 : it.x2, y: ly, 'text-anchor': it.anchor, class: 'lbl callout' }, g); t.textContent = p.short;
+    }
     bindTip(g, p);
   }
 
@@ -181,7 +220,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     const t = el('text', { x: up ? x1 + w + 5 : x1 + 6, y: eY + 12, class: 'emp' }, svg); t.textContent = e.n;
   }
   requestAnimationFrame(() => { const sc = $('#pt-scroll'); sc.scrollLeft = sc.scrollWidth; });
-})();
+});
 
 // ---------- preferences ----------
 (function () {
