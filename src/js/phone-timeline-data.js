@@ -45,7 +45,7 @@ window.PT_DATA = {
     ['Samsung Galaxy Z Flip 6', 'Work', 'Samsung', 'Blue', '4/16/2025', '7/11/2025', 2, 'Phone provided by Samsung', 'Inner screen broke on 7/7/2025', 'z-flip-6', 'Broke', 'Samsung', [['4/16/2025', '4/25/2025', 'W'], ['4/25/2025', '7/9/2025', 'PW'], ['7/9/2025', '7/11/2025', 'W']], ''],
     ['iPhone 13 Pro Max', 'Personal', 'Apple', 'Graphite', '7/9/2025', '7/14/2025', 2, "Used dad's old phone after Z Flip broke", 'Stopgap until new phone arrived', 'iphone-13-pro-max', 'Stopgap or test', '', null, ''],
     ['Samsung Galaxy Z Fold 6', 'Work', 'Samsung', 'Silver Shadow', '7/11/2025', '10/2/2026', 3, 'Replacement phone provided by Samsung', '', 'z-fold-6', 'Changed jobs', 'Samsung', [['7/11/2025', '7/14/2025', 'W'], ['7/14/2025', '2/27/2026', 'PW'], ['2/27/2026', '10/2/2026', 'W']], ''],
-    ['Samsung Galaxy Z Fold 7', 'Personal', 'Samsung', 'Jet Black', '2/27/2026', null, 3, 'Wanted to re-separate personal and work', '', 'z-fold-7', null, '', [['2/27/2026', '6/22/2026', 'P'], ['9/6/2026', null, 'P']], 'Set aside 6/22/2026 to 9/6/2026 for the Fold 8 Ultra test unit'],
+    ['Samsung Galaxy Z Fold 7', 'Personal', 'Samsung', 'Jet Black', '2/27/2026', null, 3, 'Wanted to re-separate personal and work', '', 'z-fold-7', null, '', null, 'Set aside 6/22/2026 to 9/6/2026 while the Fold 8 Ultra test unit was the main personal phone'],
     ['Samsung Galaxy Z Fold 8 Ultra', 'Personal', 'Samsung', 'Cream', '6/22/2026', '9/6/2026', 2, 'Testing phone before official release', 'Done testing', 'z-fold-8-ultra', 'Stopgap or test', 'Samsung', null, 'Samsung test unit, required to be the main personal phone'],
   ],
 };

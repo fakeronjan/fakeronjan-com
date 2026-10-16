@@ -67,12 +67,12 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
 // ---------- timeline ----------
 (function () {
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
-  const W = 900, LEFT = 78, RIGHT = 74, BH = 22, LG = 3;
+  const W = 900, LEFT = 78, RIGHT = 74, BH = 34, LG = 8;
   const X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1);
   const x = (d) => LEFT + (d - X0) / (X1 - X0) * (W - LEFT - RIGHT);
   const daily = phones.filter((p) => !p.trial), trials = phones.filter((p) => p.trial).sort((a, b) => a.start - b.start);
-  const tTop = 30, tH = 62, base = tTop + tH - 4;
-  const pY = base + 18, wY = pY + BH + LG, eY = wY + BH + 14, H = eY + 16 + 34;
+  const tTop = 30, tH = 70, base = tTop + tH - 4;
+  const pY = base + 22, wY = pY + BH + LG, eY = wY + BH + 22, H = eY + 16 + 34;
   const band = { P: [pY, pY + BH], W: [wY, wY + BH], PW: [pY, wY + BH] };
   const svg = $('#pt-chart');
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
@@ -112,33 +112,57 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   // lane labels
   [['Personal', pY], ['Work', wY]].forEach(([l, y]) => { const t = el('text', { x: 0, y: y + BH / 2 + 4, class: 'lane' }, svg); t.textContent = l; });
 
-  // one connected shape per run of touching segments: the top and bottom edges step between lanes as the role changes
-  function shape(segs) {
-    const L = segs.map((g) => ({ x1: x(g.start), x2: x(g.end), y1: band[g.r][0], y2: band[g.r][1] }));
+  // Layers: when several phones share a lane at once, the lane splits into stacked slots for that stretch.
+  // Each phone is still one connected shape whose top and bottom edges step as its role or slot changes.
+  const LANES = { P: ['P'], W: ['W'], PW: ['P', 'W'] };
+  const laneTop = { P: pY, W: wY };
+  // trim overlaps of a few days (a handoff, not two phones in use) so they don't split a lane
+  const bySlot = { P: [], W: [] };
+  for (const p of daily) for (const g of p.segs) for (const l of LANES[g.r]) bySlot[l].push({ p, g });
+  for (const l in bySlot) {
+    const L = bySlot[l].sort((a, b) => a.g.start - b.g.start);
+    for (let i = 1; i < L.length; i++) { const prev = L[i - 1].g, cur = L[i].g;
+      if (prev.end > cur.start && (prev.end - cur.start) / DAY <= 3 && prev.end <= cur.end) prev.end = cur.start; }
+  }
+  const active = (l, t) => bySlot[l].filter(({ g }) => g.start.getTime() <= t && t < g.end.getTime()).map(({ p }) => p).sort((a, b) => a.start - b.start);
+  const cuts = [...new Set(daily.flatMap((p) => p.segs.flatMap((g) => [g.start.getTime(), g.end.getTime()])))].sort((a, b) => a - b);
+  function pieces(p) {
+    const out = [];
+    for (const g of p.segs) {
+      const pts = [g.start.getTime(), ...cuts.filter((t) => t > g.start.getTime() && t < g.end.getTime()), g.end.getTime()];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const mid = pts[i];
+        const ys = LANES[g.r].map((l) => { const A = active(l, mid), k = Math.max(1, A.length), j = Math.max(0, A.indexOf(p));
+          return [laneTop[l] + j * BH / k, laneTop[l] + (j + 1) * BH / k]; });
+        const y1 = ys[0][0], y2 = ys.at(-1)[1];
+        const last = out.at(-1);
+        if (last && last.end === pts[i] && last.y1 === y1 && last.y2 === y2) last.end = pts[i + 1];
+        else out.push({ start: pts[i], end: pts[i + 1], y1, y2 });
+      }
+    }
+    return out;
+  }
+  function shape(L) {
+    L = L.map((s) => ({ x1: x(s.start), x2: x(s.end), y1: s.y1 + (s.y2 - s.y1 < BH ? 1 : 0), y2: s.y2 - (s.y2 - s.y1 < BH ? 1 : 0) }));
     L[0].x1 += 1; L[L.length - 1].x2 = Math.max(L[L.length - 1].x2 - 1, L[0].x1 + 2);
     let d = `M${L[0].x1} ${L[0].y1}`;
     L.forEach((s, i) => { if (i) d += ` L${s.x1} ${s.y1}`; d += ` L${s.x2} ${s.y1}`; });
-    for (let i = L.length - 1; i >= 0; i--) { d += ` L${L[i].x2} ${L[i].y2} L${L[i].x1} ${L[i].y2}`; }
+    for (let i = L.length - 1; i >= 0; i--) d += ` L${L[i].x2} ${L[i].y2} L${L[i].x1} ${L[i].y2}`;
     return d + ' Z';
   }
   for (const p of daily) {
     const g = el('g', { class: 'mark', 'aria-label': label(p) }, svg);
-    // split into runs where one segment ends exactly where the next begins
+    const pcs = pieces(p);
     const runs = []; let cur = [];
-    p.segs.forEach((s, i) => { if (i && s.start - p.segs[i - 1].end !== 0) { runs.push(cur); cur = []; } cur.push(s); });
+    pcs.forEach((s, i) => { if (i && s.start !== pcs[i - 1].end) { runs.push(cur); cur = []; } cur.push(s); });
     runs.push(cur);
-    if (runs.length > 1) { // a phone set aside for a while: thin line joins its two stretches
-      for (let i = 1; i < runs.length; i++) { const a = runs[i - 1].at(-1), b = runs[i][0], yy = (band[a.r][0] + band[a.r][1]) / 2;
-        el('line', { x1: x(a.end), x2: x(b.start), y1: yy, y2: yy, stroke: col(p.maker), 'stroke-width': 2, 'stroke-dasharray': '2 3' }, g); }
-    }
-    const big = p.segs.reduce((a, b) => (x(b.end) - x(b.start)) > (x(a.end) - x(a.start)) ? b : a);
-    const [by1, by2] = band[big.r];
     runs.forEach((r) => el('path', { d: shape(r), fill: fillOf(p), stroke: 'transparent', 'stroke-width': 4, 'stroke-linejoin': 'round' }, g));
-    if (p.current) { const last = p.segs.at(-1), [y1, y2] = band[last.r]; el('rect', { x: x(last.end), y: y1, width: 6, height: y2 - y1, rx: 2, fill: col(p.maker), 'fill-opacity': 0.35 }, g); }
-    // label the widest stretch if the name fits inside it
-    const t = el('text', { x: x(big.start) + 6, y: (by1 + by2) / 2 + 4, class: 'lbl' }, g); t.textContent = p.short;
+    if (p.current) { const last = pcs.at(-1); el('rect', { x: x(last.end), y: last.y1, width: 6, height: last.y2 - last.y1, rx: 2, fill: col(p.maker), 'fill-opacity': 0.35 }, g); }
+    // label the widest full-height stretch if the name fits inside it
+    const big = pcs.reduce((a, b) => (x(b.end) - x(b.start)) * Math.min(1, (b.y2 - b.y1) / BH) > (x(a.end) - x(a.start)) * Math.min(1, (a.y2 - a.y1) / BH) ? b : a);
+    const t = el('text', { x: x(big.start) + 7, y: (big.y1 + big.y2) / 2 + 4, class: 'lbl' }, g); t.textContent = p.short;
     t.style.fill = ['Google', 'Microsoft'].includes(p.maker) ? '#122014' : '#fff';
-    if (t.getComputedTextLength() + 12 > x(big.end) - x(big.start)) t.remove();
+    if (t.getComputedTextLength() + 14 > x(big.end) - x(big.start) || big.y2 - big.y1 < 15) t.remove();
     bindTip(g, p);
   }
 
