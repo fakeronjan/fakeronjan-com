@@ -20,11 +20,11 @@ window.PT_DATA = {
   // Hall of Fame rows: iPhone 4, Galaxy S6 Edge, iPhone XR, iPhone 15 Pro Max, Galaxy Z Fold 7
   hallOfFame: [2, 7, 11, 23, 27],
   // one story per phone: [story, phone row, successor row or null, detail]
-  storyOrder: ['Next phone up', 'Greener grass', 'Flipped out', 'Loved and lost', "Don't let the door hit you", 'Return to sender', 'Company phone', 'Pinch hitter', 'Pre-market test', 'Current'],
+  storyOrder: ['Next phone up', 'Greener grass', 'Flipped out', 'Loved and lost', "Don't let the door hit you", 'Return to sender', 'Company phone', 'Pinch hitter', 'Pre-market test', 'My current phone'],
   storyNotes: {
     'Greener grass': 'Liked it, wanted a change', 'Loved and lost': 'Lost, stolen, or broken', 'Next phone up': 'Upgraded to a newer model',
     "Don't let the door hit you": "Didn't like it, switched", 'Company phone': 'Came and went with a job', 'Return to sender': "Didn't like it, returned",
-    'Flipped out': 'Lost out to a flip phone', 'Pinch hitter': 'Filled in for a few days', 'Pre-market test': 'Samsung test unit', 'Current': 'In my pocket now',
+    'Flipped out': 'Lost out to a flip phone', 'Pinch hitter': 'Filled in for a few days', 'Pre-market test': 'Samsung test unit', 'My current phone': 'In my pocket now',
   },
   stories: [
     ['Greener grass', 0, 1, ''], ['Loved and lost', 1, 3, 'Stolen while changing a flat tire'], ['Next phone up', 2, 6, 'Nielsen'],
@@ -34,7 +34,7 @@ window.PT_DATA = {
     ['Company phone', 15, null, 'Bought for work. Retired when leaving Nielsen'], ['Flipped out', 16, 15, ''], ['Next phone up', 17, 19, ''], ['Company phone', 18, null, 'Meta'],
     ['Flipped out', 19, 22, ''], ['Return to sender', 20, null, ''], ['Company phone', 21, null, '2K Games'], ['Greener grass', 22, 23, ''],
     ['Flipped out', 23, 24, ''], ['Loved and lost', 24, 26, 'Inner screen broke'], ['Pinch hitter', 25, null, "Dad's old phone after the Z Flip 6 broke"], ['Company phone', 26, null, 'Samsung'],
-    ['Current', 27, 'next', ''], ['Pre-market test', 28, null, 'Samsung test unit, required as the main personal phone'],
+    ['My current phone', 27, 'next', ''], ['Pre-market test', 28, null, 'Samsung test unit, required as the main personal phone'],
   ],
   phones: [
     ['iPhone 3G', 'Personal', 'Apple', 'Black', '7/11/2008', '7/8/2010', 3, 'First smartphone, waited in line at Apple', '', 'iphone-3g', 'Switched', '', null, ''],

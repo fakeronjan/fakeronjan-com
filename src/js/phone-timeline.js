@@ -363,7 +363,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     const dn = el('text', { x: 0, y: barY + 15, class: 'sdesc' }, svg); dn.textContent = D.storyNotes[r.st];
     el('line', { x1: 0, x2: W - RIGHT, y1: y + r.h, y2: y + r.h, stroke: 'var(--rule)' }, svg);
     for (const it of r.items) {
-      const { p } = it, cur = r.st === 'Current';
+      const { p } = it, cur = r.st === 'My current phone';
       const g = el('g', { class: 'mark', 'aria-label': label(p) }, svg);
       el('rect', { x: it.x1, y: barY, width: it.x2 - it.x1, height: BAR, rx: 3, fill: cur ? 'none' : COLOR[r.st], stroke: cur ? 'var(--ink-3)' : 'none', 'stroke-dasharray': '3 2' }, g);
       const ly = barY - 6 - it.k * TIER;
