@@ -195,7 +195,11 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     const pick = (list, l) => list.filter((p) => covers(p, t, l)).sort((a, b) => b.start - a.start)[0];
     days.push({ t, P: pick(daily, 'P') || pick(trials, 'P') || null, W: pick(daily, 'W') || null });
   }
-  const totals = { P: days.filter((d) => d.P).length, W: days.filter((d) => d.W).length };
+  // a phone covering both lanes on a day counts once, in the lane it was bought for
+  for (const d of days) d.both = d.P && d.P === d.W;
+  const lanesOf = (d) => d.both ? [d.P.use === 'Work' ? 'W' : 'P'] : ['P', 'W'].filter((l) => d[l]);
+  const totals = { P: 0, W: 0 };
+  for (const d of days) for (const l of lanesOf(d)) totals[l]++;
   const FIN = D.finish, FORM = D.form;
   const attrs = [
     { key: 'OS', of: (p) => p.maker === 'Apple' ? 'iOS' : 'Android', color: (c) => c === 'iOS' ? 'var(--apple)' : 'var(--samsung)' },
@@ -218,25 +222,21 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     const svg = sec.querySelector('svg');
     for (let yr = 2008; yr <= 2027; yr++) { const xx = x(new Date(yr, 0, 1)); el('line', { x1: xx, x2: xx, y1: 0, y2: SH * 2 + SG + 2, class: 'gridline' }, svg);
       if (yr % 2 === 0) { const t = el('text', { x: xx, y: H - 2, 'text-anchor': 'middle', class: 'axis' }, svg); t.textContent = yr; } }
-    [['Personal', 'P', 0], ['Work', 'W', SH + SG]].forEach(([name, l, y0]) => {
-      const t = el('text', { x: 0, y: y0 + SH - 2, class: 'lane' }, svg); t.textContent = name;
-      // runs of consecutive days with the same phone in this lane
-      let i = 0;
-      while (i < days.length) {
-        let j = i; while (j + 1 < days.length && days[j + 1][l] === days[i][l]) j++;
-        const p = days[i][l];
-        if (p) {
-          const g = el('g', { class: 'mark' }, svg);
-          el('rect', { x: x(days[i].t), y: y0, width: Math.max(1, x(days[j].t + DAY) - x(days[i].t)), height: SH, fill: a.color(a.of(p), a.key === 'Color' ? p : null), ...(a.key === 'Color' ? { stroke: 'var(--rule)', 'stroke-width': 0.75 } : {}) }, g);
-          bindTip(g, p);
-        }
-        i = j + 1;
-      }
-    });
+    [['Personal', 0], ['Work', SH + SG]].forEach(([name, y0]) => { const t = el('text', { x: 0, y: y0 + SH - 2, class: 'lane' }, svg); t.textContent = name; });
+    // runs of consecutive days with the same personal and work phones; a phone covering both gets one block across both rows
+    const fillFor = (p) => ({ fill: a.color(a.of(p), a.key === 'Color' ? p : null), ...(a.key === 'Color' ? { stroke: 'var(--rule)', 'stroke-width': 0.75 } : {}) });
+    let i = 0;
+    while (i < days.length) {
+      let j = i; while (j + 1 < days.length && days[j + 1].P === days[i].P && days[j + 1].W === days[i].W) j++;
+      const d = days[i], x1 = x(d.t), w = Math.max(1, x(days[j].t + DAY) - x1);
+      const blocks = d.both ? [[d.P, 0, SH * 2 + SG]] : [[d.P, 0, SH], [d.W, SH + SG, SH]].filter((b) => b[0]);
+      for (const [p, y0, h] of blocks) { const g = el('g', { class: 'mark' }, svg); el('rect', { x: x1, y: y0, width: w, height: h, ...fillFor(p) }, g); bindTip(g, p); }
+      i = j + 1;
+    }
     // breakdown: share of personal days, share of work days, phone count, average rating
     const cats = {};
     const get = (c) => (cats[c] ||= { P: 0, W: 0, n: 0, r: 0 });
-    for (const d of days) { if (d.P) get(a.of(d.P)).P++; if (d.W) get(a.of(d.W)).W++; }
+    for (const d of days) for (const l of lanesOf(d)) get(a.of(d[l]))[l]++;
     for (const p of phones) { const o = get(a.of(p)); o.n++; o.r += p.rating; }
     const rows = Object.entries(cats).sort((m, n) => (n[1].P + n[1].W) - (m[1].P + m[1].W) || n[1].n - m[1].n);
     const half = Math.ceil(rows.length / 2);
