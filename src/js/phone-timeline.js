@@ -26,6 +26,7 @@ const NEXT = { ...D.next, short: D.next.name, start: pd(D.next.start), preorder:
 const EMPLOYERS = D.employers.map(([n, a, b]) => ({ n, start: pd(a), end: b ? pd(b) : null }));
 const baseLabel = (p) => p.name === 'iPhone 13 Pro' ? `iPhone 13 Pro (${p.color}${p.use === 'Work' ? ', work' : ''})` : p.name;
 // Hall of Fame phones carry a star next to their name everywhere except the Hall of Fame itself
+Object.entries(D.badges || {}).forEach(([i, b]) => { phones[+i].badge = b; });
 D.hallOfFame.forEach((i) => { phones[i].fav = true; phones[i].short += ' ⭐'; });
 const label = (p) => baseLabel(p) + (p.fav ? ' ⭐' : '');
 // callout names have an outline halo; Firefox drops color emoji drawn with a stroke, so the star goes in its own unstroked tspan
@@ -331,10 +332,11 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   const x = (d) => LEFT + (d - X0) / (X1 - X0) * (W - LEFT - RIGHT);
   const svg = $('#pt-story-chart');
   const measure = (() => { const t = el('text', { class: 'lbl', x: -999, y: -999 }, svg); return (str) => { t.textContent = str; return t.getComputedTextLength(); }; })();
+  const badgeWidth = (() => { const t = el('text', { class: 'badge-t', x: -999, y: -999 }, svg); return (str) => { t.textContent = str; return t.getComputedTextLength() + 12; }; })();
   // per story row: names sit above the bars, staircased right to left so no leader crosses a name
   const rows = STORY_ORDER.map((st) => {
     const items = D.stories.filter((r) => r[0] === st).map((r) => phones[r[1]]).sort((a, b) => a.start - b.start)
-      .map((p) => { const name = p.name === 'iPhone 13 Pro' ? label(p) : p.short; const x1 = x(p.start) + 1, x2 = Math.max(x(p.end) - 1, x1 + 3), w = measure(name); return { p, name, x1, x2, w, ax: x1 + 1.5 }; });
+      .map((p) => { const name = p.name === 'iPhone 13 Pro' ? label(p) : p.short; const x1 = x(p.start) + 1, x2 = Math.max(x(p.end) - 1, x1 + 3), bw = p.badge ? badgeWidth(p.badge) : 0, w = measure(name) + (bw ? bw + 6 : 0); return { p, name, x1, x2, w, bw, ax: x1 + 1.5 }; });
     const placed = [];
     for (const it of [...items].sort((a, b) => b.ax - a.ax)) {
       const right = it.ax + 3 + it.w <= W - 2;
@@ -369,6 +371,12 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
       el('line', { x1: it.ax, x2: it.ax, y1: ly + 3, y2: barY, stroke: 'var(--ink-3)', 'stroke-width': 1 }, g);
       el('rect', { x: it.l1 - 2, y: ly - 11, width: it.w + 4, height: 14, fill: 'transparent' }, g);
       const tx = el('text', { x: it.anchor === 'start' ? it.l1 : it.l2, y: ly, 'text-anchor': it.anchor, class: 'lbl callout' }, g); setName(tx, it.name);
+      if (it.bw) { // red badge right after the name
+        const bx = (it.anchor === 'start' ? it.l1 : it.l2 - it.w) + (it.w - it.bw);
+        el('rect', { x: bx, y: ly - 10, width: it.bw, height: 13, rx: 6.5, fill: 'var(--panel)', stroke: 'var(--bad)', 'stroke-width': 1 }, g);
+        const bt = el('text', { x: bx + it.bw / 2, y: ly - 0.5, 'text-anchor': 'middle', class: 'badge-t' }, g); bt.textContent = it.p.badge;
+        if (it.anchor === 'end') tx.setAttribute('x', it.l2 - it.bw - 6);
+      }
       bindTip(g, p);
     }
     y += r.h;
@@ -392,7 +400,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
       const when = span(f);
       return `<div class="scard">
         <div class="pair${to ? '' : ' solo'}">${cell(f)}${to ? `<span class="arrow" aria-label="then">→</span>${cell(to)}` : ''}</div>
-        <div class="names${to ? '' : ' solo'}"><span>${shortName(f)}</span>${to ? `<span>→</span><span>${shortName(to)}</span>` : ''}</div>
+        <div class="names${to ? '' : ' solo'}"><span>${shortName(f)}${f.badge ? ` <span class="badge">${f.badge}</span>` : ''}</span>${to ? `<span>→</span><span>${shortName(to)}</span>` : ''}</div>
         <span class="d">${when}</span>${detail ? `<span class="x">${detail}</span>` : ''}</div>`;
     }).join('')}</div>`;
     B.appendChild(sec);

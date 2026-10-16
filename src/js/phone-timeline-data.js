@@ -21,6 +21,8 @@ window.PT_DATA = {
   hallOfFame: [2, 7, 11, 23, 27],
   // one story per phone: [story, phone row, successor row or null, detail]
   storyOrder: ['Next phone up', 'Greener grass', 'Flipped out', 'Loved and lost', "Don't let the door hit you", 'Return to sender', 'Company phone', 'Pinch hitter', 'Pre-market test', 'My current phone'],
+  // red badges for how a Loved and lost phone went: phone row -> badge
+  badges: { 1: 'Stolen', 7: 'Lost', 24: 'Broken' },
   storyNotes: {
     'Greener grass': 'Liked it, wanted a change', 'Loved and lost': 'Lost, stolen, or broken', 'Next phone up': 'Upgraded to a newer model',
     "Don't let the door hit you": "Didn't like it, switched", 'Company phone': 'Came and went with a job', 'Return to sender': "Didn't like it, returned",
