@@ -35,6 +35,8 @@
 .pt .legend i {display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px;}
 .pt .legend i.pin {width: 8px; height: 8px; border-radius: 1px; transform: rotate(45deg); background: var(--ink-3); margin-right: 8px;}
 .pt .legend i.dash {background: transparent; border: 1.5px dashed var(--apple);}
+.pt .legend i.paid {background: repeating-linear-gradient(45deg, var(--ink-3) 0 3px, color-mix(in srgb, var(--ink-3) 45%, var(--panel)) 3px 5px);}
+.pt svg .emp {fill: var(--ink-2); font-weight: 700;}
 .pt .ph {background: var(--photo); border-radius: 5px; display: flex; align-items: center; justify-content: center; padding: 2px;}
 .pt .ph img {max-width: 100%; max-height: 100%; object-fit: contain; display: block;}
 .pt .rank {display: grid; gap: 4px;}
@@ -78,7 +80,7 @@
     <h2>Timeline</h2>
     <div class="panel">
       <div class="legend" id="pt-legend"></div>
-      <div class="scroll-x" id="pt-scroll"><svg id="pt-chart" role="img" aria-label="Timeline of every phone from 2008 to 2026 in Personal and Work lanes, with short stints as pins on a Tried row"></svg></div>
+      <div class="scroll-x" id="pt-scroll"><svg id="pt-chart" role="img" aria-label="Timeline of every phone from 2008 to 2026 in Personal and Work lanes, with employers underneath and short stints as pins on a Tried row"></svg></div>
     </div>
   </section>
   <section id="pt-longest">
