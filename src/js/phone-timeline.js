@@ -34,9 +34,8 @@ function roleLine(p) {
 const tip = $('#pt-tip');
 function tipHTML(p) {
   if (p.preorder) return `<div class="ph">${pic(p)}</div><div class="body"><b>${p.name}</b><span class="m">${p.maker}, ${p.color}</span><span>${p.note}</span></div>`;
-  const r = '●'.repeat(p.rating) + '○'.repeat(3 - p.rating);
   return `<div class="ph">${pic(p)}</div><div class="body"><b>${label(p)}</b><span class="m">${p.maker}, ${p.color}, ${p.paid ? `paid for by ${p.paid}` : 'bought'}</span>
-    <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}</span><span class="d">${p.days.toLocaleString('en-US')} days, rating ${r}</span>
+    <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}</span><span class="d">${p.days.toLocaleString('en-US')} days</span>
     <span class="m">${roleLine(p)}</span>${p.note ? `<span class="m">${p.note}</span>` : ''}</div>`;
 }
 function place(x, y) {
@@ -212,7 +211,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   const x = (t) => LEFT + (t - X0) / (X1 - X0) * (W - LEFT - RIGHT);
   const pct = (n, d) => { const v = d ? n / d : 0; return v === 0 ? '-' : v >= 0.995 && v < 1 ? '>99%' : v < 0.005 ? '<1%' : Math.round(v * 100) + '%'; };
   const body = $('#pt-prefs-body');
-  const head = '<div class="cathead"><span></span><span></span><span>Personal</span><span>Work</span><span>Phones</span><span>Rating</span></div>';
+  const head = '<div class="cathead"><span></span><span></span><span>Personal</span><span>Work</span><span>Phones</span></div>';
   for (const a of attrs) {
     const sec = document.createElement('div'); sec.className = 'pref';
     const H = SH * 2 + SG + 18;
@@ -232,18 +231,18 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
       for (const [p, y0, h] of blocks) { const g = el('g', { class: 'mark' }, svg); el('rect', { x: x1, y: y0, width: w, height: h, ...fillFor(p) }, g); bindTip(g, p); }
       i = j + 1;
     }
-    // breakdown: share of personal days, share of work days, phone count, average rating
+    // breakdown: share of personal days, share of work days, phone count
     const cats = {};
-    const get = (c) => (cats[c] ||= { P: 0, W: 0, n: 0, r: 0 });
+    const get = (c) => (cats[c] ||= { P: 0, W: 0, n: 0 });
     for (const d of days) for (const l of lanesOf(d)) get(a.of(d[l]))[l]++;
-    for (const p of phones) { const o = get(a.of(p)); o.n++; o.r += p.rating; }
+    for (const p of phones) get(a.of(p)).n++;
     const rows = Object.entries(cats).sort((m, n) => (n[1].P + n[1].W) - (m[1].P + m[1].W) || n[1].n - m[1].n);
     const half = Math.ceil(rows.length / 2);
     const cols = rows.length > 3 ? [rows.slice(0, half), rows.slice(half)] : [rows];
     const list = document.createElement('div'); list.className = 'cats';
     list.innerHTML = cols.map((cr) => `<div>${head}${cr.map(([c, o]) => `<div class="cat"><span class="sw" style="background:${a.color(c)}"></span><span class="nm">${c}</span>
         <span class="v">${pct(o.P, totals.P)}</span><span class="v">${pct(o.W, totals.W)}</span>
-        <span class="v dim">${o.n}</span><span class="v dim">${(o.r / o.n).toFixed(1)}</span></div>`).join('')}</div>`).join('');
+        <span class="v dim">${o.n}</span></div>`).join('')}</div>`).join('');
     sec.appendChild(list);
   }
 })();
