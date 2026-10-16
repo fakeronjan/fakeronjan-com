@@ -38,7 +38,7 @@ function tipHTML(p) {
   const r = '●'.repeat(p.rating) + '○'.repeat(3 - p.rating);
   return `<div class="ph">${pic(p)}</div><div class="body"><b>${label(p)}</b><span class="m">${p.maker}, ${p.color}, ${p.paid ? `paid for by ${p.paid}` : 'bought'}</span>
     <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}</span><span class="d">${p.days.toLocaleString('en-US')} days, rating ${r}</span>
-    <span class="m">${roleLine(p)}</span><span>${p.reason}</span>${p.comment ? `<span class="m">${p.comment}</span>` : ''}${p.note ? `<span class="m">${p.note}</span>` : ''}</div>`;
+    <span class="m">${roleLine(p)}</span>${p.comment ? `<span class="m">${p.comment}</span>` : ''}${p.note ? `<span class="m">${p.note}</span>` : ''}</div>`;
 }
 function place(x, y) {
   const w = tip.offsetWidth, h = tip.offsetHeight; let L = x + 14, T = y + 14;
@@ -228,7 +228,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   const favs = phones.filter((p) => p.rating === 3).sort((a, b) => b.start - a.start);
   const B = $('#pt-favs-body');
   B.innerHTML = favs.map((p) => `<div class="fav" data-i="${phones.indexOf(p)}"><span class="ph">${pic(p)}</span><b>${label(p)}</b>
-    <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}, ${p.days.toLocaleString('en-US')} days</span><span class="q">${p.reason}</span></div>`).join('');
+    <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}, ${p.days.toLocaleString('en-US')} days</span></div>`).join('');
   B.querySelectorAll('[data-i]').forEach((n) => bindTip(n, phones[+n.dataset.i]));
 })();
 
