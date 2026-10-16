@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: 'My Smartphone History'
+title: 'My smartphone history'
 date: 2026-10-16
 tags: [about-me]
 ---
