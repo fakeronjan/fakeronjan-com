@@ -28,6 +28,12 @@ const baseLabel = (p) => p.name === 'iPhone 13 Pro' ? `iPhone 13 Pro (${p.color}
 // Hall of Fame phones carry a star next to their name everywhere except the Hall of Fame itself
 D.hallOfFame.forEach((i) => { phones[i].fav = true; phones[i].short += ' ⭐'; });
 const label = (p) => baseLabel(p) + (p.fav ? ' ⭐' : '');
+// callout names have an outline halo; Firefox drops color emoji drawn with a stroke, so the star goes in its own unstroked tspan
+function setName(t, str) {
+  if (!str.endsWith(' ⭐')) { t.textContent = str; return; }
+  t.textContent = str.slice(0, -1);
+  const star = document.createElementNS(NS, 'tspan'); star.textContent = '⭐'; star.setAttribute('style', 'stroke: none'); t.appendChild(star);
+}
 const pic = (p) => `<img src="${IMG(p.img)}" alt="${baseLabel(p)} in ${p.color}" loading="lazy">`;
 const ROLE = { P: 'Personal', W: 'Work', PW: 'Personal and work' };
 function roleLine(p) {
@@ -209,7 +215,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
       const edge = top ? pY + big.y1 : pY + big.y2;
       el('line', { x1: it.ax, x2: it.ax, y1: top ? ly + 3 : ly - 10, y2: edge, stroke: 'var(--ink-3)', 'stroke-width': 1 }, g);
       el('rect', { x: it.x1 - 2, y: ly - 11, width: it.w + 4, height: 14, fill: 'transparent' }, g);
-      const t = el('text', { x: it.anchor === 'start' ? it.x1 : it.x2, y: ly, 'text-anchor': it.anchor, class: 'lbl callout' }, g); t.textContent = p.short;
+      const t = el('text', { x: it.anchor === 'start' ? it.x1 : it.x2, y: ly, 'text-anchor': it.anchor, class: 'lbl callout' }, g); setName(t, p.short);
     }
     bindTip(g, p);
   }
@@ -362,7 +368,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
       const ly = barY - 6 - it.k * TIER;
       el('line', { x1: it.ax, x2: it.ax, y1: ly + 3, y2: barY, stroke: 'var(--ink-3)', 'stroke-width': 1 }, g);
       el('rect', { x: it.l1 - 2, y: ly - 11, width: it.w + 4, height: 14, fill: 'transparent' }, g);
-      const tx = el('text', { x: it.anchor === 'start' ? it.l1 : it.l2, y: ly, 'text-anchor': it.anchor, class: 'lbl callout' }, g); tx.textContent = it.name;
+      const tx = el('text', { x: it.anchor === 'start' ? it.l1 : it.l2, y: ly, 'text-anchor': it.anchor, class: 'lbl callout' }, g); setName(tx, it.name);
       bindTip(g, p);
     }
     y += r.h;
