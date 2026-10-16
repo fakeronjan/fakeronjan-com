@@ -1,9 +1,9 @@
 {% raw %}
 <div class="pt">
 <style>
-.pt { --bg: #f3f4f6; --panel: #ffffff; --ink: var(--fg); --ink-2: #4a4a4a; --ink-3: #6b6b6b; --rule: #e4e4e4; --grid: #efefef; --lane-ink: #2a2f38; --photo: #ffffff; --focus: #2a78d6; --apple: #4260c4; --samsung: #10703a; --google: #8dbd42; --motorola: #008674; --microsoft: #4dbc92; --htc: #85861f; --f-display: "Space Grotesk", system-ui, sans-serif; --f-body: "Manrope", system-ui, sans-serif; --f-data: "Manrope", system-ui, sans-serif; font-size: 15px; line-height: 1.5; color: var(--ink); margin-top: 2.5rem; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pt { --bg: #2a2a31; --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane-ink: #e2e2e6; --photo: #f4f5f3; --focus: #6da7ec; --apple: #5f80e0; --samsung: #1a763f; --google: #75a322; --motorola: #107c5a; --microsoft: #52ab69; --htc: #887000; } }
-:root[data-theme="dark"] .pt { --bg: #2a2a31; --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane-ink: #e2e2e6; --photo: #f4f5f3; --focus: #6da7ec; --apple: #5f80e0; --samsung: #1a763f; --google: #75a322; --motorola: #107c5a; --microsoft: #52ab69; --htc: #887000; }
+.pt { --bg: #f3f4f6; --panel: #ffffff; --ink: var(--fg); --ink-2: #4a4a4a; --ink-3: #6b6b6b; --rule: #e4e4e4; --grid: #efefef; --lane-ink: #2a2f38; --photo: #ffffff; --focus: #2a78d6; --apple: #4260c4; --samsung: #10703a; --google: #8dbd42; --motorola: #008674; --microsoft: #4dbc92; --htc: #85861f; --s-next: #2a78d6; --s-grass: #1baf7a; --s-flip: #eda100; --s-loved: #e87ba4; --s-door: #6250d6; --s-return: #e34948; --s-company: #8c9096; --s-other: #c4c7cc; --f-display: "Space Grotesk", system-ui, sans-serif; --f-body: "Manrope", system-ui, sans-serif; --f-data: "Manrope", system-ui, sans-serif; font-size: 15px; line-height: 1.5; color: var(--ink); margin-top: 2.5rem; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pt { --bg: #2a2a31; --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane-ink: #e2e2e6; --photo: #f4f5f3; --focus: #6da7ec; --apple: #5f80e0; --samsung: #1a763f; --google: #75a322; --motorola: #107c5a; --microsoft: #52ab69; --htc: #887000; --s-next: #3987e5; --s-grass: #199e70; --s-flip: #c98500; --s-loved: #d55181; --s-door: #7b6be0; --s-return: #e5524f; --s-company: #6f737a; --s-other: #4a4d55; } }
+:root[data-theme="dark"] .pt { --bg: #2a2a31; --panel: #1e1e24; --ink: var(--fg); --ink-2: #c4c4c8; --ink-3: #9a9aa0; --rule: #2e2e36; --grid: #26262d; --lane-ink: #e2e2e6; --photo: #f4f5f3; --focus: #6da7ec; --apple: #5f80e0; --samsung: #1a763f; --google: #75a322; --motorola: #107c5a; --microsoft: #52ab69; --htc: #887000; --s-next: #3987e5; --s-grass: #199e70; --s-flip: #c98500; --s-loved: #d55181; --s-door: #7b6be0; --s-return: #e5524f; --s-company: #6f737a; --s-other: #4a4d55; }
 .pt * { box-sizing: border-box; }
 .pt h2, .pt h3 {font-family: var(--f-display); text-wrap: balance; margin: 0;}
 .pt h2 {font-size: 24px; font-weight: 700; letter-spacing: -0.01em;}
@@ -25,6 +25,7 @@
 .pt svg text {fill: var(--ink-3); font-family: var(--f-data); font-size: 11px;}
 .pt svg .lbl {fill: var(--ink); font-weight: 600;}
 .pt svg .callout {paint-order: stroke; stroke: var(--panel); stroke-width: 3px; stroke-linejoin: round;}
+.pt svg .srow {fill: var(--ink); font-family: var(--f-body); font-size: 12px; font-weight: 700;}
 .pt svg .lane {fill: var(--lane-ink); font-family: var(--f-body); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;}
 .pt svg .axis {fill: var(--ink-3);}
 .pt svg .gridline {stroke: var(--grid); stroke-width: 1;}
@@ -139,6 +140,9 @@
   </section>
   <section id="pt-stories">
     <h2>Stories</h2>
+    <div class="panel">
+      <div class="scroll-x" id="pt-story-scroll"><svg id="pt-story-chart" role="img" aria-label="Each phone placed in its story's row across the years it was held"></svg></div>
+    </div>
     <div class="stories" id="pt-stories-body"></div>
   </section>
   <p class="credit"><em>Photos are official renders in the owned color, from Apple, Samsung, and GSMArena.</em></p>

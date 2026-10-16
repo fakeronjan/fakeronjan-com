@@ -312,6 +312,59 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   document.querySelectorAll('.pt .rrow').forEach((n) => bindTip(n, phones[+n.dataset.i]));
 })();
 
+// ---------- stories timeline ----------
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(function () {
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+  const COLOR = { 'Next phone up': 'var(--s-next)', 'Greener grass': 'var(--s-grass)', 'Flipped out': 'var(--s-flip)', 'Loved and Lost': 'var(--s-loved)',
+    "Don't let the door hit you": 'var(--s-door)', 'Return to sender': 'var(--s-return)', 'Company phone': 'var(--s-company)', 'Pinch hitter': 'var(--s-other)', 'Pre-market test': 'var(--s-other)' };
+  const W = 960, LEFT = 190, RIGHT = 134, BAR = 12, TIER = 14, X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1);
+  const x = (d) => LEFT + (d - X0) / (X1 - X0) * (W - LEFT - RIGHT);
+  const svg = $('#pt-story-chart');
+  const measure = (() => { const t = el('text', { class: 'lbl', x: -999, y: -999 }, svg); return (str) => { t.textContent = str; return t.getComputedTextLength(); }; })();
+  // per story row: names sit above the bars, staircased right to left so no leader crosses a name
+  const rows = D.storyOrder.map((st) => {
+    const items = D.stories.filter((r) => r[0] === st).map((r) => phones[r[1]]).sort((a, b) => a.start - b.start)
+      .map((p) => { const name = p.name === 'iPhone 13 Pro' ? label(p) : p.short; const x1 = x(p.start) + 1, x2 = Math.max(x(p.end) - 1, x1 + 3), w = measure(name); return { p, name, x1, x2, w, ax: x1 + 1.5 }; });
+    const placed = [];
+    for (const it of [...items].sort((a, b) => b.ax - a.ax)) {
+      const right = it.ax + 3 + it.w <= W - 2;
+      it.l1 = right ? it.ax + 3 : it.ax - 3 - it.w; it.l2 = it.l1 + it.w; it.anchor = right ? 'start' : 'end';
+      const lower = Math.max(0, ...placed.filter((o) => it.l1 - 3 <= o.ax && o.ax <= it.l2 + 3).map((o) => o.k + 1));
+      const upper = Math.min(Infinity, ...placed.filter((o) => o.l1 - 3 <= it.ax && it.ax <= o.l2 + 3).map((o) => o.k));
+      const free = (k) => !placed.some((o) => o.k === k && it.l1 - 8 < o.l2 && o.l1 < it.l2 + 8);
+      let k = lower; while (k < upper && !free(k)) k++;
+      if (k >= upper) { k = lower; while (!free(k)) k++; }
+      it.k = k; placed.push(it);
+    }
+    const tiers = Math.max(1, ...items.map((i) => i.k + 1));
+    return { st, items, h: tiers * TIER + BAR + 14 };
+  });
+  const H = rows.reduce((a, r) => a + r.h, 0) + 30;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  for (let yr = 2008; yr <= 2027; yr++) {
+    const xx = x(new Date(yr, 0, 1)); el('line', { x1: xx, x2: xx, y1: 0, y2: H - 26, class: 'gridline' }, svg);
+    if (yr % 2 === 0) { const t = el('text', { x: xx, y: H - 10, 'text-anchor': 'middle', class: 'axis' }, svg); t.textContent = yr; }
+  }
+  let y = 0;
+  for (const r of rows) {
+    const barY = y + r.h - BAR - 7;
+    const t = el('text', { x: 0, y: barY + BAR - 1, class: 'srow' }, svg); t.textContent = r.st;
+    el('line', { x1: 0, x2: W - RIGHT, y1: y + r.h, y2: y + r.h, stroke: 'var(--rule)' }, svg);
+    for (const it of r.items) {
+      const { p } = it, cur = r.st === 'Current';
+      const g = el('g', { class: 'mark', 'aria-label': label(p) }, svg);
+      el('rect', { x: it.x1, y: barY, width: it.x2 - it.x1, height: BAR, rx: 3, fill: cur ? 'none' : COLOR[r.st], stroke: cur ? 'var(--ink-3)' : 'none', 'stroke-dasharray': '3 2' }, g);
+      const ly = barY - 6 - it.k * TIER;
+      el('line', { x1: it.ax, x2: it.ax, y1: ly + 3, y2: barY, stroke: 'var(--ink-3)', 'stroke-width': 1 }, g);
+      el('rect', { x: it.l1 - 2, y: ly - 11, width: it.w + 4, height: 14, fill: 'transparent' }, g);
+      const tx = el('text', { x: it.anchor === 'start' ? it.l1 : it.l2, y: ly, 'text-anchor': it.anchor, class: 'lbl callout' }, g); tx.textContent = it.name;
+      bindTip(g, p);
+    }
+    y += r.h;
+  }
+  requestAnimationFrame(() => { const sc = $('#pt-story-scroll'); sc.scrollLeft = sc.scrollWidth; });
+});
+
 // ---------- stories ----------
 (function () {
   const B = $('#pt-stories-body');
