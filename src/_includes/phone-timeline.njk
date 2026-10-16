@@ -77,16 +77,16 @@
 .pt .pref .strip {overflow-x: auto;}
 .pt .pref .strip svg {min-width: 760px;}
 .pt .cats {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 28px;}
-.pt .cat {display: grid; grid-template-columns: 12px minmax(0, 9.5em) minmax(0, 1fr) 3em 5.5em 4.2em; gap: 8px; align-items: center; font-size: 13.5px;}
+.pt .cat {display: grid; grid-template-columns: 12px minmax(0, 1fr) 4.6em 4.6em 4em 4em; gap: 8px; align-items: center; font-size: 13.5px;}
 .pt .cat .sw {width: 12px; height: 12px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12);}
 .pt .cat .nm {white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .pt .cat .bar {height: 8px; border-radius: 0 3px 3px 0; background: var(--ink-3); opacity: .55;}
 .pt .cat .v {font-family: var(--f-data); font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-2); font-size: 12.5px;}
 .pt .cat .v.dim {color: var(--ink-3);}
-.pt .cathead {display: grid; grid-template-columns: 12px minmax(0, 9.5em) minmax(0, 1fr) 3em 5.5em 4.2em; gap: 8px; font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em;}
-.pt .cathead span:nth-child(n+4) {text-align: right;}
+.pt .cathead {display: grid; grid-template-columns: 12px minmax(0, 1fr) 4.6em 4.6em 4em 4em; gap: 8px; font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em;}
+.pt .cathead span:nth-child(n+3) {text-align: right;}
 @media (max-width: 760px) { .pt .cats {grid-template-columns: minmax(0, 1fr);} .pt .cats > div + div .cathead {display: none;} .pt .pref .strip svg {min-width: 0;} }
-@media (max-width: 520px) { .pt .cat, .pt .cathead {grid-template-columns: 12px minmax(0, 1fr) 3em 3.6em 3.6em;} .pt .cat > span:nth-child(3), .pt .cathead > span:nth-child(3) {display: none;} }
+@media (max-width: 520px) { .pt .cat, .pt .cathead {grid-template-columns: 12px minmax(0, 1fr) 4.2em 3.6em 3.4em 3.4em; gap: 6px;} }
 @media (max-width: 640px) {
   .pt .ends {grid-template-columns: minmax(0, 1fr);}
   .pt .rrow {grid-template-columns: 1.6em 30px minmax(0, 1fr) 5.5em; row-gap: 3px;}
@@ -132,7 +132,7 @@
   <section id="pt-method" class="method-notes">
     <h2>Method</h2>
     <ul>
-      <li>Preferences use personal-phone days: each day counts toward the phone that was the personal phone that day, including work phones that doubled as personal. Phones under 30 days only count on days no other phone covered.</li>
+      <li>Preferences count days in each lane: Personal is the share of days each phone was the personal phone, Work the share of days it was the work phone. A phone covering both counts in both. Phones under 30 days only count on personal days no other phone covered.</li>
       <li>Favorites are the phones rated 3 out of 3.</li>
       <li>Photos are official renders in the owned color, from Apple, Samsung, and GSMArena.</li>
     </ul>

@@ -187,15 +187,15 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
 
 // ---------- preferences ----------
 (function () {
-  // which phone was the personal phone each day: daily drivers first, short stints only to fill gaps
-  const covers = (p, t) => p.segs.some((g) => (g.r === 'P' || g.r === 'PW') && g.start.getTime() <= t && t < g.end.getTime());
+  // which phone covered each lane each day: daily drivers first, short stints only to fill personal gaps
+  const covers = (p, t, l) => p.segs.some((g) => (g.r === l || g.r === 'PW') && g.start.getTime() <= t && t < g.end.getTime());
   const daily = phones.filter((p) => !p.trial), trials = phones.filter((p) => p.trial);
   const days = [];
   for (let t = phones[0].start.getTime(); t < TODAY.getTime(); t += DAY) {
-    const pick = (list) => list.filter((p) => covers(p, t)).sort((a, b) => b.start - a.start)[0];
-    days.push({ t, p: pick(daily) || pick(trials) || null });
+    const pick = (list, l) => list.filter((p) => covers(p, t, l)).sort((a, b) => b.start - a.start)[0];
+    days.push({ t, P: pick(daily, 'P') || pick(trials, 'P') || null, W: pick(daily, 'W') || null });
   }
-  const total = days.filter((d) => d.p).length;
+  const totals = { P: days.filter((d) => d.P).length, W: days.filter((d) => d.W).length };
   const FIN = D.finish, FORM = D.form;
   const attrs = [
     { key: 'OS', of: (p) => p.maker === 'Apple' ? 'iOS' : 'Android', color: (c) => c === 'iOS' ? 'var(--apple)' : 'var(--samsung)' },
@@ -205,44 +205,46 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     { key: 'Who paid', of: (p) => p.paid ? 'Employer' : 'Bought', color: (c) => c === 'Employer' ? 'var(--htc)' : 'var(--ink-3)' },
   ];
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
-  const W = 900, LEFT = 78, RIGHT = 74, X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1);
+  const W = 900, LEFT = 78, RIGHT = 74, X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1), SH = 12, SG = 3;
   const x = (t) => LEFT + (t - X0) / (X1 - X0) * (W - LEFT - RIGHT);
+  const pct = (n, d) => { const v = d ? n / d : 0; return v === 0 ? '-' : v >= 0.995 && v < 1 ? '>99%' : v < 0.005 ? '<1%' : Math.round(v * 100) + '%'; };
   const body = $('#pt-prefs-body');
-  const head = '<div class="cathead"><span></span><span></span><span></span><span>Days</span><span>Phones</span><span>Rating</span></div>';
+  const head = '<div class="cathead"><span></span><span></span><span>Personal</span><span>Work</span><span>Phones</span><span>Rating</span></div>';
   for (const a of attrs) {
     const sec = document.createElement('div'); sec.className = 'pref';
-    sec.innerHTML = `<h3>${a.key}</h3><div class="strip"><svg viewBox="0 0 ${W} 34" role="img" aria-label="${a.key} of the personal phone over time"></svg></div>`;
+    const H = SH * 2 + SG + 18;
+    sec.innerHTML = `<h3>${a.key}</h3><div class="strip"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${a.key} of the personal and work phones over time"></svg></div>`;
     body.appendChild(sec);
     const svg = sec.querySelector('svg');
-    for (let yr = 2008; yr <= 2027; yr++) { const xx = x(new Date(yr, 0, 1)); el('line', { x1: xx, x2: xx, y1: 0, y2: 18, class: 'gridline' }, svg);
-      if (yr % 2 === 0) { const t = el('text', { x: xx, y: 31, 'text-anchor': 'middle', class: 'axis' }, svg); t.textContent = yr; } }
-    // runs of consecutive days with the same phone
-    let i = 0;
-    while (i < days.length) {
-      let j = i; while (j + 1 < days.length && days[j + 1].p === days[i].p) j++;
-      const p = days[i].p;
-      if (p) {
-        const g = el('g', { class: 'mark' }, svg);
-        el('rect', { x: x(days[i].t), y: 2, width: Math.max(1, x(days[j].t + DAY) - x(days[i].t)), height: 14, fill: a.color(a.of(p), a.key === 'Color' ? p : null) }, g);
-        bindTip(g, p);
+    for (let yr = 2008; yr <= 2027; yr++) { const xx = x(new Date(yr, 0, 1)); el('line', { x1: xx, x2: xx, y1: 0, y2: SH * 2 + SG + 2, class: 'gridline' }, svg);
+      if (yr % 2 === 0) { const t = el('text', { x: xx, y: H - 2, 'text-anchor': 'middle', class: 'axis' }, svg); t.textContent = yr; } }
+    [['Personal', 'P', 0], ['Work', 'W', SH + SG]].forEach(([name, l, y0]) => {
+      const t = el('text', { x: 0, y: y0 + SH - 2, class: 'lane' }, svg); t.textContent = name;
+      // runs of consecutive days with the same phone in this lane
+      let i = 0;
+      while (i < days.length) {
+        let j = i; while (j + 1 < days.length && days[j + 1][l] === days[i][l]) j++;
+        const p = days[i][l];
+        if (p) {
+          const g = el('g', { class: 'mark' }, svg);
+          el('rect', { x: x(days[i].t), y: y0, width: Math.max(1, x(days[j].t + DAY) - x(days[i].t)), height: SH, fill: a.color(a.of(p), a.key === 'Color' ? p : null), ...(a.key === 'Color' ? { stroke: 'var(--rule)', 'stroke-width': 0.75 } : {}) }, g);
+          bindTip(g, p);
+        }
+        i = j + 1;
       }
-      i = j + 1;
-    }
-    // breakdown: share of personal days, phone count, average rating
+    });
+    // breakdown: share of personal days, share of work days, phone count, average rating
     const cats = {};
-    for (const d of days) if (d.p) { const c = a.of(d.p); (cats[c] ||= { d: 0, n: 0, r: 0 }).d++; }
-    for (const p of phones) { const c = a.of(p); const o = (cats[c] ||= { d: 0, n: 0, r: 0 }); o.n++; o.r += p.rating; }
-    const rows = Object.entries(cats).sort((m, n) => n[1].d - m[1].d || n[1].n - m[1].n);
-    const maxPct = Math.max(...rows.map(([, o]) => o.d)) / total;
+    const get = (c) => (cats[c] ||= { P: 0, W: 0, n: 0, r: 0 });
+    for (const d of days) { if (d.P) get(a.of(d.P)).P++; if (d.W) get(a.of(d.W)).W++; }
+    for (const p of phones) { const o = get(a.of(p)); o.n++; o.r += p.rating; }
+    const rows = Object.entries(cats).sort((m, n) => (n[1].P + n[1].W) - (m[1].P + m[1].W) || n[1].n - m[1].n);
     const half = Math.ceil(rows.length / 2);
     const cols = rows.length > 3 ? [rows.slice(0, half), rows.slice(half)] : [rows];
     const list = document.createElement('div'); list.className = 'cats';
-    list.innerHTML = cols.map((cr) => `<div>${head}${cr.map(([c, o]) => {
-      const pct = o.d / total;
-      return `<div class="cat"><span class="sw" style="background:${a.color(c)}"></span><span class="nm">${c}</span>
-        <span><span class="bar" style="display:block;width:${pct / maxPct * 100}%"></span></span><span class="v">${pct >= 0.995 ? '>99' : pct > 0 && pct < 0.005 ? '<1' : Math.round(pct * 100)}%</span>
-        <span class="v dim">${o.n}</span><span class="v dim">${(o.r / o.n).toFixed(1)}</span></div>`;
-    }).join('')}</div>`).join('');
+    list.innerHTML = cols.map((cr) => `<div>${head}${cr.map(([c, o]) => `<div class="cat"><span class="sw" style="background:${a.color(c)}"></span><span class="nm">${c}</span>
+        <span class="v">${pct(o.P, totals.P)}</span><span class="v">${pct(o.W, totals.W)}</span>
+        <span class="v dim">${o.n}</span><span class="v dim">${(o.r / o.n).toFixed(1)}</span></div>`).join('')}</div>`).join('');
     sec.appendChild(list);
   }
 })();
