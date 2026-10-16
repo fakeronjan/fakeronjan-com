@@ -1,6 +1,6 @@
 ---
 layout: post.njk
-title: "OVERDOING IT: the return of live sports"
+title: "Overdoing it: the return of live sports"
 date: 2022-01-20
 tags: [sports-memories]
 ---
