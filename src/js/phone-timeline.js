@@ -29,7 +29,7 @@ const ROLE = { P: 'Personal', W: 'Work', PW: 'Personal and work' };
 function roleLine(p) {
   const both = p.segs.filter((g) => g.r === 'PW');
   if (!both.length) return p.use;
-  return both.map((g) => `Personal and work ${mdy(g.start)} to ${mdy(g.end)}`).join('<br>');
+  return both.map((g) => `Personal and work ${my(g.start)}–${my(g.end)}`).join('<br>');
 }
 
 // ---------- tooltip ----------
@@ -37,7 +37,7 @@ const tip = $('#pt-tip');
 function tipHTML(p) {
   if (p.preorder) return `<div class="ph">${pic(p)}</div><div class="body"><b>${p.name}</b><span class="m">${p.maker}, ${p.color}</span><span>${p.note}</span></div>`;
   return `<div class="ph">${pic(p)}</div><div class="body"><b>${label(p)}</b><span class="m">${p.maker}, ${p.color}, ${p.paid ? `paid for by ${p.paid}` : 'bought'}</span>
-    <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}</span><span class="d">${p.days.toLocaleString('en-US')} days</span>
+    <span class="d">${span(p)}</span>
     <span class="m">${roleLine(p)}</span>${p.note ? `<span class="m">${p.note}</span>` : ''}</div>`;
 }
 function place(x, y) {

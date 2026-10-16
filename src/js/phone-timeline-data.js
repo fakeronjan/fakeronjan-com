@@ -4,7 +4,7 @@
 window.PT_DATA = {
   snapshot: '10/16/2026',
   employers: [['Nielsen', '8/9/2004', '3/4/2022'], ['Meta', '3/7/2022', '5/24/2023'], ['2K Games', '5/30/2023', '1/13/2025'], ['Samsung', '4/14/2025', '10/2/2026'], ['Rentrak', '10/19/2026', null]],
-  next: { name: 'iPhone Duo', use: 'Personal', maker: 'Apple', color: 'Star White', img: 'iphone-duo', start: '11/1/2026', note: 'Preordered 10/16/2026, 512 GB. Arrives in November and replaces the Z Fold 7' },
+  next: { name: 'iPhone Duo', use: 'Personal', maker: 'Apple', color: 'Star White', img: 'iphone-duo', start: '11/1/2026', note: 'Preordered 10/2026, 512 GB. Arrives in November and replaces the Z Fold 7' },
   // approximate finish colors for the color strip, and the color family each one falls in
   finish: {
     'iphone-3g': ['#1b1b1d', 'Black'], 'droid-incredible': ['#1e1e1e', 'Black'], 'iphone-4': ['#f2f2f0', 'White or cream'], 'droid-charge': ['#232323', 'Black'],
@@ -53,13 +53,13 @@ window.PT_DATA = {
     ['iPhone 13 Pro', 'Work', 'Apple', 'Graphite', '3/7/2022', '5/24/2023', 2, 'Phone provided by Meta', '', 'iphone-13-pro-graphite', 'Changed jobs', 'Meta', null, ''],
     ['iPhone 14 Pro', 'Personal', 'Apple', 'Deep Purple', '9/17/2022', '6/30/2023', 1, "Wanted two phones that weren't identical", 'Preferred Razr+, gave iPhone to Bob', 'iphone-14-pro', 'Gave away', '', null, ''],
     ['Google Pixel 7', 'Personal', 'Google', 'Lemongrass', '2/26/2023', '3/3/2023', 2, 'Wanted to try Pixel features risk-free', 'Never made daily driver, returned', 'pixel-7', 'Returned', '', null, ''],
-    ['iPhone 14', 'Work', 'Apple', 'Midnight', '6/5/2023', '1/13/2025', 2, 'Phone provided by 2K', '', 'iphone-14', 'Changed jobs', '2K Games', [['6/5/2023', '9/23/2023', 'W']], 'Kept until 1/13/2025 but never turned on after the 15 Pro Max took over work on 9/23/2023'],
+    ['iPhone 14', 'Work', 'Apple', 'Midnight', '6/5/2023', '1/13/2025', 2, 'Phone provided by 2K', '', 'iphone-14', 'Changed jobs', '2K Games', [['6/5/2023', '9/23/2023', 'W']], 'Kept until 1/2025 but never turned on after the 15 Pro Max took over work in 9/2023'],
     ['Motorola Razr+', 'Personal', 'Motorola', 'Glacier Blue', '6/29/2023', '9/23/2023', 2, 'Wanted to give flip form another shot', '', 'razr-plus', 'Switched', '', null, ''],
     ['iPhone 15 Pro Max', 'Personal', 'Apple', 'Natural Titanium', '9/23/2023', '4/25/2025', 3, 'Wanted to go back to one phone (work)', 'Preferred Z Flip, gave iPhone to dad', 'iphone-15-pro-max', 'Gave away', '', [['9/23/2023', '4/16/2025', 'PW'], ['4/16/2025', '4/25/2025', 'P']], 'Covered personal and work while the 2K iPhone 14 sat unused'],
     ['Samsung Galaxy Z Flip 6', 'Work', 'Samsung', 'Blue', '4/16/2025', '7/11/2025', 2, 'Phone provided by Samsung', 'Inner screen broke on 7/7/2025', 'z-flip-6', 'Broke', 'Samsung', [['4/16/2025', '4/25/2025', 'W'], ['4/25/2025', '7/9/2025', 'PW'], ['7/9/2025', '7/11/2025', 'W']], ''],
     ['iPhone 13 Pro Max', 'Personal', 'Apple', 'Graphite', '7/9/2025', '7/14/2025', 2, "Used dad's old phone after Z Flip broke", 'Stopgap until new phone arrived', 'iphone-13-pro-max', 'Stopgap or test', '', null, ''],
     ['Samsung Galaxy Z Fold 6', 'Work', 'Samsung', 'Silver Shadow', '7/11/2025', '10/2/2026', 3, 'Replacement phone provided by Samsung', '', 'z-fold-6', 'Changed jobs', 'Samsung', [['7/11/2025', '7/14/2025', 'W'], ['7/14/2025', '2/27/2026', 'PW'], ['2/27/2026', '10/2/2026', 'W']], ''],
-    ['Samsung Galaxy Z Fold 7', 'Personal', 'Samsung', 'Jet Black', '2/27/2026', null, 3, 'Wanted to re-separate personal and work', '', 'z-fold-7', null, '', null, 'Set aside 6/22/2026 to 9/6/2026 while the Fold 8 Ultra test unit was the main personal phone'],
+    ['Samsung Galaxy Z Fold 7', 'Personal', 'Samsung', 'Jet Black', '2/27/2026', null, 3, 'Wanted to re-separate personal and work', '', 'z-fold-7', null, '', null, 'Set aside 6/2026–9/2026 while the Fold 8 Ultra test unit was the main personal phone'],
     ['Samsung Galaxy Z Fold 8 Ultra', 'Personal', 'Samsung', 'Cream', '6/22/2026', '9/6/2026', 2, 'Testing phone before official release', 'Done testing', 'z-fold-8-ultra', 'Stopgap or test', 'Samsung', null, 'Samsung test unit, required to be the main personal phone'],
   ],
 };
