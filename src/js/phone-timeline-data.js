@@ -17,6 +17,18 @@ window.PT_DATA = {
   },
   // form factor by image id; everything else is a slab
   form: { 'z-flip-3': 'Flip', 'razr-plus': 'Flip', 'z-flip-6': 'Flip', 'surface-duo': 'Fold', 'z-fold-6': 'Fold', 'z-fold-7': 'Fold', 'z-fold-8-ultra': 'Fold' },
+  // one story per phone: [story, phone row, successor row or null, detail]
+  storyOrder: ['Next phone up', 'Greener grass', 'Flipped out', 'Loved and Lost', "Don't let the door hit you", 'Return to sender', 'Company phone', 'Pinch hitter', 'Pre-market test', 'Current'],
+  stories: [
+    ['Greener grass', 0, 1, ''], ['Loved and Lost', 1, 3, 'Stolen while changing a flat tire'], ['Next phone up', 2, 6, 'Nielsen'],
+    ["Don't let the door hit you", 3, 4, ''], ['Greener grass', 4, 5, ''], ['Greener grass', 5, 7, ''], ['Company phone', 6, null, 'Nielsen. Retired when one phone covered both'],
+    ['Loved and Lost', 7, 8, 'Left in a cab in Hong Kong'], ["Don't let the door hit you", 8, 9, ''], ['Greener grass', 9, 10, ''], ['Return to sender', 10, null, ''],
+    ['Next phone up', 11, 13, ''], ['Return to sender', 12, null, ''], ['Next phone up', 13, 16, ''], ['Greener grass', 14, 15, ''],
+    ['Company phone', 15, null, 'Bought for work. Retired when leaving Nielsen'], ['Flipped out', 16, 15, ''], ['Next phone up', 17, 19, ''], ['Company phone', 18, null, 'Meta'],
+    ['Flipped out', 19, 22, ''], ['Return to sender', 20, null, ''], ['Company phone', 21, null, '2K Games. Never turned on after the 15 Pro Max took over'], ['Greener grass', 22, 23, ''],
+    ['Flipped out', 23, 24, ''], ['Loved and Lost', 24, 26, 'Inner screen broke'], ['Pinch hitter', 25, null, "Dad's old phone after the Z Flip 6 broke"], ['Company phone', 26, null, 'Samsung'],
+    ['Current', 27, 'next', ''], ['Pre-market test', 28, null, 'Samsung test unit, required as the main personal phone'],
+  ],
   phones: [
     ['iPhone 3G', 'Personal', 'Apple', 'Black', '7/11/2008', '7/8/2010', 3, 'First smartphone, waited in line at Apple', '', 'iphone-3g', 'Switched', '', null, ''],
     ['HTC Droid Incredible', 'Personal', 'HTC', 'Black', '7/8/2010', '6/25/2011', 2, 'Wanted to try Android ecosystem', 'Stolen while changing flat tire', 'droid-incredible', 'Lost or stolen', '', null, ''],

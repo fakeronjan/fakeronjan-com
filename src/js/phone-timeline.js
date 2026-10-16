@@ -4,7 +4,6 @@ const $ = (s) => document.querySelector(s);
 const NS = 'http://www.w3.org/2000/svg';
 const IMG = (id) => `/blog/img/phone-timeline/${id}.jpg`;
 const MAKERS = ['Apple', 'Samsung', 'Google', 'Motorola', 'Microsoft', 'HTC'];
-const ENDINGS = ['Upgraded', 'Switched', "Didn't like it", 'Returned', 'Gave away', 'Lost or stolen', 'Broke', 'Changed jobs', 'Stopgap or test', 'Not recorded'];
 const SHORT = { 'Motorola Droid RAZR Maxx 4G': 'Droid RAZR Maxx', 'HTC Droid Incredible': 'Droid Incredible', 'Samsung Droid Charge': 'Droid Charge',
   'Samsung Galaxy S6 Edge': 'S6 Edge', 'Samsung Galaxy S7': 'S7', 'Samsung Galaxy S10e': 'S10e', 'Samsung Galaxy Z Flip 3': 'Z Flip 3',
   'Samsung Galaxy Z Flip 6': 'Z Flip 6', 'Samsung Galaxy Z Fold 6': 'Z Fold 6', 'Samsung Galaxy Z Fold 7': 'Z Fold 7', 'Samsung Galaxy Z Fold 8 Ultra': 'Z Fold 8 Ultra',
@@ -269,14 +268,27 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   document.querySelectorAll('.pt .rrow').forEach((n) => bindTip(n, phones[+n.dataset.i]));
 })();
 
-// ---------- how each phone ended ----------
+// ---------- stories ----------
 (function () {
-  const done = phones.filter((p) => !p.current);
-  const groups = ENDINGS.map((e) => ({ e, list: done.filter((p) => p.ending === e).sort((a, b) => b.start - a.start) })).filter((g) => g.list.length);
-  groups.sort((a, b) => (a.e === 'Not recorded') - (b.e === 'Not recorded') || b.list.length - a.list.length);
-  const E = $('#pt-ends');
-  E.innerHTML = groups.map((g) => `<div class="end"><div class="h"><b>${g.e}</b><span>${g.list.length}</span></div>
-    <div class="phs">${g.list.map((p) => `<span class="ph" data-i="${phones.indexOf(p)}">${pic(p)}</span>`).join('')}</div></div>`).join('');
-  E.querySelectorAll('[data-i]').forEach((n) => bindTip(n, phones[+n.dataset.i]));
+  const B = $('#pt-stories-body');
+  const pidx = (i) => i === 'next' ? NEXT : D.phones[i] ? phones[i] : null;
+  const shortName = (p) => p.preorder ? p.name : label(p);
+  const cell = (p) => `<span class="ph" data-k="${p.preorder ? 'next' : phones.indexOf(p)}">${pic(p)}</span>`;
+  for (const name of D.storyOrder) {
+    const list = D.stories.filter((r) => r[0] === name).map(([, f, t, detail]) => ({ from: pidx(f), to: t === null ? null : pidx(t), detail }))
+      .sort((a, b) => b.from.start - a.from.start);
+    if (!list.length) continue;
+    const sec = document.createElement('div'); sec.className = 'panel story';
+    sec.innerHTML = `<h3>${name}</h3><div class="cards">${list.map(({ from, to, detail }) => {
+      const f = from;
+      const when = `${mdy(f.start)} to ${f.current ? 'now' : mdy(f.end)}, ${f.days.toLocaleString('en-US')} days`;
+      return `<div class="scard">
+        <div class="pair${to ? '' : ' solo'}">${cell(f)}${to ? `<span class="arrow" aria-label="then">→</span>${cell(to)}` : ''}</div>
+        <div class="names${to ? '' : ' solo'}"><span>${shortName(f)}</span>${to ? `<span>→</span><span>${shortName(to)}</span>` : ''}</div>
+        <span class="d">${when}</span>${detail ? `<span class="x">${detail}</span>` : ''}</div>`;
+    }).join('')}</div>`;
+    B.appendChild(sec);
+  }
+  B.querySelectorAll('[data-k]').forEach((n) => bindTip(n, n.dataset.k === 'next' ? NEXT : phones[+n.dataset.k]));
 })();
 })();
