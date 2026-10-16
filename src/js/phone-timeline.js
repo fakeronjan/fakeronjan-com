@@ -223,13 +223,13 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     for (let yr = 2008; yr <= 2027; yr++) { const xx = x(new Date(yr, 0, 1)); el('line', { x1: xx, x2: xx, y1: 0, y2: SH * 2 + SG + 2, class: 'gridline' }, svg);
       if (yr % 2 === 0) { const t = el('text', { x: xx, y: H - 2, 'text-anchor': 'middle', class: 'axis' }, svg); t.textContent = yr; } }
     [['Personal', 0], ['Work', SH + SG]].forEach(([name, y0]) => { const t = el('text', { x: 0, y: y0 + SH - 2, class: 'lane' }, svg); t.textContent = name; });
-    // runs of consecutive days with the same personal and work phones; a phone covering both gets one block across both rows
+    // runs of consecutive days with the same personal and work phones; a phone covering both shows only in the lane it was bought for
     const fillFor = (p) => ({ fill: a.color(a.of(p), a.key === 'Color' ? p : null), ...(a.key === 'Color' ? { stroke: 'var(--rule)', 'stroke-width': 0.75 } : {}) });
     let i = 0;
     while (i < days.length) {
       let j = i; while (j + 1 < days.length && days[j + 1].P === days[i].P && days[j + 1].W === days[i].W) j++;
       const d = days[i], x1 = x(d.t), w = Math.max(1, x(days[j].t + DAY) - x1);
-      const blocks = d.both ? [[d.P, 0, SH * 2 + SG]] : [[d.P, 0, SH], [d.W, SH + SG, SH]].filter((b) => b[0]);
+      const blocks = lanesOf(d).map((l) => [d[l], l === 'P' ? 0 : SH + SG, SH]);
       for (const [p, y0, h] of blocks) { const g = el('g', { class: 'mark' }, svg); el('rect', { x: x1, y: y0, width: w, height: h, ...fillFor(p) }, g); bindTip(g, p); }
       i = j + 1;
     }
