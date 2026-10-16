@@ -11,6 +11,8 @@ const SHORT = { 'Motorola Droid RAZR Maxx 4G': 'Droid RAZR Maxx', 'HTC Droid Inc
 const DAY = 864e5;
 const pd = (s) => { const [m, d, y] = s.split('/').map(Number); return new Date(y, m - 1, d); };
 const mdy = (d) => `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+const my = (d) => `${d.getMonth() + 1}/${d.getFullYear()}`;
+const span = (p) => `${my(p.start)}–${p.current ? 'now' : my(p.end)} (${p.days.toLocaleString('en-US')} days)`;
 const col = (m) => `var(--${m.toLowerCase()})`;
 const TODAY = pd(D.snapshot);
 
@@ -296,7 +298,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   const favs = D.hallOfFame.map((i) => phones[i]).sort((a, b) => a.start - b.start);
   const B = $('#pt-favs-body');
   B.innerHTML = favs.map((p) => `<div class="fav" data-i="${phones.indexOf(p)}"><span class="ph">${pic(p)}</span><b>${label(p)}</b>
-    <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}, ${p.days.toLocaleString('en-US')} days</span></div>`).join('');
+    <span class="d">${span(p)}</span></div>`).join('');
   B.querySelectorAll('[data-i]').forEach((n) => bindTip(n, phones[+n.dataset.i]));
 })();
 
@@ -324,7 +326,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     const sec = document.createElement('div'); sec.className = 'panel story';
     sec.innerHTML = `<h3>${name}</h3><div class="cards">${list.map(({ from, to, detail }) => {
       const f = from;
-      const when = `${mdy(f.start)} to ${f.current ? 'now' : mdy(f.end)}, ${f.days.toLocaleString('en-US')} days`;
+      const when = span(f);
       return `<div class="scard">
         <div class="pair${to ? '' : ' solo'}">${cell(f)}${to ? `<span class="arrow" aria-label="then">→</span>${cell(to)}` : ''}</div>
         <div class="names${to ? '' : ' solo'}"><span>${shortName(f)}</span>${to ? `<span>→</span><span>${shortName(to)}</span>` : ''}</div>
