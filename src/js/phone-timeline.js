@@ -276,7 +276,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   const cell = (p) => `<span class="ph" data-k="${p.preorder ? 'next' : phones.indexOf(p)}">${pic(p)}</span>`;
   for (const name of D.storyOrder) {
     const list = D.stories.filter((r) => r[0] === name).map(([, f, t, detail]) => ({ from: pidx(f), to: t === null ? null : pidx(t), detail }))
-      .sort((a, b) => b.from.start - a.from.start);
+      .sort((a, b) => a.from.start - b.from.start);
     if (!list.length) continue;
     const sec = document.createElement('div'); sec.className = 'panel story';
     sec.innerHTML = `<h3>${name}</h3><div class="cards">${list.map(({ from, to, detail }) => {
