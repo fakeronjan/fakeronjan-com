@@ -248,9 +248,9 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   }
 })();
 
-// ---------- favorites ----------
+// ---------- hall of fame ----------
 (function () {
-  const favs = phones.filter((p) => p.rating === 3).sort((a, b) => b.start - a.start);
+  const favs = D.hallOfFame.map((i) => phones[i]).sort((a, b) => a.start - b.start);
   const B = $('#pt-favs-body');
   B.innerHTML = favs.map((p) => `<div class="fav" data-i="${phones.indexOf(p)}"><span class="ph">${pic(p)}</span><b>${label(p)}</b>
     <span class="d">${mdy(p.start)} to ${p.current ? 'now' : mdy(p.end)}, ${p.days.toLocaleString('en-US')} days</span></div>`).join('');

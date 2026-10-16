@@ -17,6 +17,8 @@ window.PT_DATA = {
   },
   // form factor by image id; everything else is a slab
   form: { 'z-flip-3': 'Flip', 'razr-plus': 'Flip', 'z-flip-6': 'Flip', 'surface-duo': 'Fold', 'z-fold-6': 'Fold', 'z-fold-7': 'Fold', 'z-fold-8-ultra': 'Fold' },
+  // Hall of Fame rows: iPhone 4, Galaxy S6 Edge, iPhone XR, iPhone 15 Pro Max, Galaxy Z Fold 7
+  hallOfFame: [2, 7, 11, 23, 27],
   // one story per phone: [story, phone row, successor row or null, detail]
   storyOrder: ['Next phone up', 'Greener grass', 'Flipped out', 'Loved and Lost', "Don't let the door hit you", 'Return to sender', 'Company phone', 'Pinch hitter', 'Pre-market test', 'Current'],
   stories: [

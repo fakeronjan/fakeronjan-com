@@ -62,8 +62,7 @@
 .pt .scard .names.solo {grid-template-columns: minmax(0, 1fr);}
 .pt .scard .d {font-family: var(--f-data); font-variant-numeric: tabular-nums; font-size: 12.5px; color: var(--ink-3);}
 .pt .scard .x {font-size: 13px; color: var(--ink-2);}
-.pt .method-notes {margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--rule); display: grid; gap: 10px; font-size: 13px; color: var(--ink-2);}
-.pt .method-notes ul {margin: 0; padding-left: 18px; display: grid; gap: 4px;}
+.pt .credit {margin-top: 40px; font-size: 13px; color: var(--ink-3);}
 .pt #pt-tip {position: fixed; pointer-events: none; z-index: 20; background: var(--ink); color: var(--panel); font-size: 12.5px; line-height: 1.45; padding: 9px; border-radius: 8px; width: 290px; max-width: calc(100vw - 16px); display: none; grid-template-columns: 76px minmax(0, 1fr); gap: 10px;}
 .pt #pt-tip.on {display: grid;}
 .pt #pt-tip .ph {height: 92px; background: #fff;}
@@ -103,7 +102,7 @@
 }
 </style>
   <nav class="toc" aria-label="Sections">
-    <a href="#pt-timeline">Timeline</a><a href="#pt-prefs">Preferences</a><a href="#pt-favs">Favorites</a><a href="#pt-longest">Longest held</a><a href="#pt-stories">Stories</a><a href="#pt-method">Method</a>
+    <a href="#pt-timeline">Timeline</a><a href="#pt-prefs">Preferences</a><a href="#pt-favs">Hall of Fame</a><a href="#pt-longest">Longest held</a><a href="#pt-stories">Stories</a>
   </nav>
   <section id="pt-timeline">
     <h2>Timeline</h2>
@@ -117,7 +116,7 @@
     <div class="panel" id="pt-prefs-body"></div>
   </section>
   <section id="pt-favs">
-    <h2>Favorites</h2>
+    <h2>Hall of Fame</h2>
     <div class="panel"><div class="favs" id="pt-favs-body"></div></div>
   </section>
   <section id="pt-longest">
@@ -133,14 +132,7 @@
     <h2>Stories</h2>
     <div class="stories" id="pt-stories-body"></div>
   </section>
-  <section id="pt-method" class="method-notes">
-    <h2>Method</h2>
-    <ul>
-      <li>Preferences count days in each lane: Personal is the share of days each phone was the personal phone, Work the share of days it was the work phone. A phone covering both counts once, in the lane it was bought for. Phones under 30 days only count on personal days no other phone covered.</li>
-      <li>Favorites are the phones rated 3 out of 3.</li>
-      <li>Photos are official renders in the owned color, from Apple, Samsung, and GSMArena.</li>
-    </ul>
-  </section>
+  <p class="credit"><em>Photos are official renders in the owned color, from Apple, Samsung, and GSMArena.</em></p>
 <div id="pt-tip" role="tooltip"></div>
 <script src="/js/phone-timeline-data.js"></script>
 <script src="/js/phone-timeline.js"></script>
