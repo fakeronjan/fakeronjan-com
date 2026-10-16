@@ -20,6 +20,8 @@ const phones = D.phones.map(([name, use, maker, color, s, e, rating, reason, com
   const segs = (roles || [[s, e, use === 'Work' ? 'W' : 'P']]).map(([a, b, r]) => ({ start: pd(a), end: b ? pd(b) : TODAY, r }));
   return { name, short: SHORT[name] || name, use, maker, color, start, end, current: !e, rating, reason, comment, img, ending, paid, segs, note, days, trial: days < 30 };
 });
+// stories ordered by when each one first happened
+const STORY_ORDER = [...D.storyOrder].sort((a, b) => Math.min(...D.stories.filter((r) => r[0] === a).map((r) => pd(D.phones[r[1]][4]))) - Math.min(...D.stories.filter((r) => r[0] === b).map((r) => pd(D.phones[r[1]][4]))));
 const NEXT = { ...D.next, short: D.next.name, start: pd(D.next.start), preorder: true };
 const EMPLOYERS = D.employers.map(([n, a, b]) => ({ n, start: pd(a), end: b ? pd(b) : null }));
 const label = (p) => p.name === 'iPhone 13 Pro' ? `iPhone 13 Pro (${p.color}${p.use === 'Work' ? ', work' : ''})` : p.name;
@@ -322,7 +324,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   const svg = $('#pt-story-chart');
   const measure = (() => { const t = el('text', { class: 'lbl', x: -999, y: -999 }, svg); return (str) => { t.textContent = str; return t.getComputedTextLength(); }; })();
   // per story row: names sit above the bars, staircased right to left so no leader crosses a name
-  const rows = D.storyOrder.map((st) => {
+  const rows = STORY_ORDER.map((st) => {
     const items = D.stories.filter((r) => r[0] === st).map((r) => phones[r[1]]).sort((a, b) => a.start - b.start)
       .map((p) => { const name = p.name === 'iPhone 13 Pro' ? label(p) : p.short; const x1 = x(p.start) + 1, x2 = Math.max(x(p.end) - 1, x1 + 3), w = measure(name); return { p, name, x1, x2, w, ax: x1 + 1.5 }; });
     const placed = [];
@@ -371,7 +373,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
   const pidx = (i) => i === 'next' ? NEXT : D.phones[i] ? phones[i] : null;
   const shortName = (p) => p.preorder ? p.name : label(p);
   const cell = (p) => `<span class="ph" data-k="${p.preorder ? 'next' : phones.indexOf(p)}">${pic(p)}</span>`;
-  for (const name of D.storyOrder) {
+  for (const name of STORY_ORDER) {
     const list = D.stories.filter((r) => r[0] === name).map(([, f, t, detail]) => ({ from: pidx(f), to: t === null ? null : pidx(t), detail }))
       .sort((a, b) => a.from.start - b.from.start);
     if (!list.length) continue;
