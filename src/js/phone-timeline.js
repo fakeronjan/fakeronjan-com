@@ -5,8 +5,8 @@ const NS = 'http://www.w3.org/2000/svg';
 const IMG = (id) => `/blog/img/phone-timeline/${id}.jpg`;
 const MAKERS = ['Apple', 'Samsung', 'Google', 'Motorola', 'Microsoft', 'HTC'];
 const SHORT = { 'Motorola Droid RAZR Maxx 4G': 'Droid RAZR Maxx', 'HTC Droid Incredible': 'Droid Incredible', 'Samsung Droid Charge': 'Droid Charge',
-  'Samsung Galaxy S6 Edge': 'S6 Edge', 'Samsung Galaxy S7': 'S7', 'Samsung Galaxy S10e': 'S10e', 'Samsung Galaxy Z Flip 3': 'Z Flip 3',
-  'Samsung Galaxy Z Flip 6': 'Z Flip 6', 'Samsung Galaxy Z Fold 6': 'Z Fold 6', 'Samsung Galaxy Z Fold 7': 'Z Fold 7', 'Samsung Galaxy Z Fold 8 Ultra': 'Z Fold 8 Ultra',
+  'Samsung Galaxy S6 Edge': 'Galaxy S6 Edge', 'Samsung Galaxy S7': 'Galaxy S7', 'Samsung Galaxy S10e': 'Galaxy S10e', 'Samsung Galaxy Z Flip 3': 'Galaxy Z Flip 3',
+  'Samsung Galaxy Z Flip 6': 'Galaxy Z Flip 6', 'Samsung Galaxy Z Fold 6': 'Galaxy Z Fold 6', 'Samsung Galaxy Z Fold 7': 'Galaxy Z Fold 7', 'Samsung Galaxy Z Fold 8 Ultra': 'Galaxy Z Fold 8 Ultra',
   'Google Pixel 3': 'Pixel 3', 'Google Pixel 7': 'Pixel 7', 'Motorola Razr+': 'Razr+', 'Microsoft Surface Duo': 'Surface Duo' };
 const DAY = 864e5;
 const pd = (s) => { const [m, d, y] = s.split('/').map(Number); return new Date(y, m - 1, d); };
@@ -66,7 +66,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
 // waits for fonts so label widths are measured with the real face
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () {
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
-  const W = 900, LEFT = 78, RIGHT = 74, BH = 34, LG = 8, TIER = 15;
+  const W = 960, LEFT = 78, RIGHT = 134, BH = 34, LG = 8, TIER = 15;
   const X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1);
   const x = (d) => LEFT + (d - X0) / (X1 - X0) * (W - LEFT - RIGHT);
   const daily = phones.filter((p) => !p.trial), trials = phones.filter((p) => p.trial).sort((a, b) => a.start - b.start);
@@ -125,8 +125,13 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     outs.sort((a, b) => b.ax - a.ax);
     const placed = [];
     for (const it of outs) {
-      let k = Math.max(0, ...placed.filter((o) => it.x1 - 3 <= o.ax && o.ax <= it.x2 + 3).map((o) => o.k + 1));
-      while (placed.some((o) => (o.k === k && it.x1 - 8 < o.x2 && o.x1 < it.x2 + 8) || (o.k < k && o.x1 - 3 <= it.ax && it.ax <= o.x2 + 3))) k++;
+      // above every leader my label covers, and below every label my leader would pass through
+      const lower = Math.max(0, ...placed.filter((o) => it.x1 - 3 <= o.ax && o.ax <= it.x2 + 3).map((o) => o.k + 1));
+      const upper = Math.min(Infinity, ...placed.filter((o) => o.x1 - 3 <= it.ax && it.ax <= o.x2 + 3).map((o) => o.k));
+      const free = (k) => !placed.some((o) => o.k === k && it.x1 - 8 < o.x2 && o.x1 < it.x2 + 8);
+      let k = lower;
+      while (k < upper && !free(k)) k++;
+      if (k >= upper) { k = lower; while (!free(k)) k++; } // no clean slot: accept a crossing rather than overlap
       it.k = k; placed.push(it);
     }
     tiers[side] = placed;
@@ -246,7 +251,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
     { key: 'Who paid', of: (p) => p.paid ? 'Employer' : 'Bought', color: (c) => c === 'Employer' ? 'var(--htc)' : 'var(--ink-3)' },
   ];
   const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
-  const W = 900, LEFT = 78, RIGHT = 74, X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1), SH = 12, SG = 3;
+  const W = 960, LEFT = 78, RIGHT = 134, X0 = new Date(2008, 0, 1), X1 = new Date(2027, 2, 1), SH = 12, SG = 3;
   const x = (t) => LEFT + (t - X0) / (X1 - X0) * (W - LEFT - RIGHT);
   const pct = (n, d) => { const v = d ? n / d : 0; return v === 0 ? '-' : v >= 0.995 && v < 1 ? '>99%' : v < 0.005 ? '<1%' : Math.round(v * 100) + '%'; };
   const body = $('#pt-prefs-body');
