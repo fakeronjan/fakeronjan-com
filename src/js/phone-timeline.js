@@ -10,7 +10,6 @@ const SHORT = { 'Motorola Droid RAZR Maxx 4G': 'Droid RAZR Maxx', 'HTC Droid Inc
   'Google Pixel 3': 'Pixel 3', 'Google Pixel 7': 'Pixel 7', 'Motorola Razr+': 'Razr+', 'Microsoft Surface Duo': 'Surface Duo' };
 const DAY = 864e5;
 const pd = (s) => { const [m, d, y] = s.split('/').map(Number); return new Date(y, m - 1, d); };
-const mdy = (d) => `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
 const my = (d) => `${d.getMonth() + 1}/${d.getFullYear()}`;
 const span = (p) => `${my(p.start)}–${p.current ? 'now' : my(p.end)} (${p.days.toLocaleString('en-US')} days)`;
 const col = (m) => `var(--${m.toLowerCase()})`;
