@@ -24,8 +24,11 @@ const phones = D.phones.map(([name, use, maker, color, s, e, rating, reason, com
 const STORY_ORDER = [...D.storyOrder].sort((a, b) => Math.min(...D.stories.filter((r) => r[0] === a).map((r) => pd(D.phones[r[1]][4]))) - Math.min(...D.stories.filter((r) => r[0] === b).map((r) => pd(D.phones[r[1]][4]))));
 const NEXT = { ...D.next, short: D.next.name, start: pd(D.next.start), preorder: true };
 const EMPLOYERS = D.employers.map(([n, a, b]) => ({ n, start: pd(a), end: b ? pd(b) : null }));
-const label = (p) => p.name === 'iPhone 13 Pro' ? `iPhone 13 Pro (${p.color}${p.use === 'Work' ? ', work' : ''})` : p.name;
-const pic = (p) => `<img src="${IMG(p.img)}" alt="${label(p)} in ${p.color}" loading="lazy">`;
+const baseLabel = (p) => p.name === 'iPhone 13 Pro' ? `iPhone 13 Pro (${p.color}${p.use === 'Work' ? ', work' : ''})` : p.name;
+// Hall of Fame phones carry a star next to their name everywhere except the Hall of Fame itself
+D.hallOfFame.forEach((i) => { phones[i].fav = true; phones[i].short += ' ⭐'; });
+const label = (p) => baseLabel(p) + (p.fav ? ' ⭐' : '');
+const pic = (p) => `<img src="${IMG(p.img)}" alt="${baseLabel(p)} in ${p.color}" loading="lazy">`;
 const ROLE = { P: 'Personal', W: 'Work', PW: 'Personal and work' };
 function roleLine(p) {
   const both = p.segs.filter((g) => g.r === 'PW');
@@ -298,7 +301,7 @@ $('#pt-legend').innerHTML = MAKERS.map((m) => `<span><i style="background:${col(
 (function () {
   const favs = D.hallOfFame.map((i) => phones[i]).sort((a, b) => a.start - b.start);
   const B = $('#pt-favs-body');
-  B.innerHTML = favs.map((p) => `<div class="fav" data-i="${phones.indexOf(p)}"><span class="ph">${pic(p)}</span><b>${label(p)}</b>
+  B.innerHTML = favs.map((p) => `<div class="fav" data-i="${phones.indexOf(p)}"><span class="ph">${pic(p)}</span><b>${baseLabel(p)}</b>
     <span class="d">${span(p)}</span></div>`).join('');
   B.querySelectorAll('[data-i]').forEach((n) => bindTip(n, phones[+n.dataset.i]));
 })();
