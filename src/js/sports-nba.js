@@ -1566,8 +1566,17 @@
       state.dmSeasons[season] = d;
       state.dmSeason = season;
       dmSeasonSelect.value = String(season);
+      // Same format as the Standings date dropdown: ISO date, with the
+      // standings' labels on the last regular-season day and, once the
+      // season is over, the last playoff day.
+      var labels = {};
+      var rsDays = d.days.filter(function (x) { return !x.playoffs; });
+      if (rsDays.length < d.days.length) {
+        if (rsDays.length) labels[rsDays[rsDays.length - 1].date] = "End of regular season";
+        if (state.dmIndex.live_season !== d.season) labels[d.days[d.days.length - 1].date] = "End of playoffs";
+      }
       dmDaySelect.innerHTML = d.days.slice().reverse().map(function (x) {
-        return '<option value="' + x.date + '">' + dmDayLabel(x.date) + "</option>";
+        return '<option value="' + x.date + '">' + (labels[x.date] ? x.date + " | " + labels[x.date] : x.date) + "</option>";
       }).join("");
       dmDaySelect.value = dmDefaultDay(d);
       renderDailyMatchups();
