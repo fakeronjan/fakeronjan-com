@@ -1327,7 +1327,6 @@
   // played. Data: weekly_matchups/<season>.json. Purely for fun.
 
   var wmNav = document.getElementById("nflWmNav");
-  var wmTitle = document.getElementById("wmTitle");
   var wmNote = document.getElementById("wmNote");
   var wmSeasonSelect = document.getElementById("wmSeasonSelect");
   var wmWeekSelect = document.getElementById("wmWeekSelect");
@@ -1485,7 +1484,6 @@
     wmPrev.disabled = wmWeekSelect.selectedIndex >= wmWeekSelect.options.length - 1;
     wmNext.disabled = wmWeekSelect.selectedIndex <= 0;
     var ps = week >= 100;
-    wmTitle.textContent = d.season + " " + wmWeekLabel(week);
     wmNote.textContent = "Win probability, line, and O/U for every game from DILLON's ratings going into the week. " +
       "Stakes show each team's playoff and Super Bowl odds with a win and with a loss.";
 

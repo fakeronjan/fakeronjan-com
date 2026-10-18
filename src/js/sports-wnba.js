@@ -1432,7 +1432,6 @@
   // Data: daily_matchups/<season>.json.
 
   var dmNav = document.getElementById("wnbaDmNav");
-  var dmTitle = document.getElementById("dmTitle");
   var dmNote = document.getElementById("dmNote");
   var dmSeasonSelect = document.getElementById("dmSeasonSelect");
   var dmDaySelect = document.getElementById("dmDaySelect");
@@ -1592,7 +1591,6 @@
     var showPo = !ps;
     dmPrev.disabled = dmDaySelect.selectedIndex >= dmDaySelect.options.length - 1;
     dmNext.disabled = dmDaySelect.selectedIndex <= 0;
-    dmTitle.textContent = d.season + " · " + dmDayLabel(date) + (ps ? " · Playoffs" : "");
     dmNote.textContent = "Win probability, line, and O/U for every game from LOBO's ratings going into the day. " +
       "Stakes show each team's playoff and title odds with a win and with a loss.";
 

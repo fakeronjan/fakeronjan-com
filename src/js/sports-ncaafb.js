@@ -1159,7 +1159,6 @@
   // Bowls outside the CFP have no stakes. Data: weekly_matchups/<season>.json.
 
   var wmNav = document.getElementById("ncaafbWmNav");
-  var wmTitle = document.getElementById("wmTitle");
   var wmNote = document.getElementById("wmNote");
   var wmSeasonSelect = document.getElementById("wmSeasonSelect");
   var wmWeekSelect = document.getElementById("wmWeekSelect");
@@ -1310,7 +1309,6 @@
     wmNext.disabled = wmWeekSelect.selectedIndex <= 0;
     var bowls = week === WM_BOWLS;
     var ps = week > WM_BOWLS;              // CFP rounds
-    wmTitle.textContent = d.season + " " + wk.label;
     wmNote.textContent = bowls
       ? "Win probability, line, and O/U for every bowl outside the CFP from SALAAM's ratings going into bowl season. These games don't change anyone's CFP or title odds, so they have no Stakes."
       : "Win probability, line, and O/U for every FBS game from SALAAM's ratings going into the week. " +

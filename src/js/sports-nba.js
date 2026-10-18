@@ -1450,7 +1450,6 @@
   // Data: daily_matchups/<season>.json.
 
   var dmNav = document.getElementById("nbaDmNav");
-  var dmTitle = document.getElementById("dmTitle");
   var dmNote = document.getElementById("dmNote");
   var dmSeasonSelect = document.getElementById("dmSeasonSelect");
   var dmDaySelect = document.getElementById("dmDaySelect");
@@ -1633,7 +1632,6 @@
     var showPo = !ps || day.games.some(function (g) { return g.series && g.series.best_of <= 2; });
     dmPrev.disabled = dmDaySelect.selectedIndex >= dmDaySelect.options.length - 1;
     dmNext.disabled = dmDaySelect.selectedIndex <= 0;
-    dmTitle.textContent = fmtSeason(d.season) + " · " + dmDayLabel(date) + (ps ? " · Playoffs" : "");
     dmNote.textContent = "Win probability, line, and O/U for every game from DUNCAN's ratings going into the day. " +
       "Stakes show each team's playoff and title odds with a win and with a loss.";
 
