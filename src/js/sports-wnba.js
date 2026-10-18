@@ -1423,6 +1423,236 @@
     attachLinks(poWrap);
   }
 
+  // ═══════════════════════════════ Daily Matchups ═════════════════════════
+  // Every game of a day, previewed from LOBO's ratings going into it: win
+  // probability, line, O/U, and each team's playoff and title odds with a win
+  // and with a loss; then the score and whether LOBO's pick was right. The
+  // WNBA port of DUNCAN's Daily Matchups (sports-nba.js). No sort pills:
+  // basketball-reference lists no WNBA tip-off times, so Juice is the order.
+  // Data: daily_matchups/<season>.json.
+
+  var dmNav = document.getElementById("wnbaDmNav");
+  var dmTitle = document.getElementById("dmTitle");
+  var dmNote = document.getElementById("dmNote");
+  var dmSeasonSelect = document.getElementById("dmSeasonSelect");
+  var dmDaySelect = document.getElementById("dmDaySelect");
+  var dmPrev = document.getElementById("dmPrev");
+  var dmNext = document.getElementById("dmNext");
+  var dmStamp = document.getElementById("dmStamp");
+  var dmWrap = document.getElementById("dmWrap");
+  state.dmSeasons = {};
+  var DM_QUALITY_TITLE = "How good and how even the matchup is: both teams' ratings and how close LOBO has the game. 0-100, ranked against every game.";
+  var DM_STAKES_TITLE = "How much the result swings both teams' playoff and title odds. 0-100, ranked against every game.";
+  var DM_JUICE_TITLE = "Quality and Stakes combined (their geometric mean). A game needs both to score high.";
+
+  function dmNick(name) {
+    var parts = name.split(" ");
+    return parts[parts.length - 1];
+  }
+  function dmPct(v) {
+    if (v == null) return "-";
+    if (v === 0) return "0%";
+    return oddsPct(v);
+  }
+  function dmDayLabel(ds) {
+    var p = ds.split("-");
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return d.toLocaleDateString("en-US", { weekday: "short" }) + " " + (+p[1]) + "/" + (+p[2]) + "/" + p[0];
+  }
+  // Playoff games: where the series stands going into this game.
+  function dmSeries(g) {
+    if (g.cup_final) return "Commissioner's Cup Final";
+    var s = g.series;
+    if (!s) return "";
+    if (s.best_of === 1) return s.round;   // single-game rounds (1997, 1999, 2016-21)
+    var h = s.home_wins, a = s.away_wins;
+    var game = "Game " + (h + a + 1);
+    if (h === a) return game + (h ? ", series tied " + h + "-" + a : "");
+    return game + ", " + dmNick(h > a ? dmShown(g, "home") : dmShown(g, "away")) + " leads " + Math.max(h, a) + "-" + Math.min(h, a);
+  }
+  function dmKickLine(g) {
+    return dmSeries(g);
+  }
+  function dmPick(g) {
+    var home = g.p_home >= 0.5;
+    return { team: home ? dmShown(g, "home") : dmShown(g, "away"), p: home ? g.p_home : 1 - g.p_home, home: home };
+  }
+  function dmLine(g) {
+    if (Math.abs(g.line) < 0.25) return "Pick'em";
+    return dmNick(g.line > 0 ? dmShown(g, "home") : dmShown(g, "away")) + " by " + Math.abs(g.line);
+  }
+  function dmCorrect(g) {
+    if (!g.result || g.result.home === g.result.away) return null;
+    return (g.p_home >= 0.5) === (g.result.home > g.result.away);
+  }
+  function dmPctOf(rec) {
+    var m = rec.match(/^(\d+)-(\d+)$/);
+    if (!m) return 0.5;
+    var w = +m[1], l = +m[2];
+    return w + l ? w / (w + l) : 0.5;
+  }
+
+  function loadDailyMatchups() {
+    return fetch(BASE + "/daily_matchups/index.json")
+      .then(function (r) { return r.json(); })
+      .then(function (idx) {
+        if (!idx.seasons || !idx.seasons.length) return;
+        state.dmIndex = idx;
+        dmNav.hidden = false;
+        dmSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
+        dmSeasonSelect.onchange = function () { loadDmSeason(Number(dmSeasonSelect.value)); };
+        dmDaySelect.onchange = renderDailyMatchups;
+        dmPrev.onclick = function () { stepDmDay(-1); };
+        dmNext.onclick = function () { stepDmDay(1); };
+        return loadDmSeason(idx.seasons[0]);
+      })
+      .catch(function () {});
+  }
+
+  // Default day: today if there are games, else the latest day on or before
+  // today, else (preseason) the first day.
+  function dmDefaultDay(d) {
+    var now = new Date();
+    var today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+    var pick = d.days[0].date;
+    d.days.forEach(function (x) { if (x.date <= today) pick = x.date; });
+    return pick;
+  }
+
+  function loadDmSeason(season) {
+    var have = state.dmSeasons[season];
+    var p = have ? Promise.resolve(have) : fetch(BASE + "/daily_matchups/" + season + ".json").then(function (r) { return r.json(); });
+    return p.then(function (d) {
+      state.dmSeasons[season] = d;
+      state.dmSeason = season;
+      dmSeasonSelect.value = String(season);
+      dmDaySelect.innerHTML = d.days.slice().reverse().map(function (x) {
+        return '<option value="' + x.date + '">' + dmDayLabel(x.date) + "</option>";
+      }).join("");
+      dmDaySelect.value = dmDefaultDay(d);
+      renderDailyMatchups();
+    });
+  }
+
+  function stepDmDay(dir) {
+    // Options are newest first, so "next day" is one option up.
+    var i = dmDaySelect.selectedIndex - dir;
+    if (i < 0 || i >= dmDaySelect.options.length) return;
+    dmDaySelect.selectedIndex = i;
+    renderDailyMatchups();
+  }
+
+  // name = canonical (links), shown = the era's name when the two differ.
+  function dmTeamLink(name, shown, season) {
+    var slug = state.nameToSlug[name];
+    return slug ? '<span class="team-link linked" data-team-slug="' + slug + '" data-season="' + season + '">' + shown + "</span>" : shown;
+  }
+  function dmShown(g, side) { return g[side + "_display"] || g[side]; }
+
+  function dmStakesLines(g, key, ps) {
+    if (!g.stakes) return '<span class="wm-dim">-</span>';
+    return ["away", "home"].map(function (side) {
+      var s = g.stakes[side];
+      if (key === "po") {
+        if (s.po_win == null) return side === "away" ? '<span class="wm-dim">-</span>' : "";
+        return '<div class="wm-stake">' + dmPct(s.po_win) + ' <span class="wm-dim">/</span> ' + dmPct(s.po_loss) + "</div>";
+      }
+      var loss = ps && s.title_loss === 0 ? "out" : dmPct(s.title_loss);
+      return '<div class="wm-stake">' + dmPct(s.title_win) + ' <span class="wm-dim">/</span> ' + loss + "</div>";
+    }).join("");
+  }
+
+  function dmResult(g) {
+    if (!g.result) return '<span class="wm-dim">-</span>';
+    var ok = dmCorrect(g);
+    var mark = ok == null ? "&nbsp;" : (ok ? '<span class="wc-w">&#10003;</span>' : '<span class="wc-l">&#10007;</span>');
+    function wl(us, them) { return us > them ? ' <span class="wc-w">W</span>' : ' <span class="wc-l">L</span>'; }
+    return "<div>" + dmNick(dmShown(g, "away")) + " " + g.result.away + wl(g.result.away, g.result.home) + "</div>" +
+      "<div>" + dmNick(dmShown(g, "home")) + " " + g.result.home + wl(g.result.home, g.result.away) + "</div>" +
+      (dmKickLine(g) ? '<div class="wm-mark-line sub-line-italic">' + mark + "</div>" : "");
+  }
+
+  function renderDailyMatchups() {
+    var d = state.dmSeasons[state.dmSeason];
+    if (!d) return;
+    var date = dmDaySelect.value;
+    var day = d.days.filter(function (x) { return x.date === date; })[0];
+    if (!day) return;
+    var ps = day.playoffs;
+    // Playoff odds: regular-season days only (the WNBA has no play-in).
+    var showPo = !ps;
+    dmPrev.disabled = dmDaySelect.selectedIndex >= dmDaySelect.options.length - 1;
+    dmNext.disabled = dmDaySelect.selectedIndex <= 0;
+    dmTitle.textContent = d.season + " · " + dmDayLabel(date) + (ps ? " · Playoffs" : "");
+    dmNote.textContent = "Win probability, line, and O/U for every game from LOBO's ratings going into the day. " +
+      "Stakes show each team's playoff and title odds with a win and with a loss.";
+
+    // LOBO's record picking winners: this day, and the season through it.
+    function tally(days) {
+      var w = 0, l = 0;
+      days.forEach(function (x) { x.games.forEach(function (g) { var c = dmCorrect(g); if (c === true) w++; else if (c === false) l++; }); });
+      return [w, l];
+    }
+    var thisDay = tally([day]);
+    // Regular season and playoffs split once the view reaches the playoffs.
+    var season = tally(d.days.filter(function (x) { return x.date <= date && !x.playoffs; }));
+    var playoffs = tally(d.days.filter(function (x) { return x.date <= date && x.playoffs; }));
+    var stamp = '<span class="wc-md-label">LOBO pick record</span>';
+    // Broadest first: season (or regular season), playoffs, then this day.
+    if (season[0] + season[1]) stamp += '<span class="wc-result">' + d.season + (ps ? " regular season" : " season") + " <b>" + season[0] + "-" + season[1] + "</b></span>";
+    if (ps && playoffs[0] + playoffs[1]) stamp += '<span class="wc-result">' + d.season + " playoffs <b>" + playoffs[0] + "-" + playoffs[1] + "</b></span>";
+    if (thisDay[0] + thisDay[1]) stamp += '<span class="wc-result">' + dmDayLabel(date) + " <b>" + thisDay[0] + "-" + thisDay[1] + "</b></span>";
+    dmStamp.innerHTML = stamp;
+
+    var byJuice = function (a, b) { return (b.juice == null ? -1 : b.juice) - (a.juice == null ? -1 : a.juice); };
+    var games = day.games.slice().sort(byJuice);
+
+    // Markers: the game of the night (top Juice) and upset-watch picks
+    // (LOBO favors the team with the worse record).
+    var gotn = games[0] && games[0].juice != null ? games[0] : null;
+    function isUpset(g) {
+      if (ps || g.cup_final) return false;
+      var pk = dmPick(g);
+      return dmPctOf(pk.home ? g.home_record : g.away_record) < dmPctOf(pk.home ? g.away_record : g.home_record);
+    }
+    var nUpset = games.filter(isUpset).length;
+    dmStamp.innerHTML += (gotn ? '<span class="wm-legend">&#11088; Game of the night</span>' : "") +
+      (nUpset ? '<span class="wm-legend" title="LOBO favors the team with the worse record">&#9889; Upset watch</span>' : "");
+
+    function num(v) { return v == null ? '<span class="wm-dim">-</span>' : v; }
+    var rows = games.map(function (g) {
+      var pk = dmPick(g);
+      var mark = (g === gotn ? "&#11088;" : "") + (isUpset(g) ? "&#9889;" : "");
+      var kick = dmKickLine(g);
+      return '<tr' + (g === gotn ? ' class="wm-gotw"' : "") + ">" +
+        '<td class="wm-mark">' + mark + "</td>" +
+        '<td class="wm-matchup"><div><span class="wm-at"></span><span class="wm-rank">' + (g.away_rank || "") + "</span>" + dmTeamLink(g.away, dmShown(g, "away"), d.season) + ' <span class="wm-dim">' + g.away_record + "</span></div>" +
+        '<div><span class="wm-at">' + (g.neutral ? "vs." : "@") + '</span><span class="wm-rank">' + (g.home_rank || "") + "</span>" + dmTeamLink(g.home, dmShown(g, "home"), d.season) + ' <span class="wm-dim">' + g.home_record + "</span></div>" +
+          (kick ? '<div class="wm-kick sub-line-italic">' + kick + "</div>" : "") + "</td>" +
+        '<td class="col-od col-hide-mobile">' + num(g.quality) + "</td>" +
+        '<td class="col-od col-hide-mobile">' + num(g.stakes_score) + "</td>" +
+        '<td class="col-od wm-juice">' + num(g.juice) + "</td>" +
+        '<td class="col-od"><div class="od-val">' + dmNick(pk.team) + '</div><div class="od-rank">' + dmPct(pk.p) + "</div></td>" +
+        '<td class="col-hide-mobile">' + dmLine(g) + "</td>" +
+        '<td class="col-od col-hide-mobile">' + (g.total != null ? g.total.toFixed(1) : "-") + "</td>" +
+        (showPo ? "<td>" + dmStakesLines(g, "po", ps) + "</td>" : "") +
+        '<td class="' + (ps ? "" : "col-hide-mobile") + '">' + dmStakesLines(g, "title", ps) + "</td>" +
+        '<td class="wm-result">' + dmResult(g) + "</td>" +
+        "</tr>";
+    }).join("");
+    dmWrap.innerHTML =
+      '<table class="sport-table wm-table"><thead><tr>' +
+      '<th class="wm-mark"></th>' + "<th>Matchup</th>" +
+      '<th class="col-od col-hide-mobile" title="' + DM_QUALITY_TITLE + '">Quality</th>' +
+      '<th class="col-od col-hide-mobile" title="' + DM_STAKES_TITLE + '">Stakes</th>' +
+      '<th class="col-od" title="' + DM_JUICE_TITLE + '">Juice</th>' +
+      '<th class="col-od">LOBO pick</th><th class="col-hide-mobile">LOBO Line</th><th class="col-od col-hide-mobile">LOBO O/U</th>' +
+      (showPo ? '<th title="Playoff odds with a win / with a loss">Playoff Odds (W/L)</th>' : "") +
+      '<th class="' + (ps ? "" : "col-hide-mobile") + '" title="Title odds with a win / with a loss">Title Odds (W/L)</th>' +
+      "<th>Result</th></tr></thead><tbody>" + rows + "</tbody></table>";
+    attachLinks(dmWrap);
+  }
+
   // ═══════════════════════════════ init ═══════════════════════════════
 
   buildPills("tsViewPills", state.tsView, function (v) {
@@ -1459,6 +1689,7 @@
     loadChampions();
     loadGoat();
     loadPlayoffOdds();
+    loadDailyMatchups();
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });
