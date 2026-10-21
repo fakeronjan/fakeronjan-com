@@ -38,6 +38,11 @@
     return value != null && seasons.indexOf(n) !== -1 ? n : seasons[0];
   }
 
+  // A season dropdown's values as numbers, in its order (newest first).
+  function optionNumbers(sel) {
+    return Array.prototype.map.call(sel.options, function (o) { return Number(o.value); });
+  }
+
   function tabButton(tab) {
     return Array.prototype.filter.call(document.querySelectorAll(".sport-tab"), function (b) {
       return b.dataset.tab === tab;
@@ -121,5 +126,6 @@
     hasOption: hasOption,
     pick: pick,
     seasonFrom: seasonFrom,
+    optionNumbers: optionNumbers,
   };
 })();
