@@ -541,7 +541,7 @@
 
   function loadTeam(slug) {
     if (!slug) return Promise.resolve();
-    if (state.teamCache[slug]) return finishLoadTeam(slug);
+    if (state.teamCache[slug]) return Promise.resolve(finishLoadTeam(slug));
     tsTableWrap.innerHTML = '<p class="sport-loading">Loading team data...</p>';
     return fetch(BASE + "/teams/" + slug + ".json")
       .then(function (r) { return r.json(); })

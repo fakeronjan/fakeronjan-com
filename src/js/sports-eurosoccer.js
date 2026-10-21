@@ -257,9 +257,31 @@
     var btn = e.target.closest(".sport-tab");
     if (!btn) return;
     activateTab(btn.dataset.tab);
+    writeUrl(true);
   });
 
   // ── deep-link handlers ──────────────────────────────────────────────────
+
+  function onStandingsLeague(v) { state.standingsLeague = v; renderStandings(); writeUrl(); }
+  function onTsLeague(v) {
+    state.tsLeague = v;
+    populateTeams(v);
+    tsChartWrap.hidden = true;
+    tsTableWrap.innerHTML = '<p class="sport-loading">Select a club above</p>';
+    tsSeasonSelect.innerHTML = "";
+    writeUrl();
+  }
+  var TS_VIEW_OPTS = [
+    { value: "cross", label: "All season summary" },
+    { value: "single", label: "All matches within one season" },
+  ];
+  function onTsView(v) {
+    state.tsView = v;
+    tsSeasonSelect.hidden = v !== "single";
+    tsDateTypeSelect.hidden = v !== "cross";
+    renderTeamTable();
+    writeUrl();
+  }
 
   // Valid Standings league filter values (the 5 domestic leagues). UEFA cups
   // (CL/EL) don't map - passing one through is a no-op.
@@ -271,10 +293,10 @@
     activateTab("standings");
     if (targetLeague && STANDINGS_LEAGUES[targetLeague]) {
       state.standingsLeague = targetLeague;
-      buildLeaguePills("zdLeaguePills", true, state.standingsLeague, function (v) { state.standingsLeague = v; renderStandings(); });
+      buildLeaguePills("zdLeaguePills", true, state.standingsLeague, onStandingsLeague);
     }
     seasonSelect.value = season;
-    loadSeason(season);
+    loadSeason(season).then(function () { writeUrl(true); });
   }
 
   // ZIDANE Team Summary pill has no "All" option - it must match the team's
@@ -285,26 +307,12 @@
     if (!t) return;
     activateTab("team-summary");
     state.tsLeague = t.league;
-    buildLeaguePills("tsLeaguePills", false, state.tsLeague, function (v) {
-      state.tsLeague = v;
-      populateTeams(v);
-      tsChartWrap.hidden = true;
-      tsTableWrap.innerHTML = '<p class="sport-loading">Select a club above</p>';
-      tsSeasonSelect.innerHTML = "";
-    });
+    buildLeaguePills("tsLeaguePills", false, state.tsLeague, onTsLeague);
     populateTeams(state.tsLeague);
     tsTeamSelect.value = slug;
     var wantSingle = season != null && season !== "";
     state.tsView = wantSingle ? "single" : "cross";
-    buildPillsFromOpts("tsViewPills", [
-      { value: "cross", label: "All season summary" },
-      { value: "single", label: "All matches within one season" },
-    ], state.tsView, function (v) {
-      state.tsView = v;
-      tsSeasonSelect.hidden = v !== "single";
-      tsDateTypeSelect.hidden = v !== "cross";
-      renderTeamTable();
-    });
+    buildPillsFromOpts("tsViewPills", TS_VIEW_OPTS, state.tsView, onTsView);
     tsSeasonSelect.hidden = !wantSingle;
     tsDateTypeSelect.hidden = wantSingle;
     loadTeam(slug).then(function () {
@@ -314,6 +322,7 @@
         if (hasOpt) tsSeasonSelect.value = targetVal;
       }
       renderTeamTable();
+      writeUrl(true);
     });
   }
 
@@ -454,10 +463,11 @@
   }
 
   seasonSelect.addEventListener("change", function () {
-    loadSeason(seasonSelect.value);
+    loadSeason(seasonSelect.value).then(function () { writeUrl(); });
   });
   dateSelect.addEventListener("change", function () {
     selectSnapshot(dateSelect.value);
+    writeUrl();
   });
 
   // ═══════════════════════════════ Team Summary ═══════════════════════════════
@@ -493,7 +503,7 @@
 
   function loadTeam(slug) {
     if (!slug) return Promise.resolve();
-    if (state.teamCache[slug]) return finishLoadTeam(slug);
+    if (state.teamCache[slug]) return Promise.resolve(finishLoadTeam(slug));
     tsTableWrap.innerHTML = '<p class="sport-loading">Loading club data...</p>';
     return fetch(BASE + "/teams/" + slug + ".json")
       .then(function (r) { return r.json(); })
@@ -693,9 +703,9 @@
       clipMarks.join("");
   }
 
-  tsTeamSelect.addEventListener("change", function () { loadTeam(tsTeamSelect.value); });
-  tsSeasonSelect.addEventListener("change", renderTeamTable);
-  tsDateTypeSelect.addEventListener("change", renderTeamTable);
+  tsTeamSelect.addEventListener("change", function () { loadTeam(tsTeamSelect.value).then(function () { writeUrl(); }); });
+  tsSeasonSelect.addEventListener("change", function () { renderTeamTable(); writeUrl(); });
+  tsDateTypeSelect.addEventListener("change", function () { renderTeamTable(); writeUrl(); });
 
   // ═══════════════════════════════ League Winners ═══════════════════════════════
 
@@ -812,7 +822,7 @@
     attachLinks(historyTableWrap);
   }
 
-  var onHistoryPick = function (v) { state.historyComp = v; renderLeagueHistory(v); };
+  var onHistoryPick = function (v) { state.historyComp = v; renderLeagueHistory(v); writeUrl(); };
   buildPillsFromOpts("historyDomesticPills", LEAGUE_OPTIONS, state.historyComp, onHistoryPick, ["historyUefaPills"]);
   buildPillsFromOpts("historyUefaPills", UEFA_OPTIONS, state.historyComp, onHistoryPick, ["historyDomesticPills"]);
 
@@ -888,31 +898,119 @@
     attachLinks(goatTableWrap);
   }
 
-  buildLeaguePills("goatLeaguePills", true, state.goatLeague, function (v) { state.goatLeague = v; renderGoat(); });
+  buildLeaguePills("goatLeaguePills", true, state.goatLeague, function (v) { state.goatLeague = v; renderGoat(); writeUrl(); });
   buildPillsFromOpts("goatMetricPills", [
     { value: "overall", label: "Rating (overall)" },
     { value: "offense", label: "Offense only" },
     { value: "defense", label: "Defense only" },
-  ], state.goatMetric, function (v) { state.goatMetric = v; loadGoat(); });
+  ], state.goatMetric, function (v) { state.goatMetric = v; Promise.resolve(loadGoat()).then(function () { writeUrl(); }); });
+
+  // ═══════════════════════════════ URL state ═══════════════════════════════
+  // Shareable URLs (see sports-url.js): per tab, which settings go in the
+  // address bar and how a link restores them.
+
+  var U = window.SportUrl;
+  var url = null;
+  function writeUrl(push) { if (url) url.write(push); }
+
+  // Leagues and cups go in the URL as short codes: "La Liga" is la-liga.
+  function compSlug(c) { return c.toLowerCase().replace(/ /g, "-"); }
+  function compFromSlug(s, opts) {
+    return opts.filter(function (o) { return compSlug(o.value) === s; }).map(function (o) { return o.value; })[0] || null;
+  }
+
+  var URL_TABS = {
+    "standings": {
+      query: function (add) {
+        if (!state.seasonData) return;
+        var snaps = state.seasonData.snapshots;
+        if (String(state.seasonData.season) !== seasonSelect.options[0].value) add("season", state.seasonData.season);
+        if (dateSelect.value !== snaps[snaps.length - 1].date) add("date", dateSelect.value);
+        if (state.standingsLeague !== "all") add("league", compSlug(state.standingsLeague));
+      },
+      apply: function (p) {
+        state.standingsLeague = compFromSlug(p.get("league"), LEAGUE_OPTIONS) || "all";
+        U.setPills("zdLeaguePills", state.standingsLeague);
+        var season = U.hasOption(seasonSelect, p.get("season")) ? p.get("season") : seasonSelect.options[0].value;
+        seasonSelect.value = season;
+        var load = state.seasonData && String(state.seasonData.season) === season ? Promise.resolve() : loadSeason(season);
+        return load.then(function () {
+          if (!state.seasonData) return;
+          var snaps = state.seasonData.snapshots, date = p.get("date");
+          selectSnapshot(U.hasOption(dateSelect, date) ? date : snaps[snaps.length - 1].date);
+        });
+      },
+    },
+    "team-summary": {
+      // A club implies its league, so league is only written before a club is picked.
+      query: function (add) {
+        if (tsTeamSelect.value) add("team", tsTeamSelect.value);
+        else if (state.tsLeague) add("league", compSlug(state.tsLeague));
+        if (state.tsView === "single") {
+          add("view", "single");
+          if (tsTeamSelect.value && tsSeasonSelect.value) add("season", tsSeasonSelect.value);
+        } else if (tsDateTypeSelect.value === "eor") {
+          add("snap", "eor");
+        }
+      },
+      apply: function (p) {
+        var slug = p.get("team");
+        var t = slug && state.teamsIndex.filter(function (x) { return x.slug === slug; })[0];
+        state.tsLeague = t ? t.league : (compFromSlug(p.get("league"), LEAGUE_OPTIONS) || "");
+        U.setPills("tsLeaguePills", state.tsLeague);
+        populateTeams(state.tsLeague);
+        state.tsView = p.get("view") === "single" ? "single" : "cross";
+        U.setPills("tsViewPills", state.tsView);
+        tsSeasonSelect.hidden = state.tsView !== "single";
+        tsDateTypeSelect.hidden = state.tsView !== "cross";
+        tsDateTypeSelect.value = p.get("snap") === "eor" ? "eor" : "eos";
+        if (!t) {
+          tsChartWrap.hidden = true;
+          tsSeasonSelect.innerHTML = "";
+          tsTableWrap.innerHTML = '<p class="sport-loading">Select a club above</p>';
+          return Promise.resolve();
+        }
+        tsTeamSelect.value = slug;
+        return loadTeam(slug).then(function () {
+          var season = p.get("season");
+          if (U.hasOption(tsSeasonSelect, season)) tsSeasonSelect.value = season;
+          else if (tsSeasonSelect.options.length) tsSeasonSelect.selectedIndex = 0;
+          renderTeamTable();
+        });
+      },
+    },
+    "league-history": {
+      query: function (add) {
+        if (state.historyComp !== "Champions League") add("comp", compSlug(state.historyComp));
+      },
+      apply: function (p) {
+        state.historyComp = compFromSlug(p.get("comp"), LEAGUE_OPTIONS.concat(UEFA_OPTIONS)) || "Champions League";
+        U.setPills("historyDomesticPills", state.historyComp);
+        U.setPills("historyUefaPills", state.historyComp);
+        renderLeagueHistory(state.historyComp);
+      },
+    },
+    "goat": {
+      query: function (add) {
+        if (state.goatMetric !== "overall") add("metric", state.goatMetric);
+        if (state.goatLeague !== "all") add("league", compSlug(state.goatLeague));
+      },
+      apply: function (p) {
+        state.goatMetric = U.pick(p.get("metric"), ["offense", "defense"], "overall");
+        state.goatLeague = compFromSlug(p.get("league"), LEAGUE_OPTIONS) || "all";
+        U.setPills("goatMetricPills", state.goatMetric);
+        U.setPills("goatLeaguePills", state.goatLeague);
+        return Promise.resolve(loadGoat());
+      },
+    },
+  };
 
   // ═══════════════════════════════ init ═══════════════════════════════
 
-  buildLeaguePills("tsLeaguePills", false, state.tsLeague, function (v) {
-    state.tsLeague = v;
-    populateTeams(v);
-    tsChartWrap.hidden = true;
-    tsTableWrap.innerHTML = '<p class="sport-loading">Select a club above</p>';
-    tsSeasonSelect.innerHTML = "";
-  });
-  buildPillsFromOpts("tsViewPills", [
-    { value: "cross", label: "All season summary" },
-    { value: "single", label: "All matches within one season" },
-  ], state.tsView, function (v) {
-    state.tsView = v;
-    tsSeasonSelect.hidden = v !== "single";
-    tsDateTypeSelect.hidden = v !== "cross";
-    renderTeamTable();
-  });
+  url = U.create({ tabs: URL_TABS, activateTab: activateTab });
+
+  buildLeaguePills("tsLeaguePills", false, state.tsLeague, onTsLeague);
+  buildPillsFromOpts("tsViewPills", TS_VIEW_OPTS, state.tsView, onTsView);
   tsSeasonSelect.hidden = true;
   tsDateTypeSelect.hidden = false;
 
@@ -936,10 +1034,14 @@
     }
     seasonSelect.innerHTML = data.seasons.map(function (s) { return '<option value="' + s + '">' + s + "</option>"; }).join("");
     seasonSelect.value = data.seasons[0];
-    buildLeaguePills("zdLeaguePills", true, state.standingsLeague, function (v) { state.standingsLeague = v; renderStandings(); });
-    loadSeason(data.seasons[0]);
-    loadChampions();
-    loadGoat();
+    buildLeaguePills("zdLeaguePills", true, state.standingsLeague, onStandingsLeague);
+    var ready = {
+      "standings": loadSeason(data.seasons[0]),
+      "league-history": loadChampions(),
+      "goat": Promise.resolve(loadGoat()),
+      "team-summary": Promise.resolve(),
+    };
+    url.start(ready, [ready["standings"]]);
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });
