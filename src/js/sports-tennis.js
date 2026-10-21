@@ -68,6 +68,7 @@
     if (!btn) return;
     activateTab(btn.dataset.tab);
     if (btn.dataset.tab === "slamchase") refreshSlamChase(state.mwState.slamchase);
+    writeUrl(true);
   });
 
   // ── M/W pill handling ───────────────────────────────────────────────────
@@ -86,7 +87,7 @@
   document.querySelectorAll(".pill-group[data-mw-target]").forEach(function (wrap) {
     var tabId = wrap.dataset.mwTarget;
     wrap.querySelectorAll(".pill[data-mw]").forEach(function (btn) {
-      btn.addEventListener("click", function () { applyMW(tabId, btn.dataset.mw); });
+      btn.addEventListener("click", function () { applyMW(tabId, btn.dataset.mw); writeUrl(); });
     });
   });
 
@@ -449,6 +450,7 @@
         renderChart1(slug + "Chart1", slug + "Legend1", slug + "Legend2", tour, cohort);
         renderChart2(slug + "Chart2", tour, cohort);
         renderTable(slug + "Table", tour, cohort);
+        writeUrl();
       });
     });
   }
@@ -468,7 +470,48 @@
 
   // ═══════════════════════════════ init ═══════════════════════════════
 
-  loadSlamsBundle().then(function () {
+  // ═══════════════════════════════ URL state ═══════════════════════════════
+  // Shareable URLs (see sports-url.js): per tab, which settings go in the
+  // address bar and how a link restores them.
+
+  var U = window.SportUrl;
+  var url = null;
+  function writeUrl(push) { if (url) url.write(push); }
+
+  function cohortWrapId(tour) { return tour === "m" ? "menCohortPills" : "womenCohortPills"; }
+
+  // Old hub links used ?mw=w for Women's on both tabs.
+  function tourFrom(p) { return (p.get("tour") || p.get("mw")) === "w" ? "w" : "m"; }
+
+  var URL_TABS = {
+    "slamchase": {
+      query: function (add) {
+        var tour = state.mwState.slamchase;
+        if (tour === "w") add("tour", "w");
+        var active = document.querySelector("#" + cohortWrapId(tour) + " .pill.active");
+        if (active && active.dataset.key !== COHORTS[tour][0].key) add("cohort", active.dataset.key);
+      },
+      apply: function (p) {
+        var tour = tourFrom(p);
+        if (p.get("mw") === "w") applyMW("tournament", "w");
+        var btn = U.findPill(cohortWrapId(tour), "key", p.get("cohort")) || document.querySelector("#" + cohortWrapId(tour) + " .pill");
+        document.querySelectorAll("#" + cohortWrapId(tour) + " .pill").forEach(function (b) { b.classList.toggle("active", b === btn); });
+        applyMW("slamchase", tour);
+      },
+    },
+    "tournament": {
+      query: function (add) {
+        if (state.mwState.tournament === "w") add("tour", "w");
+      },
+      apply: function (p) {
+        applyMW("tournament", tourFrom(p));
+      },
+    },
+  };
+
+  url = U.create({ tabs: URL_TABS, activateTab: activateTab, fallbackTab: "slamchase" });
+
+  var ready = loadSlamsBundle().then(function () {
     ["m", "w"].forEach(function (tour) {
       renderCohortPills(tour);
       var cohort = COHORTS[tour][0];
@@ -479,13 +522,9 @@
       renderTable(slug + "Table", tour, cohort);
       renderTournamentGrid(tour);
     });
-    // Deep link from the portal's Women's card (?mw=w) - default both m/w
-    // pill groups to Women's so whichever tab loads first shows it.
-    if (new URLSearchParams(location.search).get("mw") === "w") {
-      applyMW("slamchase", "w");
-      applyMW("tournament", "w");
-    }
-  }).catch(function () {
+  });
+  ready.catch(function () {
     document.getElementById("menCohortPills").innerHTML = '<p class="sport-error">Could not load Grand Slam data</p>';
   });
+  url.start({ "slamchase": ready, "tournament": ready }, [ready]);
 })();
