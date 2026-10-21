@@ -201,6 +201,7 @@
     document.getElementById("playerSelect").value = p.safe_name;
     activateTab("player-summary");
     renderPlayer(p.safe_name);
+    writeUrl(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -208,6 +209,7 @@
     document.getElementById("tcSeasonSelect").value = sid;
     renderStandings(sid);
     activateTab("standings");
+    writeUrl(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -226,6 +228,7 @@
     var btn = e.target.closest(".sport-tab");
     if (!btn) return;
     activateTab(btn.dataset.tab);
+    writeUrl(true);
   });
 
   // ═══════════════════════════════ Standings ═══════════════════════════════
@@ -235,7 +238,7 @@
       state.seasonsIndex = idx;
       var sel = document.getElementById("tcSeasonSelect");
       sel.innerHTML = idx.map(function (s) { return '<option value="' + s.season_id + '">' + escapeHtml(s.label) + "</option>"; }).join("");
-      sel.addEventListener("change", function () { renderStandings(sel.value); });
+      sel.addEventListener("change", function () { renderStandings(sel.value); writeUrl(); });
       return renderStandings(idx[0].season_id);
     });
   }
@@ -306,7 +309,7 @@
       state.playerSet = new Set(idx.map(function (p) { return p.player; }));
       populatePlayerDropdown();
       var sel = document.getElementById("playerSelect");
-      sel.addEventListener("change", function () { renderPlayer(sel.value); });
+      sel.addEventListener("change", function () { renderPlayer(sel.value); writeUrl(); });
     });
   }
 
@@ -316,6 +319,7 @@
       btn.classList.add("active");
       state.playerGender = btn.dataset.gender;
       populatePlayerDropdown();
+      writeUrl();
     });
   });
   document.querySelectorAll("#playerScopePills .pill").forEach(function (btn) {
@@ -324,6 +328,7 @@
       btn.classList.add("active");
       state.playerScope = btn.dataset.scope;
       populatePlayerDropdown();
+      writeUrl();
     });
   });
 
@@ -608,9 +613,14 @@
   document.getElementById("goatViewPills").addEventListener("click", function (e) {
     var btn = e.target.closest(".pill");
     if (!btn) return;
-    document.querySelectorAll("#goatViewPills .pill").forEach(function (b) { b.classList.remove("active"); });
-    btn.classList.add("active");
-    state.goatView = btn.dataset.view;
+    setGoatView(btn.dataset.view);
+    renderGoat();
+    writeUrl();
+  });
+
+  function setGoatView(v) {
+    document.querySelectorAll("#goatViewPills .pill").forEach(function (b) { b.classList.toggle("active", b.dataset.view === v); });
+    state.goatView = v;
     document.getElementById("goatSortPills").hidden = state.goatView !== "components";
     var notes = {
       career: "Top 50 careers by sum of positive end-of-season ratings. Rewards quality × longevity.",
@@ -618,8 +628,7 @@
       seasons: "Top 50 single-season ratings (end-of-season rating, filtered to that season's cast).",
     };
     document.getElementById("goatNote").textContent = notes[state.goatView];
-    renderGoat();
-  });
+  }
   document.getElementById("goatSortPills").addEventListener("click", function (e) {
     var btn = e.target.closest(".pill");
     if (!btn) return;
@@ -627,16 +636,72 @@
     btn.classList.add("active");
     state.goatSort = btn.dataset.sort;
     renderGoat();
+    writeUrl();
   });
+
+  // ── URL state ──
+  // Shareable URLs (see sports-url.js): per tab, which settings go in the
+  // address bar and how a link restores them.
+
+  var U = window.SportUrl;
+  var url = null;
+  function writeUrl(push) { if (url) url.write(push); }
+
+  function setPillGroup(id, key, value) {
+    document.querySelectorAll("#" + id + " .pill").forEach(function (b) { b.classList.toggle("active", b.dataset[key] === value); });
+  }
+
+  var URL_TABS = {
+    "standings": {
+      query: function (add) {
+        var sel = document.getElementById("tcSeasonSelect");
+        if (sel.options.length && sel.value !== sel.options[0].value) add("season", sel.value);
+      },
+      apply: function (p) {
+        var sel = document.getElementById("tcSeasonSelect");
+        sel.value = U.hasOption(sel, p.get("season")) ? p.get("season") : sel.options[0].value;
+        return renderStandings(sel.value);
+      },
+    },
+    "player-summary": {
+      query: function (add) {
+        if (state.playerGender !== "all") add("gender", state.playerGender);
+        if (state.playerScope !== "3plus") add("scope", state.playerScope);
+        var v = document.getElementById("playerSelect").value;
+        if (v) add("player", v);
+      },
+      apply: function (p) {
+        state.playerGender = U.pick(p.get("gender"), ["M", "F"], "all");
+        state.playerScope = p.get("scope") === "all" ? "all" : "3plus";
+        setPillGroup("playerGenderPills", "gender", state.playerGender);
+        setPillGroup("playerScopePills", "scope", state.playerScope);
+        populatePlayerDropdown();
+        var sel = document.getElementById("playerSelect");
+        sel.value = U.hasOption(sel, p.get("player")) ? p.get("player") : "";
+        return renderPlayer(sel.value);
+      },
+    },
+    "champions": { apply: function () {} },
+    "goat": {
+      query: function (add) {
+        if (state.goatView !== "career") add("view", state.goatView);
+        if (state.goatView === "components" && state.goatSort !== "era_rating") add("sort", state.goatSort);
+      },
+      apply: function (p) {
+        setGoatView(U.pick(p.get("view"), ["components", "seasons"], "career"));
+        var sortBtn = U.findPill("goatSortPills", "sort", p.get("sort"));
+        state.goatSort = sortBtn ? sortBtn.dataset.sort : "era_rating";
+        setPillGroup("goatSortPills", "sort", state.goatSort);
+        renderGoat();
+      },
+    },
+  };
 
   // ── Init ──
 
-  // Deep link from a portal card, e.g. /thechallenge/?tab=goat&gender=F -
-  // jump straight to the tab (and gender's pane) the card advertised instead
-  // of always landing on the default Season Results / both-panes view.
-  var deepLinkParams = new URLSearchParams(location.search);
-  var deepLinkTab = deepLinkParams.get("tab");
-  if (deepLinkTab) activateTab(deepLinkTab);
+  url = U.create({ tabs: URL_TABS, activateTab: activateTab });
+  // The portal's Women's cards link with gender=F: scroll to that pane once rendered.
+  var linkParams = new URLSearchParams(location.search);
 
   fetchJSON("seasons_index.json").then(function (seasonIdx) {
     var latest = seasonIdx[0];
@@ -644,11 +709,15 @@
     document.getElementById("tcUpdated").textContent = "Last updated: S" + latest.season_num + " " + stamp;
   });
 
-  loadPlayer().then(function () {
+  var playerReady = loadPlayer();
+  var allReady = playerReady.then(function () {
     return Promise.all([loadStandings(), loadChampions(), loadGoat()]);
-  }).then(function () {
-    if (deepLinkParams.get("gender") === "F") {
-      var pane = document.getElementById(deepLinkTab === "goat" ? "goatTableF" : "standingsTableF").closest(".split-pane");
+  });
+  url.start({ "standings": allReady, "player-summary": playerReady, "champions": allReady, "goat": allReady }, [allReady]);
+  allReady.then(function () {
+    var tab = linkParams.get("tab");
+    if (linkParams.get("gender") === "F" && (tab === "goat" || tab === "standings" || !tab)) {
+      var pane = document.getElementById(tab === "goat" ? "goatTableF" : "standingsTableF").closest(".split-pane");
       if (pane) pane.scrollIntoView({ block: "nearest" });
     }
   }).catch(function () {
