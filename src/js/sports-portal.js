@@ -651,6 +651,7 @@
 
   var FRANCHISE_RENAMES = {
     "Washington Bullets": "Washington Wizards", "Charlotte Bobcats": "Charlotte Hornets",
+    "New Jersey Nets": "Brooklyn Nets", "New York Nets": "Brooklyn Nets",
     "Cleveland Indians": "Cleveland Guardians", "Florida Marlins": "Miami Marlins",
     "Tampa Bay Devil Rays": "Tampa Bay Rays",
     "Chicago Black Hawks": "Chicago Blackhawks", "Mighty Ducks of Anaheim": "Anaheim Ducks",
@@ -700,7 +701,7 @@
     "NHL__Washington Capitals": 1974,
     "NFL__San Francisco 49ers": 1946, "NFL__New England Patriots": 1960, "NFL__Denver Broncos": 1960,
     "NFL__New Orleans Saints": 1967, "NFL__Seattle Seahawks": 1976, "NFL__Tampa Bay Buccaneers": 1976,
-    "NBA__Phoenix Suns": 1968, "NBA__Indiana Pacers": 1967, "NBA__Atlanta Hawks": 1968, "NBA__Utah Jazz": 1979,
+    "NBA__Phoenix Suns": 1968, "NBA__Indiana Pacers": 1967, "NBA__Brooklyn Nets": 1967, "NBA__Atlanta Hawks": 1968, "NBA__Utah Jazz": 1979,
     "MLB__San Diego Padres": 1969, "MLB__Milwaukee Brewers": 1970, "MLB__Seattle Mariners": 1977,
     "NHL__Buffalo Sabres": 1970, "NHL__Vancouver Canucks": 1970,
     "NFL__Minnesota Vikings": 1961, "NFL__Atlanta Falcons": 1966, "NFL__Cincinnati Bengals": 1968,
