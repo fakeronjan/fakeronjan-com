@@ -622,7 +622,8 @@
     "Detroit__NFL": [1957, "Detroit Lions"],
     "Houston__NFL": [1961, "Houston Oilers", "AFL"],
     "San Diego__NFL": [1963, "San Diego Chargers", "AFL"],
-    "New York / New Jersey__NBA": [1973, "New York Knicks"],
+    "New York / New Jersey__NBA": [1976, "New York Nets", "ABA"],
+    "Indianapolis__NBA": [1973, "Indiana Pacers", "ABA"],
     "Portland__NBA": [1977, "Portland Trail Blazers"],
     "Washington__NBA": [1978, "Washington Bullets"],
     "Cleveland__MLB": [1948, "Cleveland Indians"],
@@ -632,11 +633,11 @@
     "Philadelphia__NHL": [1975, "Philadelphia Flyers"],
   };
 
-  // Market fielded a team in the sport pre-1980 but never won a title. Year =
+  // Market fielded a team in the sport pre-1980. Year =
   // when that market got its first team in that sport.
   var PRE_1980_MARKET_START = {
     "Cincinnati__NFL": 1968, "Atlanta__NFL": 1966, "Minneapolis / St. Paul__NFL": 1961,
-    "Atlanta__NBA": 1968, "Phoenix__NBA": 1968, "Indianapolis__NBA": 1976,
+    "Atlanta__NBA": 1968, "Phoenix__NBA": 1968, "Indianapolis__NBA": 1967,
     "San Diego__MLB": 1969, "Buffalo__NHL": 1970, "Vancouver__NHL": 1970, "Winnipeg__NHL": 1980,
   };
 
@@ -663,12 +664,14 @@
 
   // Pre-1980 championships keyed by `${sport}__${current-franchise name}`.
   // Current-market only (relocated franchises' old-city titles are NOT
-  // here); renames-in-place DO carry (Bullets->Wizards, etc).
+  // here); renames-in-place DO carry (Bullets->Wizards, etc). AFL and ABA
+  // titles count here: these only feed the drought views, never title totals.
   var TEAM_PRE1980_TITLES = {
     "NBA__Boston Celtics": [1957,1959,1960,1961,1962,1963,1964,1965,1966,1968,1969,1974,1976],
     "NBA__New York Knicks": [1970,1973], "NBA__Milwaukee Bucks": [1971], "NBA__Los Angeles Lakers": [1972],
     "NBA__Golden State Warriors": [1975], "NBA__Portland Trail Blazers": [1977], "NBA__Washington Wizards": [1978],
     "NBA__Philadelphia 76ers": [1967],
+    "NBA__Indiana Pacers": [1970,1972,1973], "NBA__Brooklyn Nets": [1974,1976],
     "MLB__New York Yankees": [1923,1927,1928,1932,1936,1937,1938,1939,1941,1943,1947,1949,1950,1951,1952,1953,1956,1958,1961,1962,1977,1978],
     "MLB__Boston Red Sox": [1903,1912,1915,1916,1918], "MLB__Chicago White Sox": [1906,1917],
     "MLB__Chicago Cubs": [1907,1908], "MLB__Pittsburgh Pirates": [1909,1925,1960,1971,1979],
