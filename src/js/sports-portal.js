@@ -393,8 +393,8 @@
     {
       label: "Tennis Grand Slams (Open Era)",
       cards: [
-        { slug: "tennis", title: "Men's ♂️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("M"); } },
-        { slug: "tennis", query: "?mw=w", title: "Women's ♀️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("W"); } },
+        { slug: "tennis", query: "?tab=slamchase", title: "Men's ♂️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("M"); } },
+        { slug: "tennis", query: "?tab=slamchase&tour=w", title: "Women's ♀️🎾", sectionLabel: "Slam Chase", load: function () { return loadTennisCurrent("W"); } },
       ],
     },
     {
@@ -438,7 +438,7 @@
     var updatedHtml = payload && !error && payload.updated ? "<span>" + escapeHtml(payload.updated) + "</span>" : "<span></span>";
     var foot = (payload && !error) || cadenceHtml ? '<div class="card-foot">' + cadenceHtml + updatedHtml + "</div>" : "";
     return (
-      '<a class="card" href="' + SQ + "/" + card.slug + "/" + (card.query || "") + '">' +
+      '<a class="card" href="' + SQ + "/" + card.slug + "/" + (card.query || "?tab=standings") + '">' +
       '<div class="card-head"><span class="card-title">' + card.title + (card.stage ? ' <span class="card-stage">· ' + card.stage + "</span>" : "") + '</span><span class="card-arrow">→</span></div>' +
       '<div class="card-body">' + body + "</div>" +
       foot +
@@ -490,13 +490,18 @@
     var btn = e.target.closest(".sport-tab");
     if (!btn) return;
     var target = btn.dataset.tab;
-    activateTab(target);
-    document.getElementById("leagueFilter").hidden = !CITY_TABS[target];
+    showTab(target);
     if (cityRenderers[target] && !cityRendered[target]) {
       cityRendered[target] = true;
       cityRenderers[target]();
     }
+    writeUrl(true);
   });
+
+  function showTab(target) {
+    activateTab(target);
+    document.getElementById("leagueFilter").hidden = !CITY_TABS[target];
+  }
 
   function renderActiveCityTab() {
     var activeBtn = document.querySelector("#portalTabs .sport-tab.active");
@@ -994,6 +999,7 @@
       document.querySelectorAll("#leagueFilter [data-preset]").forEach(function (b) { b.classList.toggle("active", b === btn); });
       cityRendered = {};
       renderActiveCityTab();
+      writeUrl();
     });
   });
 
@@ -1108,7 +1114,7 @@
         attachCityLinks();
       }
       if (csrSelected != null && opts.some(function (o) { return o.value === csrSelected; })) sel.value = csrSelected;
-      sel.addEventListener("change", update);
+      sel.addEventListener("change", function () { update(); writeUrl(); });
       update();
     });
   }
@@ -1143,7 +1149,7 @@
         }
       }
       if (chSelectedCity && allCities.indexOf(chSelectedCity) !== -1) sel.value = chSelectedCity;
-      sel.addEventListener("change", update);
+      sel.addEventListener("change", function () { update(); writeUrl(); });
       update();
     });
   }
@@ -1339,6 +1345,7 @@
     droughtMode = btn.dataset.dmode;
     document.querySelectorAll("#droughtModePills .pill").forEach(function (b) { b.classList.toggle("active", b === btn); });
     renderDroughtsView();
+    writeUrl();
   });
   document.getElementById("droughtScopePills").addEventListener("click", function (e) {
     var btn = e.target.closest(".pill");
@@ -1346,6 +1353,7 @@
     droughtScope = btn.dataset.dscope;
     document.querySelectorAll("#droughtScopePills .pill").forEach(function (b) { b.classList.toggle("active", b === btn); });
     renderDroughtsView();
+    writeUrl();
   });
   document.getElementById("droughtSortPills").addEventListener("click", function (e) {
     var btn = e.target.closest(".pill");
@@ -1353,6 +1361,7 @@
     droughtSort = btn.dataset.dsort;
     document.querySelectorAll("#droughtSortPills .pill").forEach(function (b) { b.classList.toggle("active", b === btn); });
     renderDroughtsView();
+    writeUrl();
   });
 
   // Sub-view: Active Droughts, By City. For each city, the most recent
@@ -2091,4 +2100,90 @@
     "goat-table": renderGoatYears,
     "city-droughts": renderDroughtsView,
   };
+
+  // ═══════════════════════════════ URL state ═══════════════════════════════
+  // Shareable URLs (see sports-url.js): per tab, which settings go in the
+  // address bar and how a link restores them.
+
+  var U = window.SportUrl;
+  var url = null;
+  function writeUrl(push) { if (url) url.write(push); }
+
+  // Moments and cities go in the URL as short codes: "2026 NBA + NHL Finals" is 2026-nba-nhl-finals.
+  function slug(s) { return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+
+  function setPreset(preset) {
+    preset = U.pick(preset, ["big4", "big4mls"], "all");
+    if (preset !== leaguePreset) { leaguePreset = preset; cityRendered = {}; }
+    document.querySelectorAll("#leagueFilter [data-preset]").forEach(function (b) { b.classList.toggle("active", b.dataset.preset === leaguePreset); });
+  }
+  function presetQuery(add) { if (leaguePreset !== "all") add("leagues", leaguePreset); }
+  // Renders a city tab once a link has set its state.
+  function renderCity(tab) { cityRendered[tab] = true; return cityRenderers[tab](); }
+
+  var URL_TABS = {
+    "current-summary": { apply: function () {} },
+    "cross-sport-rankings": {
+      query: function (add) {
+        presetQuery(add);
+        var sel = document.getElementById("csr-date");
+        if (!sel || sel.selectedIndex <= 0) return;
+        add("moment", slug(sel.options[sel.selectedIndex].textContent.split(" | ").slice(1).join(" | ")));
+      },
+      apply: function (p) {
+        setPreset(p.get("leagues"));
+        return viewCityData().then(function (data) {
+          csrSelected = null;
+          (data.snapshotMetros || []).forEach(function (s, i) { if (slug(s.label) === p.get("moment")) csrSelected = String(i); });
+          return renderCity("cross-sport-rankings");
+        });
+      },
+    },
+    "city-history": {
+      query: function (add) {
+        presetQuery(add);
+        var sel = document.getElementById("ch-city");
+        if (sel && sel.value) add("city", slug(sel.value));
+      },
+      apply: function (p) {
+        setPreset(p.get("leagues"));
+        return viewCityData().then(function (data) {
+          var names = {};
+          data.current.forEach(function (m) { names[m.name] = 1; });
+          data.snapshotMetros.forEach(function (s) { s.metros.forEach(function (m) { names[m.name] = 1; }); });
+          chSelectedCity = Object.keys(names).filter(function (n) { return slug(n) === p.get("city"); })[0] || "";
+          return renderCity("city-history");
+        });
+      },
+    },
+    "goat-table": {
+      query: presetQuery,
+      apply: function (p) { setPreset(p.get("leagues")); return renderCity("goat-table"); },
+    },
+    "city-droughts": {
+      query: function (add) {
+        presetQuery(add);
+        if (droughtMode !== "active") add("mode", droughtMode);
+        if (droughtScope !== "city") add("scope", droughtScope);
+        if (droughtScope === "city" && droughtSort !== "years") add("sort", droughtSort);
+      },
+      apply: function (p) {
+        setPreset(p.get("leagues"));
+        droughtMode = p.get("mode") === "broken" ? "broken" : "active";
+        droughtScope = p.get("scope") === "team" ? "team" : "city";
+        droughtSort = p.get("sort") === "seasonYears" ? "seasonYears" : "years";
+        document.querySelectorAll("#droughtModePills .pill").forEach(function (b) { b.classList.toggle("active", b.dataset.dmode === droughtMode); });
+        document.querySelectorAll("#droughtScopePills .pill").forEach(function (b) { b.classList.toggle("active", b.dataset.dscope === droughtScope); });
+        document.querySelectorAll("#droughtSortPills .pill").forEach(function (b) { b.classList.toggle("active", b.dataset.dsort === droughtSort); });
+        return renderCity("city-droughts");
+      },
+    },
+  };
+
+  url = U.create({ tabs: URL_TABS, activateTab: showTab, fallbackTab: "current-summary" });
+  // City tabs render on demand, so they're ready at once; the landing tab is always Current Summary.
+  url.start({
+    "current-summary": Promise.resolve(), "cross-sport-rankings": Promise.resolve(), "city-history": Promise.resolve(),
+    "goat-table": Promise.resolve(), "city-droughts": Promise.resolve(),
+  });
 })();
