@@ -1602,7 +1602,6 @@
           var snaps = state.poSeasons[idx.seasons[0]].snapshots;
           var last = snaps[snaps.length - 1];
           var live = idx.seasons[0] === idx.current_season && last.stage !== "Champion";
-          state.poLive = live;
           if (live && !state.userPickedTab) activateTab("playoff-odds");
         });
       })
@@ -1736,7 +1735,8 @@
 
   // ═══════════════════════════════ URL state ═══════════════════════════════
   // The address bar mirrors the active tab and its main selections, so any
-  // view can be shared as a link. Only non-default values are written: a
+  // view can be shared as a link. The tab is always written, even on the
+  // landing view; other settings only when not the default: a
   // link without a week follows the current week, one with a week stays on
   // it. Tab changes add a history entry; selection changes replace it.
 
@@ -1773,8 +1773,8 @@
   function urlQuery() {
     var tab = currentTab(), q = [];
     function add(k, v) { q.push(k + "=" + encodeURIComponent(v)); }
-    // A bare link lands on Playoffs while they're live, so Standings needs naming then.
-    if (tab !== "standings" || state.poLive) add("tab", tab);
+    // Always named: the landing tab changes (Playoffs while they're live).
+    add("tab", tab);
 
     if (tab === "standings" && state.seasonData) {
       var snaps = state.seasonData.snapshots, i = Number(weekSelect.value);
@@ -1978,7 +1978,12 @@
       "weekly-matchups": loadWeeklyMatchups(),
       "team-summary": Promise.resolve(),
     };
-    if (initParams.toString()) applyUrl(initParams);
+    if (initParams.toString()) {
+      applyUrl(initParams);
+    } else {
+      // Name the landing tab once it's settled (Playoffs may take over).
+      Promise.all([state.ready["standings"], state.ready["playoff-odds"]]).then(function () { writeUrl(); });
+    }
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });
