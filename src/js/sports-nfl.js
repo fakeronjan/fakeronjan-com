@@ -267,27 +267,32 @@
     if (!season) return;
     activateTab("standings");
     seasonSelect.value = season;
-    loadSeason(Number(season));
+    loadSeason(Number(season)).then(function () { writeUrl(true); });
+  }
+
+  var TS_VIEW_OPTS = [
+    { value: "cross", label: "All season summary" },
+    { value: "single", label: "All games within one season" },
+  ];
+  function onTsConf(v) { state.tsConf = v; populateTeamSelect(); writeUrl(); }
+  function onTsView(v) {
+    state.tsView = v;
+    tsSeasonSelect.hidden = v !== "single";
+    tsDateTypeSelect.hidden = v !== "cross";
+    renderTeamTable();
+    writeUrl();
   }
 
   function teamLinkClick(slug, season) {
     if (!slug) return;
     activateTab("team-summary");
     state.tsConf = "ALL";
-    buildPills("tsConfPills", state.tsConf, function (v) { state.tsConf = v; populateTeamSelect(); });
+    buildPills("tsConfPills", state.tsConf, onTsConf);
     populateTeamSelect();
     tsTeamSelect.value = slug;
     var wantSingle = season != null && season !== "";
     state.tsView = wantSingle ? "single" : "cross";
-    buildPills("tsViewPills", state.tsView, function (v) {
-      state.tsView = v;
-      tsSeasonSelect.hidden = v !== "single";
-      tsDateTypeSelect.hidden = v !== "cross";
-      renderTeamTable();
-    }, [
-      { value: "cross", label: "All season summary" },
-      { value: "single", label: "All games within one season" },
-    ]);
+    buildPills("tsViewPills", state.tsView, onTsView, TS_VIEW_OPTS);
     tsSeasonSelect.hidden = !wantSingle;
     tsDateTypeSelect.hidden = wantSingle;
     loadTeam(slug).then(function () {
@@ -297,6 +302,7 @@
         if (hasOpt) tsSeasonSelect.value = targetVal;
       }
       renderTeamTable();
+      writeUrl(true);
     });
   }
 
@@ -322,6 +328,7 @@
     if (!btn) return;
     state.userPickedTab = true;
     activateTab(btn.dataset.tab);
+    writeUrl(true);
   });
 
   // ═══════════════════════════════ Standings ═══════════════════════════════
@@ -440,9 +447,9 @@
   }
 
   seasonSelect.addEventListener("change", function () {
-    loadSeason(Number(seasonSelect.value));
+    loadSeason(Number(seasonSelect.value)).then(function () { writeUrl(); });
   });
-  weekSelect.addEventListener("change", renderStandings);
+  weekSelect.addEventListener("change", function () { renderStandings(); writeUrl(); });
 
   // ═══════════════════════════════ Team Summary ═══════════════════════════════
 
@@ -475,7 +482,7 @@
           state.nameToSlug[t.name] = t.slug;
           (t.historical_names || []).forEach(function (h) { state.nameToSlug[h] = t.slug; });
         });
-        buildPills("tsConfPills", state.tsConf, function (v) { state.tsConf = v; populateTeamSelect(); });
+        buildPills("tsConfPills", state.tsConf, onTsConf);
         populateTeamSelect();
       })
       .catch(function () {
@@ -698,9 +705,9 @@
       clipMarks.join("") + trophies.join("");
   }
 
-  tsTeamSelect.addEventListener("change", function () { loadTeam(tsTeamSelect.value); });
-  tsSeasonSelect.addEventListener("change", renderTeamTable);
-  tsDateTypeSelect.addEventListener("change", renderTeamTable);
+  tsTeamSelect.addEventListener("change", function () { loadTeam(tsTeamSelect.value).then(function () { writeUrl(); }); });
+  tsSeasonSelect.addEventListener("change", function () { renderTeamTable(); writeUrl(); });
+  tsDateTypeSelect.addEventListener("change", function () { renderTeamTable(); writeUrl(); });
 
   // ═══════════════════════════════ Super Bowls (League History) ═══════════════════════════════
 
@@ -1211,6 +1218,7 @@
     document.getElementById("historyListView").hidden = view !== "list";
     document.getElementById("historyRankingsView").hidden = view !== "rankings";
     if (view === "rankings") showRankCategory(btn.dataset.cat);
+    writeUrl();
   });
 
   document.getElementById("historyRankPills").addEventListener("click", function (e) {
@@ -1219,6 +1227,7 @@
     document.querySelectorAll("#historyRankPills .pill").forEach(function (b) { b.classList.remove("active"); });
     btn.classList.add("active");
     renderRankings(btn.dataset.rank);
+    writeUrl();
   });
 
   // ═══════════════════════════════ GOAT Table ═══════════════════════════════
@@ -1309,13 +1318,13 @@
     attachLinks(goatTableWrap);
   }
 
-  buildPills("goatConfPills", state.goatConf, function (v) { state.goatConf = v; renderGoat(); }, [
+  buildPills("goatConfPills", state.goatConf, function (v) { state.goatConf = v; renderGoat(); writeUrl(); }, [
     { value: "ALL", label: "All" }, { value: "AFC", label: "AFC" }, { value: "NFC", label: "NFC" },
   ]);
-  buildPills("goatMetricPills", state.goatMetric, function (v) { state.goatMetric = v; renderGoat(); }, [
+  buildPills("goatMetricPills", state.goatMetric, function (v) { state.goatMetric = v; renderGoat(); writeUrl(); }, [
     { value: "react", label: "Rating (overall)" }, { value: "o", label: "Offense only" }, { value: "d", label: "Defense only" },
   ]);
-  buildPills("goatModePills", state.goatMode, function (v) { state.goatMode = v; renderGoat(); }, [
+  buildPills("goatModePills", state.goatMode, function (v) { state.goatMode = v; renderGoat(); writeUrl(); }, [
     { value: "rs", label: "End of regular season" }, { value: "ps", label: "End of playoffs" },
   ]);
 
@@ -1334,6 +1343,7 @@
   // Sort choice persists across weeks/seasons and visits (per device).
   state.wmSort = "juice";
   try { if (localStorage.getItem("dillonWmSort") === "kickoff") state.wmSort = "kickoff"; } catch (e) {}
+  state.wmDefaultWeek = {};
   function syncWmSortPills() {
     wmSortPills.querySelectorAll(".pill").forEach(function (p) { p.classList.toggle("active", p.dataset.wmsort === state.wmSort); });
   }
@@ -1345,6 +1355,7 @@
     try { localStorage.setItem("dillonWmSort", state.wmSort); } catch (err) {}
     syncWmSortPills();
     renderWeeklyMatchups();
+    writeUrl();
   });
   var wmStamp = document.getElementById("wmStamp");
   var wmWrap = document.getElementById("wmWrap");
@@ -1410,8 +1421,8 @@
         if (!idx.seasons.length) return;
         wmNav.hidden = false;
         wmSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
-        wmSeasonSelect.onchange = function () { loadWmSeason(Number(wmSeasonSelect.value)); };
-        wmWeekSelect.onchange = renderWeeklyMatchups;
+        wmSeasonSelect.onchange = function () { loadWmSeason(Number(wmSeasonSelect.value)).then(function () { writeUrl(); }); };
+        wmWeekSelect.onchange = function () { renderWeeklyMatchups(); writeUrl(); };
         wmPrev.onclick = function () { stepWmWeek(-1); };
         wmNext.onclick = function () { stepWmWeek(1); };
         return loadWmSeason(idx.seasons[0]);
@@ -1432,6 +1443,7 @@
         return '<option value="' + w.week + '">' + wmWeekLabel(w.week) + "</option>";
       }).join("");
       wmWeekSelect.value = String(cur.week);
+      state.wmDefaultWeek[season] = cur.week;
       renderWeeklyMatchups();
     });
   }
@@ -1474,6 +1486,7 @@
     if (i < 0 || i >= wmWeekSelect.options.length) return;
     wmWeekSelect.selectedIndex = i;
     renderWeeklyMatchups();
+    writeUrl();
   }
 
   function renderWeeklyMatchups() {
@@ -1583,12 +1596,13 @@
         if (!idx.seasons.length) return;
         poNav.hidden = false;
         poSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
-        poSeasonSelect.onchange = function () { loadPoSeason(Number(poSeasonSelect.value), null); };
+        poSeasonSelect.onchange = function () { loadPoSeason(Number(poSeasonSelect.value), null).then(function () { writeUrl(); }); };
         return loadPoSeason(idx.seasons[0], null).then(function () {
           // Land here while the current season's playoffs are undecided.
           var snaps = state.poSeasons[idx.seasons[0]].snapshots;
           var last = snaps[snaps.length - 1];
           var live = idx.seasons[0] === idx.current_season && last.stage !== "Champion";
+          state.poLive = live;
           if (live && !state.userPickedTab) activateTab("playoff-odds");
         });
       })
@@ -1607,7 +1621,7 @@
         return '<option value="' + s.date + '">' + s.date + " | " + s.stage + "</option>";
       }).join("");
       poDateSelect.value = date || snaps[snaps.length - 1].date;
-      poDateSelect.onchange = function () { renderPlayoffOdds(); };
+      poDateSelect.onchange = function () { renderPlayoffOdds(); writeUrl(); };
       renderPlayoffOdds();
     });
   }
@@ -1720,17 +1734,221 @@
     attachLinks(poWrap);
   }
 
+  // ═══════════════════════════════ URL state ═══════════════════════════════
+  // The address bar mirrors the active tab and its main selections, so any
+  // view can be shared as a link. Only non-default values are written: a
+  // link without a week follows the current week, one with a week stays on
+  // it. Tab changes add a history entry; selection changes replace it.
+
+  function currentTab() {
+    var b = document.querySelector(".sport-tab.active");
+    return b ? b.dataset.tab : "standings";
+  }
+
+  function findPill(containerId, key, value) {
+    return Array.prototype.filter.call(document.querySelectorAll("#" + containerId + " .pill"), function (b) {
+      return b.dataset[key] === value;
+    })[0] || null;
+  }
+
+  function setPills(containerId, value) {
+    document.querySelectorAll("#" + containerId + " .pill").forEach(function (b) {
+      b.classList.toggle("active", b.dataset.value === value);
+    });
+  }
+
+  function hasOption(sel, value) {
+    return Array.prototype.some.call(sel.options, function (o) { return o.value === value; });
+  }
+
+  function pick(value, allowed, dflt) {
+    return allowed.indexOf(value) !== -1 ? value : dflt;
+  }
+
+  function seasonFrom(value, seasons) {
+    var n = Number(value);
+    return seasons.indexOf(n) !== -1 ? n : seasons[0];
+  }
+
+  function urlQuery() {
+    var tab = currentTab(), q = [];
+    function add(k, v) { q.push(k + "=" + encodeURIComponent(v)); }
+    // A bare link lands on Playoffs while they're live, so Standings needs naming then.
+    if (tab !== "standings" || state.poLive) add("tab", tab);
+
+    if (tab === "standings" && state.seasonData) {
+      var snaps = state.seasonData.snapshots, i = Number(weekSelect.value);
+      if (state.seasonData.season !== state.seasonsIndex.seasons[0]) add("season", state.seasonData.season);
+      if (snaps[i] && i !== snaps.length - 1) add("week", snaps[i].date);
+      if (state.standingsConf !== "ALL") add("conf", state.standingsConf);
+    } else if (tab === "weekly-matchups" && state.wmIndex) {
+      if (state.wmSeason !== state.wmIndex.seasons[0]) add("season", state.wmSeason);
+      if (Number(wmWeekSelect.value) !== state.wmDefaultWeek[state.wmSeason]) add("week", wmWeekSelect.value);
+      if (state.wmSort === "kickoff") add("sort", "kickoff");
+    } else if (tab === "team-summary") {
+      if (tsTeamSelect.value) add("team", tsTeamSelect.value);
+      if (state.tsView === "single") {
+        add("view", "single");
+        if (tsTeamSelect.value && tsSeasonSelect.value) add("season", tsSeasonSelect.value);
+      } else if (tsDateTypeSelect.value === "eor") {
+        add("snap", "eor");
+      }
+      if (state.tsConf !== "ALL") add("conf", state.tsConf);
+    } else if (tab === "playoff-odds" && state.poIndex && state.poSeasons[state.poSeason]) {
+      var poSnaps = state.poSeasons[state.poSeason].snapshots;
+      if (state.poSeason !== state.poIndex.seasons[0]) add("season", state.poSeason);
+      if (poDateSelect.value !== poSnaps[poSnaps.length - 1].date) add("date", poDateSelect.value);
+    } else if (tab === "league-history" && !document.getElementById("historyRankingsView").hidden) {
+      // A category's first list is its default, so only later lists need naming.
+      var active = document.querySelector("#historyRankPills .pill.active");
+      if (active) {
+        if (active === findPill("historyRankPills", "cat", active.dataset.cat)) add("list", active.dataset.cat);
+        else add("rank", active.dataset.rank);
+      }
+    } else if (tab === "goat") {
+      if (state.goatMode === "rs") add("mode", "rs");
+      if (state.goatMetric !== "react") add("metric", state.goatMetric);
+      if (state.goatConf !== "ALL") add("conf", state.goatConf);
+    }
+    return q.join("&");
+  }
+
+  function writeUrl(push) {
+    if (!state.ready) return;
+    var qs = urlQuery();
+    var url = location.pathname + (qs ? "?" + qs : "") + location.hash;
+    if (url === location.pathname + location.search + location.hash) return;
+    history[push ? "pushState" : "replaceState"](null, "", url);
+  }
+
+  function applyStandings(p) {
+    state.standingsConf = pick(p.get("conf"), CONFERENCES, "ALL");
+    setPills("nflConfPills", state.standingsConf);
+    var season = seasonFrom(p.get("season"), state.seasonsIndex.seasons);
+    seasonSelect.value = String(season);
+    var load = state.seasonData && state.seasonData.season === season ? Promise.resolve() : loadSeason(season);
+    return load.then(function () {
+      if (!state.seasonData) return;
+      var snaps = state.seasonData.snapshots, i = snaps.length - 1, week = p.get("week");
+      snaps.forEach(function (s, j) { if (s.date === week) i = j; });
+      weekSelect.value = String(i);
+      renderStandings();
+    });
+  }
+
+  function applyWeeklyMatchups(p) {
+    var season = seasonFrom(p.get("season"), state.wmIndex.seasons);
+    // The link sets the sort for this visit without touching the saved preference.
+    state.wmSort = p.get("sort") === "kickoff" ? "kickoff" : "juice";
+    syncWmSortPills();
+    return loadWmSeason(season).then(function () {
+      var week = p.get("week");
+      if (hasOption(wmWeekSelect, week)) wmWeekSelect.value = week;
+      renderWeeklyMatchups();
+    });
+  }
+
+  function applyTeamSummary(p) {
+    state.tsConf = pick(p.get("conf"), CONFERENCES, "ALL");
+    setPills("tsConfPills", state.tsConf);
+    populateTeamSelect();
+    state.tsView = p.get("view") === "single" ? "single" : "cross";
+    setPills("tsViewPills", state.tsView);
+    tsSeasonSelect.hidden = state.tsView !== "single";
+    tsDateTypeSelect.hidden = state.tsView !== "cross";
+    tsDateTypeSelect.value = p.get("snap") === "eor" ? "eor" : "eos";
+    var slug = p.get("team");
+    if (!hasOption(tsTeamSelect, slug) || !slug) {
+      tsTeamSelect.value = "";
+      tsChartWrap.hidden = true;
+      document.getElementById("tsDisruptedTop").hidden = true;
+      document.getElementById("tsDisruptedBottom").hidden = true;
+      tsTableWrap.innerHTML = '<p class="sport-loading">Select a team above</p>';
+      return Promise.resolve();
+    }
+    tsTeamSelect.value = slug;
+    return loadTeam(slug).then(function () {
+      var season = p.get("season");
+      if (hasOption(tsSeasonSelect, season)) tsSeasonSelect.value = season;
+      else if (tsSeasonSelect.options.length) tsSeasonSelect.selectedIndex = 0;
+      renderTeamTable();
+    });
+  }
+
+  function applyPlayoffOdds(p) {
+    var season = seasonFrom(p.get("season"), state.poIndex.seasons);
+    return loadPoSeason(season, null).then(function () {
+      var date = p.get("date");
+      if (hasOption(poDateSelect, date)) { poDateSelect.value = date; renderPlayoffOdds(); }
+    });
+  }
+
+  function applyLeagueHistory(p) {
+    var rankBtn = p.get("rank") ? findPill("historyRankPills", "rank", p.get("rank")) : null;
+    var cat = rankBtn ? rankBtn.dataset.cat : p.get("list");
+    var viewBtn = (cat && findPill("historyViewPills", "cat", cat)) || findPill("historyViewPills", "hview", "list");
+    document.querySelectorAll("#historyViewPills .pill").forEach(function (b) { b.classList.toggle("active", b === viewBtn); });
+    var view = viewBtn.dataset.hview;
+    document.getElementById("historyListView").hidden = view !== "list";
+    document.getElementById("historyRankingsView").hidden = view !== "rankings";
+    if (view === "rankings") {
+      document.querySelectorAll("#historyRankPills .pill").forEach(function (b) { b.classList.toggle("active", b === rankBtn); });
+      showRankCategory(viewBtn.dataset.cat);
+    }
+    return Promise.resolve();
+  }
+
+  function applyGoat(p) {
+    state.goatMode = p.get("mode") === "rs" ? "rs" : "ps";
+    state.goatMetric = pick(p.get("metric"), ["o", "d"], "react");
+    state.goatConf = pick(p.get("conf"), CONFERENCES, "ALL");
+    setPills("goatModePills", state.goatMode);
+    setPills("goatMetricPills", state.goatMetric);
+    setPills("goatConfPills", state.goatConf);
+    if (state.goatData) renderGoat();
+    return Promise.resolve();
+  }
+
+  var URL_APPLY = {
+    "standings": applyStandings,
+    "weekly-matchups": applyWeeklyMatchups,
+    "team-summary": applyTeamSummary,
+    "playoff-odds": applyPlayoffOdds,
+    "league-history": applyLeagueHistory,
+    "goat": applyGoat,
+  };
+
+  // Shows the view a URL describes once that tab's data is in. A tab with no
+  // data (Weekly Matchups or Playoffs before they exist) falls back to Standings.
+  function applyUrl(p) {
+    var tab = URL_APPLY[p.get("tab")] ? p.get("tab") : "standings";
+    activateTab(tab);
+    return state.ready[tab].then(function () {
+      var nav = document.querySelector('.sport-tab[data-tab="' + tab + '"]');
+      if (nav.hidden) {
+        activateTab("standings");
+        return applyStandings(new URLSearchParams()).then(function () { writeUrl(); });
+      }
+      return URL_APPLY[tab](p);
+    });
+  }
+
+  window.addEventListener("popstate", function () {
+    if (!state.ready) return;
+    state.userPickedTab = true;
+    applyUrl(new URLSearchParams(location.search));
+  });
+
   // ═══════════════════════════════ init ═══════════════════════════════
 
-  buildPills("tsViewPills", state.tsView, function (v) {
-    state.tsView = v;
-    tsSeasonSelect.hidden = v !== "single";
-    tsDateTypeSelect.hidden = v !== "cross";
-    renderTeamTable();
-  }, [
-    { value: "cross", label: "All season summary" },
-    { value: "single", label: "All games within one season" },
-  ]);
+  var initParams = new URLSearchParams(location.search);
+  if (initParams.toString()) {
+    // Any link beats the live-playoffs landing; show its tab right away.
+    state.userPickedTab = true;
+    if (URL_APPLY[initParams.get("tab")]) activateTab(initParams.get("tab"));
+  }
+
+  buildPills("tsViewPills", state.tsView, onTsView, TS_VIEW_OPTS);
   tsSeasonSelect.hidden = true;
 
   Promise.all([
@@ -1749,14 +1967,18 @@
     }
     seasonSelect.innerHTML = data.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
     seasonSelect.value = String(data.seasons[0]);
-    buildPills("nflConfPills", state.standingsConf, function (v) { state.standingsConf = v; renderStandings(); }, [
+    buildPills("nflConfPills", state.standingsConf, function (v) { state.standingsConf = v; renderStandings(); writeUrl(); }, [
       { value: "ALL", label: "All" }, { value: "AFC", label: "AFC" }, { value: "NFC", label: "NFC" },
     ]);
-    loadSeason(data.seasons[0]);
-    loadChampions();
-    loadGoat();
-    loadPlayoffOdds();
-    loadWeeklyMatchups();
+    state.ready = {
+      "standings": loadSeason(data.seasons[0]),
+      "league-history": loadChampions(),
+      "goat": loadGoat(),
+      "playoff-odds": loadPlayoffOdds(),
+      "weekly-matchups": loadWeeklyMatchups(),
+      "team-summary": Promise.resolve(),
+    };
+    if (initParams.toString()) applyUrl(initParams);
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load standings</p>';
   });
