@@ -247,6 +247,7 @@
     if (!btn) return;
     state.userPickedTab = true;
     activateTab(btn.dataset.tab);
+    writeUrl(true);
   });
 
   function activateWcTab() {
@@ -255,6 +256,27 @@
   }
 
   // ── deep-link handlers ──────────────────────────────────────────────────
+
+  function onStandingsConf(v) { state.standingsConf = v; renderStandings(); writeUrl(); }
+  function onTsConf(v) {
+    state.tsConf = v;
+    populateTeams(v);
+    tsChartWrap.hidden = true;
+    tsTableWrap.innerHTML = '<p class="sport-loading">Select a country above</p>';
+    tsSeasonSelect.innerHTML = "";
+    writeUrl();
+  }
+  var TS_VIEW_OPTS = [
+    { value: "cross", label: "Yearly summary" },
+    { value: "single", label: "All matches within one year" },
+  ];
+  function onTsView(v) {
+    state.tsView = v;
+    tsSeasonSelect.hidden = v !== "single";
+    tsDateTypeSelect.hidden = v !== "cross";
+    renderTeamTable({});
+    writeUrl();
+  }
 
   // Valid Standings confederation pill values (excludes 'all').
   var STANDINGS_CONFS = {};
@@ -265,10 +287,10 @@
     activateTab("standings");
     if (targetConf && STANDINGS_CONFS[targetConf]) {
       state.standingsConf = targetConf;
-      buildConfPills("msConfPills", true, state.standingsConf, function (v) { state.standingsConf = v; renderStandings(); });
+      buildConfPills("msConfPills", true, state.standingsConf, onStandingsConf);
     }
     seasonSelect.value = season;
-    loadSeason(Number(season));
+    loadSeason(Number(season)).then(function () { writeUrl(true); });
   }
 
   // Country Summary pill has an "All" option (unlike CARMELO/ICHIRO/FORSBERG),
@@ -279,26 +301,12 @@
     var t = state.teamsIndex && state.teamsIndex.filter(function (x) { return x.slug === slug; })[0];
     activateTab("team-summary");
     state.tsConf = t ? t.confederation : "all";
-    buildConfPills("tsConfPills", true, state.tsConf, function (v) {
-      state.tsConf = v;
-      populateTeams(v);
-      tsChartWrap.hidden = true;
-      tsTableWrap.innerHTML = '<p class="sport-loading">Select a country above</p>';
-      tsSeasonSelect.innerHTML = "";
-    });
+    buildConfPills("tsConfPills", true, state.tsConf, onTsConf);
     populateTeams(state.tsConf);
     tsTeamSelect.value = slug;
     var wantSingle = season != null && season !== "";
     state.tsView = wantSingle ? "single" : "cross";
-    buildPillsFromOpts("tsViewPills", [
-      { value: "cross", label: "Yearly summary" },
-      { value: "single", label: "All matches within one year" },
-    ], state.tsView, function (v) {
-      state.tsView = v;
-      tsSeasonSelect.hidden = v !== "single";
-      tsDateTypeSelect.hidden = v !== "cross";
-      renderTeamTable({});
-    });
+    buildPillsFromOpts("tsViewPills", TS_VIEW_OPTS, state.tsView, onTsView);
     tsSeasonSelect.hidden = state.tsView !== "single";
     tsDateTypeSelect.hidden = state.tsView !== "cross";
     loadTeam(slug).then(function () {
@@ -308,6 +316,7 @@
         if (hasOpt) tsSeasonSelect.value = targetVal;
       }
       renderTeamTable({});
+      writeUrl(true);
     });
   }
 
@@ -434,9 +443,16 @@
     }));
     dateSelect.innerHTML = options.join("");
 
+    selectSnapshot(standingsDefaultDate());
+  }
+
+  // Past years open on their most prestigious labeled date, the current year on its latest.
+  function standingsDefaultDate() {
+    var snaps = state.seasonData.snapshots;
+    var labeled = snaps.filter(function (s) { return s.label != null; })
+      .slice().sort(function (a, b) { return (a.prestige != null ? a.prestige : 99) - (b.prestige != null ? b.prestige : 99); });
     var isCurrentYear = state.seasonData.season === new Date().getFullYear();
-    var defaultDate = (!isCurrentYear && labeled.length) ? labeled[0].date : snaps[snaps.length - 1].date;
-    selectSnapshot(defaultDate);
+    return (!isCurrentYear && labeled.length) ? labeled[0].date : snaps[snaps.length - 1].date;
   }
 
   function selectSnapshot(date) {
@@ -476,10 +492,11 @@
   }
 
   seasonSelect.addEventListener("change", function () {
-    loadSeason(Number(seasonSelect.value));
+    loadSeason(Number(seasonSelect.value)).then(function () { writeUrl(); });
   });
   dateSelect.addEventListener("change", function () {
     selectSnapshot(dateSelect.value);
+    writeUrl();
   });
 
   // ═══════════════════════════════ Country Summary ═══════════════════════════════
@@ -542,7 +559,7 @@
 
   function loadTeam(slug) {
     if (!slug) return Promise.resolve();
-    if (state.teamCache[slug]) return finishLoadTeam(slug);
+    if (state.teamCache[slug]) return Promise.resolve(finishLoadTeam(slug));
     tsTableWrap.innerHTML = '<p class="sport-loading">Loading team data...</p>';
     return fetch(BASE + "/teams/" + slug + ".json")
       .then(function (r) { return r.json(); })
@@ -825,9 +842,9 @@
       clipMarks.join("");
   }
 
-  tsTeamSelect.addEventListener("change", function () { loadTeam(tsTeamSelect.value); });
-  tsSeasonSelect.addEventListener("change", function () { renderTeamTable({}); });
-  tsDateTypeSelect.addEventListener("change", function () { renderTeamTable({}); });
+  tsTeamSelect.addEventListener("change", function () { Promise.resolve(loadTeam(tsTeamSelect.value)).then(function () { writeUrl(); }); });
+  tsSeasonSelect.addEventListener("change", function () { renderTeamTable({}); writeUrl(); });
+  tsDateTypeSelect.addEventListener("change", function () { renderTeamTable({}); writeUrl(); });
 
   // ═══════════════════════════════ Other Tournaments ═══════════════════════════════
 
@@ -940,7 +957,7 @@
     attachLinks(target);
   }
 
-  var onHistoryPick = function (v) { state.historyTourny = v; renderLeagueHistory(v, "historyTableWrap"); };
+  var onHistoryPick = function (v) { state.historyTourny = v; renderLeagueHistory(v, "historyTableWrap"); writeUrl(); };
   buildPillsFromOpts("historyContinentalPills", HISTORY_CONTINENTAL, state.historyTourny, onHistoryPick, ["historyNationsPills"]);
   buildPillsFromOpts("historyNationsPills", HISTORY_NATIONS, state.historyTourny, onHistoryPick, ["historyContinentalPills"]);
 
@@ -1012,12 +1029,12 @@
     attachLinks(goatTableWrap);
   }
 
-  buildConfPills("goatConfPills", true, state.goatConf, function (v) { state.goatConf = v; renderGoat(); });
+  buildConfPills("goatConfPills", true, state.goatConf, function (v) { state.goatConf = v; renderGoat(); writeUrl(); });
   buildPillsFromOpts("goatMetricPills", [
     { value: "overall", label: "Rating (overall)" },
     { value: "offense", label: "Offense only" },
     { value: "defense", label: "Defense only" },
-  ], state.goatMetric, function (v) { state.goatMetric = v; loadGoat(); });
+  ], state.goatMetric, function (v) { state.goatMetric = v; Promise.resolve(loadGoat()).then(function () { writeUrl(); }); });
 
   // ═══════════════════════════════ FIFA World Cup ═══════════════════════════════
 
@@ -1067,6 +1084,7 @@
     var btn = e.target.closest(".pill");
     if (!btn) return;
     setWcSubview(btn.dataset.wcview);
+    writeUrl();
   });
 
   function populateWcCountries() {
@@ -1080,7 +1098,7 @@
     });
     wcCountrySelect.disabled = false;
   }
-  wcCountrySelect.addEventListener("change", function () { renderWcByCountry(wcCountrySelect.value); });
+  wcCountrySelect.addEventListener("change", function () { renderWcByCountry(wcCountrySelect.value); writeUrl(); });
 
   function renderWcByCountry(slug) {
     if (!slug) { wcBycountryWrap.innerHTML = '<p class="sport-loading">Select a country above</p>'; return; }
@@ -1097,6 +1115,8 @@
     activateWcTab();
     setWcSubview("bycountry");
     renderWcByCountry(slug);
+    wcCountrySelect.value = slug;
+    writeUrl(true);
   }
 
   function showWcOddsEdition(year) {
@@ -1106,6 +1126,7 @@
     state.wcViewKey = null;
     wcBuildControls();
     renderWcView();
+    writeUrl(true);
   }
 
   // Knockout Upsets: every knockout match the model gave the winner <50%,
@@ -1198,6 +1219,7 @@
       state.wcViewKey = null;
       wcBuildControls();
       renderWcView();
+      writeUrl();
     };
 
     var snaps = (bucket || {}).snapshots || [];
@@ -1212,7 +1234,7 @@
     });
     wcDateSelect.value = state.wcViewKey != null ? state.wcViewKey
       : (live ? "" : (snaps.length ? wcSnapKey(snaps[snaps.length - 1]) : ""));
-    wcDateSelect.onchange = function () { state.wcViewKey = wcDateSelect.value || null; renderWcView(); };
+    wcDateSelect.onchange = function () { state.wcViewKey = wcDateSelect.value || null; renderWcView(); writeUrl(); };
   }
 
   function renderWcOdds() {
@@ -1390,7 +1412,147 @@
     attachLinks(wcOddsWrap);
   }
 
+  // ═══════════════════════════════ URL state ═══════════════════════════════
+  // Shareable URLs (see sports-url.js): per tab, which settings go in the
+  // address bar and how a link restores them.
+
+  var U = window.SportUrl;
+  var url = null;
+  function writeUrl(push) { if (url) url.write(push); }
+
+  // Confederations and tournaments go in the URL as short codes: "Copa América" is copa-america.
+  function slug(c) { return c.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/ /g, "-"); }
+  function fromSlug(s, opts) {
+    return opts.filter(function (o) { return slug(o.value) === s; }).map(function (o) { return o.value; })[0] || null;
+  }
+  function confFromSlug(s) { return fromSlug(s, CONF_OPTIONS) || "all"; }
+
+  var URL_TABS = {
+    "standings": {
+      query: function (add) {
+        if (!state.seasonData) return;
+        if (state.seasonData.season !== U.optionNumbers(seasonSelect)[0]) add("season", state.seasonData.season);
+        if (dateSelect.value !== standingsDefaultDate()) add("date", dateSelect.value);
+        if (state.standingsConf !== "all") add("conf", slug(state.standingsConf));
+      },
+      apply: function (p) {
+        state.standingsConf = confFromSlug(p.get("conf"));
+        U.setPills("msConfPills", state.standingsConf);
+        var season = U.seasonFrom(p.get("season"), U.optionNumbers(seasonSelect));
+        seasonSelect.value = String(season);
+        var load = state.seasonData && state.seasonData.season === season ? Promise.resolve() : loadSeason(season);
+        return load.then(function () {
+          if (!state.seasonData) return;
+          var date = p.get("date");
+          selectSnapshot(date && state.seasonData.snapshots.some(function (s) { return s.date === date; }) ? date : standingsDefaultDate());
+        });
+      },
+    },
+    "team-summary": {
+      query: function (add) {
+        if (tsTeamSelect.value) add("team", tsTeamSelect.value);
+        if (state.tsView === "single") {
+          add("view", "single");
+          if (tsTeamSelect.value && tsSeasonSelect.value) add("season", tsSeasonSelect.value);
+        } else if (tsDateTypeSelect.value === "eor") {
+          add("snap", "eor");
+        }
+        if (state.tsConf !== "all") add("conf", slug(state.tsConf));
+      },
+      apply: function (p) {
+        var team = p.get("team");
+        var t = team && state.teamsIndex.filter(function (x) { return x.slug === team; })[0];
+        state.tsConf = confFromSlug(p.get("conf"));
+        // A country outside the linked confederation brings its own.
+        if (t && state.tsConf !== "all" && t.confederation !== state.tsConf) state.tsConf = t.confederation;
+        U.setPills("tsConfPills", state.tsConf);
+        populateTeams(state.tsConf);
+        state.tsView = p.get("view") === "single" ? "single" : "cross";
+        U.setPills("tsViewPills", state.tsView);
+        tsSeasonSelect.hidden = state.tsView !== "single";
+        tsDateTypeSelect.hidden = state.tsView !== "cross";
+        tsDateTypeSelect.value = p.get("snap") === "eor" ? "eor" : "eos";
+        if (!t) {
+          tsChartWrap.hidden = true;
+          tsSeasonSelect.innerHTML = "";
+          tsTableWrap.innerHTML = '<p class="sport-loading">Select a country above</p>';
+          return Promise.resolve();
+        }
+        tsTeamSelect.value = team;
+        return Promise.resolve(loadTeam(team)).then(function () {
+          var season = p.get("season");
+          if (U.hasOption(tsSeasonSelect, season)) tsSeasonSelect.value = season;
+          else if (tsSeasonSelect.options.length) tsSeasonSelect.selectedIndex = 0;
+          renderTeamTable({});
+        });
+      },
+    },
+    "wc-odds": {
+      query: function (add) {
+        var active = document.querySelector("#wcSubviewPills .pill.active");
+        var v = active ? active.dataset.wcview : "odds";
+        if (v !== "odds") add("view", v);
+        if (v === "odds") {
+          var b = wcEditionBucket();
+          if (!b) return;
+          var dflt = state.wcOddsData ? state.wcOddsData.edition : state.wcHistory.tournaments[0].edition;
+          if (b.edition !== dflt) add("edition", b.edition);
+          var snaps = b.snapshots || [];
+          var dfltKey = wcIsLiveEdition() ? "" : (snaps.length ? wcSnapKey(snaps[snaps.length - 1]) : "");
+          if (wcDateSelect.value !== dfltKey) add("stage", wcDateSelect.value);
+        } else if (v === "bycountry" && wcCountrySelect.value) {
+          add("team", wcCountrySelect.value);
+        }
+      },
+      apply: function (p) {
+        var v = U.pick(p.get("view"), ["upsets", "bycountry", "history"], "odds");
+        var eds = ((state.wcHistory && state.wcHistory.tournaments) || []).map(function (b) { return b.edition; });
+        var ed = Number(p.get("edition"));
+        state.wcSelectedEdition = eds.indexOf(ed) !== -1 ? ed : null;
+        state.wcViewKey = null;
+        wcBuildControls();
+        var stage = p.get("stage");
+        if (stage && U.hasOption(wcDateSelect, stage)) { state.wcViewKey = stage; wcDateSelect.value = stage; }
+        renderWcView();
+        setWcSubview(v);
+        if (v === "bycountry") {
+          var team = p.get("team");
+          if (!team || !U.hasOption(wcCountrySelect, team)) team = "";
+          wcCountrySelect.value = team;
+          renderWcByCountry(team);
+        }
+      },
+    },
+    "league-history": {
+      query: function (add) {
+        if (state.historyTourny !== "UEFA Euro") add("comp", slug(state.historyTourny));
+      },
+      apply: function (p) {
+        state.historyTourny = fromSlug(p.get("comp"), HISTORY_CONTINENTAL.concat(HISTORY_NATIONS)) || "UEFA Euro";
+        U.setPills("historyContinentalPills", state.historyTourny);
+        U.setPills("historyNationsPills", state.historyTourny);
+        renderLeagueHistory(state.historyTourny, "historyTableWrap");
+      },
+    },
+    "goat": {
+      query: function (add) {
+        if (state.goatMetric !== "overall") add("metric", state.goatMetric);
+        if (state.goatConf !== "all") add("conf", slug(state.goatConf));
+      },
+      apply: function (p) {
+        state.goatMetric = U.pick(p.get("metric"), ["offense", "defense"], "overall");
+        state.goatConf = confFromSlug(p.get("conf"));
+        U.setPills("goatMetricPills", state.goatMetric);
+        U.setPills("goatConfPills", state.goatConf);
+        return Promise.resolve(loadGoat());
+      },
+    },
+  };
+
   // ═══════════════════════════════ init ═══════════════════════════════
+
+  // Any link beats the automatic landing tab.
+  url = U.create({ tabs: URL_TABS, activateTab: activateTab, onLink: function () { state.userPickedTab = true; } });
 
   Promise.all([
     fetch(BASE + "/seasons_index.json").then(function (r) { return r.json(); }),
@@ -1407,30 +1569,21 @@
     seasonSelect.value = String(data.seasons[0]);
     populateTeams(state.tsConf);
     renderLeagueHistory(state.historyTourny, "historyTableWrap");
-    loadSeason(data.seasons[0]);
-    loadChampions();
-    loadGoat();
-    loadWcOdds();
+    var ready = {
+      "standings": loadSeason(data.seasons[0]),
+      "league-history": loadChampions(),
+      "goat": Promise.resolve(loadGoat()),
+      "wc-odds": loadWcOdds(),
+      "team-summary": Promise.resolve(),
+    };
+    // The landing view settles once the World Cup tab has decided whether to take over.
+    url.start(ready, [ready["standings"], ready["wc-odds"]]);
   }).catch(function () {
     standingsTableWrap.innerHTML = '<p class="sport-error">Could not load ratings</p>';
   });
 
-  buildConfPills("msConfPills", true, state.standingsConf, function (v) { state.standingsConf = v; renderStandings(); });
-  buildConfPills("tsConfPills", true, state.tsConf, function (v) {
-    state.tsConf = v;
-    populateTeams(v);
-    tsChartWrap.hidden = true;
-    tsTableWrap.innerHTML = '<p class="sport-loading">Select a country above</p>';
-    tsSeasonSelect.innerHTML = "";
-  });
-  buildPillsFromOpts("tsViewPills", [
-    { value: "cross", label: "Yearly summary" },
-    { value: "single", label: "All matches within one year" },
-  ], state.tsView, function (v) {
-    state.tsView = v;
-    tsSeasonSelect.hidden = v !== "single";
-    tsDateTypeSelect.hidden = v !== "cross";
-    renderTeamTable({});
-  });
+  buildConfPills("msConfPills", true, state.standingsConf, onStandingsConf);
+  buildConfPills("tsConfPills", true, state.tsConf, onTsConf);
+  buildPillsFromOpts("tsViewPills", TS_VIEW_OPTS, state.tsView, onTsView);
   tsSeasonSelect.hidden = true;
 })();
