@@ -187,9 +187,10 @@
       if (showRecord) columns.push({ label: recordLabel, cls: "record", width: recordWidth });
       if (isSoccer && showRecord) columns.push({ label: "Pts", cls: "num" });
       if (showPlayoffs) columns.push({ label: "Playoffs", cls: "record" });
-      if (showTitleOdds) columns.push({ label: "Champ %", cls: "record" });
+      // Playoff mode highlights Champ % (the sort column) in place of Rating.
+      if (showTitleOdds) columns.push({ label: "Champ %", cls: live ? "rating" : "record" });
       if (showLast) columns.push({ label: "Last", cls: "last" });
-      columns.push({ label: "Rating", cls: "rating" });
+      columns.push({ label: "Rating", cls: live ? "num" : "rating" });
 
       var rows = top5.map(function (t, i) {
         var baseName = escapeHtml(t.display_name || t.team);
