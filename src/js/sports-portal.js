@@ -140,21 +140,46 @@
     return String(raw).replace(/\s*\([^)]*\)\s*$/, "").replace(/\bvs\.\s*/, "vs ");
   }
 
+  // Sites with a playoff sim. While the current season's playoffs are live
+  // (same test the sites use to open on their Playoffs tab), the card ranks
+  // the Top 5 by title odds and shows playoff records.
+  var PLAYOFF_ODDS_REPOS = { duncan: 1, lobo: 1, dillon: 1, salaam: 1, griffey: 1, sakic: 1, cobi: 1 };
+
+  function playoffsLive(repo) {
+    if (!PLAYOFF_ODDS_REPOS[repo]) return Promise.resolve(false);
+    var base = GH + "/" + repo + "/data/playoff_odds/";
+    return fetchJson(base + "index.json").then(function (idx) {
+      if (!idx.seasons.length || idx.seasons[0] !== idx.current_season) return false;
+      return fetchJson(base + idx.seasons[0] + ".json").then(function (d) {
+        var snaps = d.snapshots;
+        return snaps.length > 0 && snaps[snaps.length - 1].stage !== "Champion";
+      });
+    }).catch(function () { return false; });
+  }
+
   function loadWLS(repo, badgeFn, opts) {
     opts = opts || {};
     var idxPromise = fetchJson(GH + "/" + repo + "/data/seasons_index.json").catch(function () { return null; });
+    var livePromise = playoffsLive(repo);
 
-    function withTeams(teams, updated, latestSeason, seasonComplete) {
-      var seasonName = (SEASON_FMT[repo] && latestSeason != null) ? SEASON_FMT[repo](latestSeason) : null;
-      var top5 = teams.slice().sort(function (a, b) { return a.rank - b.rank; }).slice(0, 5);
+    function withTeams(teams, updated, latestSeason, seasonComplete, live) {
+      var seasonName = (SEASON_FMT[repo] && latestSeason != null)
+        ? (live ? latestSeason + " Playoffs" : SEASON_FMT[repo](latestSeason)) : null;
+      var titleOdds = function (t) { return t.title_odds != null ? t.title_odds : (t.sb_odds != null ? t.sb_odds : null); };
+      var top5 = teams.slice().sort(function (a, b) {
+        if (live) {
+          var d = (titleOdds(b) || 0) - (titleOdds(a) || 0);
+          if (d) return d;
+        }
+        return a.rank - b.rank;
+      }).slice(0, 5);
 
       var isSoccer = !!SOCCER_SPORTS[repo];
       var isHockey = !!HOCKEY_SPORTS[repo];
-      var showPlayoffs = !isSoccer && top5.some(function (t) { return hasGames(t.playoff_record); });
-      var showRecord = !opts.hideRecord && top5.some(function (t) { return t.regular_record || t.record; });
+      var showPlayoffs = live || (!isSoccer && top5.some(function (t) { return hasGames(t.playoff_record); }));
+      var showRecord = !live && !opts.hideRecord && top5.some(function (t) { return t.regular_record || t.record; });
       var showLast = !!opts.showLast;
-      var titleOdds = function (t) { return t.title_odds != null ? t.title_odds : (t.sb_odds != null ? t.sb_odds : null); };
-      var showTitleOdds = !showPlayoffs && top5.some(function (t) { return titleOdds(t) != null; });
+      var showTitleOdds = live || (!showPlayoffs && top5.some(function (t) { return titleOdds(t) != null; }));
       var recordLabel = isSoccer ? "W-D-L" : (isHockey ? "W-L-OTL" : "W-L");
       var recordWidth = (isSoccer || isHockey) ? 60 : null;
 
@@ -162,11 +187,11 @@
       if (showRecord) columns.push({ label: recordLabel, cls: "record", width: recordWidth });
       if (isSoccer && showRecord) columns.push({ label: "Pts", cls: "num" });
       if (showPlayoffs) columns.push({ label: "Playoffs", cls: "record" });
-      else if (showTitleOdds) columns.push({ label: "Champ %", cls: "record" });
+      if (showTitleOdds) columns.push({ label: "Champ %", cls: "record" });
       if (showLast) columns.push({ label: "Last", cls: "last" });
       columns.push({ label: "Rating", cls: "rating" });
 
-      var rows = top5.map(function (t) {
+      var rows = top5.map(function (t, i) {
         var baseName = escapeHtml(t.display_name || t.team);
         var flag = t.flag ? t.flag + " " : "";
         var name = flag + baseName;
@@ -183,7 +208,8 @@
         }
         if (showPlayoffs) {
           cells.push(hasGames(t.playoff_record) ? escapeHtml(t.playoff_record) : "-");
-        } else if (showTitleOdds) {
+        }
+        if (showTitleOdds) {
           var odds = titleOdds(t);
           if (odds == null) cells.push("-");
           else {
@@ -192,7 +218,7 @@
         }
         if (showLast) cells.push(escapeHtml(fmtLast(t.last_match)));
         cells.push(t.rating.toFixed(2));
-        return { rank: t.rank, cells: cells };
+        return { rank: live ? i + 1 : t.rank, cells: cells };
       });
 
       return {
@@ -201,27 +227,29 @@
         updated: updated ? "Last " + (isSoccer ? "matches" : "games") + " added: " + updated : "",
         seasonName: seasonName,
         seasonComplete: seasonComplete,
+        query: live ? (repo === "salaam" ? "?tab=cfp" : "?tab=playoff-odds") : null,
       };
     }
 
     if (PLAYOFF_SPORTS[repo]) {
       return idxPromise.then(function (idx) {
         var latestSeason = idx && idx.seasons ? idx.seasons[0] : null;
-        return fetchJson(GH + "/" + repo + "/data/seasons/" + latestSeason + ".json").then(function (detail) {
+        return Promise.all([fetchJson(GH + "/" + repo + "/data/seasons/" + latestSeason + ".json"), livePromise]).then(function (res) {
+          var detail = res[0], live = res[1];
           var snap = detail.snapshots[detail.snapshots.length - 1];
           var updated = (snap.date || "").slice(0, 10);
-          var seasonComplete = (snap.label || "").indexOf("End of playoffs") !== -1;
-          return withTeams(snap.teams, updated, latestSeason, seasonComplete);
+          var seasonComplete = !live && (snap.label || "").indexOf("End of playoffs") !== -1;
+          return withTeams(snap.teams, updated, latestSeason, seasonComplete, live);
         });
       });
     }
-    return Promise.all([fetchJson(GH + "/" + repo + "/data/current_standings.json"), idxPromise]).then(function (results) {
-      var d = results[0], idx = results[1];
+    return Promise.all([fetchJson(GH + "/" + repo + "/data/current_standings.json"), idxPromise, livePromise]).then(function (results) {
+      var d = results[0], idx = results[1], live = results[2];
       var latestSeason = idx && idx.seasons ? idx.seasons[0] : null;
       var seasonComplete = false;
       if (repo === "cobi") seasonComplete = (d.teams || []).some(function (t) { return t.mls_cup_finish === "Champion"; });
       else if (repo === "zidane") seasonComplete = (d.teams || []).some(function (t) { return t.cl_finish === "Champion"; });
-      return withTeams(d.teams, d.updated, latestSeason, seasonComplete);
+      return withTeams(d.teams, d.updated, latestSeason, seasonComplete, live);
     });
   }
 
@@ -438,7 +466,7 @@
     var updatedHtml = payload && !error && payload.updated ? "<span>" + escapeHtml(payload.updated) + "</span>" : "<span></span>";
     var foot = (payload && !error) || cadenceHtml ? '<div class="card-foot">' + cadenceHtml + updatedHtml + "</div>" : "";
     return (
-      '<a class="card" href="' + SQ + "/" + card.slug + "/" + (card.query || "?tab=standings") + '">' +
+      '<a class="card" href="' + SQ + "/" + card.slug + "/" + ((payload && !error && payload.query) || card.query || "?tab=standings") + '">' +
       '<div class="card-head"><span class="card-title">' + card.title + (card.stage ? ' <span class="card-stage">· ' + card.stage + "</span>" : "") + '</span><span class="card-arrow">→</span></div>' +
       '<div class="card-body">' + body + "</div>" +
       foot +
