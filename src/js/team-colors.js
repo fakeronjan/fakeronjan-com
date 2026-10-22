@@ -15,7 +15,9 @@
   var BG = { light: "#fdfdfd", dark: "#16161a" };
   var BLACK = "#000000";
 
-  function register(league, data) {
+  // opts.confirmed: last season checked for rebrands (read by the droplet's
+  // health check, not the pages).
+  function register(league, data, opts) {
     Object.keys(data).forEach(function (team) {
       data[team] = data[team].map(function (e) {
         var p = e[2].toUpperCase(), s = e[3].toUpperCase();

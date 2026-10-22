@@ -5,6 +5,10 @@
 // and its Wikipedia article. Current and final-era hex values from Wikipedia's
 // team color data (Module:Sports color/basketball); older eras sampled from that
 // era's primary logo ("logo"). Researched 2026-10-22.
+//
+// `confirmed` (at the bottom) is the last season these were checked for
+// rebrands and new teams. The droplet's daily health check DMs Ronjan once a
+// newer season starts, and whenever a current team has no colors.
 TeamColors.register("WNBA", {
   "Atlanta Dream": [
     [2008, 2019, "#4C90CC", "#E41834"],          // logo: sky blue, red
@@ -54,4 +58,4 @@ TeamColors.register("WNBA", {
   "Washington Mystics": [
     [1998, 2010, "#004880", "#B87040"],          // logo: blue, bronze
     [2011, 9999, "#E03A3E", "#002B5C"]],         // red, navy
-});
+}, { confirmed: 2026 });
