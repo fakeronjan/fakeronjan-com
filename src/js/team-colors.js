@@ -30,10 +30,11 @@
     LEAGUES[league] = byKey;
   }
 
-  // Teams are looked up by their pages' slug form, so a name and its slug
-  // ("Miami (OH)" / "Miami__OH", "St. Louis Cardinals" / "St__Louis_Cardinals")
-  // find the same colors: punctuation and spaces become "_", trailing ones go.
-  function key(team) { return String(team).replace(/[^A-Za-z0-9\u00C0-\u024F]/g, "_").replace(/_+$/, ""); }
+  // Teams are looked up by a slug-like key, so a name and each site's slug for
+  // it find the same colors ("Miami (OH)" / "Miami__OH", "St. Louis Blues" /
+  // "St_Louis_Blues" / "St__Louis_Blues"): runs of punctuation and spaces
+  // become one "_", and leading or trailing ones go.
+  function key(team) { return String(team).replace(/[^A-Za-z0-9\u00C0-\u024F]+/g, "_").replace(/^_|_$/g, ""); }
 
   function era(league, team, season) {
     var eras = (LEAGUES[league] || {})[key(team)];
