@@ -1454,8 +1454,6 @@
         if (state.tsView === "single") {
           add("view", "single");
           if (tsTeamSelect.value && tsSeasonSelect.value) add("season", tsSeasonSelect.value);
-        } else if (tsDateTypeSelect.value === "eor") {
-          add("snap", "eor");
         }
         if (state.tsConf !== "all") add("conf", slug(state.tsConf));
       },
@@ -1471,7 +1469,7 @@
         U.setPills("tsViewPills", state.tsView);
         tsSeasonSelect.hidden = state.tsView !== "single";
         tsDateTypeSelect.hidden = state.tsView !== "cross";
-        tsDateTypeSelect.value = p.get("snap") === "eor" ? "eor" : "eos";
+        tsDateTypeSelect.value = "anchor";   // the only snapshot option
         if (!t) {
           tsChartWrap.hidden = true;
           tsSeasonSelect.innerHTML = "";

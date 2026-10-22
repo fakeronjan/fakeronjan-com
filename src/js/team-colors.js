@@ -40,7 +40,7 @@
     var eras = (LEAGUES[league] || {})[key(team)];
     if (!eras) return null;
     if (season == null || season === "") return eras[eras.length - 1];   // no season: current colors
-    var y = Number(season);
+    var y = parseInt(String(season), 10);   // also reads "2013-14" as 2013
     for (var i = 0; i < eras.length; i++) if (y >= eras[i][0] && y <= eras[i][1]) return eras[i];
     return null;
   }
