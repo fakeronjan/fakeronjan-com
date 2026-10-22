@@ -143,6 +143,9 @@
   // Sites with a playoff sim. While the current season's playoffs are live
   // (same test the sites use to open on their Playoffs tab), the card ranks
   // the Top 5 by title odds and shows playoff records.
+  // Repos whose cards show team-color circles (js/team-colors-*.js).
+  var COLOR_LEAGUE = { lobo: "WNBA" };
+
   var PLAYOFF_ODDS_REPOS = { duncan: 1, lobo: 1, dillon: 1, salaam: 1, griffey: 1, sakic: 1, cobi: 1 };
 
   function playoffsLive(repo) {
@@ -195,7 +198,8 @@
       var rows = top5.map(function (t, i) {
         var baseName = escapeHtml(t.display_name || t.team);
         var flag = t.flag ? t.flag + " " : "";
-        var name = flag + baseName;
+        var dot = window.TeamColors && COLOR_LEAGUE[repo] ? TeamColors.dot(COLOR_LEAGUE[repo], t.team, latestSeason) : "";
+        var name = dot + flag + baseName;
         var badges = badgeFn(t);
         var cells = ['<span class="top5-name-inner"><span class="top5-name-text">' + name + "</span>" + (badges ? '<span class="top5-name-badges">' + badges + "</span>" : "") + "</span>"];
         if (showRecord) {
