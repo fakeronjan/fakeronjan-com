@@ -37,7 +37,8 @@ TeamColors.register("WNBA", {
     [1999, 2017, "#145084", "#048454"],          // logo: blue, green
     [2018, 9999, "#0C233F", "#266092"]],         // midnight navy, lake blue
   "New York Liberty": [
-    [1997, 2019, "#0048B8", "#F86018"],          // logo: blue, orange
+    [1997, 2019, "#1C3F6E", "#86CEBC"],          // navy, seafoam: Ronjan's call, one era for how it's remembered
+                                                 // (uniforms: black body late 90s, medium blue 2010-15; orange only trim)
     [2020, 9999, "#86CEBC", "#000000"]],         // seafoam, black
   "Orlando Miracle": [[1999, 2002, "#187CB4", "#000000"]],   // logo: electric blue, black
   "Phoenix Mercury": [
