@@ -144,7 +144,7 @@
   // (same test the sites use to open on their Playoffs tab), the card ranks
   // the Top 5 by title odds and shows playoff records.
   // Repos whose cards show team-color circles (js/team-colors-*.js).
-  var COLOR_LEAGUE = { lobo: "WNBA", duncan: "NBA", dillon: "NFL", salaam: "CFB", sakic: "NHL" };
+  var COLOR_LEAGUE = { lobo: "WNBA", duncan: "NBA", dillon: "NFL", salaam: "CFB", sakic: "NHL", griffey: "MLB" };
 
   var PLAYOFF_ODDS_REPOS = { duncan: 1, lobo: 1, dillon: 1, salaam: 1, griffey: 1, sakic: 1, cobi: 1 };
 
