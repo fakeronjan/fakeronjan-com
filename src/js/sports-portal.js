@@ -188,7 +188,7 @@
       if (isSoccer && showRecord) columns.push({ label: "Pts", cls: "num" });
       if (showPlayoffs) columns.push({ label: "Playoffs", cls: "record" });
       // Playoff mode highlights Champ % (the sort column) in place of Rating.
-      if (showTitleOdds) columns.push({ label: "Champ %", cls: live ? "rating" : "record" });
+      if (showTitleOdds) columns.push(live ? { label: "Champ %", cls: "rating", width: 60 } : { label: "Champ %", cls: "record" });
       if (showLast) columns.push({ label: "Last", cls: "last" });
       columns.push({ label: "Rating", cls: live ? "num" : "rating" });
 

@@ -1581,7 +1581,7 @@ table.top5 td.last, table.top5 th.col-last {
   white-space: nowrap;
   max-width: 1px;
 }
-table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; width: 3.1rem; }
+table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; width: 3.1rem; white-space: nowrap; }
 
 .card-badge {
   font-size: 0.58rem;
