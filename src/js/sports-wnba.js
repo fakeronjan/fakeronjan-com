@@ -588,7 +588,7 @@
     var teamName = slug.replace(/_/g, " ");
     var tableRows = rows.slice().reverse().map(function (g) {
       var dot = !isSingle && window.TeamColors ? TeamColors.dot("WNBA", teamName, g.season) : "";
-      var seasonCell = g.season + (dot ? '<div class="season-dot-line">' + dot + "</div>" : "") + (isSingle ? "" : seasonTag(g.season));
+      var seasonCell = (dot ? '<span class="tc-glue">' + dot + g.season + "</span>" : g.season) + (isSingle ? "" : seasonTag(g.season));
       var dateLabel = g.season_flag === 1 ? "End of regular season" : g.season_flag === 2 ? "End of playoffs" : "";
       var dateCell = dateLabel ? g.date + '<div class="sub-line-italic">' + dateLabel + "</div>" : g.date;
       return (
