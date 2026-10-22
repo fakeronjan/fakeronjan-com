@@ -1,7 +1,10 @@
 // Team colors for the sports pages, shared by every sports-*.js that loads it.
 //
 // Each league registers its teams' color eras: [first season, last season
-// (9999 = ongoing), primary, secondary]. A team name with no era for a season
+// (9999 = ongoing), primary, secondary, optional chart overrides]. The
+// circle always shows primary over secondary; overrides like
+// { light: { s: "#000000" }, dark: { p: "#A2AAAD" } } change the chart line
+// in one theme only (Celtics, Nets). A team name with no era for a season
 // gets no colors, and pages fall back to their usual look. Two rules apply
 // to the data as registered:
 //   - Black is never a primary color: an era listed black-first is flipped.
@@ -21,7 +24,7 @@
     Object.keys(data).forEach(function (team) {
       data[team] = data[team].map(function (e) {
         var p = e[2].toUpperCase(), s = e[3].toUpperCase();
-        return p === BLACK ? [e[0], e[1], s, p] : [e[0], e[1], p, s];
+        return (p === BLACK ? [e[0], e[1], s, p] : [e[0], e[1], p, s]).concat([e[4] || {}]);
       });
     });
     LEAGUES[league] = data;
@@ -68,7 +71,9 @@
   function line(league, team, season) {
     var e = era(league, team, season);
     if (!e) return null;
-    return { light: lineFor(e[2], e[3], BG.light), dark: lineFor(e[2], e[3], BG.dark) };
+    var o = e[4];
+    function theme(k) { var c = o[k] || {}; return lineFor(c.p || e[2], c.s || e[3], BG[k]); }
+    return { light: theme("light"), dark: theme("dark") };
   }
 
   // Two-color circle (top half primary, bottom half secondary) for next to a
@@ -81,5 +86,52 @@
       '<circle cx="6" cy="6" r="5"/></svg>';
   }
 
-  window.TeamColors = { register: register, era: era, line: line, dot: dot };
+  // Adds the circle to a linked team name (data-team-slug = the name with
+  // underscores, data-season), glued to the name's first word so a wrapped
+  // name never leaves it alone on a line.
+  function decorate(el, league) {
+    if (el.querySelector(".tc-dot")) return;
+    var d = dot(league, el.dataset.teamSlug.replace(/_/g, " "), el.dataset.season);
+    if (!d) return;
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return /\S/.test(n.data) ? 1 : 3; } });
+    var text = walker.nextNode();
+    var glue = document.createElement("span");
+    glue.className = "tc-glue";
+    glue.innerHTML = d;
+    if (!text) { el.insertBefore(glue, el.firstChild); return; }
+    var m = text.data.match(/^(\s*)(\S+)/);
+    text.data = text.data.slice(m[0].length);
+    glue.appendChild(document.createTextNode(m[2]));
+    text.parentNode.insertBefore(glue, text);
+    if (m[1]) text.parentNode.insertBefore(document.createTextNode(m[1]), glue);
+  }
+
+  // The Team Summary rating line in team colors: primary above zero,
+  // secondary below, one segment per color era (each starts at the previous
+  // era's last point so the line is continuous). rows need .season; px/py
+  // place a row index / rating; H is the SVG height. Returns { defs, lines }
+  // or null when any season lacks colors (the page keeps its usual line).
+  function chartLine(league, team, rows, px, py, zeroY, H) {
+    var cols = rows.map(function (r) { return line(league, team, r.season); });
+    if (!cols.length || !cols.every(Boolean)) return null;
+    var segs = [];
+    rows.forEach(function (r, i) {
+      var key = JSON.stringify(cols[i]), last = segs[segs.length - 1];
+      if (last && last.key === key) last.idx.push(i);
+      else segs.push({ key: key, c: cols[i], idx: i > 0 ? [i - 1, i] : [i] });
+    });
+    var defs = "", lines = "";
+    segs.forEach(function (sg, k) {
+      function stop(off, which) {
+        return '<stop class="tc-stop" offset="' + off + '" style="--tcl:' + sg.c.light[which] + ";--tcd:" + sg.c.dark[which] + '"/>';
+      }
+      defs += '<linearGradient id="tcGrad' + k + '" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="' + H + '">' +
+        stop((zeroY / H - 0.0001).toFixed(4), "p") + stop((zeroY / H + 0.0001).toFixed(4), "s") + "</linearGradient>";
+      lines += '<polyline points="' + sg.idx.map(function (i) { return px(i).toFixed(1) + "," + py(rows[i].rating).toFixed(1); }).join(" ") +
+        '" fill="none" stroke="url(#tcGrad' + k + ')" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    });
+    return { defs: defs, lines: lines };
+  }
+
+  window.TeamColors = { register: register, era: era, line: line, dot: dot, decorate: decorate, chartLine: chartLine };
 })();

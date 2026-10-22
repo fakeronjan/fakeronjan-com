@@ -292,30 +292,9 @@
     });
   }
 
-  // Team colors: a two-color circle before every linked team name, in that
-  // season's colors (slugs are the team name with underscores).
-  // The circle is glued to the name's first word so a wrapped name never
-  // leaves it alone on a line.
-  function addTeamDot(el) {
-    if (!window.TeamColors || el.querySelector(".tc-dot")) return;
-    var d = TeamColors.dot("WNBA", el.dataset.teamSlug.replace(/_/g, " "), el.dataset.season);
-    if (!d) return;
-    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return /\S/.test(n.data) ? 1 : 3; } });
-    var text = walker.nextNode();
-    var glue = document.createElement("span");
-    glue.className = "tc-glue";
-    glue.innerHTML = d;
-    if (!text) { el.insertBefore(glue, el.firstChild); return; }
-    var m = text.data.match(/^(\s*)(\S+)/);
-    text.data = text.data.slice(m[0].length);
-    glue.appendChild(document.createTextNode(m[2]));
-    text.parentNode.insertBefore(glue, text);
-    if (m[1]) text.parentNode.insertBefore(document.createTextNode(m[1]), glue);
-  }
-
   function attachLinks(root) {
     root.querySelectorAll(".team-cell.linked, .team-link.linked").forEach(function (el) {
-      addTeamDot(el);
+      if (window.TeamColors) TeamColors.decorate(el, "WNBA");   // team-color circle
       el.addEventListener("click", function (e) {
         e.stopPropagation();
         teamLinkClick(el.dataset.teamSlug, el.dataset.season);
@@ -644,30 +623,11 @@
     var zeroY = py(0);
     var points = rows.map(function (r, i) { return px(i).toFixed(1) + "," + py(r.rating).toFixed(1); }).join(" ");
 
-    // Team colors: primary above zero, secondary below, one segment per color
-    // era (each starts at the previous era's last point so the line is
-    // continuous). Without colors for every season, the usual cyan/pink line.
+    // Team colors when every season has them (js/team-colors.js); otherwise
+    // the usual cyan/pink line.
     var team = tsTeamSelect.value ? tsTeamSelect.value.replace(/_/g, " ") : "";
-    var lines = window.TeamColors ? rows.map(function (r) { return TeamColors.line("WNBA", team, r.season); }) : [];
-    var useTeam = lines.length === rows.length && lines.every(Boolean);
-    var gradDefs = "", lineSvg = "";
-    if (useTeam) {
-      var segs = [];
-      rows.forEach(function (r, i) {
-        var key = JSON.stringify(lines[i]), last = segs[segs.length - 1];
-        if (last && last.key === key) last.idx.push(i);
-        else segs.push({ key: key, c: lines[i], idx: i > 0 ? [i - 1, i] : [i] });
-      });
-      segs.forEach(function (sg, k) {
-        function stop(off, which) {
-          return '<stop class="tc-stop" offset="' + off + '" style="--tcl:' + sg.c.light[which] + ";--tcd:" + sg.c.dark[which] + '"/>';
-        }
-        gradDefs += '<linearGradient id="tcGrad' + k + '" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="' + H + '">' +
-          stop((zeroY / H - 0.0001).toFixed(4), "p") + stop((zeroY / H + 0.0001).toFixed(4), "s") + "</linearGradient>";
-        lineSvg += '<polyline points="' + sg.idx.map(function (i) { return px(i).toFixed(1) + "," + py(rows[i].rating).toFixed(1); }).join(" ") +
-          '" fill="none" stroke="url(#tcGrad' + k + ')" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
-      });
-    }
+    var tc = window.TeamColors ? TeamColors.chartLine("WNBA", team, rows, px, py, zeroY, H) : null;
+    var useTeam = !!tc;
 
     function ctxLine(v) {
       var y = py(v).toFixed(1);
@@ -730,12 +690,12 @@
     tsChart.innerHTML =
       '<defs><linearGradient id="lineGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="' + H + '">' +
       '<stop offset="' + (zeroY / H - 0.0001).toFixed(4) + '" stop-color="var(--accent)"/>' +
-      '<stop offset="' + (zeroY / H + 0.0001).toFixed(4) + '" stop-color="var(--accent-2)"/></linearGradient>' + gradDefs + "</defs>" +
+      '<stop offset="' + (zeroY / H + 0.0001).toFixed(4) + '" stop-color="var(--accent-2)"/></linearGradient>' + (tc ? tc.defs : "") + "</defs>" +
       contextLines +
       '<line x1="10" y1="' + zeroY.toFixed(1) + '" x2="' + (W - 10).toFixed(1) + '" y2="' + zeroY.toFixed(1) + '" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4,3"/>' +
       '<line x1="10" y1="' + (CBOT + 2) + '" x2="' + (W - 10).toFixed(1) + '" y2="' + (CBOT + 2) + '" stroke="var(--muted)" stroke-width="1"/>' +
       ticks.join("") + xlabels.join("") +
-      (useTeam ? lineSvg : '<polyline points="' + points + '" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linejoin="round"/>') +
+      (tc ? tc.lines : '<polyline points="' + points + '" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linejoin="round"/>') +
       clipMarks.join("") + trophies.join("");
   }
 
