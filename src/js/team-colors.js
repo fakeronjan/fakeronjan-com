@@ -3,8 +3,9 @@
 // Each league registers its teams' color eras: [first season, last season
 // (9999 = ongoing), primary, secondary, optional options]. The circles
 // always show primary and secondary; options like
-// { light: { s: "#000000" }, dark: { p: "#A2AAAD" } } change the chart line
-// in one theme only (Celtics, Nets). Primary is the color of the team's main
+// { light: { p: "#A2AAAD" }, dark: { s: "#FFFFFF" } } change the chart line
+// per theme (only the Nets, whose black and white would each vanish in one
+// theme). Primary is the color of the team's main
 // jersey (road jersey in basketball, home in football), black included. A
 // team name with no era for a season gets no colors, and pages fall back to
 // their usual look.

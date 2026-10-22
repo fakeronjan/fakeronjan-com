@@ -18,7 +18,7 @@ TeamColors.register("NBA", {
     [2008, 2015, "#1C2C5C", "#E4383C"],   // navy road jersey with red trim
     [2016, 2020, "#C8102E", "#C0D028"],   // 2015 rebrand: torch red, volt green, granite gray; volt approximated from the 2016 uniforms' trim (Ronjan's call)
     [2021, 9999, "#C8102E", "#FDB927"]],   // Wikipedia (current): red, legacy yellow
-  "Boston Celtics": [[1977, 9999, "#008348", "#FFFFFF", {light: {s: "#000000"}}]],   // green road jersey every era; green and white uniforms (Ronjan's call)
+  "Boston Celtics": [[1977, 9999, "#008348", "#FFFFFF"]],   // green road jersey every era; green and white uniforms
   "Brooklyn Nets": [
     [1977, 1977, "#003DA6", "#EC0044"],   // Wikipedia (New York Nets): blue, red
     [1978, 1997, "#1C4CA4", "#E4184C"],   // blue road jersey with red trim (NJ Nets)
