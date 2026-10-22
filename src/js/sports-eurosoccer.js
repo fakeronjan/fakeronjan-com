@@ -43,14 +43,19 @@
     return (d.getUTCMonth() + 1) + "/" + d.getUTCDate() + "/" + d.getUTCFullYear();
   }
 
-  // W-D-L record with dimmed points in parens.
-  function fmtRecord(rec) {
+  // First season each league gave 3 points for a win (2 before; zidane_rules.py).
+  var THREE_POINTS_FROM = { "EPL": 1981, "Serie A": 1994, "Ligue 1": 1994, "La Liga": 1995, "Bundesliga": 1995 };
+
+  // W-D-L record with dimmed points in parens, at that league season's points
+  // for a win.
+  function fmtRecord(rec, league, season) {
     if (!rec || rec === "-") return "0-0-0";
     var parts = rec.split("-");
     if (parts.length !== 3) return rec;
     var w = parseInt(parts[0], 10), d = parseInt(parts[1], 10), l = parseInt(parts[2], 10);
     if (w + d + l === 0) return rec;
-    var pts = 3 * w + d;
+    var from = THREE_POINTS_FROM[league];
+    var pts = (from && parseInt(String(season), 10) < from ? 2 : 3) * w + d;
     return rec + ' <span class="dim-pct">(' + pts + ")</span>";
   }
 
@@ -390,7 +395,7 @@
         '<td class="col-rank col-hide-mobile">' + fmtRankMove(t.lg_rank, prev ? prev.lgRank : null) + "</td>" +
         teamTd +
         "<td>" + leagueBadge(t.league, t.domestic_finish) + "</td>" +
-        '<td class="col-record">' + fmtRecord(t.record) + "</td>" +
+        '<td class="col-record">' + fmtRecord(t.record, t.league, season) + "</td>" +
         "<td>" + ratingBar(t.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Attacking strength: goals scored vs an average opponent. Sums with Defense to Rating.">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Defending strength: goals prevented vs an average opponent. Sums with Offense to Rating.">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
@@ -603,7 +608,7 @@
         '<td class="col-rank linked" data-season-link="' + g.season + '" data-target-league="' + (data.league || "") + '" style="text-align:center">' + seasonText + (state.tsView !== "single" ? seasonTag(g.season) : "") + "</td>" +
         '<td class="col-hide-mobile">' + dateCell + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(g.last_match, g.season, !!g._isStale) + "</td>" +
-        '<td class="col-record">' + fmtRecord(g.record) + "</td>" +
+        '<td class="col-record">' + fmtRecord(g.record, data.league, g.season) + "</td>" +
         '<td class="col-rank">' + fmtRankMove(g.rank, g._prevRank) + "</td>" +
         '<td class="col-rank col-hide-mobile">' + fmtRankMove(g.lg_rank, g._prevLgRank) + "</td>" +
         "<td>" + (g.rank != null ? ratingBar(g.rating, barSc) : '<span style="color:var(--muted)">-</span>') + "</td>" +
@@ -782,7 +787,7 @@
         '<td class="' + bg + ' col-hide-mobile" style="font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted);font-size:0.85em;text-align:center">' + ovrRank + "</td>" +
         '<td class="' + bg + ' col-hide-mobile" style="font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted);font-size:0.85em;text-align:center">' + lgRank + "</td>" +
         '<td class="' + bg + ' rating-cell">' + rating + "</td>" +
-        '<td class="' + bg + ' col-hide-mobile col-record">' + fmtRecord(t.record) + "</td>"
+        '<td class="' + bg + ' col-hide-mobile col-record">' + fmtRecord(t.record, t.league, season) + "</td>"
       );
     }
 
@@ -884,7 +889,7 @@
         '<td class="season-cell linked" data-season-link="' + t.season + '" data-target-league="' + targetLg + '" style="text-align:center">' + t.season + seasonTag(t.season) + "</td>" +
         teamTd +
         "<td>" + leagueBadge(t.league, t.domestic_finish) + "</td>" +
-        '<td class="col-hide-mobile col-record">' + fmtRecord(t.record) + "</td>" +
+        '<td class="col-hide-mobile col-record">' + fmtRecord(t.record, t.league, t.season) + "</td>" +
         metricCells +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(t.domestic_finish, t.cl_finish, t.el_finish, t.league, t.domestic_cup_finish) + "</td>" +
         "</tr>"
