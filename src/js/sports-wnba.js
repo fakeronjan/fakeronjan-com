@@ -294,10 +294,23 @@
 
   // Team colors: a two-color circle before every linked team name, in that
   // season's colors (slugs are the team name with underscores).
+  // The circle is glued to the name's first word so a wrapped name never
+  // leaves it alone on a line.
   function addTeamDot(el) {
     if (!window.TeamColors || el.querySelector(".tc-dot")) return;
     var d = TeamColors.dot("WNBA", el.dataset.teamSlug.replace(/_/g, " "), el.dataset.season);
-    if (d) el.insertAdjacentHTML("afterbegin", d);
+    if (!d) return;
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return /\S/.test(n.data) ? 1 : 3; } });
+    var text = walker.nextNode();
+    var glue = document.createElement("span");
+    glue.className = "tc-glue";
+    glue.innerHTML = d;
+    if (!text) { el.insertBefore(glue, el.firstChild); return; }
+    var m = text.data.match(/^(\s*)(\S+)/);
+    text.data = text.data.slice(m[0].length);
+    glue.appendChild(document.createTextNode(m[2]));
+    text.parentNode.insertBefore(glue, text);
+    if (m[1]) text.parentNode.insertBefore(document.createTextNode(m[1]), glue);
   }
 
   function attachLinks(root) {
@@ -570,8 +583,12 @@
     var barSc = barScale(rows.map(function (g) { return g.rating; }));
     // Proj column only when a row in this view is from before its regular season ended.
     var hasProj = rows.some(function (g) { return g.proj; });
+    // All-seasons view: each season gets the team's circle for that year, so a
+    // rebrand shows where the colors change.
+    var teamName = slug.replace(/_/g, " ");
     var tableRows = rows.slice().reverse().map(function (g) {
-      var seasonCell = g.season + (isSingle ? "" : seasonTag(g.season));
+      var dot = !isSingle && window.TeamColors ? TeamColors.dot("WNBA", teamName, g.season) : "";
+      var seasonCell = g.season + (dot ? '<div class="season-dot-line">' + dot + "</div>" : "") + (isSingle ? "" : seasonTag(g.season));
       var dateLabel = g.season_flag === 1 ? "End of regular season" : g.season_flag === 2 ? "End of playoffs" : "";
       var dateCell = dateLabel ? g.date + '<div class="sub-line-italic">' + dateLabel + "</div>" : g.date;
       return (
