@@ -1766,8 +1766,8 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 
 /* Team colors (js/team-colors.js): two-color circle beside team names, and
    chart-line gradient stops that carry a color per theme as --tcl / --tcd. */
-.tc-dot { width: 0.8em; height: 0.8em; vertical-align: -0.08em; margin-right: 0.35em; flex: none; overflow: visible; }
-.tc-dot circle { fill: none; stroke: color-mix(in srgb, var(--fg) 35%, transparent); stroke-width: 1; }
+.tc-dot { width: 1.2em; height: 0.8em; vertical-align: -0.08em; margin-right: 0.35em; flex: none; overflow: visible; }
+.tc-dot .tc-ol { fill: none; stroke: color-mix(in srgb, var(--fg) 35%, transparent); stroke-width: 1; }
 .tc-glue { white-space: nowrap; }
 .tc-stop { stop-color: var(--tcl); }
 @media (prefers-color-scheme: dark) {

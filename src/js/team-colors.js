@@ -2,7 +2,7 @@
 //
 // Each league registers its teams' color eras: [first season, last season
 // (9999 = ongoing), primary, secondary, optional chart overrides]. The
-// circle always shows primary over secondary; overrides like
+// circles always show primary and secondary; overrides like
 // { light: { s: "#000000" }, dark: { p: "#A2AAAD" } } change the chart line
 // in one theme only (Celtics, Nets). A team name with no era for a season
 // gets no colors, and pages fall back to their usual look. Two rules apply
@@ -76,14 +76,13 @@
     return { light: theme("light"), dark: theme("dark") };
   }
 
-  // Two-color circle (top half primary, bottom half secondary) for next to a
-  // team name, or "" when the team has no colors for that season.
+  // Two overlapped circles (primary in front, secondary behind to its right)
+  // for next to a team name, or "" when the team has no colors for that season.
   function dot(league, team, season) {
     var e = era(league, team, season);
     if (!e) return "";
-    return '<svg class="tc-dot" viewBox="0 0 12 12" aria-hidden="true">' +
-      '<path d="M1 6 A5 5 0 0 1 11 6 Z" fill="' + e[2] + '"/><path d="M1 6 A5 5 0 0 0 11 6 Z" fill="' + e[3] + '"/>' +
-      '<circle cx="6" cy="6" r="5"/></svg>';
+    function c(x, fill) { return '<circle cx="' + x + '" cy="6" r="5" fill="' + fill + '"/><circle class="tc-ol" cx="' + x + '" cy="6" r="5"/>'; }
+    return '<svg class="tc-dot" viewBox="0 0 18 12" aria-hidden="true">' + c(12, e[3]) + c(6, e[2]) + '</svg>';
   }
 
   // Adds the circle to a linked team name (data-team-slug = the name with
