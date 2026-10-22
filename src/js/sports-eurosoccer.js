@@ -178,6 +178,41 @@
     );
   }
 
+  // Whole-percent odds (fleet convention): "<1%", ">99%", and "-" for zero.
+  function oddsPct(v) {
+    if (v == null) return "-";
+    var x = v * 100;
+    if (x <= 0) return "-";
+    if (x < 0.5) return "&lt;1%";
+    if (x >= 99.5 && x < 100) return "&gt;99%";
+    return Math.round(x) + "%";
+  }
+
+  // Title and relegation odds in one cell, each with its rank within the
+  // club's league (DILLON's fmtOddsPair).
+  function fmtOddsPair(a, aRank, b, bRank) {
+    if (a == null && b == null) return "-";
+    var sep = ' <span class="odds-sep">|</span> ';
+    var rk = function (r) { return r == null ? "-" : r; };
+    return '<div class="od-val">' + oddsPct(a) + sep + oddsPct(b) + "</div>" +
+      '<div class="od-rank">' + rk(aRank) + sep + rk(bRank) + "</div>";
+  }
+
+  // Rank of each club's value within its league (1 = highest), clubs at 0
+  // or without a value unranked.
+  function leagueOddsRanks(teams, field) {
+    var out = {};
+    var byLeague = {};
+    teams.forEach(function (t) { if (t[field] > 0) (byLeague[t.league] = byLeague[t.league] || []).push(t); });
+    Object.keys(byLeague).forEach(function (lg) {
+      byLeague[lg].sort(function (x, y) { return y[field] - x[field]; })
+        .forEach(function (t, i) { out[t.team] = i + 1; });
+    });
+    return out;
+  }
+
+  var LEAGUE_ODDS_TITLE = "Chance of winning the league and of being relegated, from simulating the rest of the league season 10,000 times with current ratings. A relegation playoff place counts at that league's historical rate of losing the playoff. Each league's title chances sum to 100%.";
+
   function fmtOD(val, rank) {
     if (val == null) return "-";
     var v = val.toFixed(2);
@@ -379,6 +414,9 @@
     updateDisruptedNote("zdDisrupted", [season]);
 
     var barSc = barScale(teams.map(function (t) { return t.rating; }));
+    // League ranks come from the whole snapshot, so a league filter doesn't change them.
+    var titleRanks = leagueOddsRanks(state.currentSnapshot.teams, "title_odds");
+    var relegRanks = leagueOddsRanks(state.currentSnapshot.teams, "releg_odds");
 
     var rows = teams.map(function (t) {
       var isStale = !!(prevDate && t.last_match_date && t.last_match_date <= prevDate);
@@ -399,6 +437,7 @@
         "<td>" + ratingBar(t.rating, barSc) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Attacking strength: goals scored vs an average opponent. Sums with Defense to Rating.">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Defending strength: goals prevented vs an average opponent. Sums with Offense to Rating.">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(t.title_odds, titleRanks[t.team], t.releg_odds, relegRanks[t.team]) + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) +
         (t.last_match_date ? '<div class="sub-line-italic">' + t.last_match_date + "</div>" : "") + "</td>" +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(t.domestic_finish, t.cl_finish, t.el_finish, t.league, t.domestic_cup_finish) + "</td>" +
@@ -412,6 +451,7 @@
       "<th>Club</th><th>League</th>" +
       '<th class="col-record">League W-D-L (Pts)</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
+      '<th class="col-hide-mobile col-od" title="' + LEAGUE_ODDS_TITLE + '">Lg Champ / Rel Odds</th>' +
       '<th class="col-last-match">Last Match</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
