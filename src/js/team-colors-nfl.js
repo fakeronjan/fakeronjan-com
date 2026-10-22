@@ -2,11 +2,12 @@
 // [first season, last season (9999 = ongoing), primary, secondary, options]
 // Seasons are DILLON's keys (the year a season starts).
 //
-// Sources: Wikipedia's dated NFL color eras (Module:Gridiron color/data),
-// checked against home-jersey and primary-logo colors from SportsLogos.net.
-// A new era starts only when the color pair visibly changes; shade tweaks
-// keep the newer shade. Royal blue and navy count as different. Primary is
-// the main jersey's color. Reviewed with Ronjan 2026-10-22
+// Sources: Wikipedia's dated NFL color eras (Module:Gridiron color/data) and
+// team uniform histories, checked against home-jersey and primary-logo colors
+// from SportsLogos.net. Primary is the main home jersey's color, black
+// included ({blackPrimary: true}). A new era starts only when the pair
+// visibly changes (royal blue and navy count as different); shade tweaks keep
+// the newer shade. Reviewed with Ronjan 2026-10-22
 // (https://claude.ai/artifact/XZURq222nAGu4tvW6XJEnL).
 //
 // `confirmed` (at the bottom) is the last season these were checked for
@@ -16,7 +17,7 @@ TeamColors.register("NFL", {
   "Arizona Cardinals": [[1988, 9999, "#97233F", "#000000"]],   // cardinal red jerseys with black every year since the move (Phoenix 1988-93); 2005 redesign added more black but kept the pair; Wikipedia (current)
   "Atlanta Falcons": [
     [1971, 1989, "#C60C30", "#000000"],   // red jerseys with black; Wikipedia 1971-89
-    [1990, 2003, "#000000", "#C60C30", {blackPrimary: true}],   // black jerseys with red (Ronjan's call: primary follows the main jersey, black included, for the Falcons)
+    [1990, 2003, "#000000", "#C60C30", {blackPrimary: true}],   // black jerseys with red (primary follows the main jersey, black included)
     [2004, 2019, "#A71930", "#000000"],   // red jerseys with black
     [2020, 9999, "#000000", "#A71930", {blackPrimary: true}]],   // 2020 redesign: black jerseys with red (Ronjan's call)
   "Baltimore Colts": [[1971, 1983, "#003B8F", "#FFFFFF"]],   // royal blue jerseys, white helmets; blue and white are the only team colors
@@ -25,9 +26,9 @@ TeamColors.register("NFL", {
     [1971, 2001, "#00338D", "#C60C30"],   // royal blue jerseys with red
     [2002, 2010, "#00274D", "#C60C30"],   // 2002 redesign: navy jerseys with red; Wikipedia 2002-10
     [2011, 9999, "#00338D", "#C60C30"]],   // back to royal blue with red in 2011; Wikipedia (current)
-  "Carolina Panthers": [[1995, 9999, "#0085CA", "#000000"]],   // black jerseys with Panthers blue and silver; black is never primary, so blue leads; Wikipedia (current)
+  "Carolina Panthers": [[1995, 9999, "#000000", "#0085CA", {blackPrimary: true}]],   // black is the main dark jersey (blue is the alternate, per Wikipedia); Wikipedia (current)
   "Chicago Bears": [[1971, 9999, "#0B162A", "#C83803"]],   // navy jerseys with orange every year; Wikipedia (current)
-  "Cincinnati Bengals": [[1971, 9999, "#FB4F14", "#000000"]],   // orange and black every era (orange jerseys 1971-80, black since 1981 with orange stripes); Wikipedia (current)
+  "Cincinnati Bengals": [[1971, 9999, "#000000", "#FB4F14", {blackPrimary: true}]],   // black jerseys at home throughout their history (Wikipedia), with orange; Wikipedia (current)
   "Cleveland Browns": [[1971, 9999, "#311D00", "#FF3C00"]],   // brown jerseys with orange every year (1999-2014 shade darker); Wikipedia (current)
   "Dallas Cowboys": [[1971, 9999, "#041E42", "#869397"]],   // navy and silver every era (the Cowboys wear white at home); Wikipedia (current)
   "Denver Broncos": [
@@ -40,15 +41,17 @@ TeamColors.register("NFL", {
   "Houston Texans": [[2002, 9999, "#03202F", "#C8102E"]],   // deep steel blue jerseys with battle red; 2024 redesign kept the pair (red a little brighter); Wikipedia
   "Indianapolis Colts": [[1984, 9999, "#002C5F", "#FFFFFF"]],   // blue jerseys, white helmets; blue and white every year (gray only as facemask trim); Wikipedia (current)
   "Jacksonville Jaguars": [
-    [1995, 2012, "#006778", "#000000"],   // teal jerseys with black (and gold trim through 2008)
-    [2013, 2017, "#006778", "#D7A22A"],   // 2013 redesign: black-and-gold jerseys with teal accents (Ronjan's call: teal and gold)
-    [2018, 9999, "#006778", "#000000"]],   // 2018 redesign: teal and black; Wikipedia (current)
+    [1995, 2011, "#006778", "#000000"],   // teal home jerseys with black (black only for prime-time games 2003-07)
+    [2012, 2012, "#000000", "#006778", {blackPrimary: true}],   // black became the primary home jersey in 2012, teal the alternate (Wikipedia)
+    [2013, 2017, "#000000", "#D7A22A", {blackPrimary: true}],   // 2013 redesign: black home jersey with gold and teal trim (Ronjan's gold call)
+    [2018, 2020, "#000000", "#006778", {blackPrimary: true}],   // 2018 redesign: black primary jersey, teal alternate (Wikipedia)
+    [2021, 9999, "#006778", "#000000"]],   // teal back as the primary home jersey in 2021 (Wikipedia); Wikipedia (current)
   "Kansas City Chiefs": [[1971, 9999, "#E31837", "#FFB612"]],   // red jerseys with gold every year; Wikipedia (current)
-  "Las Vegas Raiders": [[2020, 9999, "#A5ACAF", "#000000"]],   // silver and black; Wikipedia
+  "Las Vegas Raiders": [[2020, 9999, "#000000", "#A5ACAF", {blackPrimary: true}]],   // black jerseys with silver
   "Los Angeles Chargers": [
     [2017, 2018, "#002A5E", "#FFC20E"],   // navy jerseys with gold (first two LA seasons); Wikipedia 2017-18
     [2019, 9999, "#0080C6", "#FFC20E"]],   // powder blue became the main jersey in 2019; Wikipedia (current)
-  "Los Angeles Raiders": [[1982, 1994, "#A5ACAF", "#000000"]],   // silver and black
+  "Los Angeles Raiders": [[1982, 1994, "#000000", "#A5ACAF", {blackPrimary: true}]],   // black jerseys with silver
   "Los Angeles Rams": [
     [1971, 1972, "#002244", "#FFFFFF"],   // blue and white uniforms (before the 1973 yellow horns); Wikipedia 1964-72
     [1973, 1994, "#003594", "#FFD100"],   // royal blue jerseys with yellow; Wikipedia 1973-94
@@ -60,7 +63,7 @@ TeamColors.register("NFL", {
     [1971, 1992, "#C60C30", "#00539B"],   // Pat Patriot era: red jerseys with royal blue; Wikipedia 1971-92
     [1993, 1999, "#0A2C80", "#C60C30"],   // Flying Elvis: royal blue jerseys with red (sampled from the uniform)
     [2000, 9999, "#002244", "#C60C30"]],   // 2000 redesign: navy jerseys with red and silver; Wikipedia (current)
-  "New Orleans Saints": [[1971, 9999, "#D3BC8D", "#000000"]],   // black and gold every year; black is never primary, so gold leads (old gold darker before 2000); Wikipedia (current)
+  "New Orleans Saints": [[1971, 9999, "#000000", "#D3BC8D", {blackPrimary: true}]],   // black jerseys with gold (black chosen as the primary color in 1967, per Wikipedia); old gold darker before 2000; Wikipedia (current)
   "New York Giants": [
     [1971, 1975, "#140F44", "#E62409"],   // dark navy jerseys with red; Wikipedia 1961-75
     [1976, 1999, "#00338D", "#C60C30"],   // royal blue jerseys with red; Wikipedia 1976-99
@@ -69,11 +72,11 @@ TeamColors.register("NFL", {
     [1971, 1997, "#00683C", "#FFFFFF"],   // kelly green and white jerseys
     [1998, 2018, "#203731", "#FFFFFF"],   // 1998 return to the Namath-era logo: hunter green and white
     [2019, 9999, "#115740", "#000000"]],   // 2019 redesign: gotham green with black; the 2024 legacy jerseys kept a similar green; Wikipedia (current)
-  "Oakland Raiders": [[1971, 2019, "#A5ACAF", "#000000"]],   // silver and black (Oakland 1971-81 and 1995-2019)
+  "Oakland Raiders": [[1971, 2019, "#000000", "#A5ACAF", {blackPrimary: true}]],   // black jerseys with silver
   "Philadelphia Eagles": [
     [1971, 1995, "#076B3B", "#A2AAAD"],   // kelly green jerseys with silver; Wikipedia 1973-95
     [1996, 9999, "#004C54", "#A5ACAF"]],   // 1996 redesign: midnight green with silver; Wikipedia (current)
-  "Pittsburgh Steelers": [[1971, 9999, "#FFB612", "#000000"]],   // black jerseys with gold every year; black is never primary, so gold leads; Wikipedia (current)
+  "Pittsburgh Steelers": [[1971, 9999, "#000000", "#FFB612", {blackPrimary: true}]],   // black jerseys with gold every year; Wikipedia (current)
   "San Diego Chargers": [
     [1971, 1973, "#4278B8", "#F1D022"],   // powder blue jerseys with gold; Wikipedia 1961-73
     [1974, 1987, "#001170", "#FAA70A"],   // Air Coryell: royal blue jerseys with gold; Wikipedia 1974-87
@@ -92,7 +95,10 @@ TeamColors.register("NFL", {
     [1997, 9999, "#A71930", "#322F2B"]],   // 1997 redesign: red jerseys with pewter (pewter darker since 2014); Wikipedia (current)
   "Tennessee Titans": [
     [1997, 1998, "#4B92DB", "#C8102E"],   // Tennessee Oilers: Columbia blue with scarlet, carried from Houston
-    [1999, 2025, "#0C2340", "#4B92DB"],   // Titans navy and Titans blue (jersey switched between navy and light blue a few times; navy most years)
+    [1999, 2007, "#0C2340", "#4B92DB"],   // navy home jerseys with Titans blue
+    [2008, 2014, "#4B92DB", "#0C2340"],   // Titans blue became the regular home jersey in 2008 (Wikipedia)
+    [2015, 2024, "#0C2340", "#4B92DB"],   // navy primary home jersey again from 2015 (Wikipedia)
+    [2025, 2025, "#4B92DB", "#0C2340"],   // light Titans blue reinstated as the primary home jersey for 2025 (Wikipedia)
     [2026, 9999, "#4B92DB", "#C8102E"]],   // 2026 redesign: light blue and red (new primary logo); Wikipedia (current)
   "Washington Commanders": [[1971, 9999, "#5A1414", "#FFB612"]],   // burgundy jerseys with gold every year (Redskins, Football Team, Commanders); Wikipedia (current)
 }, { confirmed: 2026 });

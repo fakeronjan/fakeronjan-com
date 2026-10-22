@@ -62,9 +62,13 @@
   function lineFor(p, s, bg) {
     p = contrast(p, bg) >= 3 ? p : push(p, bg, bg);
     s = contrast(s, bg) >= 3 ? s : push(s, bg, bg);
-    // Gray-toned pairs (silver and black) only differ by lightness.
+    // Gray-toned pairs (silver and black) only differ by lightness: the one
+    // farther from the page background moves farther still.
     var darkPage = lum(bg) <= 0.5;
-    if (sat(p) <= 0.15 && sat(s) <= 0.15 && contrast(p, s) < 3 && (darkPage ? lum(p) >= lum(s) : lum(p) <= lum(s))) p = push(p, bg, s);
+    if (sat(p) <= 0.15 && sat(s) <= 0.15 && contrast(p, s) < 3) {
+      if (darkPage ? lum(p) >= lum(s) : lum(p) <= lum(s)) p = push(p, bg, s);
+      else s = push(s, bg, p);
+    }
     return { p: p, s: s };
   }
 
