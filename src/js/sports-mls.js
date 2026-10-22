@@ -336,6 +336,7 @@
 
   function attachLinks(root) {
     root.querySelectorAll(".team-cell.linked, .team-link.linked").forEach(function (el) {
+      if (window.TeamColors) TeamColors.decorate(el, "MLS");   // team-color circle
       el.addEventListener("click", function (e) {
         e.stopPropagation();
         teamLinkClick(el.dataset.teamSlug, el.dataset.season);
@@ -626,7 +627,10 @@
     var hasProj = rows.some(function (g) { return g.proj; });
     var tableRows = rows.slice().reverse().map(function (g) {
       var era = (g.display_name && g.display_name !== canonical) ? g.display_name : "";
-      var seasonCell = era ? g.season + '<div class="sub-line-italic">' + era + "</div>" : g.season;
+      // All-seasons view: the club's circle for that year beside the season.
+      var dot = !isSingle && window.TeamColors ? TeamColors.dot("MLS", canonical, g.season) : "";
+      var seasonText = dot ? '<span class="tc-glue">' + dot + g.season + "</span>" : g.season;
+      var seasonCell = era ? seasonText + '<div class="sub-line-italic">' + era + "</div>" : seasonText;
       var dateLabel = g.is_end_of_regular_season === 1 ? "End of regular season" : g.is_end_of_season === 1 ? "End of playoffs" : "";
       var dateCell = dateLabel ? g.date + '<div class="sub-line-italic">' + dateLabel + "</div>" : g.date;
       return (
@@ -686,9 +690,14 @@
     var zeroY = py(0);
     var points = rows.map(function (r, i) { return px(i).toFixed(1) + "," + py(r.rating).toFixed(1); }).join(" ");
 
+    // Team colors when every season has them (js/team-colors.js); otherwise
+    // the usual cyan/pink line.
+    var tc = tsTeamSelect.value && window.TeamColors ? TeamColors.chartLine("MLS", tsTeamSelect.value, rows, px, py, zeroY, H) : null;
+    var useTeam = !!tc;
+
     function ctxLine(v) {
       var y = py(v).toFixed(1);
-      var col = v > 0 ? "var(--accent)" : "var(--accent-2)";
+      var col = useTeam ? "var(--muted)" : (v > 0 ? "var(--accent)" : "var(--accent-2)");
       return '<line x1="10" y1="' + y + '" x2="' + (W - 10).toFixed(1) + '" y2="' + y +
         '" stroke="' + col + '" stroke-width="1" stroke-dasharray="3,3" stroke-opacity="0.55"/>' +
         '<text x="12" y="' + (py(v) - 3).toFixed(1) + '" font-size="9" fill="' + col + '">' + (v > 0 ? "+" : "") + v + "</text>";
@@ -733,12 +742,12 @@
     tsChart.innerHTML =
       '<defs><linearGradient id="lineGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="' + H + '">' +
       '<stop offset="' + (zeroY / H - 0.0001).toFixed(4) + '" stop-color="var(--accent)"/>' +
-      '<stop offset="' + (zeroY / H + 0.0001).toFixed(4) + '" stop-color="var(--accent-2)"/></linearGradient></defs>' +
+      '<stop offset="' + (zeroY / H + 0.0001).toFixed(4) + '" stop-color="var(--accent-2)"/></linearGradient>' + (tc ? tc.defs : "") + "</defs>" +
       contextLines +
       '<line x1="10" y1="' + zeroY.toFixed(1) + '" x2="' + (W - 10).toFixed(1) + '" y2="' + zeroY.toFixed(1) + '" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4,3"/>' +
       '<line x1="10" y1="' + (CBOT + 2) + '" x2="' + (W - 10).toFixed(1) + '" y2="' + (CBOT + 2) + '" stroke="var(--muted)" stroke-width="1"/>' +
       ticks.join("") + xlabels.join("") +
-      '<polyline points="' + points + '" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linejoin="round"/>' +
+      (tc ? tc.lines : '<polyline points="' + points + '" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linejoin="round"/>') +
       clipMarks.join("");
   }
 
