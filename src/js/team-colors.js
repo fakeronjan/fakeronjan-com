@@ -1,13 +1,14 @@
 // Team colors for the sports pages, shared by every sports-*.js that loads it.
 //
 // Each league registers its teams' color eras: [first season, last season
-// (9999 = ongoing), primary, secondary, optional chart overrides]. The
-// circles always show primary and secondary; overrides like
+// (9999 = ongoing), primary, secondary, optional options]. The circles
+// always show primary and secondary; options like
 // { light: { s: "#000000" }, dark: { p: "#A2AAAD" } } change the chart line
 // in one theme only (Celtics, Nets). A team name with no era for a season
 // gets no colors, and pages fall back to their usual look. Two rules apply
 // to the data as registered:
-//   - Black is never a primary color: an era listed black-first is flipped.
+//   - Black is never a primary color: an era listed black-first is flipped,
+//     unless it sets { blackPrimary: true } (Falcons black-jersey eras).
 //   - Chart lines stay readable: a color under 3:1 contrast with the page
 //     background is lightened or darkened (never swapped for another color),
 //     and two gray-toned colors are kept at least 3:1 apart from each other.
@@ -23,8 +24,8 @@
   function register(league, data, opts) {
     Object.keys(data).forEach(function (team) {
       data[team] = data[team].map(function (e) {
-        var p = e[2].toUpperCase(), s = e[3].toUpperCase();
-        return (p === BLACK ? [e[0], e[1], s, p] : [e[0], e[1], p, s]).concat([e[4] || {}]);
+        var p = e[2].toUpperCase(), s = e[3].toUpperCase(), o = e[4] || {};
+        return (p === BLACK && !o.blackPrimary ? [e[0], e[1], s, p] : [e[0], e[1], p, s]).concat([o]);
       });
     });
     LEAGUES[league] = data;
@@ -85,12 +86,14 @@
     return '<svg class="tc-dot" viewBox="0 0 18 12" aria-hidden="true">' + c(12, e[3]) + c(6, e[2]) + '</svg>';
   }
 
-  // Adds the circle to a linked team name (data-team-slug = the name with
-  // underscores, data-season), glued to the name's first word so a wrapped
+  // Team name from a page's slug: spaces become "_" and "St. " becomes "St__".
+  function fromSlug(slug) { return slug.replace(/__/g, ". ").replace(/_/g, " "); }
+
+  // Adds the circle to a linked team name (data-team-slug, data-season), glued to the name's first word so a wrapped
   // name never leaves it alone on a line.
   function decorate(el, league) {
     if (el.querySelector(".tc-dot")) return;
-    var d = dot(league, el.dataset.teamSlug.replace(/_/g, " "), el.dataset.season);
+    var d = dot(league, fromSlug(el.dataset.teamSlug), el.dataset.season);
     if (!d) return;
     var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return /\S/.test(n.data) ? 1 : 3; } });
     var text = walker.nextNode();
@@ -132,5 +135,5 @@
     return { defs: defs, lines: lines };
   }
 
-  window.TeamColors = { register: register, era: era, line: line, dot: dot, decorate: decorate, chartLine: chartLine };
+  window.TeamColors = { register: register, era: era, line: line, dot: dot, decorate: decorate, chartLine: chartLine, fromSlug: fromSlug };
 })();
