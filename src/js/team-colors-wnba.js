@@ -17,13 +17,14 @@ TeamColors.register("WNBA", {
     [1997, 2003, "#301048", "#2898A0"],          // logo: purple, teal (Hornets colors)
     [2004, 2006, "#325A8B", "#F26531"]],         // blue, orange (Bobcats colors)
   "Chicago Sky": [[2006, 9999, "#5091CD", "#FFD520"]],
-  "Cleveland Rockers": [[1997, 2003, "#4682B4", "#000000"]],
-  "Connecticut Sun": [
-    [2003, 2020, "#F47424", "#C41030"],          // logo: orange, red
-    [2021, 9999, "#F05023", "#0A2240"]],         // orange, navy
+  "Cleveland Rockers": [[1997, 2003, "#00ACEC", "#000000"]],   // cyan, black (2001 media guide: "Cyan, Black & Silver")
+  "Connecticut Sun": [                            // uniforms by year per Wikipedia
+    [2003, 2003, "#C4101C", "#ECC03C"],          // red road jersey, gold trim
+    [2004, 2015, "#041C44", "#C4101C"],          // uniform: navy road jersey, red trim
+    [2016, 9999, "#F05023", "#0A2240"]],         // orange jersey added 2016; orange, navy
   "Dallas Wings": [[2016, 9999, "#002B5C", "#C4D600"]],
   "Detroit Shock": [
-    [1998, 2002, "#F4A00C", "#106C6C"],          // logo: gold, teal
+    [1998, 2002, "#F4A00C", "#106C6C"],          // logo: gold, teal (team colors "Black, Red, Teal & Yellow")
     [2003, 2009, "#ED174C", "#006BB6"]],
   "Golden State Valkyries": [[2025, 9999, "#B896D4", "#000000"]],
   "Houston Comets": [[1997, 2008, "#CE1141", "#00285E"]],
@@ -42,7 +43,7 @@ TeamColors.register("WNBA", {
     [2020, 9999, "#86CEBC", "#000000"]],         // seafoam, black
   "Orlando Miracle": [[1999, 2002, "#187CB4", "#000000"]],   // logo: electric blue, black
   "Phoenix Mercury": [
-    [1997, 2010, "#EC3834", "#F4E450"],          // logo: red, yellow
+    [1997, 2010, "#4460A4", "#F0E054"],          // uniform: purple-blue road jersey, yellow trim
     [2011, 2025, "#3C247C", "#E4601C"],          // logo: purple, orange
     [2026, 9999, "#3C286E", "#FA4B0A"]],         // purple, orange
   "Portland Fire": [
@@ -51,11 +52,11 @@ TeamColors.register("WNBA", {
   "Sacramento Monarchs": [[1997, 2009, "#753BBD", "#CE1141"]],
   "San Antonio Silver Stars": [[2003, 2017, "#C4CCD4", "#000000"]],   // logo: silver, black
   "Seattle Storm": [
-    [2000, 2015, "#34584C", "#8C202C"],          // logo: green, red
+    [2000, 2015, "#34584C", "#8C202C"],          // pine green, maroon red (red dropped Jan 2016)
     [2016, 9999, "#2C5235", "#FEE11A"]],         // green, yellow
   "Toronto Tempo": [[2026, 9999, "#441E36", "#B3C7E7"]],
   "Tulsa Shock": [[2010, 2015, "#FDBB30", "#C41230"]],
-  "Utah Starzz": [[1997, 2002, "#008080", "#483D8B"]],
+  "Utah Starzz": [[1997, 2002, "#008080", "#483D8B"]],   // teal, purple (jerseys teal/aqua; colors incl. purple)
   "Washington Mystics": [
     [1998, 2010, "#004880", "#B87040"],          // logo: blue, bronze
     [2011, 9999, "#E03A3E", "#002B5C"]],         // red, navy
