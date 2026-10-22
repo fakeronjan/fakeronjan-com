@@ -654,6 +654,7 @@
         "<td>" + (g.rank != null ? ratingBar(g.rating, barSc) : '<span style="color:var(--muted)">-</span>') + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(g.title_odds, g.title_odds_rank, g.releg_odds, g.releg_odds_rank) + "</td>" +
         '<td class="col-hide-mobile">' + leagueBadge(data.league, g.domestic_finish) + "</td>" +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(g.domestic_finish, g.cl_finish, g.el_finish, data.league, g.domestic_cup_finish) + "</td>" +
         "</tr>"
@@ -668,6 +669,7 @@
       '<th class="col-rank">OVR #</th><th class="col-hide-mobile col-rank">LG #</th>' +
       "<th>Rating</th>" +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
+      '<th class="col-hide-mobile col-od" title="' + LEAGUE_ODDS_TITLE + '">Lg Champ / Rel Odds</th>' +
       '<th class="col-hide-mobile">League</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";
