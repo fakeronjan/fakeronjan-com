@@ -641,8 +641,7 @@
 
     // Team colors when every season has them (js/team-colors.js); otherwise
     // the usual cyan/pink line.
-    var team = tsTeamSelect.value && window.TeamColors ? TeamColors.fromSlug(tsTeamSelect.value) : "";
-    var tc = team ? TeamColors.chartLine("NFL", team, rows, px, py, zeroY, H) : null;
+    var tc = tsTeamSelect.value && window.TeamColors ? TeamColors.chartLine("NFL", tsTeamSelect.value, rows, px, py, zeroY, H) : null;
     var useTeam = !!tc;
 
     function ctxLine(v) {

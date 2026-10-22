@@ -20,16 +20,22 @@
   // opts.confirmed: last season checked for rebrands (read by the droplet's
   // health check, not the pages).
   function register(league, data, opts) {
+    var byKey = {};
     Object.keys(data).forEach(function (team) {
-      data[team] = data[team].map(function (e) {
+      byKey[key(team)] = data[team].map(function (e) {
         return [e[0], e[1], e[2].toUpperCase(), e[3].toUpperCase(), e[4] || {}];
       });
     });
-    LEAGUES[league] = data;
+    LEAGUES[league] = byKey;
   }
 
+  // Teams are looked up by their pages' slug form, so a name and its slug
+  // ("Miami (OH)" / "Miami__OH", "St. Louis Cardinals" / "St__Louis_Cardinals")
+  // find the same colors: punctuation and spaces become "_", trailing ones go.
+  function key(team) { return String(team).replace(/[^A-Za-z0-9\u00C0-\u024F]/g, "_").replace(/_+$/, ""); }
+
   function era(league, team, season) {
-    var eras = (LEAGUES[league] || {})[team];
+    var eras = (LEAGUES[league] || {})[key(team)];
     if (!eras) return null;
     if (season == null || season === "") return eras[eras.length - 1];   // no season: current colors
     var y = Number(season);
@@ -87,14 +93,12 @@
     return '<svg class="tc-dot" viewBox="0 0 18 12" aria-hidden="true">' + c(12, e[3]) + c(6, e[2]) + '</svg>';
   }
 
-  // Team name from a page's slug: spaces become "_" and "St. " becomes "St__".
-  function fromSlug(slug) { return slug.replace(/__/g, ". ").replace(/_/g, " "); }
-
-  // Adds the circle to a linked team name (data-team-slug, data-season), glued to the name's first word so a wrapped
-  // name never leaves it alone on a line.
+  // Adds the circle to a linked team name (data-team-slug, data-season),
+  // glued to the name's first word so a wrapped name never leaves it alone
+  // on a line.
   function decorate(el, league) {
     if (el.querySelector(".tc-dot")) return;
-    var d = dot(league, fromSlug(el.dataset.teamSlug), el.dataset.season);
+    var d = dot(league, el.dataset.teamSlug, el.dataset.season);
     if (!d) return;
     var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return /\S/.test(n.data) ? 1 : 3; } });
     var text = walker.nextNode();
@@ -136,5 +140,5 @@
     return { defs: defs, lines: lines };
   }
 
-  window.TeamColors = { register: register, era: era, line: line, dot: dot, decorate: decorate, chartLine: chartLine, fromSlug: fromSlug };
+  window.TeamColors = { register: register, era: era, line: line, dot: dot, decorate: decorate, chartLine: chartLine };
 })();
