@@ -26,12 +26,14 @@ TeamColors.register("WNBA", {
   "Detroit Shock": [
     [1998, 2002, "#F4A00C", "#106C6C"],          // logo: gold, teal (team colors "Black, Red, Teal & Yellow")
     [2003, 2009, "#ED174C", "#006BB6"]],
-  "Golden State Valkyries": [[2025, 9999, "#B896D4", "#000000"]],
+  "Golden State Valkyries": [
+    [2025, 2025, "#000000", "#B896D4"],          // black Explorer jersey with violet
+    [2026, 9999, "#B896D4", "#000000"]],         // violet Explorer jersey with black (2026)
   "Houston Comets": [[1997, 2008, "#CE1141", "#00285E"]],
   "Indiana Fever": [[2000, 9999, "#002D62", "#E03A3E"]],
   "Las Vegas Aces": [
     [2018, 2023, "#B80828", "#000000"],          // logo: red, black (gold accent)
-    [2024, 9999, "#A7A8AA", "#000000"]],         // silver, black
+    [2024, 9999, "#000000", "#A7A8AA"]],         // black Explorer jersey with silver
   "Los Angeles Sparks": [[1997, 9999, "#552583", "#FDB927"]],
   "Miami Sol": [[2000, 2002, "#B22222", "#F49C34"]],
   "Minnesota Lynx": [
@@ -40,7 +42,7 @@ TeamColors.register("WNBA", {
   "New York Liberty": [
     [1997, 2019, "#1C3F6E", "#86CEBC"],          // navy, seafoam: Ronjan's call, one era for how it's remembered
                                                  // (uniforms: black body late 90s, medium blue 2010-15; orange only trim)
-    [2020, 9999, "#86CEBC", "#000000"]],         // seafoam, black
+    [2020, 9999, "#86CEBC", "#000000"]],         // seafoam Explorer jersey (2021 on), black
   "Orlando Miracle": [[1999, 2002, "#187CB4", "#000000"]],   // logo: electric blue, black
   "Phoenix Mercury": [
     [1997, 2010, "#4460A4", "#F0E054"],          // uniform: purple-blue road jersey, yellow trim
@@ -50,7 +52,7 @@ TeamColors.register("WNBA", {
     [2000, 2002, "#E03A3E", "#000000"],          // red, black
     [2026, 9999, "#C8102E", "#3F3735"]],
   "Sacramento Monarchs": [[1997, 2009, "#753BBD", "#CE1141"]],
-  "San Antonio Silver Stars": [[2003, 2017, "#C4CCD4", "#000000"]],   // logo: silver, black
+  "San Antonio Silver Stars": [[2003, 2017, "#000000", "#C4CCD4"]],   // black road jersey with silver (Wikipedia)
   "Seattle Storm": [
     [2000, 2015, "#34584C", "#8C202C"],          // pine green, maroon red (red dropped Jan 2016)
     [2016, 9999, "#2C5235", "#FEE11A"]],         // green, yellow

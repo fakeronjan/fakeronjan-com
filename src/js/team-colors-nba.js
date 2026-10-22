@@ -23,7 +23,7 @@ TeamColors.register("NBA", {
     [1977, 1977, "#003DA6", "#EC0044"],   // Wikipedia (New York Nets): blue, red
     [1978, 1997, "#1C4CA4", "#E4184C"],   // blue road jersey with red trim (NJ Nets)
     [1998, 2012, "#04245C", "#CE1141"],   // navy road jersey; Wikipedia (NJ Nets): navy, red
-    [2013, 9999, "#FFFFFF", "#000000", {dark: {p: "#A2AAAD", s: "#FFFFFF"}, light: {p: "#A2AAAD", s: "#000000"}}]],   // black and white since the Brooklyn move (Ronjan's call)
+    [2013, 9999, "#000000", "#FFFFFF", {dark: {p: "#A2AAAD", s: "#FFFFFF"}, light: {p: "#A2AAAD", s: "#000000"}}]],   // black and white since the Brooklyn move (Ronjan's call)
   "Buffalo Braves": [[1977, 1978, "#3E8EDE", "#E24301"]],   // light blue from 1973-74 through the move (SportsLogos News); Wikipedia
   "Charlotte Hornets": [
     [1989, 2002, "#00788C", "#3C2C84"],   // teal road jersey with purple trim; original Hornets teal and purple
@@ -33,7 +33,7 @@ TeamColors.register("NBA", {
   "Cleveland Cavaliers": [
     [1977, 1983, "#8C0804", "#FCB034"],   // wine road jersey with gold trim
     [1984, 1994, "#F05824", "#1C407C"],   // orange road jersey 1984-87, blue with orange 1988-94
-    [1995, 2003, "#5488CC", "#000000"],   // black road jersey with blue; logo black, blue, orange
+    [1995, 2003, "#000000", "#5488CC"],   // black road jersey with blue; logo black, blue, orange
     [2004, 9999, "#860038", "#BC945C"]],   // wine road jersey with gold; Wikipedia (current)
   "Dallas Mavericks": [
     [1981, 2001, "#042C8C", "#048034"],   // blue and green; green road jersey 1982-93
@@ -67,7 +67,7 @@ TeamColors.register("NBA", {
   "Memphis Grizzlies": [
     [2002, 2004, "#00AFAA", "#96694C"],   // Vancouver look kept: teal, bronze (black road jersey)
     [2005, 9999, "#5D76A9", "#12173F"]],   // Wikipedia (current): Beale Street blue, navy
-  "Miami Heat": [[1989, 9999, "#98002E", "#000000"]],   // black road jersey with red every era
+  "Miami Heat": [[1989, 9999, "#000000", "#98002E"]],   // black road jersey with red every era
   "Milwaukee Bucks": [
     [1977, 1993, "#204C24", "#BC1C2C"],   // green road jersey with red trim
     [1994, 2006, "#5C388C", "#0C4424"],   // purple road jersey with green
@@ -87,17 +87,23 @@ TeamColors.register("NBA", {
     [1980, 1983, "#242064", "#CC1044"],   // navy and crimson red from 1979-80, Penn's colors picked by team president E. Michael Burke (Wikipedia); navy road jersey, white home, crimson trim
     [1984, 9999, "#1D428A", "#F58426"]],   // blue road jersey with orange; Wikipedia (current)
   "Oklahoma City Thunder": [[2009, 9999, "#007AC1", "#EF3B24"]],   // blue road jersey; Wikipedia (current)
-  "Orlando Magic": [[1990, 9999, "#0050B5", "#000000"]],   // blue or black road jersey every era; Wikipedia (current)
+  "Orlando Magic": [
+    [1990, 1994, "#000000", "#0050B5"],   // black pinstripe road jersey with blue
+    [1995, 9999, "#0050B5", "#000000"]],   // blue road jersey since 1995; Wikipedia (current)
   "Philadelphia 76ers": [
     [1977, 1997, "#1D428A", "#C8102E"],   // red road jersey, blue logo
-    [1998, 2009, "#B89454", "#000000"],   // black road jersey; logo gold, black, blue (Ronjan's call)
+    [1998, 2009, "#000000", "#B89454"],   // black road jersey; logo gold, black, blue (Ronjan's call)
     [2010, 9999, "#1D428A", "#C8102E"]],   // red road jersey 2010-15, blue since; Wikipedia (current)
   "Phoenix Suns": [[1977, 9999, "#1D1160", "#E56020"]],   // purple road jersey with orange every era
-  "Portland Trail Blazers": [[1977, 9999, "#E03A3E", "#000000"]],   // black road jersey with red (red jersey 1980-85)
+  "Portland Trail Blazers": [
+    [1977, 1979, "#000000", "#E03A3E"],   // black road jersey with red
+    [1980, 1985, "#E03A3E", "#000000"],   // red road jersey 1980-85
+    [1986, 9999, "#000000", "#E03A3E"]],   // black road jersey with red since 1986)
   "Sacramento Kings": [
     [1986, 1994, "#1D3D92", "#CF321F"],   // blue road jersey with red (same colors as Kansas City)
-    [1995, 9999, "#5A2D81", "#000000"]],   // purple road jersey with black; Wikipedia (current)
-  "San Antonio Spurs": [[1977, 9999, "#C4CED4", "#000000"]],   // black road jersey with silver every era
+    [1995, 2002, "#000000", "#5A2D81"],   // black road jersey with purple
+    [2003, 9999, "#5A2D81", "#000000"]],   // purple road jersey with black since 2003; Wikipedia (current)
+  "San Antonio Spurs": [[1977, 9999, "#000000", "#C4CED4"]],   // black road jersey with silver every era
   "San Diego Clippers": [
     [1979, 1982, "#3E8EDE", "#E24301"],   // Braves light blue carried over (SportsLogos News); Wikipedia
     [1983, 1984, "#0068B4", "#C8102E"]],   // 1983 logo blue and red

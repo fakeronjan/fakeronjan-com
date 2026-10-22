@@ -4,28 +4,25 @@
 // (9999 = ongoing), primary, secondary, optional options]. The circles
 // always show primary and secondary; options like
 // { light: { s: "#000000" }, dark: { p: "#A2AAAD" } } change the chart line
-// in one theme only (Celtics, Nets). A team name with no era for a season
-// gets no colors, and pages fall back to their usual look. Two rules apply
-// to the data as registered:
-//   - Black is never a primary color: an era listed black-first is flipped,
-//     unless it sets { blackPrimary: true } (Falcons black-jersey eras).
-//   - Chart lines stay readable: a color under 3:1 contrast with the page
-//     background is lightened or darkened (never swapped for another color),
-//     and two gray-toned colors are kept at least 3:1 apart from each other.
+// in one theme only (Celtics, Nets). Primary is the color of the team's main
+// jersey (road jersey in basketball, home in football), black included. A
+// team name with no era for a season gets no colors, and pages fall back to
+// their usual look.
+//
+// Chart lines stay readable: a color under 3:1 contrast with the page
+// background is lightened or darkened (never swapped for another color),
+// and two gray-toned colors are kept at least 3:1 apart from each other.
 // Lines get a color for each theme, chosen by CSS (see .tc-stop in style.css).
 (function () {
   var LEAGUES = {};
   // The pages' --bg in each theme (style.css :root and its dark override).
   var BG = { light: "#fdfdfd", dark: "#16161a" };
-  var BLACK = "#000000";
-
   // opts.confirmed: last season checked for rebrands (read by the droplet's
   // health check, not the pages).
   function register(league, data, opts) {
     Object.keys(data).forEach(function (team) {
       data[team] = data[team].map(function (e) {
-        var p = e[2].toUpperCase(), s = e[3].toUpperCase(), o = e[4] || {};
-        return (p === BLACK && !o.blackPrimary ? [e[0], e[1], s, p] : [e[0], e[1], p, s]).concat([o]);
+        return [e[0], e[1], e[2].toUpperCase(), e[3].toUpperCase(), e[4] || {}];
       });
     });
     LEAGUES[league] = data;
