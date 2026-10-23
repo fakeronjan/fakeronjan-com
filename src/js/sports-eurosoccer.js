@@ -188,8 +188,7 @@
     return Math.round(x) + "%";
   }
 
-  // Title and relegation odds in one cell, each with its rank within the
-  // club's league (DILLON's fmtOddsPair).
+  // Two odds in one cell, each with its rank under it (DILLON's fmtOddsPair).
   function fmtOddsPair(a, aRank, b, bRank) {
     if (a == null && b == null) return "-";
     var sep = ' <span class="odds-sep">|</span> ';
@@ -210,6 +209,8 @@
     });
     return out;
   }
+
+  var CL_ODDS_TITLE = "CL Win: chance of winning this season's Champions League, from simulating the rest of the competition 10,000 times with current ratings, including draws not yet made. Clubs outside the Big Five leagues are rated from their European results. CL Qual: chance of finishing in a guaranteed Champions League place for next season (top 4; top 3 in Ligue 1), from the same league simulation. Extra places for the two best leagues in Europe and the title holders' places aren't counted.";
 
   var LEAGUE_ODDS_TITLE = "Chance of winning the league and of being relegated, from simulating the rest of the league season 10,000 times with current ratings. A relegation playoff place counts at that league's historical rate of losing the playoff. Each league's title chances sum to 100%.";
 
@@ -417,6 +418,7 @@
     // League ranks come from the whole snapshot, so a league filter doesn't change them.
     var titleRanks = leagueOddsRanks(state.currentSnapshot.teams, "title_odds");
     var relegRanks = leagueOddsRanks(state.currentSnapshot.teams, "releg_odds");
+    var qualRanks = leagueOddsRanks(state.currentSnapshot.teams, "cl_qual_odds");
 
     var rows = teams.map(function (t) {
       var isStale = !!(prevDate && t.last_match_date && t.last_match_date <= prevDate);
@@ -438,6 +440,7 @@
         '<td class="rating-cell col-od col-hide-mobile" title="Attacking strength: goals scored vs an average opponent. Sums with Defense to Rating.">' + fmtOD(t.rating_o, t.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile" title="Defending strength: goals prevented vs an average opponent. Sums with Offense to Rating.">' + fmtOD(t.rating_d, t.rank_d) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(t.title_odds, titleRanks[t.team], t.releg_odds, relegRanks[t.team]) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(t.cl_win_odds, t.cl_win_rank, t.cl_qual_odds, qualRanks[t.team]) + "</td>" +
         '<td class="col-last-match">' + renderLastMatch(t.last_match, season, isStale) +
         (t.last_match_date ? '<div class="sub-line-italic">' + t.last_match_date + "</div>" : "") + "</td>" +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(t.domestic_finish, t.cl_finish, t.el_finish, t.league, t.domestic_cup_finish) + "</td>" +
@@ -452,6 +455,7 @@
       '<th class="col-record">League W-D-L (Pts)</th><th>Rating</th>' +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
       '<th class="col-hide-mobile col-od" title="' + LEAGUE_ODDS_TITLE + '">Lg Champ / Rel Odds</th>' +
+      '<th class="col-hide-mobile col-od" title="' + CL_ODDS_TITLE + '">CL Win / CL Qual Odds</th>' +
       '<th class="col-last-match">Last Match</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + rows + "</tbody></table>";
@@ -655,6 +659,7 @@
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_o, g.rank_o) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOD(g.rating_d, g.rank_d) + "</td>" +
         '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(g.title_odds, g.title_odds_rank, g.releg_odds, g.releg_odds_rank) + "</td>" +
+        '<td class="rating-cell col-od col-hide-mobile">' + fmtOddsPair(g.cl_win_odds, g.cl_win_rank, g.cl_qual_odds, g.cl_qual_rank) + "</td>" +
         '<td class="col-hide-mobile">' + leagueBadge(data.league, g.domestic_finish) + "</td>" +
         '<td class="col-hide-mobile" style="font-size:11px">' + finishBadge(g.domestic_finish, g.cl_finish, g.el_finish, data.league, g.domestic_cup_finish) + "</td>" +
         "</tr>"
@@ -670,6 +675,7 @@
       "<th>Rating</th>" +
       '<th class="col-hide-mobile col-od">OFF</th><th class="col-hide-mobile col-od">DEF</th>' +
       '<th class="col-hide-mobile col-od" title="' + LEAGUE_ODDS_TITLE + '">Lg Champ / Rel Odds</th>' +
+      '<th class="col-hide-mobile col-od" title="' + CL_ODDS_TITLE + '">CL Win / CL Qual Odds</th>' +
       '<th class="col-hide-mobile">League</th>' +
       '<th class="col-hide-mobile">Honors</th>' +
       "</tr></thead><tbody>" + tableRows + "</tbody></table>";
