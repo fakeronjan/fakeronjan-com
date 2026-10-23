@@ -4,10 +4,7 @@ const $ = (s) => document.querySelector(s);
 const NS = 'http://www.w3.org/2000/svg';
 const IMG = (id) => `/blog/img/phone-timeline/${id}.jpg`;
 const MAKERS = ['Apple', 'Samsung', 'Google', 'Motorola', 'Microsoft', 'HTC'];
-const SHORT = { 'Droid RAZR Maxx 4G': 'Droid RAZR Maxx',
-  'Samsung Galaxy S6 Edge': 'Galaxy S6 Edge', 'Samsung Galaxy S7': 'Galaxy S7', 'Samsung Galaxy S10e': 'Galaxy S10e', 'Samsung Galaxy Z Flip 3': 'Galaxy Z Flip 3',
-  'Samsung Galaxy Z Flip 6': 'Galaxy Z Flip 6', 'Samsung Galaxy Z Fold 6': 'Galaxy Z Fold 6', 'Samsung Galaxy Z Fold 7': 'Galaxy Z Fold 7', 'Samsung Galaxy Z Fold 8 Ultra': 'Galaxy Z Fold 8 Ultra',
-  'Google Pixel 3': 'Pixel 3', 'Google Pixel 7': 'Pixel 7', 'Motorola Razr+': 'Razr+', 'Microsoft Surface Duo': 'Surface Duo' };
+const SHORT = { 'Droid RAZR Maxx 4G': 'Droid RAZR Maxx' };
 const DAY = 864e5;
 const pd = (s) => { const [m, d, y] = s.split('/').map(Number); return new Date(y, m - 1, d); };
 const my = (d) => `${d.getMonth() + 1}/${d.getFullYear()}`;
