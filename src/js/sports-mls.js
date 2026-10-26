@@ -1147,7 +1147,8 @@
   // ═══════════════════════════════ Daily Matchups ═══════════════════════════
   // DUNCAN's Daily Matchups (sports-nba.js), for soccer: home / draw / away
   // probabilities with the pick as the most likely of the three, stakes with
-  // a win, a draw, and a loss, penalty tags on playoff results.
+  // a win and with a loss (the draw's sits between the two, so it isn't
+  // shown), penalty tags on playoff results.
 
   var dmNav = document.getElementById("mlsDmNav");
   var dmNote = document.getElementById("dmNote");
@@ -1340,13 +1341,10 @@
       var s = g.stakes[side];
       if (key === "po") {
         if (s.po_win == null) return side === "away" ? '<span class="wm-dim">-</span>' : "";
-        return '<div class="wm-stake">' + dmPct(s.po_win) + sep + dmPct(s.po_draw) + sep + dmPct(s.po_loss) + "</div>";
+        return '<div class="wm-stake">' + dmPct(s.po_win) + sep + dmPct(s.po_loss) + "</div>";
       }
-      if (s.title_draw == null) {
-        var loss = ps && s.title_loss === 0 ? "out" : dmPct(s.title_loss);
-        return '<div class="wm-stake">' + dmPct(s.title_win) + sep + loss + "</div>";
-      }
-      return '<div class="wm-stake">' + dmPct(s.title_win) + sep + dmPct(s.title_draw) + sep + dmPct(s.title_loss) + "</div>";
+      var loss = ps && s.title_loss === 0 ? "out" : dmPct(s.title_loss);
+      return '<div class="wm-stake">' + dmPct(s.title_win) + sep + loss + "</div>";
     }).join("");
   }
 
@@ -1377,7 +1375,7 @@
     dmPrev.disabled = dmDaySelect.selectedIndex >= dmDaySelect.options.length - 1;
     dmNext.disabled = dmDaySelect.selectedIndex <= 0;
     dmNote.textContent = "Win, draw, and loss probabilities, line, and O/U for every match from COBI's ratings going into the day. " +
-      "Stakes show each club's playoff and MLS Cup odds with a win, a draw, and a loss.";
+      "Stakes show each club's playoff and MLS Cup odds with a win and with a loss.";
 
     // COBI's record picking results: this day, and the season through it.
     function tally(days) {
@@ -1420,7 +1418,6 @@
       (nUpset ? '<span class="wm-legend" title="COBI favors the club with fewer points per match">&#9889; Upset watch</span>' : "");
 
     function num(v) { return v == null ? '<span class="wm-dim">-</span>' : v; }
-    var wdl = ps ? "W/L" : "W/D/L";
     var rows = games.map(function (g) {
       var mark = (g === gotn ? "&#11088;" : "") + (isUpset(g) ? "&#9889;" : "");
       var kick = dmKickLine(g);
@@ -1448,8 +1445,8 @@
       '<th class="col-od" title="' + DM_JUICE_TITLE + '">Juice</th>' +
       '<th title="Each club\'s chance to win, and the chance of a draw. The pick, the most likely, in bold.">COBI pick</th>' +
       '<th class="col-hide-mobile">COBI Line</th><th class="col-od col-hide-mobile">COBI O/U</th>' +
-      (showPo ? '<th title="Playoff odds with a win / draw / loss">Playoff Odds (W/D/L)</th>' : "") +
-      '<th class="' + (ps ? "" : "col-hide-mobile") + '" title="MLS Cup odds with a ' + (ps ? "win / loss" : "win / draw / loss") + '">MLS Cup Odds (' + wdl + ")</th>" +
+      (showPo ? '<th title="Playoff odds with a win / with a loss">Playoff Odds (W/L)</th>' : "") +
+      '<th class="' + (ps ? "" : "col-hide-mobile") + '" title="MLS Cup odds with a win / with a loss">MLS Cup Odds (W/L)</th>' +
       "<th>Result</th></tr></thead><tbody>" + rows + "</tbody></table>";
     attachLinks(dmWrap);
   }

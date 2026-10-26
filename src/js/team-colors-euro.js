@@ -37,7 +37,7 @@ TeamColors.register("EURO", {
   "Derby County FC": [[1992, 9999, "#FFFFFF", "#000000"]],   // white home shirt, black shorts
   "Everton FC": [[1992, 9999, "#003399", "#FFFFFF"]],   // royal blue shirt, white shorts
   "Fulham FC": [[1992, 9999, "#FFFFFF", "#000000"]],   // white home shirt, black shorts
-  "Huddersfield": [[1992, 9999, "#0E63AD", "#FFFFFF"]],   // blue-and-white striped shirt
+  "Huddersfield Town AFC": [[1992, 9999, "#0E63AD", "#FFFFFF"]],   // blue-and-white striped shirt
   "Hull City AFC": [[1992, 9999, "#F5A12D", "#000000"]],   // amber and black
   "Ipswich Town FC": [[1992, 9999, "#0033A0", "#FFFFFF"]],   // blue home shirt, white shorts
   "Leeds United FC": [[1992, 9999, "#FFFFFF", "#1D428A"]],   // all-white home kit with blue and yellow trim
@@ -69,7 +69,7 @@ TeamColors.register("EURO", {
   "Wimbledon FC": [[1992, 9999, "#003399", "#FFE600"]],   // blue with yellow
   "Wolverhampton Wanderers FC": [[1992, 9999, "#FDB913", "#231F20"]],   // old gold shirt, black shorts
   // La Liga
-  "Albacete": [[1992, 9999, "#FFFFFF", "#C8102E"]],   // white home shirt
+  "Albacete Balompié": [[1992, 9999, "#FFFFFF", "#C8102E"]],   // white home shirt
   "Athletic Club de Bilbao": [[1992, 9999, "#EE2523", "#FFFFFF"]],   // red-and-white striped shirt
   "CA Osasuna": [[1992, 9999, "#D91A21", "#0A346F"]],   // red shirt, navy shorts
   "CD Leganés": [[1992, 9999, "#005BAA", "#FFFFFF"]],   // blue-and-white striped shirt
@@ -78,7 +78,7 @@ TeamColors.register("EURO", {
   "CD Tenerife": [[1992, 9999, "#FFFFFF", "#0033A0"]],   // white shirt, blue shorts
   "CF Extremadura": [[1992, 9999, "#AA0000", "#0033A0"]],   // red shirt with blue
   "Club Atlético de Madrid": [[1992, 9999, "#CB3524", "#FFFFFF"]],   // red-and-white striped shirt
-  "Cordoba": [[1992, 9999, "#008A3E", "#FFFFFF"]],   // green-and-white striped shirt
+  "Córdoba CF": [[1992, 9999, "#008A3E", "#FFFFFF"]],   // green-and-white striped shirt
   "CP Mérida": [[1992, 9999, "#FFFFFF", "#000000"]],   // white shirt, black shorts
   "Cádiz CF": [[1992, 9999, "#FFE500", "#0045A7"]],   // yellow shirt, blue shorts
   "Deportivo Alavés": [[1992, 9999, "#0761AF", "#FFFFFF"]],   // blue-and-white striped shirt
@@ -89,7 +89,7 @@ TeamColors.register("EURO", {
   "Gimnàstic de Tarragona": [[1992, 9999, "#C8102E", "#FFFFFF"]],   // red shirt, white shorts
   "Girona FC": [[1992, 9999, "#CD2534", "#FFFFFF"]],   // red-and-white striped shirt
   "Granada CF": [[1992, 9999, "#C31632", "#FFFFFF"]],   // red-and-white hooped shirt
-  "Huesca": [[1992, 9999, "#A31A33", "#003DA5"]],   // garnet and blue
+  "SD Huesca": [[1992, 9999, "#A31A33", "#003DA5"]],   // garnet and blue
   "Hércules CF": [[1992, 9999, "#005DAA", "#FFFFFF"]],   // blue-and-white striped shirt
   "Levante UD": [[1992, 9999, "#004D98", "#B4053F"]],   // blue and garnet
   "Málaga CF": [[1992, 9999, "#3E8ED0", "#FFFFFF"]],   // sky-blue-and-white striped shirt
@@ -106,7 +106,7 @@ TeamColors.register("EURO", {
   "Real Sociedad de Fútbol": [[1992, 9999, "#0067B1", "#FFFFFF"]],   // blue-and-white striped shirt
   "Real Valladolid CF": [[1992, 9999, "#921B88", "#FFFFFF"]],   // purple-and-white striped shirt
   "Real Zaragoza": [[1992, 9999, "#FFFFFF", "#0057B8"]],   // white shirt, blue shorts
-  "Recreativo Huelva": [[1992, 9999, "#005BAC", "#FFFFFF"]],   // blue-and-white striped shirt
+  "Recreativo de Huelva": [[1992, 9999, "#005BAC", "#FFFFFF"]],   // blue-and-white striped shirt
   "SD Compostela": [[1992, 9999, "#87CEEB", "#FFFFFF"]],   // sky blue and white
   "SD Eibar": [[1992, 9999, "#A6192E", "#003DA5"]],   // garnet and blue
   "Sevilla FC": [[1992, 9999, "#FFFFFF", "#D70D2B"]],   // white shirt with red
@@ -133,15 +133,15 @@ TeamColors.register("EURO", {
   "AS Roma": [[1992, 9999, "#8E1F2F", "#F0BC42"]],   // giallorossi: maroon and orange-gold
   "Ascoli Calcio": [[1992, 9999, "#000000", "#FFFFFF"]],   // black-and-white striped shirt
   "Atalanta BC": [[1992, 9999, "#1E71B8", "#000000"]],   // nerazzurri: blue-and-black striped shirt
-  "Benevento": [[1992, 9999, "#FFDE00", "#E2001A"]],   // yellow-and-red striped shirt
+  "Benevento Calcio": [[1992, 9999, "#FFDE00", "#E2001A"]],   // yellow-and-red striped shirt
   "Bologna FC 1909": [[1992, 9999, "#A21C26", "#1A2F48"]],   // rossoblù: red and blue
   "Brescia Calcio": [[1992, 9999, "#005CA9", "#FFFFFF"]],   // blue shirt with the white V
   "Cagliari Calcio": [[1992, 9999, "#B01028", "#002350"]],   // rossoblù: red and blue halves
   "Calcio Catania": [[1992, 9999, "#E2001A", "#0033A0"]],   // rossazzurri: red-and-blue striped shirt
   "Calcio Padova": [[1992, 9999, "#FFFFFF", "#E2001A"]],   // white shirt with red
-  "Carpi": [[1992, 9999, "#FFFFFF", "#E2001A"]],   // white shirt with red
+  "Carpi FC": [[1992, 9999, "#FFFFFF", "#E2001A"]],   // white shirt with red
   "Como 1907": [[1992, 9999, "#215AAE", "#FFFFFF"]],   // blue and white
-  "Crotone": [[1992, 9999, "#002350", "#C8102E"]],   // blue-and-red striped shirt
+  "FC Crotone": [[1992, 9999, "#002350", "#C8102E"]],   // blue-and-red striped shirt
   "Delfino Pescara": [[1992, 9999, "#2C9AD6", "#FFFFFF"]],   // sky blue and white
   "Empoli FC": [[1992, 9999, "#00579C", "#FFFFFF"]],   // blue and white
   "FC Internazionale Milano": [[1992, 9999, "#0068A8", "#000000"]],   // nerazzurri: blue-and-black striped shirt
@@ -157,10 +157,10 @@ TeamColors.register("EURO", {
     [1998, 2003, "#FFD200", "#1E4A9E"],   // yellow-and-blue hooped home shirt (Parmalat era, 1998-2004)
     [2004, 9999, "#FFFFFF", "#000000"]],   // white shirt with the black cross (crociata) since 2004
   "Piacenza Calcio": [[1992, 9999, "#E2001A", "#FFFFFF"]],   // red and white
-  "Pisa": [[1992, 9999, "#000000", "#0055A5"]],   // nerazzurri: black-and-blue striped shirt
+  "Pisa SC": [[1992, 9999, "#000000", "#0055A5"]],   // nerazzurri: black-and-blue striped shirt
   "Reggina Calcio": [[1992, 9999, "#8B1A2B", "#FFFFFF"]],   // amaranto and white
   "SPAL": [[1992, 9999, "#0A94CD", "#FFFFFF"]],   // sky-blue-and-white striped shirt
-  "Spezia": [[1992, 9999, "#FFFFFF", "#000000"]],   // white shirt with black
+  "Spezia Calcio": [[1992, 9999, "#FFFFFF", "#000000"]],   // white shirt with black
   "SS Lazio": [[1992, 9999, "#87D8F7", "#FFFFFF"]],   // biancocelesti: sky blue and white
   "SSC Napoli": [[1992, 9999, "#12A0D7", "#FFFFFF"]],   // azzurri: sky blue and white
   "Torino FC": [[1992, 9999, "#7A1C27", "#FFFFFF"]],   // granata and white
@@ -191,20 +191,20 @@ TeamColors.register("EURO", {
   "Dynamo Dresden": [[1992, 9999, "#FFCC00", "#000000"]],   // yellow and black
   "Eintracht Braunschweig": [[1992, 9999, "#FFD700", "#003399"]],   // yellow home shirt, blue shorts
   "Eintracht Frankfurt": [[1992, 9999, "#000000", "#E1000F"]],   // black and red
-  "Elversberg": [[1992, 9999, "#FFFFFF", "#000000"]],   // white home shirt with black
+  "SV 07 Elversberg": [[1992, 9999, "#FFFFFF", "#000000"]],   // white home shirt with black
   "Energie Cottbus": [[1992, 9999, "#E2001A", "#FFFFFF"]],   // red home shirt, white shorts
   "FC Augsburg": [[1992, 9999, "#BA3733", "#46714D"]],   // red and green (with white)
   "FC Bayern München": [[1992, 9999, "#DC052D", "#FFFFFF"]],   // red home shirt with white
   "FC Schalke 04": [[1992, 9999, "#004D9D", "#FFFFFF"]],   // royal blue home shirt with white
   "FC St. Pauli": [[1992, 9999, "#624839", "#FFFFFF"]],   // brown and white
   "Fortuna Düsseldorf": [[1992, 9999, "#DA251D", "#FFFFFF"]],   // red and white
-  "Greuther Furth": [[1992, 9999, "#009A44", "#FFFFFF"]],   // green and white
+  "SpVgg Greuther Fürth": [[1992, 9999, "#009A44", "#FFFFFF"]],   // green and white
   "Hamburger SV": [[1992, 9999, "#FFFFFF", "#E2001A"]],   // white home shirt with red shorts ('die Rothosen')
   "Hannover 96": [[1992, 9999, "#C8102E", "#FFFFFF"]],   // red home shirt ('die Roten') with white
   "Hansa Rostock": [[1992, 9999, "#005DA8", "#FFFFFF"]],   // blue home shirt, white shorts
   "Hertha BSC": [[1992, 9999, "#005CA9", "#FFFFFF"]],   // blue and white
   "Holstein Kiel": [[1992, 9999, "#004B9B", "#FFFFFF"]],   // blue home shirt, white shorts
-  "Ingolstadt": [[1992, 9999, "#C8102E", "#000000"]],   // red home shirt, black shorts
+  "FC Ingolstadt 04": [[1992, 9999, "#C8102E", "#000000"]],   // red home shirt, black shorts
   "Karlsruher SC": [[1992, 9999, "#00349E", "#FFFFFF"]],   // blue and white
   "KFC Uerdingen 05": [[1992, 9999, "#E2001A", "#004B93"]],   // red home shirt, blue shorts
   "MSV Duisburg": [[1992, 9999, "#004B9B", "#FFFFFF"]],   // blue-and-white hooped shirt ('Zebras')
@@ -248,7 +248,7 @@ TeamColors.register("EURO", {
   "FC Nantes": [[1992, 9999, "#FCD405", "#00A04D"]],   // yellow and green
   "FC Sochaux-Montbéliard": [[1992, 9999, "#FFD800", "#0B1031"]],   // yellow shirt, navy shorts
   "Grenoble Foot 38": [[1992, 9999, "#005BA8", "#FFFFFF"]],   // blue and white
-  "LB Chateauroux": [[1992, 9999, "#003DA5", "#C8102E"]],   // blue and red
+  "LB Châteauroux": [[1992, 9999, "#003DA5", "#C8102E"]],   // blue and red
   "Le Havre AC": [[1992, 9999, "#6CB4EE", "#0D2142"]],   // sky blue and navy
   "Le Mans FC": [[1992, 9999, "#E2001A", "#FFD100"]],   // red with yellow
   "Lille OSC": [[1992, 9999, "#E01E13", "#221F64"]],   // red shirt, navy shorts
