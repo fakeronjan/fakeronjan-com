@@ -22,6 +22,7 @@ eleventyComputed:
 
   <nav class="sport-tabs" id="zdTabs">
     <button class="sport-tab active" data-tab="standings" type="button">Standings</button>
+    <button class="sport-tab" data-tab="daily-matchups" id="zdDmNav" hidden type="button">Daily Matchups</button>
     <button class="sport-tab" data-tab="team-summary" type="button">Club Summary</button>
     <button class="sport-tab" data-tab="league-history" type="button">League Winners</button>
     <button class="sport-tab" data-tab="goat" type="button">GOAT Table</button>
@@ -36,6 +37,26 @@ eleventyComputed:
     </div>
     <div id="zdDisrupted" class="sport-disrupted-note" hidden></div>
     <div id="zdStandingsTable" class="sport-table-wrap"></div>
+  </section>
+
+  <section class="sport-view" data-view="daily-matchups" id="daily-matchups" hidden>
+    <p class="sport-note" id="dmNote"></p>
+    <div class="sport-controls">
+      <select id="dmSeasonSelect" class="sport-select" aria-label="Season"></select>
+      <div class="step-nav">
+        <button class="pill" id="dmPrev" type="button" aria-label="Previous match day">&#9664;</button>
+        <select id="dmDaySelect" class="sport-select" aria-label="Day"></select>
+        <button class="pill" id="dmNext" type="button" aria-label="Next match day">&#9654;</button>
+      </div>
+      <div class="pill-group" id="dmLeaguePills"></div>
+      <div class="pill-group" id="dmSortPills" role="group" aria-label="Sort">
+        <span class="wc-md-label">Sort</span>
+        <button class="pill active" data-dmsort="juice" type="button">Juice</button>
+        <button class="pill" data-dmsort="kickoff" type="button">Kickoff</button>
+      </div>
+    </div>
+    <div id="dmStamp" class="wc-stamp"></div>
+    <div id="dmWrap" class="sport-table-wrap"></div>
   </section>
 
   <section class="sport-view" data-view="team-summary" id="team-summary" hidden>

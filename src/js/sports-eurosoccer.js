@@ -967,6 +967,333 @@
     { value: "defense", label: "Defense only" },
   ], state.goatMetric, function (v) { state.goatMetric = v; Promise.resolve(loadGoat()).then(function () { writeUrl(); }); });
 
+  // ═══════════════════════════════ Daily Matchups ═══════════════════════════
+  // COBI's Daily Matchups (sports-mls.js) for the Big-5 leagues and the
+  // Champions League: league pills like Standings ("All Leagues" = the five
+  // leagues; the CL on its own pill), title / relegation / CL-qualification
+  // stakes for league matches, CL-winner stakes for CL matches.
+
+  var dmNav = document.getElementById("zdDmNav");
+  var dmNote = document.getElementById("dmNote");
+  var dmSeasonSelect = document.getElementById("dmSeasonSelect");
+  var dmDaySelect = document.getElementById("dmDaySelect");
+  var dmPrev = document.getElementById("dmPrev");
+  var dmNext = document.getElementById("dmNext");
+  var dmSortPills = document.getElementById("dmSortPills");
+  var dmStamp = document.getElementById("dmStamp");
+  var dmWrap = document.getElementById("dmWrap");
+  state.dmSeasons = {};
+  state.dmLeague = "all";
+  var DM_LEAGUE_OPTS = [{ value: "all", label: "All Leagues" }].concat(LEAGUE_OPTIONS, [UEFA_OPTIONS[0]]);
+  function dmInLeague(g) { return state.dmLeague === "all" ? g.league !== "Champions League" : g.league === state.dmLeague; }
+  function dmDays(d) {
+    return d.days.map(function (x) { return { date: x.date, games: x.games.filter(dmInLeague) }; })
+      .filter(function (x) { return x.games.length; });
+  }
+  function onDmLeague(v) {
+    state.dmLeague = v;
+    if (state.dmSeasons[state.dmSeason]) fillDmDays(state.dmSeasons[state.dmSeason], dmDaySelect.value);
+    writeUrl();
+  }
+  state.dmSort = "juice";
+  try { if (localStorage.getItem("zidaneDmSort") === "kickoff") state.dmSort = "kickoff"; } catch (e) {}
+  function syncDmSortPills() {
+    dmSortPills.querySelectorAll(".pill").forEach(function (p) { p.classList.toggle("active", p.dataset.dmsort === state.dmSort); });
+  }
+  syncDmSortPills();
+  dmSortPills.addEventListener("click", function (e) {
+    var btn = e.target.closest(".pill");
+    if (!btn || btn.dataset.dmsort === state.dmSort) return;
+    state.dmSort = btn.dataset.dmsort;
+    try { localStorage.setItem("zidaneDmSort", state.dmSort); } catch (err) {}
+    syncDmSortPills();
+    renderDailyMatchups();
+    writeUrl();
+  });
+
+  var DM_QUALITY_TITLE = "How good and how even the matchup is: both clubs' ratings and how close ZIDANE has the match. 0-100, ranked against every match.";
+  var DM_STAKES_TITLE = "How much the result swings both clubs' title, relegation, and Champions League odds. 0-100, ranked against every match.";
+  var DM_JUICE_TITLE = "Quality and Stakes combined (their geometric mean). A match needs both to score high.";
+
+  // Short club names in the matchup, line, and result (three stakes columns
+  // leave no room for full names): the name a club goes by where it's well
+  // known (Man City, Bayern, PSG), else the name without its club-form tags
+  // and founding year ("AS Roma" -> Roma, "1. FSV Mainz 05" -> Mainz).
+  var DM_SHORT = {
+    "Manchester City FC": "Man City", "Manchester United FC": "Man United", "Tottenham Hotspur FC": "Tottenham",
+    "Brighton & Hove Albion FC": "Brighton", "Wolverhampton Wanderers FC": "Wolves", "Nottingham Forest FC": "Nott'm Forest",
+    "West Ham United FC": "West Ham", "Newcastle United FC": "Newcastle", "Sheffield Wednesday FC": "Sheffield Wed",
+    "Sheffield United FC": "Sheffield Utd", "Queens Park Rangers FC": "QPR", "West Bromwich Albion FC": "West Brom",
+    "Huddersfield Town AFC": "Huddersfield", "Leicester City FC": "Leicester", "Crystal Palace FC": "Palace",
+    "FC Bayern München": "Bayern", "Bayer 04 Leverkusen": "Leverkusen", "Borussia Mönchengladbach": "Gladbach",
+    "Borussia Dortmund": "Dortmund", "Eintracht Frankfurt": "Frankfurt", "TSG 1899 Hoffenheim": "Hoffenheim",
+    "Paris Saint-Germain FC": "PSG", "Olympique de Marseille": "Marseille", "Olympique Lyonnais": "Lyon",
+    "OGC Nice": "Nice", "Racing Club de Lens": "Lens", "Stade Rennais FC 1901": "Rennes", "Stade Brestois 29": "Brest",
+    "FC Internazionale Milano": "Inter", "Club Atlético de Madrid": "Atlético", "Real Betis Balompié": "Betis",
+    "RCD Espanyol de Barcelona": "Espanyol", "Deportivo de La Coruña": "Deportivo", "Real Sociedad de Fútbol": "Real Sociedad",
+    "Athletic Club de Bilbao": "Athletic Club", "Rayo Vallecano de Madrid": "Rayo Vallecano", "RC Celta de Vigo": "Celta",
+    "Sporting Clube de Portugal": "Sporting CP", "Sport Lisboa e Benfica": "Benfica",
+    "US Città di Palermo": "Palermo",
+  };
+  var DM_TAG = /^(1\. FC|1\. FSV|FC|AFC|CF|AC|ACF|AS|US|SS|SSC|SC|SV|VfB|VfL|SpVgg|RC|RCD|CD|UD|SD|OGC|Club) /;
+  function dmNick(name) {
+    if (DM_SHORT[name]) return DM_SHORT[name];
+    var n = name;
+    for (var i = 0; i < 2; i++) n = n.replace(DM_TAG, "").replace(/^\d{2,4} /, "");
+    n = n.replace(/ (FC|AFC|CF|SC|BC|CFC|Calcio|\d{2,4})$/, "").replace(/ (FC|AFC|CF|Calcio|\d{2,4})$/, "");
+    return n || name;
+  }
+  function dmPct(v) {
+    if (v == null) return "-";
+    if (v === 0) return "0%";
+    return oddsPct(v);
+  }
+  function dmDayLabel(ds) {
+    var p = ds.split("-");
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return d.toLocaleDateString("en-US", { weekday: "short" }) + " " + (+p[1]) + "/" + (+p[2]) + "/" + p[0];
+  }
+  // Kickoff in the viewer's own time zone (data is UTC).
+  function dmTipoff(g) {
+    if (!g.kickoff) return "";
+    return new Date(g.kickoff).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+  }
+  // Playoff matches: the round, and where a best-of-three stands.
+  function dmSeries(g) {
+    var s = g.series;
+    if (!s) return "";
+    if (s.kind !== "bo3") return s.round;
+    var h = s.home_wins, a = s.away_wins;
+    var game = s.round + ", Game " + (h + a + 1);
+    if (h === a) return game + (h ? ", series tied " + h + "-" + a : "");
+    var leader = dmNick(h > a ? dmShown(g, "home") : dmShown(g, "away"));
+    // Plural nicknames take "lead" (Brewers lead), the rest "leads" (Heat leads).
+    return game + ", " + leader + (/s$/.test(leader) ? " lead " : " leads ") + Math.max(h, a) + "-" + Math.min(h, a);
+  }
+  function dmKickLine(g) {
+    return [dmSeries(g), dmTipoff(g)].filter(Boolean).join(" · ");
+  }
+  // The pick: the most likely of home win, draw, away win.
+  function dmPick(g) {
+    var d = g.p_draw == null ? -1 : g.p_draw;
+    if (d > g.p_home && d > g.p_away) return { side: "draw", team: "Draw", p: d };
+    var home = g.p_home >= g.p_away;
+    return { side: home ? "home" : "away", team: home ? dmShown(g, "home") : dmShown(g, "away"), p: home ? g.p_home : g.p_away, home: home };
+  }
+  function dmLine(g) {
+    if (Math.abs(g.line) < 0.125) return "Pick'em";
+    return dmNick(g.line > 0 ? dmShown(g, "home") : dmShown(g, "away")) + " by " + Math.abs(g.line);
+  }
+  function dmOutcome(g) {
+    var r = g.result;
+    if (!r) return null;
+    if (r.home > r.away || r.pens === "home") return "home";
+    if (r.away > r.home || r.pens === "away") return "away";
+    return "draw";
+  }
+  function dmCorrect(g) {
+    var o = dmOutcome(g);
+    return o == null ? null : dmPick(g).side === o;
+  }
+  // Points per match from a W-D-L record.
+  function dmPctOf(rec) {
+    var m = rec.match(/^(\d+)-(\d+)-(\d+)$/);
+    if (!m) return 0;
+    var w = +m[1], d = +m[2], l = +m[3];
+    return w + d + l ? (3 * w + d) / (w + d + l) : 0;
+  }
+
+  function loadDailyMatchups() {
+    return fetch(BASE + "/daily_matchups/index.json")
+      .then(function (r) { return r.json(); })
+      .then(function (idx) {
+        if (!idx.seasons || !idx.seasons.length) return;
+        state.dmIndex = idx;
+        dmNav.hidden = false;
+        dmSeasonSelect.innerHTML = idx.seasons.map(function (y) { return '<option value="' + y + '">' + y + "</option>"; }).join("");
+        dmSeasonSelect.onchange = function () { loadDmSeason(dmSeasonSelect.value).then(function () { writeUrl(); }); };
+        buildPillsFromOpts("dmLeaguePills", DM_LEAGUE_OPTS, state.dmLeague, onDmLeague);
+        dmDaySelect.onchange = function () { renderDailyMatchups(); writeUrl(); };
+        dmPrev.onclick = function () { stepDmDay(-1); };
+        dmNext.onclick = function () { stepDmDay(1); };
+        return loadDmSeason(idx.seasons[0]);
+      })
+      .catch(function () {});
+  }
+
+  // Default day: today if there are matches, else the latest day on or
+  // before today, else (preseason) the first day.
+  function dmDefaultDay(d) {
+    var now = new Date();
+    var today = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+    var days = dmDays(d);
+    if (!days.length) return null;
+    var pick = days[0].date;
+    days.forEach(function (x) { if (x.date <= today) pick = x.date; });
+    return pick;
+  }
+
+  function loadDmSeason(season) {
+    var have = state.dmSeasons[season];
+    var p = have ? Promise.resolve(have) : fetch(BASE + "/daily_matchups/" + season + ".json").then(function (r) { return r.json(); });
+    return p.then(function (d) {
+      state.dmSeasons[season] = d;
+      state.dmSeason = season;
+      dmSeasonSelect.value = String(season);
+      fillDmDays(d, null);
+    });
+  }
+
+  // Day dropdown (ISO dates, newest first): only days with a match for the
+  // league pill. Keeps the chosen day when it still has one.
+  function fillDmDays(d, keep) {
+    var days = dmDays(d);
+    dmDaySelect.innerHTML = days.slice().reverse().map(function (x) {
+      return '<option value="' + x.date + '">' + x.date + "</option>";
+    }).join("");
+    if (keep && U.hasOption(dmDaySelect, keep)) dmDaySelect.value = keep;
+    else if (days.length) dmDaySelect.value = dmDefaultDay(d);
+    renderDailyMatchups();
+  }
+
+  function stepDmDay(dir) {
+    // Options are newest first, so "next day" is one option up.
+    var i = dmDaySelect.selectedIndex - dir;
+    if (i < 0 || i >= dmDaySelect.options.length) return;
+    dmDaySelect.selectedIndex = i;
+    renderDailyMatchups();
+    writeUrl();
+  }
+
+  // name = canonical (links), shown = the era's name.
+  function dmTeamLink(name, shown, season) {
+    var slug = state.nameToSlug[name];
+    return slug ? '<span class="team-link linked" data-team-slug="' + slug + '" data-season="' + season + '">' + shown + "</span>" : shown;
+  }
+  function dmShown(g, side) { return g[side + "_display"] || g[side]; }
+
+  // The pick column: each club's chance to win (away, home) and the draw's,
+  // the pick (the most likely) in bold.
+  function dmWinLines(g) {
+    var side = dmPick(g).side;
+    function line(key, label) {
+      return '<div class="wm-stake' + (key === side ? " wm-juice" : key === "draw" ? " wm-dim" : "") + '">' + label + "</div>";
+    }
+    return line("away", dmPct(g.p_away)) + line("home", dmPct(g.p_home)) +
+      (g.p_draw == null ? "" : line("draw", "Draw " + dmPct(g.p_draw)));
+  }
+
+  function dmResult(g) {
+    if (!g.result) return '<span class="wm-dim">-</span>';
+    var ok = dmCorrect(g);
+    var mark = ok == null ? "&nbsp;" : (ok ? '<span class="wc-w">&#10003;</span>' : '<span class="wc-l">&#10007;</span>');
+    var o = dmOutcome(g);
+    var pens = g.result.pens ? ' <span class="wm-dim">(pens)</span>' : "";
+    function wdl(side) {
+      if (o === "draw") return ' <span class="wm-dim">D</span>';
+      return o === side ? ' <span class="wc-w">W</span>' + pens : ' <span class="wc-l">L</span>';
+    }
+    return "<div>" + dmNick(dmShown(g, "away")) + " " + g.result.away + wdl("away") + "</div>" +
+      "<div>" + dmNick(dmShown(g, "home")) + " " + g.result.home + wdl("home") + "</div>" +
+      (dmKickLine(g) ? '<div class="wm-mark-line sub-line-italic">' + mark + "</div>" : "");
+  }
+
+  function renderDailyMatchups() {
+    var d = state.dmSeasons[state.dmSeason];
+    if (!d) return;
+    var date = dmDaySelect.value;
+    var day = dmDays(d).filter(function (x) { return x.date === date; })[0];
+    if (!day) { dmWrap.innerHTML = '<p class="sport-note">No matches</p>'; dmStamp.innerHTML = ""; return; }
+    var ps = false;
+    var isCl = state.dmLeague === "Champions League";
+    var showQual = !isCl && day.games.some(function (g) { return g.stakes.home.qual_win != null; });
+    dmPrev.disabled = dmDaySelect.selectedIndex >= dmDaySelect.options.length - 1;
+    dmNext.disabled = dmDaySelect.selectedIndex <= 0;
+    dmNote.textContent = "Win, draw, and loss probabilities, line, and O/U for every match from ZIDANE's ratings going into the day. " +
+      "Stakes show each club's title, relegation, and Champions League odds with a win and with a loss.";
+
+    // ZIDANE's record picking results: this day, and the season through it.
+    function tally(days) {
+      var w = 0, l = 0;
+      days.forEach(function (x) { x.games.forEach(function (g) { var c = dmCorrect(g); if (c === true) w++; else if (c === false) l++; }); });
+      return [w, l];
+    }
+    var thisDay = tally([day]);
+    var season = tally(dmDays(d).filter(function (x) { return x.date <= date; }));
+    var stamp = '<span class="wc-md-label">ZIDANE pick record</span>';
+    // Broadest first: the season (for the league pill), then this day.
+    if (season[0] + season[1]) stamp += '<span class="wc-result">' + d.season + " season <b>" + season[0] + "-" + season[1] + "</b></span>";
+    if (thisDay[0] + thisDay[1]) stamp += '<span class="wc-result">' + dmDayLabel(date) + " <b>" + thisDay[0] + "-" + thisDay[1] + "</b></span>";
+    dmStamp.innerHTML = stamp;
+
+    var byJuice = function (a, b) { return (b.juice == null ? -1 : b.juice) - (a.juice == null ? -1 : a.juice); };
+    var games = day.games.slice().sort(byJuice);
+
+    // Markers: the match of the day (top Juice) and upset-watch picks
+    // (ZIDANE favors the club with fewer points per match). Set before any re-sort
+    // so both sorts mark the same matches.
+    var gotn = games[0] && games[0].juice != null ? games[0] : null;
+    if (state.dmSort === "kickoff") {
+      games.sort(function (a, b) {
+        var ka = a.kickoff || "", kb = b.kickoff || "";
+        return ka < kb ? -1 : ka > kb ? 1 : byJuice(a, b);
+      });
+    }
+    function isUpset(g) {
+      if (ps) return false;
+      var pk = dmPick(g);
+      if (pk.side === "draw") return false;
+      return dmPctOf(pk.home ? g.home_record : g.away_record) < dmPctOf(pk.home ? g.away_record : g.home_record);
+    }
+    var nUpset = games.filter(isUpset).length;
+    dmStamp.innerHTML += (gotn ? '<span class="wm-legend">&#11088; Match of the day</span>' : "") +
+      (nUpset ? '<span class="wm-legend" title="ZIDANE favors the club with fewer points per match">&#9889; Upset watch</span>' : "");
+
+    function num(v) { return v == null ? '<span class="wm-dim">-</span>' : v; }
+    function wdlCell(g, key) {
+      var sep = ' <span class="wm-dim">/</span> ';
+      return ["away", "home"].map(function (side) {
+        var s = g.stakes[side];
+        if (s[key + "_win"] == null) return side === "away" ? '<span class="wm-dim">-</span>' : "";
+        return '<div class="wm-stake">' + dmPct(s[key + "_win"]) + sep + dmPct(s[key + "_loss"]) + "</div>";
+      }).join("");
+    }
+    var rows = games.map(function (g) {
+      var mark = (g === gotn ? "&#11088;" : "") + (isUpset(g) ? "&#9889;" : "");
+      var kick = dmKickLine(g);
+      return '<tr' + (g === gotn ? ' class="wm-gotw"' : "") + ">" +
+        '<td class="wm-mark">' + mark + "</td>" +
+        '<td class="wm-matchup"><div><span class="wm-at"></span><span class="wm-rank">' + (g.away_rank || "") + "</span>" + dmTeamLink(g.away, dmNick(dmShown(g, "away")), d.season) + ' <span class="wm-dim">' + g.away_record + "</span></div>" +
+        '<div><span class="wm-at">@</span><span class="wm-rank">' + (g.home_rank || "") + "</span>" + dmTeamLink(g.home, dmNick(dmShown(g, "home")), d.season) + ' <span class="wm-dim">' + g.home_record + "</span></div>" +
+          (kick ? '<div class="wm-kick sub-line-italic">' + kick + "</div>" : "") + "</td>" +
+        '<td class="col-od col-hide-mobile">' + num(g.quality) + "</td>" +
+        '<td class="col-od col-hide-mobile">' + num(g.stakes_score) + "</td>" +
+        '<td class="col-od wm-juice">' + num(g.juice) + "</td>" +
+        "<td>" + dmWinLines(g) + "</td>" +
+        '<td class="col-hide-mobile">' + dmLine(g) + "</td>" +
+        '<td class="col-od col-hide-mobile">' + (g.total != null ? g.total.toFixed(1) : "-") + "</td>" +
+        (isCl ? "<td>" + wdlCell(g, "cl") + "</td>" :
+          "<td>" + wdlCell(g, "title") + "</td>" + '<td class="col-hide-mobile">' + wdlCell(g, "releg") + "</td>" +
+          (showQual ? '<td class="col-hide-mobile">' + wdlCell(g, "qual") + "</td>" : "")) +
+        '<td class="wm-result">' + dmResult(g) + "</td>" +
+        "</tr>";
+    }).join("");
+    dmWrap.innerHTML =
+      '<table class="sport-table wm-table"><thead><tr>' +
+      '<th class="wm-mark"></th>' + "<th>Matchup</th>" +
+      '<th class="col-od col-hide-mobile" title="' + DM_QUALITY_TITLE + '">Quality</th>' +
+      '<th class="col-od col-hide-mobile" title="' + DM_STAKES_TITLE + '">Stakes</th>' +
+      '<th class="col-od" title="' + DM_JUICE_TITLE + '">Juice</th>' +
+      '<th title="Each club\'s chance to win, and the chance of a draw. The pick, the most likely, in bold.">ZIDANE pick</th>' +
+      '<th class="col-hide-mobile">ZIDANE Line</th><th class="col-od col-hide-mobile">ZIDANE O/U</th>' +
+      (isCl ? '<th title="Champions League winner odds with a win / with a loss">CL Win Odds (W/L)</th>' :
+        '<th title="League title odds with a win / with a loss">Title Odds (W/L)</th>' +
+        '<th class="col-hide-mobile" title="Relegation odds with a win / with a loss">Rel Odds (W/L)</th>' +
+        (showQual ? '<th class="col-hide-mobile" title="Champions League qualification odds with a win / with a loss">CL Qual Odds (W/L)</th>' : "")) +
+      "<th>Result</th></tr></thead><tbody>" + rows + "</tbody></table>";
+    attachLinks(dmWrap);
+  }
+
   // ═══════════════════════════════ URL state ═══════════════════════════════
   // Shareable URLs (see sports-url.js): per tab, which settings go in the
   // address bar and how a link restores them.
@@ -1000,6 +1327,29 @@
           if (!state.seasonData) return;
           var snaps = state.seasonData.snapshots, date = p.get("date");
           selectSnapshot(U.hasOption(dateSelect, date) ? date : snaps[snaps.length - 1].date);
+        });
+      },
+    },
+    "daily-matchups": {
+      query: function (add) {
+        var d = state.dmSeasons[state.dmSeason];
+        if (!d) return;
+        if (state.dmSeason !== state.dmIndex.seasons[0]) add("season", state.dmSeason);
+        if (state.dmLeague !== "all") add("league", compSlug(state.dmLeague));
+        if (dmDaySelect.value && dmDaySelect.value !== dmDefaultDay(d)) add("date", dmDaySelect.value);
+        if (state.dmSort === "kickoff") add("sort", "kickoff");
+      },
+      apply: function (p) {
+        var season = state.dmIndex.seasons.indexOf(p.get("season")) >= 0 ? p.get("season") : state.dmIndex.seasons[0];
+        state.dmLeague = compFromSlug(p.get("league"), DM_LEAGUE_OPTS) || "all";
+        U.setPills("dmLeaguePills", state.dmLeague);
+        // The link sets the sort for this visit without touching the saved preference.
+        state.dmSort = p.get("sort") === "kickoff" ? "kickoff" : "juice";
+        syncDmSortPills();
+        return loadDmSeason(season).then(function () {
+          var date = p.get("date");
+          if (U.hasOption(dmDaySelect, date)) dmDaySelect.value = date;
+          renderDailyMatchups();
         });
       },
     },
@@ -1101,6 +1451,7 @@
       "standings": loadSeason(data.seasons[0]),
       "league-history": loadChampions(),
       "goat": Promise.resolve(loadGoat()),
+      "daily-matchups": loadDailyMatchups(),
       "team-summary": Promise.resolve(),
     };
     url.start(ready, [ready["standings"]]);
