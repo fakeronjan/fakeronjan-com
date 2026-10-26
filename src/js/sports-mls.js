@@ -1218,7 +1218,9 @@
     var h = s.home_wins, a = s.away_wins;
     var game = s.round + ", Game " + (h + a + 1);
     if (h === a) return game + (h ? ", series tied " + h + "-" + a : "");
-    return game + ", " + dmNick(h > a ? dmShown(g, "home") : dmShown(g, "away")) + " leads " + Math.max(h, a) + "-" + Math.min(h, a);
+    var leader = dmNick(h > a ? dmShown(g, "home") : dmShown(g, "away"));
+    // Plural nicknames take "lead" (Brewers lead), the rest "leads" (Heat leads).
+    return game + ", " + leader + (/s$/.test(leader) ? " lead " : " leads ") + Math.max(h, a) + "-" + Math.min(h, a);
   }
   function dmKickLine(g) {
     return [dmSeries(g), dmTipoff(g)].filter(Boolean).join(" · ");
@@ -1320,10 +1322,15 @@
   }
   function dmShown(g, side) { return g[side + "_display"] || g[side]; }
 
-  // Win probability per club (away, home), then the draw.
+  // The pick column: each club's chance to win (away, home) and the draw's,
+  // the pick (the most likely) in bold.
   function dmWinLines(g) {
-    return '<div class="wm-stake">' + dmPct(g.p_away) + "</div>" + '<div class="wm-stake">' + dmPct(g.p_home) + "</div>" +
-      (g.p_draw == null ? "" : '<div class="wm-stake wm-dim">Draw ' + dmPct(g.p_draw) + "</div>");
+    var side = dmPick(g).side;
+    function line(key, label) {
+      return '<div class="wm-stake' + (key === side ? " wm-juice" : key === "draw" ? " wm-dim" : "") + '">' + label + "</div>";
+    }
+    return line("away", dmPct(g.p_away)) + line("home", dmPct(g.p_home)) +
+      (g.p_draw == null ? "" : line("draw", "Draw " + dmPct(g.p_draw)));
   }
 
   function dmStakesLines(g, key, ps) {
@@ -1415,7 +1422,6 @@
     function num(v) { return v == null ? '<span class="wm-dim">-</span>' : v; }
     var wdl = ps ? "W/L" : "W/D/L";
     var rows = games.map(function (g) {
-      var pk = dmPick(g);
       var mark = (g === gotn ? "&#11088;" : "") + (isUpset(g) ? "&#9889;" : "");
       var kick = dmKickLine(g);
       return '<tr' + (g === gotn ? ' class="wm-gotw"' : "") + ">" +
@@ -1426,8 +1432,7 @@
         '<td class="col-od col-hide-mobile">' + num(g.quality) + "</td>" +
         '<td class="col-od col-hide-mobile">' + num(g.stakes_score) + "</td>" +
         '<td class="col-od wm-juice">' + num(g.juice) + "</td>" +
-        '<td class="col-od"><div class="od-val">' + (pk.side === "draw" ? "Draw" : dmNick(pk.team)) + '</div><div class="od-rank">' + dmPct(pk.p) + "</div></td>" +
-        '<td class="col-hide-mobile">' + dmWinLines(g) + "</td>" +
+        "<td>" + dmWinLines(g) + "</td>" +
         '<td class="col-hide-mobile">' + dmLine(g) + "</td>" +
         '<td class="col-od col-hide-mobile">' + (g.total != null ? g.total.toFixed(1) : "-") + "</td>" +
         (showPo ? "<td>" + dmStakesLines(g, "po", ps) + "</td>" : "") +
@@ -1441,7 +1446,7 @@
       '<th class="col-od col-hide-mobile" title="' + DM_QUALITY_TITLE + '">Quality</th>' +
       '<th class="col-od col-hide-mobile" title="' + DM_STAKES_TITLE + '">Stakes</th>' +
       '<th class="col-od" title="' + DM_JUICE_TITLE + '">Juice</th>' +
-      '<th class="col-od">COBI pick</th><th class="col-hide-mobile" title="Each club\'s chance to win, and the chance of a draw">Win / Draw</th>' +
+      '<th title="Each club\'s chance to win, and the chance of a draw. The pick, the most likely, in bold.">COBI pick</th>' +
       '<th class="col-hide-mobile">COBI Line</th><th class="col-od col-hide-mobile">COBI O/U</th>' +
       (showPo ? '<th title="Playoff odds with a win / draw / loss">Playoff Odds (W/D/L)</th>' : "") +
       '<th class="' + (ps ? "" : "col-hide-mobile") + '" title="MLS Cup odds with a ' + (ps ? "win / loss" : "win / draw / loss") + '">MLS Cup Odds (' + wdl + ")</th>" +

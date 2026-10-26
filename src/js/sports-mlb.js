@@ -1606,7 +1606,9 @@
     var h = s.home_wins, a = s.away_wins;
     var game = "Game " + (h + a + 1);
     if (h === a) return game + (h ? ", series tied " + h + "-" + a : "");
-    return game + ", " + dmNick(h > a ? dmShown(g, "home") : dmShown(g, "away")) + " leads " + Math.max(h, a) + "-" + Math.min(h, a);
+    var leader = dmNick(h > a ? dmShown(g, "home") : dmShown(g, "away"));
+    // Plural nicknames take "lead" (Brewers lead), the rest "leads" (Heat leads).
+    return game + ", " + leader + (/s$/.test(leader) ? " lead " : " leads ") + Math.max(h, a) + "-" + Math.min(h, a);
   }
   function dmKickLine(g) {
     return [dmSeries(g), dmTipoff(g)].filter(Boolean).join(" · ");
