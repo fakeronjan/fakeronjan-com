@@ -454,7 +454,7 @@
       document.querySelectorAll("[data-range]").forEach(function (td) {
         var s = (span[td.getAttribute("data-range")] || []).sort();
         var ok = res[1][td.getAttribute("data-updated")];
-        td.textContent = s.length ? fmtDay(s[0]) + " to " + fmtDay(ok ? etDay(ok) : s[s.length - 1]) : "-";
+        td.textContent = s.length ? fmtDay(s[0]) + " - " + fmtDay(ok ? etDay(ok) : s[s.length - 1]) : "-";
       });
       updateMinCount();
       renderTimeline();
