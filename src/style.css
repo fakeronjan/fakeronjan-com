@@ -1884,6 +1884,9 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-arrow { font-size: 0.6rem; margin-left: 0.25rem; }
 .gh-table .gh-c { text-align: center; }
 .gh-table td { vertical-align: middle; }
+/* A long header over a short number wraps instead of setting the column's width */
+.gh-table th.gh-th-narrow { white-space: normal; width: 7rem; }
+.gh-table th { vertical-align: bottom; }
 .gh-unlock { display: flex; gap: 0.6rem; align-items: flex-start; }
 .gh-unlock img, .gh-unlock-blank { width: 32px; height: 32px; border-radius: 4px; flex: none; object-fit: contain; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .gh-desc { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 0.1rem; max-width: 42ch; }
