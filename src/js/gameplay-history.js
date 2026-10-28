@@ -334,7 +334,7 @@
       var out = document.getElementById("ghTimeline");
       var count = document.getElementById("ghYearCount");
       if (!y) {
-        count.textContent = "Pick a year to see its games";
+        count.textContent = "Choose a year to see all games played";
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
