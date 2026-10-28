@@ -1792,14 +1792,15 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .video-games-nav .fleet-nav-home:last-child { border-right: none; }
 
 .gh-accounts { margin: 0 0 1.25rem; }
-.gh-accounts td { vertical-align: top; }
+.gh-accounts td { vertical-align: top; line-height: 24px; }
 .gh-accounts .gh-dot { margin-right: 0.4rem; }
 .gh-accounts .gh-tracked > span { display: block; }
 .gh-accounts .gh-nowrap { white-space: nowrap; }
-.gh-account { display: flex; flex-direction: column; gap: 0.3rem; }
-.gh-account-imgs { display: flex; gap: 0.35rem; }
-.gh-account img { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; flex: none; }
-.gh-account img.gh-pixel { image-rendering: pixelated; }
+.gh-account-imgs { display: flex; flex-direction: column; gap: 0.3rem; }
+.gh-account-imgs img { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; display: block; }
+.gh-account-imgs img.gh-pixel { image-rendering: pixelated; }
+.gh-account-names span { display: block; line-height: 24px; margin-bottom: 0.3rem; }
+.gh-account-names span:last-child { margin-bottom: 0; }
 @media (max-width: 1023px) { .gh-accounts .gh-dates { white-space: normal; } }
 @media (min-width: 1024px) { .gh-accounts .gh-tracked > span { white-space: nowrap; } }
 #ghMinBar[hidden] { display: none; }
