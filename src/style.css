@@ -1791,11 +1791,17 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .video-games-nav .fleet-nav-home { padding: 0.35rem 0.6rem; }
 .video-games-nav .fleet-nav-home:last-child { border-right: none; }
 
-.gh-accounts { display: flex; flex-wrap: wrap; gap: 0.45rem 1.2rem; margin: -0.5rem 0 1.25rem; font-size: 0.8rem; color: var(--muted); }
-.gh-account { display: inline-flex; align-items: center; gap: 0.35rem; }
-.gh-account img { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; }
+.gh-accounts { margin: 0 0 1.25rem; }
+.gh-account { display: flex; align-items: center; gap: 0.55rem; }
+.gh-account-imgs { display: flex; gap: 0.35rem; flex: none; width: calc(72px + 0.7rem); }
+.gh-account img { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; flex: none; }
 .gh-account img.gh-pixel { image-rendering: pixelated; }
-.gh-account b { color: var(--fg); font-weight: 600; }
+@media (max-width: 640px) {
+  .gh-account { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+  .gh-account-imgs { width: auto; }
+}
+.gh-account div b { display: block; font-weight: 600; }
+.gh-account div span { display: block; font-size: 0.78rem; color: var(--muted); }
 .gh-min-label { font-size: 0.82rem; color: var(--muted); }
 .gh-search { font-family: inherit; font-size: 0.85rem; color: var(--fg); background: var(--bg); border: 1px solid var(--muted); border-radius: 6px; padding: 0.35rem 0.6rem; width: min(100%, 15rem); }
 

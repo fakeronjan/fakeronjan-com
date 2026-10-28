@@ -264,7 +264,7 @@
     return cols.concat([
       { k: "f", h: "Platform", cls: "gh-hide-m", v: function (u) { return u.family + " " + u.platform; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + esc(u.platform) + "</span>"; } },
       { k: "t", h: "Type", cls: "gh-hide-t", desc: true, v: function (u) { return KIND_ORDER[u.kind] || parseInt(u.kind, 10) || 0; }, r: function (u) { return '<span class="gh-nowrap">' + kindLabel(u.kind) + "</span>"; } },
-      { k: "r", h: "Players", cls: "gh-c gh-hide-m", v: function (u) { return u.rarity; }, r: function (u) { return u.rarity == null ? "-" : u.rarity + "%"; } },
+      { k: "r", h: "Rarity", cls: "gh-c gh-hide-m", v: function (u) { return u.rarity; }, r: function (u) { return u.rarity == null ? "-" : u.rarity + "%"; } },
       { k: "e", h: "Earned", desc: true, v: function (u) { return u.day; }, r: function (u) { return fmtDay(u.day); } },
     ]);
   }
@@ -428,8 +428,8 @@
     });
     legend(document.getElementById("ghLegend"));
 
-    var loaded = Promise.all([getJSON(BASE + "/data/games.json"), getJSON(BASE + "/data/status.json")]).then(function (res) {
-      games = res[0];
+    var loaded = getJSON(BASE + "/data/games.json").then(function (data) {
+      games = data;
       games.forEach(function (r) {
         gamesById[r.id] = r;
         var earned = 0;
@@ -440,10 +440,18 @@
       games.forEach(function (r) { r.days.forEach(function (d) { ys[d.slice(0, 4)] = 1; }); });
       years = Object.keys(ys).sort().reverse();
       yearSel.innerHTML = '<option value="">All years</option>' + years.map(function (y) { return "<option>" + y + "</option>"; }).join("");
-      var firsts = games.map(function (r) { return r.first; }).filter(Boolean).sort();
-      var lasts = games.map(function (r) { return r.last; }).filter(Boolean).sort();
-      document.getElementById("ghRange").textContent = fmtDay(firsts[0]) + " to " + fmtDay(lasts[lasts.length - 1]);
-      document.getElementById("ghRefreshed").textContent = "Refreshed " + fmtDay(etDay(res[1].updated));
+      var span = {};
+      games.forEach(function (r) {
+        r.entries.forEach(function (e) {
+          var s = span[e.family] = span[e.family] || [];
+          if (e.first) s.push(e.first);
+          if (e.last) s.push(e.last);
+        });
+      });
+      document.querySelectorAll("[data-range]").forEach(function (td) {
+        var s = (span[td.getAttribute("data-range")] || []).sort();
+        td.textContent = s.length ? fmtDay(s[0]) + " to " + fmtDay(s[s.length - 1]) : "-";
+      });
       updateMinCount();
       renderTimeline();
       renderGames();
