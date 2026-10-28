@@ -372,7 +372,7 @@
         filter: function (r, f, q) { return minOK(r) && (f === "All" || r.families.indexOf(f) !== -1) && (!q || r.name.toLowerCase().indexOf(q) !== -1); },
         cols: [
           { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<b>" + gameLink(r.id, r.name) + "</b></div>"; } },
-          { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return dots(r.families) + " " + r.families.join(", "); } },
+          { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return r.families.map(function (f) { return '<span class="gh-plat-line">' + dots([f]) + " " + f + "</span>"; }).join(""); } },
           { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
           { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
           { k: "d", h: "Days", desc: true, v: function (r) { return r.days.length || null; }, r: function (r) { return r.days.length || "-"; } },
