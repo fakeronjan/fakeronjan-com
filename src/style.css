@@ -1833,6 +1833,18 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-grid { stroke: var(--muted); stroke-opacity: 0.15; }
 .gh-year-sum { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gh-year-sum b { color: var(--fg); font-weight: 600; }
+/* All years: counts and the year's top three games in their own columns, each on its own line */
+.gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 24rem); row-gap: 0.7rem; }
+.gh-years:not(.gh-years-compact) .gh-strip { height: 64px; }
+.gh-years:not(.gh-years-compact) > .gh-year-sum { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); column-gap: 0.8rem; white-space: normal; overflow: visible; line-height: 1.4; }
+.gh-sum-counts span { display: block; color: var(--fg); font-weight: 600; white-space: nowrap; }
+.gh-sum-tops span { display: block; padding-left: 0.8rem; text-indent: -0.8rem; }
+@media (max-width: 900px) {
+  .gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 17rem); }
+  .gh-years:not(.gh-years-compact) > .gh-year-sum { grid-template-columns: minmax(0, 1fr); }
+  .gh-sum-counts span { display: inline; }
+  .gh-sum-counts span:first-child::after { content: ", "; }
+}
 
 /* One year, a row per game */
 .gh-rows { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); column-gap: 0.75rem; row-gap: 1px; align-items: center; font-size: 0.78rem; }
@@ -1931,6 +1943,8 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
   .gh-years { grid-template-columns: 2.8rem minmax(0, 1fr); }
   .gh-years:not(.gh-years-compact) > .gh-year-sum,
   .gh-years:not(.gh-years-compact) > div:nth-child(3) { display: none; }
+  .gh-years:not(.gh-years-compact) { grid-template-columns: 2.8rem minmax(0, 1fr); row-gap: 0.35rem; }
+  .gh-years:not(.gh-years-compact) .gh-strip { height: 22px; }
   .gh-years-compact { grid-template-columns: 2.8rem minmax(0, 1fr) minmax(0, 4.5rem); }
   .gh-rows { grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr); }
   .gh-row-name .gh-dots { display: none; }

@@ -337,8 +337,8 @@
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
           summary: function (yr, gs, nDays) {
-            return "<b>" + plural(gs.length, "game", "games") + ", " + plural(nDays, "day", "days") + ":</b> " +
-              gs.slice(0, 3).map(function (g) { return gameLink(g.row.id, g.row.name); }).join(", ");
+            return '<div class="gh-sum-counts"><span>' + plural(gs.length, "game", "games") + "</span><span>" + plural(nDays, "day", "days") + "</span></div>" +
+              '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g) { return "<span>" + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>";
           },
         });
         out.querySelectorAll("button.gh-year").forEach(function (b) {
