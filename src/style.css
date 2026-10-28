@@ -1804,6 +1804,9 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 @media (max-width: 1023px) { .gh-accounts .gh-dates { white-space: normal; } }
 @media (min-width: 1024px) { .gh-accounts .gh-tracked > span { white-space: nowrap; } }
 #ghMinBar[hidden] { display: none; }
+.gh-year-controls { flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+.gh-year-controls .sport-count { margin-left: 0; }
+.gh-hint { font-style: italic; }
 .gh-min-label { font-size: 0.82rem; color: var(--muted); }
 .gh-search { font-family: inherit; font-size: 0.85rem; color: var(--fg); background: var(--bg); border: 1px solid var(--muted); border-radius: 6px; padding: 0.35rem 0.6rem; width: min(100%, 15rem); }
 

@@ -335,6 +335,7 @@
       var count = document.getElementById("ghYearCount");
       if (!y) {
         count.textContent = "Pick a year to see its games";
+        count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
           summary: function (yr, gs, nDays) {
@@ -359,6 +360,7 @@
         return { row: r, fams: fams, all: all.filter(function (d, i) { return all.indexOf(d) === i; }) };
       }).filter(function (o) { return o.all.length; })
         .sort(function (p, q) { return q.all[0] < p.all[0] ? -1 : q.all[0] > p.all[0] ? 1 : p.row.name.localeCompare(q.row.name); });
+      count.classList.remove("gh-hint");
       count.innerHTML = plural(inYear.length, "game", "games") + " in " + y + ' <a href="#" id="ghAllYears" class="gh-all-years">All years</a>';
       document.getElementById("ghAllYears").addEventListener("click", function (e) {
         e.preventDefault(); yearSel.value = ""; renderTimeline(); url.write();
