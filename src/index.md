@@ -15,8 +15,8 @@ Welcome to my website! This is home base for a lot of my hobbies: writing, ranki
     <span class="site-map-desc">Whatever's on my mind, from introspective birthday posts to Mario Kart music rankings. Goes back to 2013, including posts from old websites.</span>
   </a>
   <a class="site-map-card" href="/video-games/">
-    <span class="site-map-title">Game of the Year</span>
-    <span class="site-map-desc">My favorite game from every year going back to 1990, constructed from memory and written archives. More recent years have full posts cataloging the year.</span>
+    <span class="site-map-title">Video Games</span>
+    <span class="site-map-desc">My favorite game from every year going back to 1990, and an analysis of my gameplay across Nintendo, PlayStation, Steam, and Xbox going back to 2006.</span>
   </a>
   <a class="site-map-card" href="/sports/">
     <span class="site-map-title">Sports Ratings</span>
