@@ -1868,7 +1868,9 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-table .gh-wrap { white-space: normal; }
 .gh-table .gh-name { min-width: 9rem; max-width: 17rem; }
 .gh-table .gh-plat { max-width: 14rem; }
-.gh-plat-line { display: block; white-space: nowrap; }
+.gh-plat-line { display: block; padding-left: 0.8rem; text-indent: -0.8rem; }
+.gh-table .gh-nowrap { white-space: nowrap; }
+@media (max-width: 700px) { .gh-table .gh-plat .gh-nowrap { white-space: normal; } }
 .gh-table .gh-unlock-col { min-width: 13rem; max-width: 26rem; }
 .gh-unlock { min-width: 0; }
 /* Secondary columns step out on narrower screens, like the sports pages' col-hide-mobile */

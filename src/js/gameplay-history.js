@@ -110,6 +110,20 @@
     return row.entries.filter(function (e) { return active.indexOf(e) !== -1 || keys[platKey(e)]; });
   }
 
+  // One line per platform family, with its platforms at the same detail as a game page's
+  // Platforms table ("PS4, PS5"; "360 (rogerage), Xbox (fakeronjan)"), oldest first
+  function platformLines(row) {
+    var entries = countedEntries(row).slice().sort(function (a, b) { return (a.first || "9") < (b.first || "9") ? -1 : 1; });
+    return row.families.map(function (f) {
+      var labels = [];
+      entries.forEach(function (e) {
+        if (e.family !== f) return;
+        platformLabel(e).split(", ").forEach(function (l) { if (labels.indexOf(l) === -1) labels.push(l); });
+      });
+      return '<span class="gh-plat-line">' + dots([f]) + " " + labels.map(function (l) { return '<span class="gh-nowrap">' + esc(l) + "</span>"; }).join(", ") + "</span>";
+    }).join("");
+  }
+
   function familyOfEntry(entryId) {
     return { psn: "PlayStation", xbox: "Xbox", steam: "Steam" }[entryId.split(":")[0]];
   }
@@ -372,7 +386,7 @@
         filter: function (r, f, q) { return minOK(r) && (f === "All" || r.families.indexOf(f) !== -1) && (!q || r.name.toLowerCase().indexOf(q) !== -1); },
         cols: [
           { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<b>" + gameLink(r.id, r.name) + "</b></div>"; } },
-          { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return r.families.map(function (f) { return '<span class="gh-plat-line">' + dots([f]) + " " + f + "</span>"; }).join(""); } },
+          { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return platformLines(r); } },
           { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
           { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
           { k: "d", h: "Days", desc: true, v: function (r) { return r.days.length || null; }, r: function (r) { return r.days.length || "-"; } },
@@ -560,6 +574,17 @@
       if (e.first && (!g.first || e.first < g.first)) g.first = e.first;
       if (e.last && (!g.last || e.last > g.last)) g.last = e.last;
     });
+    // PlayStation screenshots are filed under one of the game's lists; they belong to the
+    // platform whose play dates hold them (Mass Effect's 2026 shots are the PS4 Legendary Edition)
+    entryIds.forEach(function (eid) {
+      if (eid.indexOf("psn") !== 0 || !gallery[eid]) return;
+      var ps = order.map(function (k) { return groups[k]; }).filter(function (g) { return g.family === "PlayStation"; });
+      var held = function (g) {
+        return gallery[eid].shots.filter(function (x) { var d = x.time.slice(0, 10); return g.first && d >= g.first && d <= g.last; }).length;
+      };
+      var best = ps.sort(function (a, b) { return held(b) - held(a) || ((b.last || "") < (a.last || "") ? -1 : 1); })[0];
+      if (best) best.captures += gallery[eid].total;
+    });
     var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) { return (b.last || "") < (a.last || "") ? -1 : 1; });
     h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Hours</th><th class="gh-hide-t">Sessions</th><th class="gh-hide-m">Unlocks</th><th class="gh-wrap gh-hide-t">Screenshots and videos</th></tr></thead><tbody>' +
       plats.map(function (g) {
@@ -574,18 +599,19 @@
       h += '<p class="sport-note gh-after">Includes an estimate: ' + row.estimated_from.map(function (c) { return esc(c) + "'s"; }).join(" and ") + " hours are shared across its games by days played.</p>";
     }
 
-    // Screenshots: Switch, PlayStation, and Miiverse, from the gallery repo. A Miiverse
-    // screenshot carries its post's text as the caption under it.
-    var shots = row._shots = gameShots(entryIds, gallery, posts), totalShots = 0;
-    entryIds.forEach(function (eid) { if (gallery[eid]) totalShots += gallery[eid].total; });
+    // Screenshots: Switch, PlayStation, and Miiverse, from the gallery repo, drawn by wireGame
+    // (with Nintendo / PlayStation pills when there are both). A Miiverse screenshot carries
+    // its post's text as the caption under it.
+    var shots = row._shots = gameShots(entryIds, gallery, posts);
+    row._shotTotals = {};
+    entryIds.forEach(function (eid) {
+      if (!gallery[eid]) return;
+      var f = eid.indexOf("psn") === 0 ? "PlayStation" : "Nintendo";
+      row._shotTotals[f] = (row._shotTotals[f] || 0) + gallery[eid].total;
+    });
     if (shots.length) {
-      var cap = shots.length === totalShots ? "All " + plural(totalShots, "screenshot", "screenshots")
-        : shots.length + " of " + totalShots + " screenshots, chosen at random from across the time I played";
-      h += '<h2 class="gh-h2">Screenshots</h2><p class="gh-caption">' + cap + '</p><div class="gh-shots" data-n="' + shots.length + '">' +
-        shots.map(function (s, i) {
-          var tile = '<button type="button" class="gh-shot" data-i="' + i + '" aria-label="Screenshot from ' + fmtDay(s.time) + '"><img src="' + SHOTS + "/t/" + s.img + '" alt="" loading="lazy"><span>' + fmtDay(s.time) + "</span></button>";
-          return s.text ? '<figure class="gh-shot-fig">' + tile + "<figcaption>" + esc(s.text) + "</figcaption></figure>" : tile;
-        }).join("") + "</div>";
+      h += '<h2 class="gh-h2">Screenshots</h2><div class="sport-controls"><div class="pill-group" id="ghShotPills" hidden></div></div>' +
+        '<p class="gh-caption" id="ghShotCap"></p><div class="gh-shots" id="ghShots"></div>';
     }
 
     if (unlocks.length) {
@@ -607,11 +633,41 @@
         cols: unlockCols(false),
       });
     }
-    var grid = document.querySelector(".gh-shots");
+    var grid = document.getElementById("ghShots");
     if (!grid) return;
-    balance(grid);
+    var shots = [];
+    var fams = FAMILIES.filter(function (f) { return row._shotTotals[f]; });
+
+    // One family's screenshots, or all of them; the caption says how many of how many
+    function drawShots(fam) {
+      shots = row._shots.filter(function (s) { return fam === "All" || s.family === fam; });
+      var total = 0;
+      fams.forEach(function (f) { if (fam === "All" || f === fam) total += row._shotTotals[f]; });
+      document.getElementById("ghShotCap").textContent = shots.length === total ? (total > 1 ? "All " : "") + plural(total, "screenshot", "screenshots")
+        : shots.length + " of " + total + " screenshots, chosen at random from across the time I played";
+      grid.dataset.n = shots.length;
+      grid.innerHTML = shots.map(function (s, i) {
+        var tile = '<button type="button" class="gh-shot" data-i="' + i + '" aria-label="Screenshot from ' + fmtDay(s.time) + '"><img src="' + SHOTS + "/t/" + s.img + '" alt="" loading="lazy"><span>' + fmtDay(s.time) + "</span></button>";
+        return s.text ? '<figure class="gh-shot-fig">' + tile + "<figcaption>" + esc(s.text) + "</figcaption></figure>" : tile;
+      }).join("");
+      balance(grid);
+    }
+
+    var pills = document.getElementById("ghShotPills");
+    if (fams.length > 1) {
+      pills.hidden = false;
+      pills.innerHTML = ["All"].concat(fams).map(function (f) {
+        return '<button type="button" class="pill' + (f === "All" ? " active" : "") + '" data-value="' + f + '">' + f + "</button>";
+      }).join("");
+      pills.addEventListener("click", function (e) {
+        var b = e.target.closest(".pill");
+        if (!b) return;
+        pills.querySelectorAll(".pill").forEach(function (p) { p.classList.toggle("active", p === b); });
+        drawShots(b.dataset.value);
+      });
+    }
+    drawShots("All");
     window.addEventListener("resize", function () { balance(grid); });
-    var shots = row._shots;
     grid.addEventListener("click", function (e) {
       var b = e.target.closest(".gh-shot");
       if (!b) return;
@@ -627,8 +683,9 @@
     var shots = [];
     entryIds.forEach(function (eid) {
       if (!gallery[eid]) return;
+      var family = eid.indexOf("psn") === 0 ? "PlayStation" : "Nintendo";
       shots = shots.concat(gallery[eid].shots.map(function (s) {
-        return { time: s.time, img: s.img, text: s.post ? text[s.post] || "" : "" };
+        return { time: s.time, img: s.img, text: s.post ? text[s.post] || "" : "", family: family };
       }));
     });
     return shots.sort(function (a, b) { return a.time < b.time ? -1 : 1; });
