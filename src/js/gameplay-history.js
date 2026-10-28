@@ -217,16 +217,16 @@
 
   function unlockCols(withGame) {
     var cols = [
-      { k: "n", h: "Unlock", v: function (u) { return (u.name || "").toLowerCase(); }, r: function (u) {
+      { k: "n", h: "Unlock", cls: "gh-wrap gh-unlock-col", v: function (u) { return (u.name || "").toLowerCase(); }, r: function (u) {
         return '<div class="gh-unlock">' + (u.img ? '<img src="' + BASE + "/" + u.img + '" alt="" loading="lazy">' : '<span class="gh-unlock-blank"></span>') +
           "<div><b>" + esc(u.name) + '</b><span class="gh-desc">' + esc(u.detail) + "</span></div></div>";
       } },
     ];
-    if (withGame) cols.push({ k: "g", h: "Game", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return gameLink(u.game, u.gameName); } });
+    if (withGame) cols.push({ k: "g", h: "Game", cls: "gh-wrap gh-name", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return gameLink(u.game, u.gameName); } });
     return cols.concat([
-      { k: "f", h: "Platform", v: function (u) { return u.family; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + u.family + "</span>"; } },
-      { k: "t", h: "Type", desc: true, v: function (u) { return KIND_ORDER[u.kind] || parseInt(u.kind, 10) || 0; }, r: function (u) { return '<span class="gh-nowrap">' + kindLabel(u.kind) + "</span>"; } },
-      { k: "r", h: "Players", cls: "gh-c", v: function (u) { return u.rarity; }, r: function (u) { return u.rarity == null ? "-" : u.rarity + "%"; } },
+      { k: "f", h: "Platform", cls: "gh-hide-m", v: function (u) { return u.family; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + u.family + "</span>"; } },
+      { k: "t", h: "Type", cls: "gh-hide-t", desc: true, v: function (u) { return KIND_ORDER[u.kind] || parseInt(u.kind, 10) || 0; }, r: function (u) { return '<span class="gh-nowrap">' + kindLabel(u.kind) + "</span>"; } },
+      { k: "r", h: "Players", cls: "gh-c gh-hide-m", v: function (u) { return u.rarity; }, r: function (u) { return u.rarity == null ? "-" : u.rarity + "%"; } },
       { k: "e", h: "Earned", desc: true, v: function (u) { return u.day; }, r: function (u) { return fmtDay(u.day); } },
     ]);
   }
@@ -321,14 +321,14 @@
         rows: games, sortKey: "last", desc: true,
         filter: function (r, f, q) { return minOK(r) && (f === "All" || r.families.indexOf(f) !== -1) && (!q || r.name.toLowerCase().indexOf(q) !== -1); },
         cols: [
-          { k: "n", h: "Game", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return "<b>" + gameLink(r.id, r.name) + "</b>"; } },
-          { k: "f", h: "Platforms", v: function (r) { return r.families.join(); }, r: function (r) { return '<span class="gh-nowrap">' + dots(r.families) + " " + r.families.join(", ") + "</span>"; } },
-          { k: "first", h: "First played", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
+          { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return "<b>" + gameLink(r.id, r.name) + "</b>"; } },
+          { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return dots(r.families) + " " + r.families.join(", "); } },
+          { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
           { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
           { k: "d", h: "Days", desc: true, v: function (r) { return r.days.length || null; }, r: function (r) { return r.days.length || "-"; } },
           { k: "h", h: "Hours", desc: true, v: function (r) { return r.hours; }, r: function (r) { return hours(r.hours, r.hours_estimated); } },
-          { k: "s", h: "Sessions", desc: true, v: function (r) { return r.sessions; }, r: function (r) { return r.sessions == null ? "-" : r.sessions; } },
-          { k: "u", h: "Unlocks", desc: true, v: function (r) { return r.unlocks ? r.unlocks[0] : null; }, r: function (r) { return r.unlocks ? r.unlocks[0] + " of " + r.unlocks[1] : "-"; } },
+          { k: "s", h: "Sessions", cls: "gh-hide-t", desc: true, v: function (r) { return r.sessions; }, r: function (r) { return r.sessions == null ? "-" : r.sessions; } },
+          { k: "u", h: "Unlocks", cls: "gh-hide-m", desc: true, v: function (r) { return r.unlocks ? r.unlocks[0] : null; }, r: function (r) { return r.unlocks ? r.unlocks[0] + " of " + r.unlocks[1] : "-"; } },
         ],
       });
     }
@@ -501,14 +501,14 @@
       if (e.last && (!g.last || e.last > g.last)) g.last = e.last;
     });
     var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) { return (b.last || "") < (a.last || "") ? -1 : 1; });
-    h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th>Platform</th><th>First played</th><th>Last played</th><th>Hours</th><th>Sessions</th><th>Unlocks</th><th>Screenshots and videos</th></tr></thead><tbody>' +
+    h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Hours</th><th class="gh-hide-t">Sessions</th><th class="gh-hide-m">Unlocks</th><th class="gh-wrap gh-hide-t">Screenshots and videos</th></tr></thead><tbody>' +
       plats.map(function (g) {
-        return "<tr><td><span class=\"gh-nowrap\">" + dots([g.family]) + " " + esc(g.platform) + (g.gamertag ? " (" + esc(g.gamertag) + ")" : "") + "</span></td>" +
-          "<td>" + fmtDay(g.first) + "</td><td>" + fmtDay(g.last) + "</td>" +
+        return '<tr><td class="gh-wrap">' + dots([g.family]) + " " + esc(g.platform) + (g.gamertag ? " (" + esc(g.gamertag) + ")" : "") + "</td>" +
+          '<td class="gh-hide-m">' + fmtDay(g.first) + "</td><td>" + fmtDay(g.last) + "</td>" +
           "<td>" + (g.minutes ? hours(Math.round(g.minutes / 6) / 10, g.estimated) : "-") + "</td>" +
-          "<td>" + (g.sessions || "-") + "</td>" +
-          "<td>" + (g.total ? g.earned + " of " + g.total : "-") + "</td>" +
-          "<td>" + (g.captures || "-") + "</td></tr>";
+          '<td class="gh-hide-t">' + (g.sessions || "-") + "</td>" +
+          '<td class="gh-hide-m">' + (g.total ? g.earned + " of " + g.total : "-") + "</td>" +
+          '<td class="gh-hide-t">' + (g.captures || "-") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
     if (row.hours_estimated) {
       h += '<p class="sport-note gh-after">Includes an estimate: ' + row.estimated_from.map(function (c) { return esc(c) + "'s"; }).join(" and ") + " hours are shared across its games by days played.</p>";

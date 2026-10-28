@@ -799,7 +799,9 @@ footer {
 #cross-sport-rankings .sport-table-wrap:has(table),
 #city-history .sport-table-wrap:has(table),
 #goat-table .sport-table-wrap:has(table),
-#city-droughts .sport-table-wrap:has(table) {
+#city-droughts .sport-table-wrap:has(table),
+.gh-page #games .sport-table-wrap:has(table),
+.gh-page #trophy-room .sport-table-wrap:has(table) {
   display: grid;
   /* REGRESSION FIXED 2026-08-18: this was briefly `minmax(0, 1320px)`
      (plain fixed length, no max-content) - that does NOT hug content. A
@@ -851,7 +853,9 @@ footer {
 #cross-sport-rankings .sport-table-wrap:has(table) > *,
 #city-history .sport-table-wrap:has(table) > *,
 #goat-table .sport-table-wrap:has(table) > *,
-#city-droughts .sport-table-wrap:has(table) > * {
+#city-droughts .sport-table-wrap:has(table) > *,
+.gh-page #games .sport-table-wrap:has(table) > *,
+.gh-page #trophy-room .sport-table-wrap:has(table) > * {
   max-width: 1320px;
 }
 .sport-table {
@@ -1838,10 +1842,25 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-arrow { font-size: 0.6rem; margin-left: 0.25rem; }
 .gh-table .gh-c { text-align: center; }
 .gh-table td { vertical-align: top; }
-.gh-unlock { display: flex; gap: 0.6rem; align-items: flex-start; min-width: 16rem; }
+.gh-unlock { display: flex; gap: 0.6rem; align-items: flex-start; }
 .gh-unlock img, .gh-unlock-blank { width: 32px; height: 32px; border-radius: 4px; flex: none; object-fit: cover; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .gh-desc { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 0.1rem; max-width: 42ch; }
 .gh-after { margin-top: 0.75rem; }
+/* Long text wraps instead of widening the table (.sport-table cells are nowrap) */
+.gh-table .gh-wrap { white-space: normal; }
+.gh-table .gh-name { min-width: 9rem; max-width: 17rem; }
+.gh-table .gh-plat { max-width: 14rem; }
+.gh-table .gh-unlock-col { min-width: 13rem; max-width: 26rem; }
+.gh-unlock { min-width: 0; }
+/* Secondary columns step out on narrower screens, like the sports pages' col-hide-mobile */
+@media (max-width: 900px) { .gh-table .gh-hide-t { display: none; } }
+@media (max-width: 640px) {
+  .gh-table .gh-hide-m { display: none; }
+  .gh-table .gh-unlock-col { min-width: 8.5rem; }
+  .gh-table .gh-name { min-width: 5.5rem; }
+  .gh-table th, .gh-table td { padding-left: 0.4rem; padding-right: 0.4rem; }
+  .gh-unlock img, .gh-unlock-blank { width: 26px; height: 26px; }
+}
 
 /* Game page */
 .gh-back { display: inline-block; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--accent); }
