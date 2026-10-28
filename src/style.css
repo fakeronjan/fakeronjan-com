@@ -1799,7 +1799,7 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .video-games-nav .fleet-nav-home:last-child { border-right: none; }
 
 .gh-accounts { margin: 0 0 1.25rem; }
-.gh-accounts td { vertical-align: top; line-height: 24px; }
+.gh-accounts td { line-height: 24px; }
 .gh-accounts .gh-dot { margin-right: 0.4rem; }
 .gh-accounts .gh-tracked > span { display: block; }
 .gh-accounts .gh-nowrap { white-space: nowrap; }
@@ -1835,7 +1835,7 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 /* The Timeline breaks out of the reading column on wide screens, centered like the Games and
    Trophy Room tables, so the strips and the top-three titles both get room */
 @media (min-width: 1000px) {
-  .gh-page #ghTimeline { width: min(1240px, calc(100vw - 4rem)); position: relative; left: 50%; transform: translateX(-50%); }
+  .gh-page #ghTimeline { width: min(1080px, calc(100vw - 4rem)); position: relative; left: 50%; transform: translateX(-50%); }
   .gh-page #ghTimeline .gh-rows { grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); }
 }
 .gh-years { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 20rem); column-gap: 0.8rem; row-gap: 0.35rem; align-items: center; font-size: 0.78rem; }
@@ -1883,15 +1883,17 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-table th.gh-sort:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .gh-arrow { font-size: 0.6rem; margin-left: 0.25rem; }
 .gh-table .gh-c { text-align: center; }
-.gh-table td { vertical-align: top; }
+.gh-table td { vertical-align: middle; }
 .gh-unlock { display: flex; gap: 0.6rem; align-items: flex-start; }
 .gh-unlock img, .gh-unlock-blank { width: 32px; height: 32px; border-radius: 4px; flex: none; object-fit: contain; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .gh-desc { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 0.1rem; max-width: 42ch; }
 .gh-after { margin-top: 0.75rem; }
-.gh-moment { display: block; margin-top: 0.4rem; padding: 0; border: none; background: none; cursor: zoom-in; width: 8rem; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; }
+.gh-moment { display: block; padding: 0; border: none; background: none; cursor: zoom-in; width: 8rem; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; }
 .gh-moment img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .gh-unlock > div { min-width: 0; }
-@media (max-width: 640px) { .gh-moment { width: 5.5rem; } }
+.gh-unlock .gh-moment { display: none; }
+.gh-unlock .gh-moment img { width: 100%; height: 100%; border-radius: 0; }
+@media (max-width: 640px) { .gh-moment { width: 5.5rem; } .gh-unlock .gh-moment { display: block; margin-top: 0.4rem; } }
 .gh-moment:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* Long text wraps instead of widening the table (.sport-table cells are nowrap) */
 .gh-table .gh-wrap { white-space: normal; }

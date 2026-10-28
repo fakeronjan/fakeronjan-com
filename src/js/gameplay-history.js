@@ -76,11 +76,12 @@
 
   // The exact system (and Xbox gamertag) an entry was played on, worded the same everywhere:
   // "PS5", "PS3, PS4", "Xbox (rogerage)", "PC", "Switch, Switch 2"
-  // Whole percent, or one decimal below 1% ("0.4%")
+  // Two significant digits: "42%", "4.2%", "0.42%"
   function fmtRarity(r) {
     if (r == null) return "-";
-    var tenths = Math.round(r * 10) / 10;
-    return (tenths >= 1 ? Math.round(r) : tenths.toFixed(1)) + "%";
+    if (r >= 9.95) return Math.round(r) + "%";
+    if (r >= 0.995) return r.toFixed(1) + "%";
+    return (r >= 0.005 ? r.toFixed(2) : "<0.01") + "%";
   }
 
   function platformLabel(e) {
@@ -253,6 +254,7 @@
       if (o.count) o.count.textContent = list.length.toLocaleString() + " of " + o.rows.filter(function (r) { return o.filter(r, "All", ""); }).length.toLocaleString();
       o.el.innerHTML = '<table class="sport-table gh-table"><thead><tr>' + o.cols.map(function (c) {
         var arrow = c.k === key ? '<span class="gh-arrow">' + (dir > 0 ? "&#9650;" : "&#9660;") + "</span>" : "";
+        if (c.nosort) return "<th" + (c.cls ? ' class="' + c.cls + '"' : "") + ">" + c.h + "</th>";
         return '<th class="gh-sort' + (c.cls ? " " + c.cls : "") + '" data-k="' + c.k + '" tabindex="0" aria-sort="' + (c.k === key ? (dir > 0 ? "ascending" : "descending") : "none") + '">' + c.h + arrow + "</th>";
       }).join("") + "</tr></thead><tbody>" + rowsHtml(0, BATCH) + "</tbody></table>" + '<div class="gh-more"></div>';
       shown = Math.min(list.length, BATCH);
@@ -273,15 +275,21 @@
     return draw;
   }
 
-  function unlockCols(withGame) {
+  function momentButton(u) {
+    return u.moment ? '<button type="button" class="gh-moment" data-img="' + esc(u.moment.img) + '" data-time="' + esc(u.moment.time) + '" data-name="' + esc(u.name) + '" aria-label="' + esc(u.name) + ': the moment it popped">' +
+      '<img src="' + SHOTS + "/t/" + u.moment.img + '" alt="" loading="lazy"></button>' : "";
+  }
+
+  function unlockCols(withGame, withMoments) {
     var cols = [
       { k: "n", h: "Unlock", cls: "gh-wrap gh-unlock-col", v: function (u) { return (u.name || "").toLowerCase(); }, r: function (u) {
         return '<div class="gh-unlock">' + (u.img ? '<img src="' + BASE + "/" + u.img + '" alt="" loading="lazy">' : '<span class="gh-unlock-blank"></span>') +
-          "<div><b>" + esc(u.name) + '</b><span class="gh-desc">' + esc(u.detail) + "</span>" +
-          (u.moment ? '<button type="button" class="gh-moment" data-img="' + esc(u.moment.img) + '" data-time="' + esc(u.moment.time) + '" data-name="' + esc(u.name) + '" aria-label="' + esc(u.name) + ': the moment it popped">' +
-            '<img src="' + SHOTS + "/t/" + u.moment.img + '" alt="" loading="lazy"></button>' : "") + "</div></div>";
+          "<div><b>" + esc(u.name) + '</b><span class="gh-desc">' + esc(u.detail) + "</span>" + momentButton(u) + "</div></div>";
       } },
     ];
+    // The picture the PS5 took when it popped, in its own column so rows stay one block tall.
+    // Phones have no room for the column and show it under the unlock's name instead.
+    if (withMoments) cols.push({ k: "m", h: "", cls: "gh-moment-col gh-hide-m", nosort: true, v: function () { return 0; }, r: momentButton });
     if (withGame) cols.push({ k: "g", h: "Game", cls: "gh-wrap gh-name", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return '<div class="gh-with-thumb">' + thumb(u.gameImg, "gh-thumb-s") + "<span>" + gameLink(u.game, u.gameName) + "</span></div>"; } });
     return cols.concat([
       { k: "f", h: "Platform", cls: "gh-hide-m", v: function (u) { return u.family + " " + u.platform; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + esc(u.platform) + "</span>"; } },
@@ -415,7 +423,7 @@
             return g && minOK(g) && (f === "All" || u.family === f) &&
               (!q || (u.name || "").toLowerCase().indexOf(q) !== -1 || u.gameName.toLowerCase().indexOf(q) !== -1 || (u.detail || "").toLowerCase().indexOf(q) !== -1);
           },
-          cols: unlockCols(true),
+          cols: unlockCols(true, unlocks.some(function (u) { return u.moment; })),
         });
       }).catch(showError);
       return unlocksLoaded;
@@ -508,6 +516,16 @@
 
   function gamePage() {
     var id = new URLSearchParams(location.search).get("id");
+    // The back link returns to the exact Gameplay History view you came from (tab, year,
+    // filters); arriving from anywhere else, it opens the Games tab
+    var back = document.querySelector(".gh-back");
+    var from = document.referrer ? new URL(document.referrer) : null;
+    if (back && from && from.origin === location.origin && from.pathname === "/video-games/gameplay-history/") {
+      back.href = from.pathname + from.search;
+      back.addEventListener("click", function (e) { e.preventDefault(); history.back(); });
+    } else if (back) {
+      back.href = "/video-games/gameplay-history/?tab=games";
+    }
     var out = document.getElementById("ghGame");
     Promise.all([
       getJSON(BASE + "/data/games.json"),
@@ -635,7 +653,7 @@
         el: document.getElementById("ghGameUnlocks"), pills: document.getElementById("ghGameUnlockPills"),
         families: row._fams.length > 1 ? row._fams : [], rows: unlocks, sortKey: "e", desc: true,
         filter: function (u, f) { return f === "All" || u.family === f; },
-        cols: unlockCols(false),
+        cols: unlockCols(false, unlocks.some(function (u) { return u.moment; })),
       });
     }
     var grid = document.getElementById("ghShots");
