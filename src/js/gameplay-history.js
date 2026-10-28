@@ -45,6 +45,12 @@
     return (estimated ? "~" : "") + h;
   }
 
+  // A game's cover art, small, from the gameplay-tracking repo's stored copies
+  function thumb(img, cls) {
+    return img ? '<img class="gh-thumb ' + (cls || "") + '" src="' + BASE + "/" + img + '" alt="" loading="lazy">'
+      : '<span class="gh-thumb ' + (cls || "") + '" aria-hidden="true"></span>';
+  }
+
   function gameLink(id, name) {
     return '<a class="gh-glink" href="' + GAME_URL + encodeURIComponent(id) + '">' + esc(name) + "</a>";
   }
@@ -222,7 +228,7 @@
           "<div><b>" + esc(u.name) + '</b><span class="gh-desc">' + esc(u.detail) + "</span></div></div>";
       } },
     ];
-    if (withGame) cols.push({ k: "g", h: "Game", cls: "gh-wrap gh-name", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return gameLink(u.game, u.gameName); } });
+    if (withGame) cols.push({ k: "g", h: "Game", cls: "gh-wrap gh-name", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return '<div class="gh-with-thumb">' + thumb(u.gameImg, "gh-thumb-s") + "<span>" + gameLink(u.game, u.gameName) + "</span></div>"; } });
     return cols.concat([
       { k: "f", h: "Platform", cls: "gh-hide-m", v: function (u) { return u.family; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + u.family + "</span>"; } },
       { k: "t", h: "Type", cls: "gh-hide-t", desc: true, v: function (u) { return KIND_ORDER[u.kind] || parseInt(u.kind, 10) || 0; }, r: function (u) { return '<span class="gh-nowrap">' + kindLabel(u.kind) + "</span>"; } },
@@ -236,6 +242,7 @@
       u.family = familyOfEntry(u.entry);
       u.day = etDay(u.earned);
       u.gameName = (gamesById[u.game] || {}).name || "";
+      u.gameImg = (gamesById[u.game] || {}).img;
     });
     return unlocks;
   }
@@ -307,7 +314,7 @@
             return '<rect x="' + (x(d) - w / 2) + '" y="2" width="' + w + '" height="12" class="gh-fill-' + f.toLowerCase() + '"><title>' + esc(o.row.name) + " (" + f + "): " + fmtDay(d) + "</title></rect>";
           }).join("");
         }).join("");
-        h += '<div class="gh-row-name" title="' + esc(o.row.name) + '">' + dots(Object.keys(o.fams)) + "<span>" + gameLink(o.row.id, o.row.name) + "</span></div>" +
+        h += '<div class="gh-row-name" title="' + esc(o.row.name) + '">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams)) + "<span>" + gameLink(o.row.id, o.row.name) + "</span></div>" +
           '<svg class="gh-row-svg" viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label="' + esc(tip) + '">' +
           '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + ticks + "</svg>";
       });
@@ -321,7 +328,7 @@
         rows: games, sortKey: "last", desc: true,
         filter: function (r, f, q) { return minOK(r) && (f === "All" || r.families.indexOf(f) !== -1) && (!q || r.name.toLowerCase().indexOf(q) !== -1); },
         cols: [
-          { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return "<b>" + gameLink(r.id, r.name) + "</b>"; } },
+          { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<b>" + gameLink(r.id, r.name) + "</b></div>"; } },
           { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return dots(r.families) + " " + r.families.join(", "); } },
           { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
           { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
