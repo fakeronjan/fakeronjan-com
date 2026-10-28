@@ -1835,7 +1835,7 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-all-years { margin-left: 0.6rem; color: var(--accent); }
 
 .gh-with-thumb { display: flex; align-items: center; gap: 0.55rem; }
-.gh-thumb { width: 32px; height: 32px; border-radius: 4px; object-fit: cover; flex: none; display: block; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.gh-thumb { width: 32px; height: 32px; border-radius: 4px; object-fit: contain; flex: none; display: block; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .gh-thumb.gh-thumb-s { width: 26px; height: 26px; }
 .gh-thumb.gh-thumb-xs { width: 18px; height: 18px; border-radius: 3px; }
 .gh-rows { row-gap: 3px; }
@@ -1848,7 +1848,7 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-table .gh-c { text-align: center; }
 .gh-table td { vertical-align: top; }
 .gh-unlock { display: flex; gap: 0.6rem; align-items: flex-start; }
-.gh-unlock img, .gh-unlock-blank { width: 32px; height: 32px; border-radius: 4px; flex: none; object-fit: cover; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.gh-unlock img, .gh-unlock-blank { width: 32px; height: 32px; border-radius: 4px; flex: none; object-fit: contain; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .gh-desc { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 0.1rem; max-width: 42ch; }
 .gh-after { margin-top: 0.75rem; }
 .gh-moment { display: block; margin-top: 0.4rem; padding: 0; border: none; background: none; cursor: zoom-in; width: 8rem; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; }
@@ -1888,7 +1888,7 @@ button.gh-year:hover { text-decoration: underline; }
 /* Game page */
 .gh-back { display: inline-block; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--accent); }
 .gh-head { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; margin-bottom: 1.25rem; }
-.gh-art { width: 7rem; height: 7rem; border-radius: 8px; object-fit: cover; flex: none; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.gh-art { width: 7rem; height: 7rem; border-radius: 8px; object-fit: contain; flex: none; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .gh-head-text { flex: 1; min-width: min(100%, 16rem); }
 .gh-head-text h1 { margin: 0 0 0.35rem; line-height: 1.15; text-wrap: balance; }
 .gh-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; font-size: 0.82rem; color: var(--muted); margin: 0; }
@@ -1902,6 +1902,9 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
 .gh-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .gh-shot span { position: absolute; left: 5px; bottom: 3px; font-size: 0.65rem; color: #fff; text-shadow: 0 1px 2px #000; font-variant-numeric: tabular-nums; }
 .gh-shot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.gh-shots { align-items: start; }
+.gh-shot-fig { margin: 0; display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.gh-shot-fig figcaption { font-size: 0.75rem; color: var(--muted); line-height: 1.35; overflow-wrap: anywhere; }
 .gh-post { display: flex; gap: 0.8rem; align-items: flex-start; border-left: 3px solid var(--gh-nintendo); padding: 0.2rem 0 0.2rem 0.8rem; margin: 0 0 0.9rem; max-width: 46rem; }
 .gh-post img { width: 9rem; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; flex: none; }
 .gh-post p { margin: 0; white-space: pre-line; }

@@ -73,6 +73,36 @@
     return k.charAt(0).toUpperCase() + k.slice(1);
   }
 
+  // The exact system (and Xbox gamertag) an entry was played on, worded the same everywhere:
+  // "PS5", "PS3, PS4", "Xbox (rogerage)", "PC", "Switch, Switch 2"
+  function platformLabel(e) {
+    return e.platform.replace(/,(?! )/g, ", ") + (e.gamertag ? " (" + e.gamertag + ")" : "");
+  }
+
+  // Trophies earned across entries, "of" a total only when every list that has some earned
+  // reports its total (a split collection's per-game share has no total of its own)
+  function unlockCount(entries) {
+    var earned = 0, total = 0, known = true;
+    entries.forEach(function (e) {
+      earned += e.earned || 0;
+      total += e.total || 0;
+      if (e.earned && !e.total) known = false;
+    });
+    if (!earned && !total) return null;
+    return known ? earned + " of " + total : String(earned);
+  }
+
+  function platKey(e) { return e.family + "|" + e.platform + "|" + (e.gamertag || ""); }
+
+  // The entries a game page counts: those with activity, plus any list with nothing earned
+  // (Vice City's 0 of 68) on a platform that has activity. Owned-but-unplayed platforms don't count.
+  function countedEntries(row) {
+    var active = row.entries.filter(function (e) { return e.first || e.earned || e.minutes; });
+    var keys = {};
+    active.forEach(function (e) { keys[platKey(e)] = 1; });
+    return row.entries.filter(function (e) { return active.indexOf(e) !== -1 || keys[platKey(e)]; });
+  }
+
   function familyOfEntry(entryId) {
     return { psn: "PlayStation", xbox: "Xbox", steam: "Steam" }[entryId.split(":")[0]];
   }
@@ -232,7 +262,7 @@
     ];
     if (withGame) cols.push({ k: "g", h: "Game", cls: "gh-wrap gh-name", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return '<div class="gh-with-thumb">' + thumb(u.gameImg, "gh-thumb-s") + "<span>" + gameLink(u.game, u.gameName) + "</span></div>"; } });
     return cols.concat([
-      { k: "f", h: "Platform", cls: "gh-hide-m", v: function (u) { return u.family; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + u.family + "</span>"; } },
+      { k: "f", h: "Platform", cls: "gh-hide-m", v: function (u) { return u.family + " " + u.platform; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + esc(u.platform) + "</span>"; } },
       { k: "t", h: "Type", cls: "gh-hide-t", desc: true, v: function (u) { return KIND_ORDER[u.kind] || parseInt(u.kind, 10) || 0; }, r: function (u) { return '<span class="gh-nowrap">' + kindLabel(u.kind) + "</span>"; } },
       { k: "r", h: "Players", cls: "gh-c gh-hide-m", v: function (u) { return u.rarity; }, r: function (u) { return u.rarity == null ? "-" : u.rarity + "%"; } },
       { k: "e", h: "Earned", desc: true, v: function (u) { return u.day; }, r: function (u) { return fmtDay(u.day); } },
@@ -243,6 +273,8 @@
     unlocks.forEach(function (u) {
       u.moment = (moments || {})[u.entry + "|" + u.earned + "|" + u.name] || null;
       u.family = familyOfEntry(u.entry);
+      var entry = ((gamesById[u.game] || {}).entries || []).filter(function (e) { return e.id === u.entry; })[0];
+      u.platform = entry ? platformLabel(entry) : u.family;
       u.day = etDay(u.earned);
       u.gameName = (gamesById[u.game] || {}).name || "";
       u.gameImg = (gamesById[u.game] || {}).img;
@@ -338,7 +370,7 @@
           { k: "d", h: "Days", desc: true, v: function (r) { return r.days.length || null; }, r: function (r) { return r.days.length || "-"; } },
           { k: "h", h: "Hours", desc: true, v: function (r) { return r.hours; }, r: function (r) { return hours(r.hours, r.hours_estimated); } },
           { k: "s", h: "Sessions", cls: "gh-hide-t", desc: true, v: function (r) { return r.sessions; }, r: function (r) { return r.sessions == null ? "-" : r.sessions; } },
-          { k: "u", h: "Unlocks", cls: "gh-hide-m", desc: true, v: function (r) { return r.unlocks ? r.unlocks[0] : null; }, r: function (r) { return r.unlocks ? r.unlocks[0] + " of " + r.unlocks[1] : "-"; } },
+          { k: "u", h: "Unlocks", cls: "gh-hide-m", desc: true, v: function (r) { return r.unlocks ? r.unlocks[0] : null; }, r: function (r) { return r.unlocks ? r.unlocks[1] : "-"; } },
         ],
       });
     }
@@ -400,9 +432,9 @@
       games = res[0];
       games.forEach(function (r) {
         gamesById[r.id] = r;
-        var earned = 0, total = 0;
-        r.entries.forEach(function (e) { earned += e.earned || 0; total += e.total || 0; });
-        r.unlocks = total ? [earned, total] : null;
+        var earned = 0;
+        r.entries.forEach(function (e) { earned += e.earned || 0; });
+        r.unlocks = unlockCount(countedEntries(r)) ? [earned, unlockCount(countedEntries(r))] : null;
       });
       var ys = {};
       games.forEach(function (r) { r.days.forEach(function (d) { ys[d.slice(0, 4)] = 1; }); });
@@ -463,8 +495,6 @@
   }
 
   function gameHtml(row, unlocks, entryIds, gallery, posts) {
-    var earned = 0, total = 0;
-    row.entries.forEach(function (e) { earned += e.earned || 0; total += e.total || 0; });
     var facts = [];
     if (row.first) {
       facts.push("First played " + fmtDay(row.first));
@@ -475,7 +505,7 @@
     }
     if (row.hours != null) facts.push((row.hours_estimated ? "about " : "") + plural(row.hours, "hour", "hours"));
     if (row.sessions) facts.push(plural(row.sessions, "session", "sessions"));
-    if (total) facts.push(earned + " of " + total + " trophies and achievements");
+    if (unlockCount(countedEntries(row))) facts.push(unlockCount(countedEntries(row)) + " trophies and achievements");
 
     var art = row.img ? '<img class="gh-art" src="' + BASE + "/" + row.img + '" alt="">' : '<span class="gh-art" aria-hidden="true"></span>';
     var badges = gotyFor(row).map(function (g) {
@@ -497,11 +527,11 @@
 
     // Platforms: one line per platform (and Xbox gamertag), entries with activity only
     var groups = {}, order = [];
-    row.entries.forEach(function (e) {
-      if (!(e.first || e.earned || e.minutes)) return;
-      var k = e.family + "|" + e.platform + "|" + (e.gamertag || "");
-      if (!groups[k]) { groups[k] = { family: e.family, platform: e.platform.replace(/,(?! )/g, ", "), gamertag: e.gamertag, minutes: 0, sessions: 0, earned: 0, total: 0, first: null, last: null, captures: 0, estimated: false }; order.push(k); }
+    countedEntries(row).forEach(function (e) {
+      var k = platKey(e);
+      if (!groups[k]) { groups[k] = { entries: [], family: e.family, label: platformLabel(e), gamertag: e.gamertag, minutes: 0, sessions: 0, earned: 0, total: 0, first: null, last: null, captures: 0, estimated: false }; order.push(k); }
       var g = groups[k];
+      g.entries.push(e);
       g.minutes += e.minutes || 0;
       g.sessions += e.sessions || 0;
       g.earned += e.earned || 0;
@@ -514,44 +544,29 @@
     var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) { return (b.last || "") < (a.last || "") ? -1 : 1; });
     h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Hours</th><th class="gh-hide-t">Sessions</th><th class="gh-hide-m">Unlocks</th><th class="gh-wrap gh-hide-t">Screenshots and videos</th></tr></thead><tbody>' +
       plats.map(function (g) {
-        return '<tr><td class="gh-wrap">' + dots([g.family]) + " " + esc(g.platform) + (g.gamertag ? " (" + esc(g.gamertag) + ")" : "") + "</td>" +
+        return '<tr><td class="gh-wrap">' + dots([g.family]) + " " + esc(g.label) + "</td>" +
           '<td class="gh-hide-m">' + fmtDay(g.first) + "</td><td>" + fmtDay(g.last) + "</td>" +
           "<td>" + (g.minutes ? hours(Math.round(g.minutes / 6) / 10, g.estimated) : "-") + "</td>" +
           '<td class="gh-hide-t">' + (g.sessions || "-") + "</td>" +
-          '<td class="gh-hide-m">' + (g.total ? g.earned + " of " + g.total : "-") + "</td>" +
+          '<td class="gh-hide-m">' + (unlockCount(g.entries) || "-") + "</td>" +
           '<td class="gh-hide-t">' + (g.captures || "-") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
     if (row.hours_estimated) {
       h += '<p class="sport-note gh-after">Includes an estimate: ' + row.estimated_from.map(function (c) { return esc(c) + "'s"; }).join(" and ") + " hours are shared across its games by days played.</p>";
     }
 
-    // Screenshots: Switch samples and Miiverse, from the gallery repo
-    var shots = [], totalShots = 0;
-    entryIds.forEach(function (eid) {
-      var g = gallery[eid];
-      if (!g) return;
-      totalShots += g.total;
-      shots = shots.concat(g.shots);
-    });
-    shots.sort(function (a, b) { return a.time < b.time ? -1 : 1; });
+    // Screenshots: Switch, PlayStation, and Miiverse, from the gallery repo. A Miiverse
+    // screenshot carries its post's text as the caption under it.
+    var shots = row._shots = gameShots(entryIds, gallery, posts), totalShots = 0;
+    entryIds.forEach(function (eid) { if (gallery[eid]) totalShots += gallery[eid].total; });
     if (shots.length) {
       var cap = shots.length === totalShots ? "All " + plural(totalShots, "screenshot", "screenshots")
         : shots.length + " of " + totalShots + " screenshots, chosen at random from across the time I played";
       h += '<h2 class="gh-h2">Screenshots</h2><p class="gh-caption">' + cap + '</p><div class="gh-shots" data-n="' + shots.length + '">' +
         shots.map(function (s, i) {
-          return '<button type="button" class="gh-shot" data-i="' + i + '" aria-label="Screenshot from ' + fmtDay(s.time) + '"><img src="' + SHOTS + "/t/" + s.img + '" alt="" loading="lazy"><span>' + fmtDay(s.time) + "</span></button>";
+          var tile = '<button type="button" class="gh-shot" data-i="' + i + '" aria-label="Screenshot from ' + fmtDay(s.time) + '"><img src="' + SHOTS + "/t/" + s.img + '" alt="" loading="lazy"><span>' + fmtDay(s.time) + "</span></button>";
+          return s.text ? '<figure class="gh-shot-fig">' + tile + "<figcaption>" + esc(s.text) + "</figcaption></figure>" : tile;
         }).join("") + "</div>";
-    }
-
-    if (posts.length) {
-      var byPost = {};
-      shots.forEach(function (s) { if (s.post) byPost[s.post] = s; });
-      h += '<h2 class="gh-h2">Miiverse posts</h2>' + posts.map(function (p) {
-        var s = byPost[p.id];
-        var kind = p.kind === "Play Journal Entries" ? "Play Journal Entry" : p.kind;
-        return '<blockquote class="gh-post">' + (s ? '<img src="' + SHOTS + "/t/" + s.img + '" alt="" loading="lazy">' : "") +
-          '<div><p>' + esc((p.body || "").replace(/\n\s*\n\s*/g, "\n")) + "</p><span>" + fmtDay(p.date) + ", " + esc(kind) + "</span></div></blockquote>";
-      }).join("");
     }
 
     if (unlocks.length) {
@@ -577,14 +592,27 @@
     if (!grid) return;
     balance(grid);
     window.addEventListener("resize", function () { balance(grid); });
-    var shots = [];
-    entryIds.forEach(function (eid) { if (gallery[eid]) shots = shots.concat(gallery[eid].shots); });
-    shots.sort(function (a, b) { return a.time < b.time ? -1 : 1; });
+    var shots = row._shots;
     grid.addEventListener("click", function (e) {
       var b = e.target.closest(".gh-shot");
       if (!b) return;
-      openLightbox(shots, +b.dataset.i, function (x, i) { return when(x.time) + " (" + (i + 1) + " of " + shots.length + ")"; });
+      openLightbox(shots, +b.dataset.i, function (x, i) {
+        return (x.text ? x.text + " | " : "") + when(x.time) + " (" + (i + 1) + " of " + shots.length + ")";
+      });
     });
+  }
+
+  function gameShots(entryIds, gallery, posts) {
+    var text = {};
+    posts.forEach(function (p) { text[p.id] = (p.body || "").replace(/\s*\n\s*/g, " ").trim(); });
+    var shots = [];
+    entryIds.forEach(function (eid) {
+      if (!gallery[eid]) return;
+      shots = shots.concat(gallery[eid].shots.map(function (s) {
+        return { time: s.time, img: s.img, text: s.post ? text[s.post] || "" : "" };
+      }));
+    });
+    return shots.sort(function (a, b) { return a.time < b.time ? -1 : 1; });
   }
 
   // "2024-06-03T19:51:00" -> "6/3/2024 at 7:51 pm"
