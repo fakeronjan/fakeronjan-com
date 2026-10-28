@@ -1,0 +1,24 @@
+---
+layout: base.njk
+title: Gameplay History | FAKE RONJAN!!
+permalink: /video-games/gameplay-history/game/
+---
+
+{% include "video-games-nav.njk" %}
+
+<div class="sport-page gh-page" id="ghGamePage" data-source="https://fakeronjan.github.io/gameplay-tracking" data-shots="https://fakeronjan.github.io/gameplay-screenshots">
+  <a class="gh-back" href="/video-games/gameplay-history/">&#8592; Gameplay History</a>
+  <p id="ghError" class="sport-note sport-note-warn" hidden>Couldn't load gameplay data. Try refreshing the page.</p>
+  <div id="ghGame"><p class="sport-loading">Loading...</p></div>
+</div>
+<dialog class="gh-lightbox" id="ghLightbox" aria-label="Screenshot">
+  <img id="ghLightboxImg" alt="">
+  <div class="gh-lightbox-bar">
+    <button type="button" id="ghLightboxPrev" aria-label="Previous screenshot">&#8592;</button>
+    <span id="ghLightboxCap"></span>
+    <button type="button" id="ghLightboxNext" aria-label="Next screenshot">&#8594;</button>
+  </div>
+</dialog>
+
+<script>window.GOTY = {{ goty | dump | safe }};</script>
+<script src="/js/gameplay-history.js?v={{ buildTime }}"></script>

@@ -1774,3 +1774,110 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
   :root:not([data-theme="light"]) .tc-stop { stop-color: var(--tcd); }
 }
 :root[data-theme="dark"] .tc-stop { stop-color: var(--tcd); }
+
+/* ── Video Games: sub-nav and Gameplay History ─────────────────────────── */
+/* Platform colors were checked for color-blind separation in both themes;
+   every use also names the platform, so color is never the only cue. */
+:root { --gh-playstation: #2a78d6; --gh-xbox: #008300; --gh-nintendo: #e04a5a; --gh-steam: #eda100; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --gh-playstation: #3987e5; --gh-steam: #c98500; }
+}
+:root[data-theme="dark"] { --gh-playstation: #3987e5; --gh-steam: #c98500; }
+
+.video-games-nav .fleet-nav-home { padding: 0.35rem 0.6rem; }
+.video-games-nav .fleet-nav-home:last-child { border-right: none; }
+
+.gh-accounts { display: flex; flex-wrap: wrap; gap: 0.45rem 1.2rem; margin: -0.5rem 0 1.25rem; font-size: 0.8rem; color: var(--muted); }
+.gh-account { display: inline-flex; align-items: center; gap: 0.35rem; }
+.gh-account img { width: 24px; height: 24px; border-radius: 4px; object-fit: cover; }
+.gh-account img.gh-pixel { image-rendering: pixelated; }
+.gh-account b { color: var(--fg); font-weight: 600; }
+.gh-min-label { font-size: 0.82rem; color: var(--muted); }
+.gh-search { font-family: inherit; font-size: 0.85rem; color: var(--fg); background: var(--bg); border: 1px solid var(--muted); border-radius: 6px; padding: 0.35rem 0.6rem; width: min(100%, 15rem); }
+
+.gh-dot { width: 0.6rem; height: 0.6rem; border-radius: 2px; display: inline-block; flex: none; vertical-align: 0; }
+.gh-dot.gh-playstation { background: var(--gh-playstation); }
+.gh-dot.gh-xbox { background: var(--gh-xbox); }
+.gh-dot.gh-nintendo { background: var(--gh-nintendo); }
+.gh-dot.gh-steam { background: var(--gh-steam); }
+.gh-fill-playstation { fill: var(--gh-playstation); }
+.gh-fill-xbox { fill: var(--gh-xbox); }
+.gh-fill-nintendo { fill: var(--gh-nintendo); }
+.gh-fill-steam { fill: var(--gh-steam); }
+.gh-dots { display: inline-flex; gap: 3px; vertical-align: 1px; }
+.gh-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.78rem; color: var(--muted); margin: 0 0 0.6rem; }
+.gh-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.gh-nowrap { white-space: nowrap; }
+
+/* Year strips */
+.gh-years { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 20rem); column-gap: 0.8rem; row-gap: 0.35rem; align-items: center; font-size: 0.78rem; }
+.gh-years-compact { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 6rem); }
+.gh-months { position: relative; height: 0.9rem; font-size: 0.65rem; color: var(--muted); }
+.gh-months span { position: absolute; transform: translateX(-50%); }
+.gh-year { font-weight: 700; font-variant-numeric: tabular-nums; }
+button.gh-year { font: inherit; font-weight: 700; color: var(--accent); background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
+button.gh-year:hover { text-decoration: underline; }
+.gh-strip { display: block; width: 100%; height: 22px; background: color-mix(in srgb, var(--fg) 5%, transparent); border-radius: 3px; }
+.gh-grid { stroke: var(--muted); stroke-opacity: 0.15; }
+.gh-year-sum { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gh-year-sum b { color: var(--fg); font-weight: 600; }
+
+/* One year, a row per game */
+.gh-rows { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); column-gap: 0.75rem; row-gap: 1px; align-items: center; font-size: 0.78rem; }
+.gh-row-name { display: flex; align-items: center; gap: 0.4rem; min-width: 0; }
+.gh-row-name span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gh-row-svg { display: block; width: 100%; height: 16px; overflow: visible; }
+.gh-span { stroke: var(--muted); stroke-opacity: 0.35; stroke-width: 1.5; }
+.gh-all-years { margin-left: 0.6rem; color: var(--accent); }
+
+.gh-glink { color: inherit; text-decoration: none; }
+.gh-glink:hover { color: var(--accent); text-decoration: underline; }
+.gh-table th.gh-sort { cursor: pointer; user-select: none; white-space: nowrap; }
+.gh-table th.gh-sort:hover { color: var(--fg); }
+.gh-table th.gh-sort:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.gh-arrow { font-size: 0.6rem; margin-left: 0.25rem; }
+.gh-table .gh-c { text-align: center; }
+.gh-table td { vertical-align: top; }
+.gh-unlock { display: flex; gap: 0.6rem; align-items: flex-start; min-width: 16rem; }
+.gh-unlock img, .gh-unlock-blank { width: 32px; height: 32px; border-radius: 4px; flex: none; object-fit: cover; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.gh-desc { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 0.1rem; max-width: 42ch; }
+.gh-after { margin-top: 0.75rem; }
+
+/* Game page */
+.gh-back { display: inline-block; font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--accent); }
+.gh-head { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; margin-bottom: 1.25rem; }
+.gh-art { width: 7rem; height: 7rem; border-radius: 8px; object-fit: cover; flex: none; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.gh-head-text { flex: 1; min-width: min(100%, 16rem); }
+.gh-head-text h1 { margin: 0 0 0.35rem; line-height: 1.15; text-wrap: balance; }
+.gh-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; font-size: 0.82rem; color: var(--muted); margin: 0; }
+.gh-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+.gh-badge { font-size: 0.78rem; font-weight: 700; color: var(--gold); border: 1px solid var(--gold); border-radius: 999px; padding: 0.15rem 0.65rem; text-decoration: none; }
+a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent); }
+.gh-h2 { font-size: 1.05rem; margin: 1.75rem 0 0.6rem; text-wrap: balance; }
+.gh-caption { font-size: 0.8rem; color: var(--muted); margin: -0.25rem 0 0.6rem; }
+.gh-shots { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 6px; }
+.gh-shot { position: relative; display: block; padding: 0; border: none; cursor: zoom-in; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.gh-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gh-shot span { position: absolute; left: 5px; bottom: 3px; font-size: 0.65rem; color: #fff; text-shadow: 0 1px 2px #000; font-variant-numeric: tabular-nums; }
+.gh-shot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.gh-post { display: flex; gap: 0.8rem; align-items: flex-start; border-left: 3px solid var(--gh-nintendo); padding: 0.2rem 0 0.2rem 0.8rem; margin: 0 0 0.9rem; max-width: 46rem; }
+.gh-post img { width: 9rem; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; flex: none; }
+.gh-post p { margin: 0; white-space: pre-line; }
+.gh-post span { font-size: 0.75rem; color: var(--muted); }
+.gh-lightbox { border: none; padding: 0; background: transparent; width: min(96vw, 1000px); max-width: none; }
+.gh-lightbox::backdrop { background: rgba(0, 0, 0, 0.88); }
+.gh-lightbox img { display: block; width: 100%; height: auto; border-radius: 4px; }
+.gh-lightbox-bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; color: #fff; font-size: 0.85rem; margin-top: 0.5rem; font-variant-numeric: tabular-nums; }
+.gh-lightbox-bar button { font: inherit; font-size: 1.2rem; color: #fff; background: none; border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 6px; padding: 0.15rem 0.7rem; cursor: pointer; }
+.gh-lightbox-bar button:focus-visible { outline: 2px solid #fff; }
+
+@media (max-width: 640px) {
+  .gh-years { grid-template-columns: 2.8rem minmax(0, 1fr); }
+  .gh-years:not(.gh-years-compact) > .gh-year-sum,
+  .gh-years:not(.gh-years-compact) > div:nth-child(3) { display: none; }
+  .gh-years-compact { grid-template-columns: 2.8rem minmax(0, 1fr) minmax(0, 4.5rem); }
+  .gh-rows { grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr); }
+  .gh-row-name .gh-dots { display: none; }
+  .gh-post { flex-direction: column; }
+  .gh-post img { width: 100%; max-width: 20rem; }
+}

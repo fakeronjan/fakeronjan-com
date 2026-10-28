@@ -1,0 +1,76 @@
+---
+layout: base.njk
+title: Gameplay History | FAKE RONJAN!!
+permalink: /video-games/gameplay-history/
+---
+
+{% include "video-games-nav.njk" %}
+
+<div class="sport-page gh-page" id="ghPage" data-source="https://fakeronjan.github.io/gameplay-tracking" data-shots="https://fakeronjan.github.io/gameplay-screenshots">
+  <h1>Gameplay History</h1>
+  <p class="sport-updated">
+    <span>&#128260; Updated daily</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="ghRange">Loading...</span>
+    <span class="sport-updated-sep">|</span>
+    <span id="ghRefreshed">Loading...</span>
+  </p>
+  <div class="gh-accounts">
+    <span class="gh-account"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/psn.png" alt=""><b>thesurfshop19 &#8594; fakeronjan &#8594; octopersona</b> PlayStation</span>
+    <span class="gh-account"><img class="gh-pixel" src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_thesurfshop19.png" alt=""><img class="gh-pixel" src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_rogerage.png" alt=""><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_fakeronjan.png" alt=""><b>thesurfshop19 &#8594; rogerage &#8594; fakeronjan</b> Xbox</span>
+    <span class="gh-account"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/steam.jpg" alt=""><b>thesurfshop19 &#8594; octopersona</b> Steam</span>
+    <span class="gh-account"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/nintendo.png" alt=""><b>ronjan</b> Nintendo</span>
+  </div>
+
+  <div class="sport-controls">
+    <label class="gh-min-label" for="ghMin">Show games played at least</label>
+    <select id="ghMin" class="sport-select">
+      <option value="1">1 day or 1 hour</option>
+      <option value="2" selected>2 days or 2 hours</option>
+      <option value="3">3 days or 3 hours</option>
+      <option value="5">5 days or 5 hours</option>
+      <option value="10">10 days or 10 hours</option>
+    </select>
+    <span class="sport-count" id="ghMinCount"></span>
+  </div>
+
+  <nav class="sport-tabs" id="ghTabs">
+    <button class="sport-tab active" data-tab="timeline" type="button">Timeline</button>
+    <button class="sport-tab" data-tab="games" type="button">Games</button>
+    <button class="sport-tab" data-tab="trophy-room" type="button">Trophy Room</button>
+  </nav>
+  <p id="ghError" class="sport-note sport-note-warn" hidden>Couldn't load gameplay data. Try refreshing the page.</p>
+
+  <section class="sport-view active" data-view="timeline" id="timeline">
+    <div class="sport-controls">
+      <select id="ghYear" class="sport-select" aria-label="Year"><option value="">All years</option></select>
+      <span class="sport-count" id="ghYearCount"></span>
+    </div>
+    <div class="gh-legend" id="ghLegend"></div>
+    <div id="ghTimeline"><p class="sport-loading">Loading...</p></div>
+    <p class="sport-note gh-after" id="ghTimelineNote">Each strip is one year, January to December. The lanes are PlayStation, Xbox, Nintendo, and Steam, top to bottom, and each mark is a day played. Nintendo days only count days with a Switch screenshot or a Miiverse post.</p>
+  </section>
+
+  <section class="sport-view" data-view="games" id="games" hidden>
+    <div class="sport-controls">
+      <div class="pill-group" id="ghGamesPills"></div>
+      <input id="ghGamesSearch" class="gh-search" type="search" placeholder="Search games" aria-label="Search games">
+      <span class="sport-count" id="ghGamesCount"></span>
+    </div>
+    <div class="sport-table-wrap" id="ghGamesTable"></div>
+    <p class="sport-note gh-after">Hours come from PlayStation (PS4 and PS5), Xbox One and later, and Steam. Sessions are PlayStation only. ~ marks hours from a collection, shared across its games by days played. Nintendo days only count days with a Switch screenshot or a Miiverse post.</p>
+  </section>
+
+  <section class="sport-view" data-view="trophy-room" id="trophy-room" hidden>
+    <div class="sport-controls">
+      <div class="pill-group" id="ghUnlockPills"></div>
+      <input id="ghUnlockSearch" class="gh-search" type="search" placeholder="Search unlocks or games" aria-label="Search unlocks or games">
+      <span class="sport-count" id="ghUnlockCount"></span>
+    </div>
+    <div class="sport-table-wrap" id="ghUnlockTable"><p class="sport-loading" id="ghUnlockLoading"></p></div>
+    <p class="sport-note gh-after">Players is the share of everyone on that platform who has earned it.</p>
+  </section>
+</div>
+
+<script src="/js/sports-url.js?v={{ buildTime }}"></script>
+<script src="/js/gameplay-history.js?v={{ buildTime }}"></script>
