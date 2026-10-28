@@ -8,39 +8,13 @@ permalink: /video-games/gameplay-history/
 
 <div class="sport-page gh-page" id="ghPage" data-source="https://fakeronjan.github.io/gameplay-tracking" data-shots="https://fakeronjan.github.io/gameplay-screenshots">
   <h1>Gameplay History</h1>
-  <div class="sport-table-wrap gh-accounts">
-    <table class="sport-table gh-table">
-      <thead><tr><th>Account</th><th class="gh-hide-m">Data Tracked</th><th>Dates</th><th>Updates</th></tr></thead>
-      <tbody>
-      <tr>
-        <td class="gh-wrap"><div class="gh-account"><span class="gh-account-imgs"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/psn.png" alt=""></span><div><b>PlayStation</b><span><span class="gh-nowrap">thesurfshop19 &#8594;</span> <span class="gh-nowrap">fakeronjan &#8594;</span> <span class="gh-nowrap">octopersona</span></span></div></div></td>
-        <td class="gh-wrap gh-hide-m gh-tracked"><span class="gh-nowrap">Trophies (PS3, PS4, PS5, Vita)</span>, play time and <span class="gh-nowrap">sessions (PS4, PS5)</span>, and <span class="gh-nowrap">screenshots (PS5)</span></td>
-        <td class="gh-dates" data-range="PlayStation">Loading...</td>
-        <td>Daily</td>
-      </tr>
-      <tr>
-        <td class="gh-wrap"><div class="gh-account"><span class="gh-account-imgs"><img class="gh-pixel" src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_thesurfshop19.png" alt=""><img class="gh-pixel" src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_rogerage.png" alt=""><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_fakeronjan.png" alt=""></span><div><b>Xbox</b><span><span class="gh-nowrap">thesurfshop19 &#8594;</span> <span class="gh-nowrap">rogerage &#8594;</span> <span class="gh-nowrap">fakeronjan</span></span></div></div></td>
-        <td class="gh-wrap gh-hide-m gh-tracked"><span class="gh-nowrap">Achievements (360, Xbox One and later)</span> and play <span class="gh-nowrap">time (Xbox One and later)</span></td>
-        <td class="gh-dates" data-range="Xbox">Loading...</td>
-        <td>Manually</td>
-      </tr>
-      <tr>
-        <td class="gh-wrap"><div class="gh-account"><span class="gh-account-imgs"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/nintendo.png" alt=""></span><div><b>Nintendo</b><span>ronjan</span></div></div></td>
-        <td class="gh-wrap gh-hide-m gh-tracked">Miiverse <span class="gh-nowrap">posts (3DS, Wii U)</span> and <span class="gh-nowrap">screenshots (Switch, Switch 2)</span></td>
-        <td class="gh-dates" data-range="Nintendo">Loading...</td>
-        <td>Manually</td>
-      </tr>
-      <tr>
-        <td class="gh-wrap"><div class="gh-account"><span class="gh-account-imgs"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/steam.jpg" alt=""></span><div><b>Steam</b><span><span class="gh-nowrap">thesurfshop19 &#8594;</span> <span class="gh-nowrap">octopersona</span></span></div></div></td>
-        <td class="gh-wrap gh-hide-m gh-tracked">Achievements and play time</td>
-        <td class="gh-dates" data-range="Steam">Loading...</td>
-        <td>Daily</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="sport-controls">
+  <nav class="sport-tabs" id="ghTabs">
+    <button class="sport-tab active" data-tab="data-summary" type="button">Data Summary</button>
+    <button class="sport-tab" data-tab="timeline" type="button">Timeline</button>
+    <button class="sport-tab" data-tab="games" type="button">Games</button>
+    <button class="sport-tab" data-tab="trophy-room" type="button">Trophy Room</button>
+  </nav>
+  <div class="sport-controls" id="ghMinBar" hidden>
     <label class="gh-min-label" for="ghMin">Show games played at least</label>
     <select id="ghMin" class="sport-select">
       <option value="1">1 day or 1 hour</option>
@@ -51,15 +25,47 @@ permalink: /video-games/gameplay-history/
     </select>
     <span class="sport-count" id="ghMinCount"></span>
   </div>
-
-  <nav class="sport-tabs" id="ghTabs">
-    <button class="sport-tab active" data-tab="timeline" type="button">Timeline</button>
-    <button class="sport-tab" data-tab="games" type="button">Games</button>
-    <button class="sport-tab" data-tab="trophy-room" type="button">Trophy Room</button>
-  </nav>
   <p id="ghError" class="sport-note sport-note-warn" hidden>Couldn't load gameplay data. Try refreshing the page.</p>
 
-  <section class="sport-view active" data-view="timeline" id="timeline">
+  <section class="sport-view active" data-view="data-summary" id="data-summary">
+    <div class="sport-table-wrap gh-accounts">
+      <table class="sport-table gh-table">
+        <thead><tr><th>Platform</th><th class="gh-hide-m">Account</th><th class="gh-hide-m">Data Tracked</th><th>Dates Covered</th><th>Updates</th></tr></thead>
+        <tbody>
+        <tr>
+          <td><i class="gh-dot gh-nintendo"></i>Nintendo</td>
+          <td class="gh-wrap gh-hide-m"><div class="gh-account"><span class="gh-account-imgs"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/nintendo.png" alt=""></span><span class="gh-lineage"><span class="gh-nowrap">ronjan</span></span></div></td>
+          <td class="gh-wrap gh-hide-m gh-tracked"><span>Miiverse posts <span class="gh-nowrap">(3DS, Wii U)</span></span><span>Screenshots <span class="gh-nowrap">(Switch, Switch 2)</span></span></td>
+          <td class="gh-dates" data-range="Nintendo">Loading...</td>
+          <td>Manually</td>
+        </tr>
+        <tr>
+          <td><i class="gh-dot gh-playstation"></i>PlayStation</td>
+          <td class="gh-wrap gh-hide-m"><div class="gh-account"><span class="gh-account-imgs"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/psn.png" alt=""></span><span class="gh-lineage"><span class="gh-nowrap">thesurfshop19 &#8594;</span> <span class="gh-nowrap">fakeronjan &#8594;</span> <span class="gh-nowrap">octopersona</span></span></div></td>
+          <td class="gh-wrap gh-hide-m gh-tracked"><span>Trophies <span class="gh-nowrap">(PS3, PS4, PS5, Vita)</span></span><span>Play time and sessions <span class="gh-nowrap">(PS4, PS5)</span></span><span>Screenshots <span class="gh-nowrap">(PS5)</span></span></td>
+          <td class="gh-dates" data-range="PlayStation" data-updated="psn_ok">Loading...</td>
+          <td>Daily</td>
+        </tr>
+        <tr>
+          <td><i class="gh-dot gh-steam"></i>Steam</td>
+          <td class="gh-wrap gh-hide-m"><div class="gh-account"><span class="gh-account-imgs"><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/steam.jpg" alt=""></span><span class="gh-lineage"><span class="gh-nowrap">thesurfshop19 &#8594;</span> <span class="gh-nowrap">octopersona</span></span></div></td>
+          <td class="gh-wrap gh-hide-m gh-tracked"><span>Achievements</span><span>Play time</span></td>
+          <td class="gh-dates" data-range="Steam" data-updated="steam_ok">Loading...</td>
+          <td>Daily</td>
+        </tr>
+        <tr>
+          <td><i class="gh-dot gh-xbox"></i>Xbox</td>
+          <td class="gh-wrap gh-hide-m"><div class="gh-account"><span class="gh-account-imgs"><img class="gh-pixel" src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_thesurfshop19.png" alt=""><img class="gh-pixel" src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_rogerage.png" alt=""><img src="https://fakeronjan.github.io/gameplay-tracking/avatars/xbox_fakeronjan.png" alt=""></span><span class="gh-lineage"><span class="gh-nowrap">thesurfshop19 &#8594;</span> <span class="gh-nowrap">rogerage &#8594;</span> <span class="gh-nowrap">fakeronjan</span></span></div></td>
+          <td class="gh-wrap gh-hide-m gh-tracked"><span>Achievements <span class="gh-nowrap">(360, Xbox One and later)</span></span><span>Play time <span class="gh-nowrap">(Xbox One and later)</span></span></td>
+          <td class="gh-dates" data-range="Xbox">Loading...</td>
+          <td>Manually</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sport-view" data-view="timeline" id="timeline" hidden>
     <div class="sport-controls">
       <select id="ghYear" class="sport-select" aria-label="Year"><option value="">All years</option></select>
       <span class="sport-count" id="ghYearCount"></span>

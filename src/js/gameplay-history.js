@@ -302,6 +302,7 @@
         v.hidden = !on;
         v.classList.toggle("active", on);
       });
+      document.getElementById("ghMinBar").hidden = name === "data-summary";
       if (name === "trophy-room") loadUnlocks();
     }
 
@@ -401,9 +402,10 @@
     }
 
     var url = window.SportUrl.create({
-      fallbackTab: "timeline",
+      fallbackTab: "data-summary",
       activateTab: activateTab,
       tabs: {
+        "data-summary": { query: function () {}, apply: function () {} },
         timeline: {
           query: function (add) { if (yearSel.value) add("year", yearSel.value); },
           apply: function (p) { yearSel.value = years.indexOf(p.get("year")) !== -1 ? p.get("year") : ""; renderTimeline(); },
@@ -428,8 +430,8 @@
     });
     legend(document.getElementById("ghLegend"));
 
-    var loaded = getJSON(BASE + "/data/games.json").then(function (data) {
-      games = data;
+    var loaded = Promise.all([getJSON(BASE + "/data/games.json"), getJSON(BASE + "/data/status.json")]).then(function (res) {
+      games = res[0];
       games.forEach(function (r) {
         gamesById[r.id] = r;
         var earned = 0;
@@ -448,9 +450,11 @@
           if (e.last) s.push(e.last);
         });
       });
+      // Daily sources run to their last successful refresh, manual ones to their last day played
       document.querySelectorAll("[data-range]").forEach(function (td) {
         var s = (span[td.getAttribute("data-range")] || []).sort();
-        td.textContent = s.length ? fmtDay(s[0]) + " to " + fmtDay(s[s.length - 1]) : "-";
+        var ok = res[1][td.getAttribute("data-updated")];
+        td.textContent = s.length ? fmtDay(s[0]) + " to " + fmtDay(ok ? etDay(ok) : s[s.length - 1]) : "-";
       });
       updateMinCount();
       renderTimeline();
