@@ -75,6 +75,13 @@
 
   // The exact system (and Xbox gamertag) an entry was played on, worded the same everywhere:
   // "PS5", "PS3, PS4", "Xbox (rogerage)", "PC", "Switch, Switch 2"
+  // Whole percent, or one decimal below 1% ("0.4%")
+  function fmtRarity(r) {
+    if (r == null) return "-";
+    var tenths = Math.round(r * 10) / 10;
+    return (tenths >= 1 ? Math.round(r) : tenths.toFixed(1)) + "%";
+  }
+
   function platformLabel(e) {
     return e.platform.replace(/,(?! )/g, ", ") + (e.gamertag ? " (" + e.gamertag + ")" : "");
   }
@@ -264,7 +271,7 @@
     return cols.concat([
       { k: "f", h: "Platform", cls: "gh-hide-m", v: function (u) { return u.family + " " + u.platform; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + esc(u.platform) + "</span>"; } },
       { k: "t", h: "Type", cls: "gh-hide-t", desc: true, v: function (u) { return KIND_ORDER[u.kind] || parseInt(u.kind, 10) || 0; }, r: function (u) { return '<span class="gh-nowrap">' + kindLabel(u.kind) + "</span>"; } },
-      { k: "r", h: "Rarity", cls: "gh-c gh-hide-m", v: function (u) { return u.rarity; }, r: function (u) { return u.rarity == null ? "-" : u.rarity + "%"; } },
+      { k: "r", h: "Rarity", cls: "gh-c gh-hide-m", v: function (u) { return u.rarity; }, r: function (u) { return fmtRarity(u.rarity); } },
       { k: "e", h: "Earned", desc: true, v: function (u) { return u.day; }, r: function (u) { return fmtDay(u.day); } },
     ]);
   }
