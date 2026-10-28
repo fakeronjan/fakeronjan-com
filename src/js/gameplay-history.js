@@ -225,7 +225,9 @@
     var cols = [
       { k: "n", h: "Unlock", cls: "gh-wrap gh-unlock-col", v: function (u) { return (u.name || "").toLowerCase(); }, r: function (u) {
         return '<div class="gh-unlock">' + (u.img ? '<img src="' + BASE + "/" + u.img + '" alt="" loading="lazy">' : '<span class="gh-unlock-blank"></span>') +
-          "<div><b>" + esc(u.name) + '</b><span class="gh-desc">' + esc(u.detail) + "</span></div></div>";
+          "<div><b>" + esc(u.name) + '</b><span class="gh-desc">' + esc(u.detail) + "</span>" +
+          (u.moment ? '<button type="button" class="gh-moment" data-img="' + esc(u.moment.img) + '" data-time="' + esc(u.moment.time) + '" data-name="' + esc(u.name) + '" aria-label="' + esc(u.name) + ': the moment it popped">' +
+            '<img src="' + SHOTS + "/t/" + u.moment.img + '" alt="" loading="lazy"></button>' : "") + "</div></div>";
       } },
     ];
     if (withGame) cols.push({ k: "g", h: "Game", cls: "gh-wrap gh-name", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return '<div class="gh-with-thumb">' + thumb(u.gameImg, "gh-thumb-s") + "<span>" + gameLink(u.game, u.gameName) + "</span></div>"; } });
@@ -237,8 +239,9 @@
     ]);
   }
 
-  function prepUnlocks(unlocks, gamesById) {
+  function prepUnlocks(unlocks, gamesById, moments) {
     unlocks.forEach(function (u) {
+      u.moment = (moments || {})[u.entry + "|" + u.earned + "|" + u.name] || null;
       u.family = familyOfEntry(u.entry);
       u.day = etDay(u.earned);
       u.gameName = (gamesById[u.game] || {}).name || "";
@@ -344,8 +347,8 @@
       if (unlocksLoaded) return unlocksLoaded;
       var total = games.reduce(function (s, r) { return s + (r.unlocks ? r.unlocks[0] : 0); }, 0);
       document.getElementById("ghUnlockLoading").textContent = "Loading " + total.toLocaleString() + " trophies and achievements";
-      unlocksLoaded = getJSON(BASE + "/data/unlocks.json").then(function (unlocks) {
-        prepUnlocks(unlocks, gamesById);
+      unlocksLoaded = Promise.all([getJSON(BASE + "/data/unlocks.json"), getJSON(SHOTS + "/moments.json").catch(function () { return {}; })]).then(function (res) {
+        var unlocks = prepUnlocks(res[0], gamesById, res[1]);
         drawUnlocks = table({
           el: document.getElementById("ghUnlockTable"), count: document.getElementById("ghUnlockCount"),
           pills: document.getElementById("ghUnlockPills"), families: ["PlayStation", "Xbox", "Steam"], search: document.getElementById("ghUnlockSearch"),
@@ -442,13 +445,14 @@
       getJSON(BASE + "/data/unlocks.json"),
       getJSON(BASE + "/data/miiverse.json"),
       getJSON(SHOTS + "/gallery.json").catch(function () { return {}; }),
+      getJSON(SHOTS + "/moments.json").catch(function () { return {}; }),
     ]).then(function (res) {
       var games = res[0], gamesById = {};
       games.forEach(function (r) { gamesById[r.id] = r; });
       var row = gamesById[id];
       if (!row) { out.innerHTML = ""; showError(); return; }
       document.title = row.name + " | FAKE RONJAN!!";
-      var unlocks = prepUnlocks(res[1].filter(function (u) { return u.game === id; }), gamesById);
+      var unlocks = prepUnlocks(res[1].filter(function (u) { return u.game === id; }), gamesById, res[4]);
       var entryIds = row.entries.map(function (e) { return e.id; });
       var gallery = res[3];
       var mvNames = row.entries.filter(function (e) { return e.id.indexOf("miiverse:") === 0; }).map(function (e) { return e.id.slice(9); });
@@ -576,27 +580,51 @@
     var shots = [];
     entryIds.forEach(function (eid) { if (gallery[eid]) shots = shots.concat(gallery[eid].shots); });
     shots.sort(function (a, b) { return a.time < b.time ? -1 : 1; });
-    var lb = document.getElementById("ghLightbox"), img = document.getElementById("ghLightboxImg"), cap = document.getElementById("ghLightboxCap"), at = 0;
-    function show(i) {
-      at = (i + shots.length) % shots.length;
-      var t = shots[at].time, hh = +t.slice(11, 13);
-      img.src = SHOTS + "/f/" + shots[at].img;
-      cap.textContent = fmtDay(t) + " at " + (hh % 12 || 12) + ":" + t.slice(14, 16) + " " + (hh < 12 ? "am" : "pm") + " (" + (at + 1) + " of " + shots.length + ")";
-    }
     grid.addEventListener("click", function (e) {
       var b = e.target.closest(".gh-shot");
       if (!b) return;
-      show(+b.dataset.i);
-      lb.showModal();
+      openLightbox(shots, +b.dataset.i, function (x, i) { return when(x.time) + " (" + (i + 1) + " of " + shots.length + ")"; });
     });
-    document.getElementById("ghLightboxPrev").addEventListener("click", function () { show(at - 1); });
-    document.getElementById("ghLightboxNext").addEventListener("click", function () { show(at + 1); });
-    lb.addEventListener("keydown", function (e) {
-      if (e.key === "ArrowLeft") show(at - 1);
-      if (e.key === "ArrowRight") show(at + 1);
-    });
-    lb.addEventListener("click", function (e) { if (e.target === lb) lb.close(); });
   }
+
+  // "2024-06-03T19:51:00" -> "6/3/2024 at 7:51 pm"
+  function when(t) {
+    var hh = +t.slice(11, 13);
+    return fmtDay(t) + " at " + (hh % 12 || 12) + ":" + t.slice(14, 16) + " " + (hh < 12 ? "am" : "pm");
+  }
+
+  // One larger-view dialog for screenshot galleries and trophy moments
+  var LB = { list: [], at: 0, caption: null };
+  function openLightbox(list, i, caption) {
+    var lb = document.getElementById("ghLightbox");
+    if (!lb) return;
+    if (!lb.dataset.wired) {
+      lb.dataset.wired = "1";
+      document.getElementById("ghLightboxPrev").addEventListener("click", function () { showAt(LB.at - 1); });
+      document.getElementById("ghLightboxNext").addEventListener("click", function () { showAt(LB.at + 1); });
+      lb.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") showAt(LB.at - 1);
+        if (e.key === "ArrowRight") showAt(LB.at + 1);
+      });
+      lb.addEventListener("click", function (e) { if (e.target === lb) lb.close(); });
+    }
+    LB.list = list; LB.caption = caption;
+    document.getElementById("ghLightboxPrev").hidden = document.getElementById("ghLightboxNext").hidden = list.length < 2;
+    showAt(i);
+    lb.showModal();
+  }
+  function showAt(i) {
+    LB.at = (i + LB.list.length) % LB.list.length;
+    document.getElementById("ghLightboxImg").src = SHOTS + "/f/" + LB.list[LB.at].img;
+    document.getElementById("ghLightboxCap").textContent = LB.caption(LB.list[LB.at], LB.at);
+  }
+
+  // A trophy's moment: the picture the PS5 took the instant it popped
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".gh-moment");
+    if (!b) return;
+    openLightbox([{ img: b.dataset.img, time: b.dataset.time }], 0, function (x) { return b.dataset.name + " | " + when(x.time); });
+  });
 
   // Columns that leave no row with a single orphan tile (5 = one row, 24 = 6 x 4)
   function balance(grid) {

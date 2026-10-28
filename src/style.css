@@ -1851,6 +1851,11 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-unlock img, .gh-unlock-blank { width: 32px; height: 32px; border-radius: 4px; flex: none; object-fit: cover; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .gh-desc { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 0.1rem; max-width: 42ch; }
 .gh-after { margin-top: 0.75rem; }
+.gh-moment { display: block; margin-top: 0.4rem; padding: 0; border: none; background: none; cursor: zoom-in; width: 8rem; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; }
+.gh-moment img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gh-unlock > div { min-width: 0; }
+@media (max-width: 640px) { .gh-moment { width: 5.5rem; } }
+.gh-moment:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* Long text wraps instead of widening the table (.sport-table cells are nowrap) */
 .gh-table .gh-wrap { white-space: normal; }
 .gh-table .gh-name { min-width: 9rem; max-width: 17rem; }
