@@ -9,12 +9,12 @@ permalink: /video-games/gameplay-history/
 <div class="sport-page gh-page" id="ghPage" data-source="https://fakeronjan.github.io/gameplay-tracking" data-shots="https://fakeronjan.github.io/gameplay-screenshots">
   <h1 class="gh-sr-only">Gameplay History</h1>
   <nav class="sport-tabs" id="ghTabs">
-    <button class="sport-tab active" data-tab="data-summary" type="button">Data Summary</button>
-    <button class="sport-tab" data-tab="timeline" type="button">Timeline</button>
+    <button class="sport-tab active" data-tab="timeline" type="button">Timeline</button>
     <button class="sport-tab" data-tab="games" type="button">Games</button>
     <button class="sport-tab" data-tab="trophy-room" type="button">Trophy Room</button>
+    <button class="sport-tab" data-tab="data-summary" type="button">Data Summary</button>
   </nav>
-  <div class="sport-controls" id="ghMinBar" hidden>
+  <div class="sport-controls" id="ghMinBar">
     <label class="gh-min-label" for="ghMin">Show games played at least</label>
     <select id="ghMin" class="sport-select">
       <option value="1">1 day or 1 hour</option>
@@ -27,7 +27,7 @@ permalink: /video-games/gameplay-history/
   </div>
   <p id="ghError" class="sport-note sport-note-warn" hidden>Couldn't load gameplay data. Try refreshing the page.</p>
 
-  <section class="sport-view active" data-view="data-summary" id="data-summary">
+  <section class="sport-view" data-view="data-summary" id="data-summary" hidden>
     <div class="sport-table-wrap gh-accounts">
       <table class="sport-table gh-table">
         <thead><tr><th>Platform</th><th class="gh-hide-m">Avatar</th><th class="gh-hide-m">Account</th><th class="gh-hide-m">Data Tracked</th><th>Dates Covered</th><th>Updated</th></tr></thead>
@@ -69,10 +69,14 @@ permalink: /video-games/gameplay-history/
     </div>
   </section>
 
-  <section class="sport-view" data-view="timeline" id="timeline" hidden>
+  <section class="sport-view active" data-view="timeline" id="timeline">
     <div class="sport-controls gh-year-controls">
       <select id="ghYear" class="sport-select" aria-label="Year"><option value="">All years</option></select>
       <span class="sport-count" id="ghYearCount"></span>
+      <div class="pill-group" id="ghYearSort" hidden>
+        <button type="button" class="pill active" data-value="last">Last played</button>
+        <button type="button" class="pill" data-value="most">Most played</button>
+      </div>
     </div>
     <div class="gh-legend" id="ghLegend"></div>
     <div id="ghTimeline"><p class="sport-loading">Loading...</p></div>

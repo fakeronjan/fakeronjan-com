@@ -317,6 +317,7 @@
   function historyPage() {
     var minSel = document.getElementById("ghMin");
     var yearSel = document.getElementById("ghYear");
+    var sortPills = document.getElementById("ghYearSort"), yearSort = "last";
     var games = [], gamesById = {}, years = [];
     var drawGames = null, drawUnlocks = null, unlocksLoaded = null;
 
@@ -343,6 +344,7 @@
       var count = document.getElementById("ghYearCount");
       if (!y) {
         count.textContent = "Choose a year to see all games played";
+        sortPills.hidden = true;
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
@@ -367,7 +369,13 @@
         all.sort();
         return { row: r, fams: fams, all: all.filter(function (d, i) { return all.indexOf(d) === i; }) };
       }).filter(function (o) { return o.all.length; })
-        .sort(function (p, q) { return q.all[0] < p.all[0] ? -1 : q.all[0] > p.all[0] ? 1 : p.row.name.localeCompare(q.row.name); });
+        .sort(function (p, q) {
+          // Last played that year (newest first), or most days played that year
+          var by = yearSort === "most" ? q.all.length - p.all.length
+            : q.all[q.all.length - 1] < p.all[p.all.length - 1] ? -1 : q.all[q.all.length - 1] > p.all[p.all.length - 1] ? 1 : 0;
+          return by || p.row.name.localeCompare(q.row.name);
+        });
+      sortPills.hidden = false;
       count.classList.remove("gh-hint");
       count.innerHTML = plural(inYear.length, "game", "games") + " in " + y + ' <a href="#" id="ghAllYears" class="gh-all-years">All years</a>';
       document.getElementById("ghAllYears").addEventListener("click", function (e) {
@@ -382,7 +390,7 @@
             return '<rect x="' + (x(d) - w / 2) + '" y="2" width="' + w + '" height="12" class="gh-fill-' + f.toLowerCase() + '"><title>' + esc(o.row.name) + " (" + f + "): " + fmtDay(d) + "</title></rect>";
           }).join("");
         }).join("");
-        h += '<div class="gh-row-name" title="' + esc(o.row.name) + '">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams)) + "<span>" + gameLink(o.row.id, o.row.name) + "</span></div>" +
+        h += '<div class="gh-row-name" title="' + esc(o.row.name) + '">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams).sort()) + "<span>" + gameLink(o.row.id, o.row.name) + "</span></div>" +
           '<svg class="gh-row-svg" viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label="' + esc(tip) + '">' +
           '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + ticks + "</svg>";
       });
@@ -434,13 +442,18 @@
     }
 
     var url = window.SportUrl.create({
-      fallbackTab: "data-summary",
+      fallbackTab: "timeline",
       activateTab: activateTab,
       tabs: {
         "data-summary": { query: function () {}, apply: function () {} },
         timeline: {
-          query: function (add) { if (yearSel.value) add("year", yearSel.value); },
-          apply: function (p) { yearSel.value = years.indexOf(p.get("year")) !== -1 ? p.get("year") : ""; renderTimeline(); },
+          query: function (add) { if (yearSel.value) add("year", yearSel.value); if (yearSel.value && yearSort === "most") add("sort", "most"); },
+          apply: function (p) {
+            yearSel.value = years.indexOf(p.get("year")) !== -1 ? p.get("year") : "";
+            yearSort = p.get("sort") === "most" ? "most" : "last";
+            window.SportUrl.setPills("ghYearSort", yearSort);
+            renderTimeline();
+          },
         },
         games: { query: function () {}, apply: function () {} },
         "trophy-room": { query: function () {}, apply: function () { return loadUnlocks(); } },
@@ -454,6 +467,14 @@
       url.write(true);
     });
     yearSel.addEventListener("change", function () { renderTimeline(); url.write(); });
+    sortPills.addEventListener("click", function (e) {
+      var b = e.target.closest(".pill");
+      if (!b) return;
+      yearSort = b.dataset.value;
+      window.SportUrl.setPills("ghYearSort", yearSort);
+      renderTimeline();
+      url.write();
+    });
     minSel.addEventListener("change", function () {
       updateMinCount();
       renderTimeline();
