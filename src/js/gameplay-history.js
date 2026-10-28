@@ -589,10 +589,8 @@
       var best = ps.sort(function (a, b) { return held(b) - held(a) || ((b.last || "") < (a.last || "") ? -1 : 1); })[0];
       if (best) best.captures += gallery[eid].total;
     });
-    // Families alphabetical, then oldest first within a family (as on the Games tab)
-    var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) {
-      return a.family < b.family ? -1 : a.family > b.family ? 1 : (a.first || "9") < (b.first || "9") ? -1 : 1;
-    });
+    // Most recently played first, like every time-ordered list on the site
+    var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) { return (b.last || "") < (a.last || "") ? -1 : 1; });
     h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Hours</th><th class="gh-hide-t">Sessions</th><th class="gh-hide-m">Unlocks</th><th class="gh-wrap gh-hide-t">Screenshots and videos</th></tr></thead><tbody>' +
       plats.map(function (g) {
         return '<tr><td class="gh-wrap">' + dots([g.family]) + " " + esc(g.label) + "</td>" +
