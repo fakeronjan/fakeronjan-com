@@ -6,8 +6,9 @@
   if (!page) return;
   var BASE = page.dataset.source;
   var SHOTS = page.dataset.shots;
-  var FAMILIES = ["PlayStation", "Xbox", "Nintendo", "Steam"];
-  var LANE = { PlayStation: 0, Xbox: 1, Nintendo: 2, Steam: 3 };
+  // Alphabetical everywhere platforms are listed: legends, pills, lanes, and table cells
+  var FAMILIES = ["Nintendo", "PlayStation", "Steam", "Xbox"];
+  var LANE = { Nintendo: 0, PlayStation: 1, Steam: 2, Xbox: 3 };
   var MONTHS = "JFMAMJJASOND";
   var KIND_ORDER = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
   var GAME_URL = "/video-games/gameplay-history/game/?id=";
@@ -405,7 +406,7 @@
         var unlocks = prepUnlocks(res[0], gamesById, res[1]);
         drawUnlocks = table({
           el: document.getElementById("ghUnlockTable"), count: document.getElementById("ghUnlockCount"),
-          pills: document.getElementById("ghUnlockPills"), families: ["PlayStation", "Xbox", "Steam"], search: document.getElementById("ghUnlockSearch"),
+          pills: document.getElementById("ghUnlockPills"), families: ["PlayStation", "Steam", "Xbox"], search: document.getElementById("ghUnlockSearch"),
           rows: unlocks, sortKey: "e", desc: true,
           filter: function (u, f, q) {
             var g = gamesById[u.game];
@@ -454,6 +455,7 @@
     var loaded = Promise.all([getJSON(BASE + "/data/games.json"), getJSON(BASE + "/data/status.json")]).then(function (res) {
       games = res[0];
       games.forEach(function (r) {
+        r.families.sort();
         gamesById[r.id] = r;
         var earned = 0;
         r.entries.forEach(function (e) { earned += e.earned || 0; });
@@ -513,7 +515,7 @@
       getJSON(SHOTS + "/moments.json").catch(function () { return {}; }),
     ]).then(function (res) {
       var games = res[0], gamesById = {};
-      games.forEach(function (r) { gamesById[r.id] = r; });
+      games.forEach(function (r) { r.families.sort(); gamesById[r.id] = r; });
       var row = gamesById[id];
       if (!row) { out.innerHTML = ""; showError(); return; }
       document.title = row.name + " | FAKE RONJAN!!";
@@ -585,7 +587,10 @@
       var best = ps.sort(function (a, b) { return held(b) - held(a) || ((b.last || "") < (a.last || "") ? -1 : 1); })[0];
       if (best) best.captures += gallery[eid].total;
     });
-    var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) { return (b.last || "") < (a.last || "") ? -1 : 1; });
+    // Families alphabetical, then oldest first within a family (as on the Games tab)
+    var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) {
+      return a.family < b.family ? -1 : a.family > b.family ? 1 : (a.first || "9") < (b.first || "9") ? -1 : 1;
+    });
     h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Hours</th><th class="gh-hide-t">Sessions</th><th class="gh-hide-m">Unlocks</th><th class="gh-wrap gh-hide-t">Screenshots and videos</th></tr></thead><tbody>' +
       plats.map(function (g) {
         return '<tr><td class="gh-wrap">' + dots([g.family]) + " " + esc(g.label) + "</td>" +
