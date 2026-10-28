@@ -753,15 +753,19 @@
     openLightbox([{ img: b.dataset.img, time: b.dataset.time }], 0, function (x) { return b.dataset.name + " | " + when(x.time); });
   });
 
-  // Columns that leave no row with a single orphan tile (5 = one row, 24 = 6 x 4)
+  // Every tile is the same size: as wide as one of the most columns the width fits (2 to 6),
+  // whatever the count or filter. Use that many columns unless the last row would hold a single
+  // orphan tile; then drop a column or two to avoid it (5 on a 4-wide grid = 3 over 2). A short
+  // row leaves space at the end, never bigger tiles.
   function balance(grid) {
-    var n = +grid.dataset.n, max = Math.max(2, Math.min(6, Math.floor((grid.clientWidth || 800) / 150)));
-    var best = max, gap = 99;
-    for (var c = max; c >= Math.ceil(max / 2); c--) {
-      var r = n % c, g = r ? c - r : 0;
-      if (g < gap) { gap = g; best = c; }
+    var n = +grid.dataset.n, width = grid.clientWidth || 800, GAP = 6;
+    var max = Math.max(2, Math.min(6, Math.floor(width / 150)));
+    var cols = Math.min(n, max);
+    for (var c = max; n > max && c >= Math.max(2, max - 2); c--) {
+      if (n % c !== 1) { cols = c; break; }
     }
-    grid.style.setProperty("--cols", Math.min(best, n));
+    grid.style.setProperty("--cols", Math.max(1, cols));
+    grid.style.setProperty("--tile", Math.floor((width - GAP * (max - 1)) / max) + "px");
   }
 
   if (document.getElementById("ghPage")) historyPage();
