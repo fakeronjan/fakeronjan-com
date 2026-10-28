@@ -26,7 +26,7 @@ li:last-child { margin-bottom: 0; }
 .goty-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1.5rem 0;
+  margin: 0 0 1.5rem;
   font-size: 0.95rem;
 }
 .goty-table th, .goty-table td {

@@ -6,7 +6,12 @@ permalink: /video-games/
 
 {% include "video-games-nav.njk" %}
 
-<h1>Game of the Year</h1>
+<h1 class="gh-sr-only">Game of the Year</h1>
+<nav class="sport-tabs" id="gotyTabs">
+  <button class="sport-tab active" data-tab="winners" type="button">Winners</button>
+  <button class="sport-tab" data-tab="methodology" type="button">Methodology</button>
+</nav>
+<section class="sport-view" id="methodology" hidden>
 <table class="methodology-table">
 <thead><tr><th>Years</th><th>Winner</th><th>Runner-up</th></tr></thead>
 <tbody>
@@ -15,6 +20,8 @@ permalink: /video-games/
 <tr><td>1990 - 2012</td><td>retroactively chosen</td><td>retroactively chosen</td></tr>
 </tbody>
 </table>
+</section>
+<section class="sport-view active" id="winners">
 <div style="overflow-x:auto"><table class="goty-table">
 <thead><tr><th>Year</th><th>Winner</th><th>Runner-up</th></tr></thead>
 <tbody>
@@ -79,7 +86,30 @@ permalink: /video-games/
 <tr><td>1990</td><td><a href="/blog/fr-top-10-mario-games/"><em>Super Mario Bros. 3</em></a></td><td><em>Teenage Mutant Ninja Turtles II: The Arcade Game</em></td></tr>
 </tbody>
 </table></div>
+</section>
 
+<script src="/js/sports-url.js?v={{ buildTime }}"></script>
+<script>
+// Winners | Methodology tabs, with ?tab= links like the Gameplay History page
+(function () {
+  function activateTab(name) {
+    document.querySelectorAll("#gotyTabs .sport-tab").forEach(function (b) { b.classList.toggle("active", b.dataset.tab === name); });
+    document.querySelectorAll("section.sport-view").forEach(function (v) {
+      v.hidden = v.id !== name;
+      v.classList.toggle("active", v.id === name);
+    });
+  }
+  var none = { query: function () {}, apply: function () {} };
+  var url = window.SportUrl.create({ fallbackTab: "winners", activateTab: activateTab, tabs: { winners: none, methodology: none } });
+  document.getElementById("gotyTabs").addEventListener("click", function (e) {
+    var b = e.target.closest(".sport-tab");
+    if (!b) return;
+    activateTab(b.dataset.tab);
+    url.write(true);
+  });
+  url.start({ winners: Promise.resolve(), methodology: Promise.resolve() }, []);
+})();
+</script>
 <script>
 (function () {
   var overlay = document.createElement("img");
