@@ -322,7 +322,7 @@
     var games = [], gamesById = {}, years = [];
     var drawGames = null, drawUnlocks = null, unlocksLoaded = null;
 
-    // Game of the Year winner and runner-up by year (decade picks left out), and the game page
+    // Game of the Year winner, runner-up, and third place by year (decade picks left out), and the game page
     // each pick belongs to, matched by name the same way a game page finds its badges
     var gotyYears = null, pickIndex = null;
     function gotyByYear() {
@@ -332,7 +332,8 @@
           if (!/^\d{4}$/.test(g.year)) return;
           (gotyYears[g.year] = gotyYears[g.year] || []).push(g);
         });
-        Object.keys(gotyYears).forEach(function (y) { gotyYears[y].sort(function (a, b) { return a.place === "Runner-up" ? 1 : b.place === "Runner-up" ? -1 : 0; }); });
+        var RANK = { "Game of the Year": 0, "Runner-up": 1, "Third place": 2 };
+        Object.keys(gotyYears).forEach(function (y) { gotyYears[y].sort(function (a, b) { return RANK[a.place] - RANK[b.place]; }); });
       }
       return gotyYears;
     }
@@ -381,7 +382,8 @@
               '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g) { return "<span>" + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>" +
               '<div class="gh-sum-goty">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
-                return "<span>" + (p.place === "Runner-up" ? "&#129352; " : "&#127942; ") + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
+                var medal = { "Runner-up": "&#129352; ", "Third place": "&#129353; " }[p.place] || "&#127942; ";
+                return "<span>" + medal + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
               }).join("") : "<span>-</span>") + "</div>";
           },
         });

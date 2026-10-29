@@ -12,9 +12,9 @@ function text(cell) {
 
 module.exports = function () {
   const html = fs.readFileSync(path.join(__dirname, "..", "video-games.njk"), "utf8");
-  const rows = html.matchAll(/<tr(?: class="decade-row")?><td>(.*?)<\/td><td(?: colspan="2")?>(.*?)<\/td>(?:<td>(.*?)<\/td>)?<\/tr>/g);
+  const rows = html.matchAll(/<tr(?: class="decade-row")?><td>(.*?)<\/td><td(?: colspan="\d")?>(.*?)<\/td>(?:<td>(.*?)<\/td>)?(?:<td>(.*?)<\/td>)?<\/tr>/g);
   const picks = [];
-  for (const [, yearCell, winner, runnerUp] of rows) {
+  for (const [, yearCell, winner, runnerUp, third] of rows) {
     const year = text(yearCell);
     if (!/^\d{4}s?$/.test(year)) continue; // the methodology table's rows
     const link = yearCell.match(/href="([^"]+)"/);
@@ -22,6 +22,7 @@ module.exports = function () {
     const decade = year.endsWith("s");
     picks.push({ year, place: decade ? "Game of the Decade" : "Game of the Year", game: text(winner), url });
     if (runnerUp) picks.push({ year, place: "Runner-up", game: text(runnerUp), url });
+    if (third && text(third) !== "-") picks.push({ year, place: "Third place", game: text(third), url });
   }
   return picks;
 };

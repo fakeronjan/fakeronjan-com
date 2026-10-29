@@ -114,6 +114,15 @@ li:last-child { margin-bottom: 0; }
   font-size: 0.75rem;
   font-style: italic;
 }
+/* Phones drop the Third column (2019 on only) so neither table scrolls sideways */
+@media (max-width: 640px) {
+  .goty-table tr > :nth-child(4), .methodology-table tr > :nth-child(4) { display: none; }
+}
+@media (max-width: 400px) {
+  .goty-table { font-size: 0.85rem; }
+  .goty-table th, .goty-table td { padding: 0.5rem 0.4rem; }
+  .goty-table td:first-child { width: 3.2rem; }
+}
 /* Same type and rules as the winners table, at its natural width */
 .methodology-table {
   border-collapse: collapse;
