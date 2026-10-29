@@ -461,6 +461,8 @@
       "Klonoa Phantasy Reverie Series": "Klonoa Phantasy Reverie",
       "Street Fighter 30th Anniversary Collection": "SF 30th Anniversary",
       "Life is Strange: True Colors": "Life is Strange: True Colors",
+      "Super Mario RPG: Legend of the Seven Stars": "Super Mario RPG (SNES)",
+      "Super Mario RPG": "Super Mario RPG (Switch)",
       "Life is Strange: Before the Storm": "Life is Strange: BtS",
       "EA Sports College Football 25": "College Football 25",
       "EA Sports College Football 26": "College Football 26",
