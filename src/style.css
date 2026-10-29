@@ -1799,7 +1799,7 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 }
 :root[data-theme="dark"] .tc-stop { stop-color: var(--tcd); }
 
-/* ── Video Games: sub-nav and Gameplay History ─────────────────────────── */
+/* ── Video Games: sub-nav and Gameplay Stats ─────────────────────────── */
 /* Platform colors were checked for color-blind separation in both themes;
    every use also names the platform, so color is never the only cue. */
 :root { --gh-playstation: #2a78d6; --gh-xbox: #008300; --gh-nintendo: #e04a5a; --gh-steam: #eda100; }

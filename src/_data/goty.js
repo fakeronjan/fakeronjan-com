@@ -1,5 +1,5 @@
 // Game of the Year picks, read from the Game of the Year page itself so the
-// winners table stays the only place they're written down. Gameplay History
+// winners table stays the only place they're written down. Gameplay Stats
 // game pages use this to show a badge linking to the write-up.
 const fs = require("fs");
 const path = require("path");

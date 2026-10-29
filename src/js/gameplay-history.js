@@ -1,4 +1,4 @@
-// Gameplay History (/video-games/gameplay-history/) and its game pages
+// Gameplay Stats (/video-games/gameplay-history/) and its game pages
 // (/video-games/gameplay-history/game/?id=...). Data comes from the
 // gameplay-tracking repo (refreshed daily) and the gameplay-screenshots repo.
 (function () {
@@ -331,7 +331,7 @@
     return unlocks;
   }
 
-  // ── Gameplay History page ───────────────────────────────────────────────
+  // ── Gameplay Stats page ───────────────────────────────────────────────
 
   function historyPage() {
     var minSel = document.getElementById("ghMin");

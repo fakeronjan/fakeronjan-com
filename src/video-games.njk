@@ -90,7 +90,7 @@ permalink: /video-games/
 
 <script src="/js/sports-url.js?v={{ buildTime }}"></script>
 <script>
-// A 🎮 after each pick that has a Gameplay History game page, matched by name the same way
+// A 📊 after each pick that has a Gameplay Stats game page, matched by name the same way
 // game pages find their badges. Names and years keep their links to the posts.
 (function () {
   function norm(s) {
@@ -112,9 +112,9 @@ permalink: /video-games/
         var a = document.createElement("a");
         a.className = "goty-gh";
         a.href = "/video-games/gameplay-history/game/?id=" + encodeURIComponent(g.id);
-        a.title = "Gameplay History";
-        a.setAttribute("aria-label", name + " in Gameplay History");
-        a.textContent = "🎮";
+        a.title = "Gameplay Stats";
+        a.setAttribute("aria-label", name + " in Gameplay Stats");
+        a.textContent = "📊";
         td.appendChild(document.createTextNode(" "));
         td.appendChild(a);
       });
@@ -123,7 +123,7 @@ permalink: /video-games/
 })();
 </script>
 <script>
-// Winners | Methodology tabs, with ?tab= links like the Gameplay History page
+// Winners | Methodology tabs, with ?tab= links like the Gameplay Stats page
 (function () {
   function activateTab(name) {
     document.querySelectorAll("#gotyTabs .sport-tab").forEach(function (b) { b.classList.toggle("active", b.dataset.tab === name); });
