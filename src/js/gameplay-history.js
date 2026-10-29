@@ -437,7 +437,8 @@
     // order: a combined row ("Street Fighter IV + Super Street Fighter IV + ...") keeps its
     // first game; "The Legend of Zelda" becomes "Zelda"; a "Remastered" tag drops; a numbered
     // game drops its subtitle when no other game shares the number (Uncharted 2, Danganronpa V3);
-    // anything still past MAX_TITLE characters ends at its last whole word with "…". The full
+    // anything still past MAX_TITLE characters (40 in a single year's rows, which have more
+    // room) ends at its last whole word with "…". The full
     // title shows on hover. Game pages and the other tabs keep full titles.
     var MAX_TITLE = 26;
     var SHORT_NAMES = {
@@ -468,7 +469,8 @@
       "The Legend of Zelda: A Link Between Worlds": "Zelda: A Link Between Worlds",
     };
     var prefixCount = null;
-    function shortTitle(name) {
+    function shortTitle(name, max) {
+      max = max || MAX_TITLE;
       var key = name.replace(/’/g, "'");
       if (SHORT_NAMES[key]) return SHORT_NAMES[key];
       if (!prefixCount) {
@@ -483,17 +485,17 @@
       var t = name.split(" + ")[0];
       if (SHORT_NAMES[t.replace(/’/g, "'")]) return SHORT_NAMES[t.replace(/’/g, "'")];
       if (t.indexOf("The Legend of Zelda: ") === 0) t = "Zelda: " + t.slice(21);
-      t = t.replace(/ Remastered$/, "");
+      t = t.replace(/ Remastered$/, "").replace(/( -|:) (The )?(Definitive|Console|Apocalypse|Ultimate|Complete|Deluxe|Game of the Year) Edition$/, "");
       var i = t.indexOf(": "), head = i > 0 ? t.slice(0, i) : "";
       if (head && head !== "Zelda" && /(\d+|\b[IVX]+|V\d)$/.test(head) && prefixCount[norm(head)] === 1) t = head;
-      if (t.length > MAX_TITLE) {
-        var cut = t.slice(0, MAX_TITLE - 1), sp = cut.lastIndexOf(" ");
+      if (t.length > max) {
+        var cut = t.slice(0, max - 1), sp = cut.lastIndexOf(" ");
         t = (sp > 8 ? cut.slice(0, sp) : cut).replace(/[\s:,.+\-]+$/, "") + "\u2026";
       }
       return t;
     }
-    function listLink(id, name) {
-      var t = shortTitle(name);
+    function listLink(id, name, max) {
+      var t = shortTitle(name, max);
       if (t === name) return gameLink(id, name);
       return '<a class="gh-glink" href="' + GAME_URL + encodeURIComponent(id) + '" title="' + esc(name) + '">' + esc(t) + "</a>";
     }
@@ -667,12 +669,27 @@
           if (ds.length) { fams[f] = ds; all = all.concat(ds); }
         });
         all.sort();
-        return { row: r, fams: fams, all: all.filter(function (d, i) { return all.indexOf(d) === i; }) };
+        all = all.filter(function (d, i) { return all.indexOf(d) === i; });
+        // The same numbers as the year's summary: days or estimated hours, the best list's share
+        // at the end of the year (and a platinum earned by then), and the year's pick, if any
+        var hrs = yearHours(r, y), done = null, plat = false;
+        r.entries.forEach(function (e) {
+          if (!e.total) return;
+          var n = 0;
+          Object.keys(e.earned_by_year || {}).forEach(function (k) { if (k <= y) n = Math.max(n, e.earned_by_year[k]); });
+          if (n && (!done || n / e.total > done)) done = n / e.total;
+          if (e.platinum && e.platinum.slice(0, 4) <= y) plat = true;
+        });
+        var pick = (gotyByYear()[y] || []).filter(function (p) { var g = gameForPick(p.game); return g && g.id === r.id; })[0];
+        return { row: r, fams: fams, all: all, hrs: hrs, score: Math.max(all.length, hrs || 0), done: done, plat: plat, pick: pick };
       }).filter(function (o) { return o.all.length; })
         .sort(function (p, q) {
-          // Last played that year (newest first), or most days played that year
-          var by = yearSort === "most" ? q.all.length - p.all.length
-            : q.all[q.all.length - 1] < p.all[p.all.length - 1] ? -1 : q.all[q.all.length - 1] > p.all[p.all.length - 1] ? 1 : 0;
+          // Last played that year (newest first), most played (days or hours, as in the
+          // summary), or most completed (games without a list last)
+          var lastP = p.all[p.all.length - 1], lastQ = q.all[q.all.length - 1];
+          var by = yearSort === "most" ? q.score - p.score
+            : yearSort === "done" ? (q.done == null ? -1 : q.done) - (p.done == null ? -1 : p.done)
+            : lastQ < lastP ? -1 : lastQ > lastP ? 1 : 0;
           return by || p.row.name.localeCompare(q.row.name);
         });
       sortPills.hidden = false;
@@ -681,7 +698,8 @@
       document.getElementById("ghAllYears").addEventListener("click", function (e) {
         e.preventDefault(); yearSel.value = ""; renderTimeline(); url.write();
       });
-      var w = 0.32, h = '<div class="gh-rows"><div></div>' + monthHeader();
+      var MEDAL = { "Game of the Year": "&#127942;", "Runner-up": "&#129352;", "3rd place": "&#129353;", "4th place": "&#127808;", "5th place": "&#9995;" };
+      var w = 0.32, h = '<div class="gh-rows"><div></div>' + monthHeader() + '<div class="gh-row-head">Played</div><div class="gh-row-head">Completed</div>';
       inYear.forEach(function (o) {
         var s = x(o.all[0]), e = Math.max(x(o.all[o.all.length - 1]), s + w);
         var tip = o.row.name + ": " + plural(o.all.length, "day", "days") + " in " + y + ", " + fmtDay(o.all[0]) + " to " + fmtDay(o.all[o.all.length - 1]);
@@ -690,9 +708,12 @@
             return '<rect x="' + (x(d) - w / 2) + '" y="2" width="' + w + '" height="12" class="gh-fill-' + f.toLowerCase() + '"><title>' + esc(o.row.name) + " (" + f + "): " + fmtDay(d) + "</title></rect>";
           }).join("");
         }).join("");
-        h += '<div class="gh-row-name" title="' + esc(o.row.name) + '">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams).sort()) + "<span>" + gameLink(o.row.id, o.row.name) + "</span></div>" +
+        var medal = o.pick ? ' <span class="gh-row-pick" title="' + esc(y + ": " + o.pick.place) + '">' + MEDAL[o.pick.place] + "</span>" : "";
+        h += '<div class="gh-row-name">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams).sort()) + "<span>" + listLink(o.row.id, o.row.name, 40) + medal + "</span></div>" +
           '<svg class="gh-row-svg" viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label="' + esc(tip) + '">' +
-          '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + ticks + "</svg>";
+          '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + ticks + "</svg>" +
+          '<div class="gh-row-stat">' + (o.hrs ? "~" + plural(Math.round(o.hrs), "hr", "hrs") + ", " : "") + plural(o.all.length, "day", "days") + "</div>" +
+          '<div class="gh-row-stat">' + (o.done != null ? Math.floor(o.done * 100) + "%" : "") + (o.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</div>";
       });
       out.innerHTML = h + "</div>";
     }
@@ -747,10 +768,10 @@
       tabs: {
         "data-summary": { query: function () {}, apply: function () {} },
         timeline: {
-          query: function (add) { if (yearSel.value) add("year", yearSel.value); if (yearSel.value && yearSort === "most") add("sort", "most"); },
+          query: function (add) { if (yearSel.value) add("year", yearSel.value); if (yearSel.value && yearSort !== "last") add("sort", yearSort); },
           apply: function (p) {
             yearSel.value = years.indexOf(p.get("year")) !== -1 ? p.get("year") : "";
-            yearSort = p.get("sort") === "most" ? "most" : "last";
+            yearSort = ["most", "done"].indexOf(p.get("sort")) !== -1 ? p.get("sort") : "last";
             window.SportUrl.setPills("ghYearSort", yearSort);
             renderTimeline();
           },

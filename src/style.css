@@ -1850,7 +1850,7 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
    Trophy Room tables, so the strips and the top-three titles both get room */
 @media (min-width: 1000px) {
   .gh-page #ghTimeline { width: min(1640px, calc(100vw - 4rem)); position: relative; left: 50%; transform: translateX(-50%); }
-  .gh-page #ghTimeline .gh-rows { grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); }
+  .gh-page #ghTimeline .gh-rows { grid-template-columns: max-content minmax(0, 1fr) max-content max-content; }
 }
 .gh-years { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 20rem); column-gap: 0.8rem; row-gap: 0.35rem; align-items: center; font-size: 0.78rem; }
 .gh-years-compact { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 6rem); }
@@ -1896,9 +1896,12 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-tl-nostats .gh-pct { display: none; }
 
 /* One year, a row per game */
-.gh-rows { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); column-gap: 0.75rem; row-gap: 1px; align-items: center; font-size: 0.78rem; }
+.gh-rows { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content max-content; column-gap: 0.75rem; row-gap: 1px; align-items: center; font-size: 0.78rem; }
 .gh-row-name { display: flex; align-items: center; gap: 0.4rem; min-width: 0; }
-.gh-row-name span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gh-row-name span { white-space: nowrap; }
+.gh-row-head { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); align-self: end; }
+.gh-row-stat { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+.gh-row-pick { margin-left: 0.15rem; }
 .gh-row-svg { display: block; width: 100%; height: 16px; overflow: visible; }
 .gh-span { stroke: var(--muted); stroke-opacity: 0.35; stroke-width: 1.5; }
 .gh-all-years { margin-left: 0.6rem; color: var(--accent); }
@@ -2012,6 +2015,8 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
   .gh-years:not(.gh-years-compact) .gh-strip { height: 22px; }
   .gh-years-compact { grid-template-columns: 2.8rem minmax(0, 1fr) minmax(0, 4.5rem); }
   .gh-rows { grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr); }
+  .gh-row-head, .gh-row-stat { display: none; }
+  .gh-row-name span { overflow: hidden; text-overflow: ellipsis; }
   .gh-row-name .gh-dots { display: none; }
   .gh-post { flex-direction: column; }
   .gh-post img { width: 100%; max-width: 20rem; }
