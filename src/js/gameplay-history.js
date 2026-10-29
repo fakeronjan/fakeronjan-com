@@ -373,7 +373,8 @@
         var lists = sum.querySelectorAll(".gh-sum-list");
         if (lists.length < 3) return;
         var box = sum.getBoundingClientRect(), lines = "";
-        // Neighboring columns connect (a line skipping the middle column would cross its text)
+        // Lines run through the picks in the middle: played to picks, picks to completed (a line
+        // skipping the middle column would cross its text)
         function join(from, to) {
           from.querySelectorAll("span[data-gid]").forEach(function (t) {
             var p = to.querySelector('span[data-gid="' + t.dataset.gid + '"]');
@@ -405,7 +406,7 @@
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
-          header: "<span>Most played</span><span>Most completed</span><span>Game of the Year</span>",
+          header: "<span>Most played</span><span class=\"gh-head-goty\">Game of the Year</span><span>Most completed</span>",
           summary: function (yr, gs) {
             var picks = gotyByYear()[yr] || [], RANKS = ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; "];
             // Most completed: the share of a trophy or achievement list unlocked by the end of the
@@ -421,14 +422,15 @@
             return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + gs.slice(0, 3).map(function (g, i) {
                 return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + gameLink(g.row.id, g.row.name) + "</span>";
               }).join("") + "</div>" +
-              '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
-                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + gameLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i></span>";
-              }).join("") : "<span>-</span>") + "</div>" +
+              '<div class="gh-sum-band"></div>' +
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
                 var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; " }[p.place] || "&#127942; ";
                 return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
-              }).join("") : "<span>-</span>") + "</div>";
+              }).join("") : "<span>-</span>") + "</div>" +
+              '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
+                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + gameLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i></span>";
+              }).join("") : "<span>-</span>") + "</div>" ;
           },
         });
         linkMatches();
