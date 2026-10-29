@@ -364,6 +364,29 @@
       if (name === "trophy-room") loadUnlocks();
     }
 
+    // A dotted line from a most-played game to the same game among that year's picks, drawn
+    // only when the two lists sit side by side
+    function linkMatches() {
+      document.querySelectorAll("#ghTimeline .gh-year-sum").forEach(function (sum) {
+        var old = sum.querySelector("svg.gh-match");
+        if (old) old.remove();
+        var tops = sum.querySelector(".gh-sum-tops"), picks = sum.querySelector(".gh-sum-goty");
+        if (!tops || !picks) return;
+        var box = sum.getBoundingClientRect(), lines = "";
+        tops.querySelectorAll("span[data-gid]").forEach(function (t) {
+          var p = picks.querySelector('span[data-gid="' + t.dataset.gid + '"]');
+          if (!p) return;
+          var tr = t.querySelector("a").getClientRects(), pr = p.getClientRects()[0];
+          var a = tr[tr.length - 1];
+          if (!a || !pr || pr.left <= a.right) return;  // stacked lists: nothing to connect
+          lines += '<line x1="' + (a.right - box.left + 6) + '" y1="' + (a.top + a.height / 2 - box.top) + '" x2="' + (pr.left - box.left - 6) + '" y2="' + (pr.top + pr.height / 2 - box.top) + '"/>';
+        });
+        if (lines) sum.insertAdjacentHTML("beforeend", '<svg class="gh-match" aria-hidden="true">' + lines + "</svg>");
+      });
+    }
+    var relink = null;
+    window.addEventListener("resize", function () { clearTimeout(relink); relink = setTimeout(linkMatches, 150); });
+
     function renderTimeline() {
       var y = yearSel.value;
       var rows = games.filter(minOK);
@@ -379,14 +402,15 @@
           summary: function (yr, gs, nDays) {
             var picks = gotyByYear()[yr] || [];
             return '<div class="gh-sum-counts"><span>' + plural(gs.length, "game", "games") + "</span><span>" + plural(nDays, "day", "days") + "</span></div>" +
-              '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g, i) { return "<span>" + ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; "][i] + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>" +
+              '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g, i) { return '<span data-gid="' + esc(g.row.id) + '">' + ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; "][i] + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>" +
               '<div class="gh-sum-goty">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
                 var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; " }[p.place] || "&#127942; ";
-                return "<span>" + medal + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
+                return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
               }).join("") : "<span>-</span>") + "</div>";
           },
         });
+        linkMatches();
         out.querySelectorAll("button.gh-year").forEach(function (b) {
           b.addEventListener("click", function () { yearSel.value = b.dataset.year; renderTimeline(); url.write(); });
         });
