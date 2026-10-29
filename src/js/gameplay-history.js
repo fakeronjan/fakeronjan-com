@@ -463,6 +463,8 @@
       "Life is Strange: True Colors": "Life is Strange: True Colors",
       "Super Mario RPG: Legend of the Seven Stars": "Super Mario RPG (SNES)",
       "Super Mario RPG": "Super Mario RPG (Switch)",
+      "Disney Classic Games: Aladdin and The Lion King": "Aladdin and The Lion King",
+      "Castlevania Requiem: Symphony of the Night & Rondo of Blood": "Castlevania Requiem",
       "Life is Strange: Before the Storm": "Life is Strange: BtS",
       "EA Sports College Football 25": "College Football 25",
       "EA Sports College Football 26": "College Football 26",
