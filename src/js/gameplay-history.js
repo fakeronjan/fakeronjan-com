@@ -121,6 +121,34 @@
     return '<span class="gh-nowrap"' + tip + ">" + (e.earned || 0) + " of " + e.total + ' <i class="gh-pct">' + Math.floor(r.best.pct * 100) + "%</i></span>" + plat;
   }
 
+  // "26 of 31 83%" for a platform's lists, the count alone when a list has no total
+  function unlockShare(entries) {
+    var c = unlockCount(entries);
+    if (!c) return "-";
+    var earned = 0, total = 0;
+    entries.forEach(function (e) { earned += e.earned || 0; total += e.total || 0; });
+    return /of/.test(c) && total ? '<span class="gh-nowrap">' + c + ' <i class="gh-pct">' + Math.floor(earned / total * 100) + "%</i></span>" : c;
+  }
+
+  // A Total row under a game's Platforms table when it was played on two or more: first and
+  // last played across them, and summed hours, sessions, unlocks, and screenshots
+  function platformTotals(plats) {
+    if (plats.length < 2) return "";
+    var first = null, last = null, mins = 0, est = false, sessions = 0, captures = 0, all = [];
+    plats.forEach(function (g) {
+      if (g.first && (!first || g.first < first)) first = g.first;
+      if (g.last && (!last || g.last > last)) last = g.last;
+      mins += g.minutes; est = est || g.estimated; sessions += g.sessions; captures += g.captures;
+      all = all.concat(g.entries);
+    });
+    return '<tfoot><tr class="gh-total"><td class="gh-wrap">Total</td>' +
+      '<td class="gh-hide-m">' + fmtDay(first) + "</td><td>" + fmtDay(last) + "</td>" +
+      "<td>" + (mins ? hours(Math.round(mins / 6) / 10, est) : "-") + "</td>" +
+      '<td class="gh-hide-t">' + (sessions || "-") + "</td>" +
+      '<td class="gh-hide-m">' + (unlockCount(all) || "-") + "</td>" +
+      '<td class="gh-hide-t">' + (captures || "-") + "</td></tr></tfoot>";
+  }
+
   function platKey(e) { return e.family + "|" + e.platform + "|" + (e.gamertag || ""); }
 
   // The entries a game page counts: those with activity, plus any list with nothing earned
@@ -854,7 +882,12 @@
     }
     if (row.hours != null) facts.push((row.hours_estimated ? "about " : "") + plural(row.hours, "hour", "hours"));
     if (row.sessions) facts.push(plural(row.sessions, "session", "sessions"));
-    if (unlockCount(countedEntries(row))) facts.push(unlockCount(countedEntries(row)) + " trophies and achievements");
+    // Unlocks as on the Games tab: the most complete list, with its share ("on PC" when the game
+    // has more than one list; the Platforms table below has each list and the total)
+    var best = bestList(row), lists = countedEntries(row).filter(function (e) { return e.total; }).length;
+    if (best) facts.push((best.entry.earned || 0) + " of " + best.entry.total + " trophies and achievements" +
+      (lists > 1 ? " on " + platformLabel(best.entry) : "") + " (" + Math.floor(best.pct * 100) + "%)");
+    else if (unlockCount(countedEntries(row))) facts.push(unlockCount(countedEntries(row)) + " trophies and achievements");
 
     var art = row.img ? '<img class="gh-art" src="' + BASE + "/" + row.img + '" alt="">' : '<span class="gh-art" aria-hidden="true"></span>';
     var badges = gotyFor(row).map(function (g) {
@@ -912,9 +945,9 @@
           '<td class="gh-hide-m">' + fmtDay(g.first) + "</td><td>" + fmtDay(g.last) + "</td>" +
           "<td>" + (g.minutes ? hours(Math.round(g.minutes / 6) / 10, g.estimated) : "-") + "</td>" +
           '<td class="gh-hide-t">' + (g.sessions || "-") + "</td>" +
-          '<td class="gh-hide-m">' + (unlockCount(g.entries) || "-") + "</td>" +
+          '<td class="gh-hide-m">' + unlockShare(g.entries) + "</td>" +
           '<td class="gh-hide-t">' + (g.captures || "-") + "</td></tr>";
-      }).join("") + "</tbody></table></div>";
+      }).join("") + "</tbody>" + platformTotals(plats) + "</table></div>";
 
     // Screenshots: Switch, PlayStation, and Miiverse, from the gallery repo, drawn by wireGame
     // (with Nintendo / PlayStation pills when there are both). A Miiverse screenshot carries
