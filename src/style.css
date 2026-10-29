@@ -1835,7 +1835,7 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 /* The Timeline breaks out of the reading column on wide screens, centered like the Games and
    Trophy Room tables, so the strips and the top-three titles both get room */
 @media (min-width: 1000px) {
-  .gh-page #ghTimeline { width: min(1080px, calc(100vw - 4rem)); position: relative; left: 50%; transform: translateX(-50%); }
+  .gh-page #ghTimeline { width: min(1200px, calc(100vw - 4rem)); position: relative; left: 50%; transform: translateX(-50%); }
   .gh-page #ghTimeline .gh-rows { grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); }
 }
 .gh-years { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 20rem); column-gap: 0.8rem; row-gap: 0.35rem; align-items: center; font-size: 0.78rem; }
@@ -1850,15 +1850,19 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-year-sum { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gh-year-sum b { color: var(--fg); font-weight: 600; }
 /* All years: counts and the year's top three games in their own columns, each on its own line */
-.gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 24rem); row-gap: 0.7rem; }
+.gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, min(36rem, 48%)); row-gap: 0.7rem; }
 .gh-years:not(.gh-years-compact) .gh-strip { height: 64px; }
-.gh-years:not(.gh-years-compact) > .gh-year-sum { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); column-gap: 0.8rem; white-space: normal; overflow: visible; line-height: 1.4; }
+.gh-years:not(.gh-years-compact) > .gh-year-sum,
+.gh-sum-head { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr) minmax(0, 1fr); column-gap: 0.8rem; white-space: normal; overflow: visible; line-height: 1.4; }
+.gh-sum-head { align-self: end; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .gh-sum-counts { align-self: center; }
 .gh-sum-counts span { display: block; color: var(--fg); font-weight: 600; white-space: nowrap; }
-.gh-sum-tops span { display: block; padding-left: 0.8rem; text-indent: -0.8rem; }
-@media (max-width: 900px) {
+.gh-sum-tops span, .gh-sum-goty span { display: block; padding-left: 0.8rem; text-indent: -0.8rem; text-wrap: balance; }
+@media (max-width: 999px) {
   .gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 17rem); }
   .gh-years:not(.gh-years-compact) > .gh-year-sum { grid-template-columns: minmax(0, 1fr); }
+  .gh-sum-head span { display: none; }
+  .gh-sum-goty { margin-top: 0.3rem; }
   .gh-sum-counts span { display: inline; }
   .gh-sum-counts span:first-child::after { content: ", "; }
 }

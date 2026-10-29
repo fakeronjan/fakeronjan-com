@@ -176,7 +176,8 @@
 
   // rows: game rows; summary(year, games, days) -> html for the right column (or null)
   function yearStrips(rows, years, opts) {
-    var h = '<div class="gh-years' + (opts.compact ? " gh-years-compact" : "") + '"><div></div>' + monthHeader() + "<div></div>";
+    var h = '<div class="gh-years' + (opts.compact ? " gh-years-compact" : "") + '"><div></div>' + monthHeader() +
+      (opts.header ? '<div class="gh-sum-head">' + opts.header + "</div>" : "<div></div>");
     years.forEach(function (y) {
       var byFam = {}, games = [], daySet = {};
       rows.forEach(function (r) {
@@ -321,6 +322,31 @@
     var games = [], gamesById = {}, years = [];
     var drawGames = null, drawUnlocks = null, unlocksLoaded = null;
 
+    // Game of the Year winner and runner-up by year (decade picks left out), and the game page
+    // each pick belongs to, matched by name the same way a game page finds its badges
+    var gotyYears = null, pickIndex = null;
+    function gotyByYear() {
+      if (!gotyYears) {
+        gotyYears = {};
+        (window.GOTY || []).forEach(function (g) {
+          if (!/^\d{4}$/.test(g.year)) return;
+          (gotyYears[g.year] = gotyYears[g.year] || []).push(g);
+        });
+        Object.keys(gotyYears).forEach(function (y) { gotyYears[y].sort(function (a, b) { return a.place === "Runner-up" ? 1 : b.place === "Runner-up" ? -1 : 0; }); });
+      }
+      return gotyYears;
+    }
+    function gameForPick(name) {
+      if (!pickIndex) {
+        pickIndex = {};
+        games.forEach(function (r) {
+          [r.name].concat(r.name.split(" + ")).concat(r.entries.map(function (e) { return e.name; })).forEach(function (n) { pickIndex[norm(n)] = pickIndex[norm(n)] || r; });
+        });
+      }
+      var k = norm(name);
+      return pickIndex[k] || pickIndex[GOTY_ALIASES[k]] || null;
+    }
+
     function minOK(r) {
       var n = +minSel.value;
       return r.days.length >= n || (r.hours || 0) >= n;
@@ -348,9 +374,15 @@
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
+          header: "<span></span><span>Most played</span><span>Game of the Year</span>",
           summary: function (yr, gs, nDays) {
+            var picks = gotyByYear()[yr] || [];
             return '<div class="gh-sum-counts"><span>' + plural(gs.length, "game", "games") + "</span><span>" + plural(nDays, "day", "days") + "</span></div>" +
-              '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g) { return "<span>" + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>";
+              '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g) { return "<span>" + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>" +
+              '<div class="gh-sum-goty">' + (picks.length ? picks.map(function (p) {
+                var row = gameForPick(p.game);
+                return "<span>" + (p.place === "Runner-up" ? "&#129352; " : "&#127942; ") + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
+              }).join("") : "<span>-</span>") + "</div>";
           },
         });
         out.querySelectorAll("button.gh-year").forEach(function (b) {
