@@ -367,19 +367,74 @@
 
     // A dotted line from a most-played game to the same game among that year's picks, drawn
     // only when the two lists sit side by side
-    // A combined row ("Persona 5 + Persona 5 Royal") named for the versions played that year
-    // ("Persona 5 Royal" in 2024). Falls back to the full name when a version can't be told apart.
-    function yearName(row, yr) {
-      if (row.name.indexOf(" + ") === -1 || row.entries.some(function (e) { return norm(e.name) === norm(row.name); })) return row.name;
-      var parts = row.name.split(" + "), used = {}, ok = true;
-      row.entries.forEach(function (e) {
-        if (!e.first || e.first.slice(0, 4) > yr || (e.last || e.first).slice(0, 4) < yr) return;
-        var k = norm(e.name), best = -1;
-        parts.forEach(function (p, i) { if (k.indexOf(norm(p)) === 0 && (best < 0 || norm(p).length > norm(parts[best]).length)) best = i; });
-        if (best < 0) ok = false; else used[best] = 1;
-      });
-      var names = parts.filter(function (p, i) { return used[i]; });
-      return ok && names.length ? names.join(" + ") : row.name;
+    // Short names for the Timeline lists, so the longest titles don't set the page's layout.
+    // A curated short name wins (and may run a few characters past the cap). Otherwise, in
+    // order: a combined row ("Street Fighter IV + Super Street Fighter IV + ...") keeps its
+    // first game; "The Legend of Zelda" becomes "Zelda"; a "Remastered" tag drops; a numbered
+    // game drops its subtitle when no other game shares the number (Uncharted 2, Danganronpa V3);
+    // anything still past MAX_TITLE characters ends at its last whole word with "…". The full
+    // title shows on hover. Game pages and the other tabs keep full titles.
+    var MAX_TITLE = 26;
+    var SHORT_NAMES = {
+      "Animal Crossing: New Horizons": "Animal Crossing: New Horizons",
+      "Bloodstained: Ritual of the Night": "Bloodstained: RotN",
+      "Shovel Knight: Treasure Trove": "Shovel Knight",
+      "Valiant Hearts: The Great War": "Valiant Hearts",
+      "Ni no Kuni: Wrath of the White Witch": "Ni no Kuni",
+      "Clair Obscur: Expedition 33": "Expedition 33",
+      "Like a Dragon: Infinite Wealth": "Like a Dragon: Infinite Wealth",
+      "Like a Dragon: Pirate Yakuza in Hawaii": "Like a Dragon: Pirate Yakuza",
+      "Paper Mario: The Thousand-Year Door": "Paper Mario: TTYD",
+      "Castlevania: Symphony of the Night": "Symphony of the Night",
+      "Danganronpa: Trigger Happy Havoc": "Danganronpa 1",
+      "Big Brain Academy: Brain vs. Brain": "Big Brain Academy",
+      "LEGO Star Wars: The Skywalker Saga": "LEGO Skywalker Saga",
+      "Phoenix Wright: Ace Attorney Trilogy": "Ace Attorney Trilogy",
+      "The Great Ace Attorney Chronicles": "The Great Ace Attorney",
+      "South Park: The Stick of Truth": "The Stick of Truth",
+      "Klonoa Phantasy Reverie Series": "Klonoa Phantasy Reverie",
+      "Street Fighter 30th Anniversary Collection": "SF 30th Anniversary",
+      "Life is Strange: True Colors": "Life is Strange: True Colors",
+      "Life is Strange: Before the Storm": "Life is Strange: BtS",
+      "EA Sports College Football 25": "College Football 25",
+      "EA Sports College Football 26": "College Football 26",
+      "Teenage Mutant Ninja Turtles: Shredder's Revenge": "TMNT: Shredder's Revenge",
+      "The Legend of Zelda: Tears of the Kingdom": "Zelda: Tears of the Kingdom",
+      "The Legend of Zelda: A Link Between Worlds": "Zelda: A Link Between Worlds",
+    };
+    var prefixCount = null;
+    function shortTitle(name) {
+      var key = name.replace(/’/g, "'");
+      if (SHORT_NAMES[key]) return SHORT_NAMES[key];
+      if (!prefixCount) {
+        prefixCount = {};
+        games.forEach(function (g) {
+          g.name.split(" + ").forEach(function (n) {
+            var k = norm(n.split(": ")[0]);
+            prefixCount[k] = (prefixCount[k] || 0) + 1;
+          });
+        });
+      }
+      var t = name.split(" + ")[0];
+      if (SHORT_NAMES[t.replace(/’/g, "'")]) return SHORT_NAMES[t.replace(/’/g, "'")];
+      if (t.indexOf("The Legend of Zelda: ") === 0) t = "Zelda: " + t.slice(21);
+      t = t.replace(/ Remastered$/, "");
+      var i = t.indexOf(": "), head = i > 0 ? t.slice(0, i) : "";
+      if (head && head !== "Zelda" && /(\d+|\b[IVX]+|V\d)$/.test(head) && prefixCount[norm(head)] === 1) t = head;
+      if (t.length > MAX_TITLE) {
+        var cut = t.slice(0, MAX_TITLE - 1), sp = cut.lastIndexOf(" ");
+        t = (sp > 8 ? cut.slice(0, sp) : cut).replace(/[\s:,.+\-]+$/, "") + "\u2026";
+      }
+      return t;
+    }
+    function listLink(id, name) {
+      var t = shortTitle(name);
+      if (t === name) return gameLink(id, name);
+      return '<a class="gh-glink" href="' + GAME_URL + encodeURIComponent(id) + '" title="' + esc(name) + '">' + esc(t) + "</a>";
+    }
+    function listText(name) {
+      var t = shortTitle(name);
+      return t === name ? esc(name) : '<span title="' + esc(name) + '">' + esc(t) + "</span>";
     }
 
     // A game's estimated hours in one year. Each platform family's lifetime hours are spread
@@ -515,17 +570,17 @@
               return { row: g.row, days: g.n, hrs: hrs, score: Math.max(g.n, hrs || 0) };
             }).sort(function (p, q) { return q.score - p.score || q.days - p.days; }).slice(0, 5);
             return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + played.map(function (g, i) {
-                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + gameLink(g.row.id, yearName(g.row, yr)) + ' <i class="gh-pct">' +
+                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + listLink(g.row.id, g.row.name) + ' <i class="gh-pct">' +
                   (g.hrs ? "~" + plural(Math.round(g.hrs), "hr", "hrs") + ", " : "") + plural(g.days, "day", "days") + "</i></span>";
               }).join("") + "</div>" +
               '<div class="gh-sum-band"></div>' +
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
                 var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; ", "4th place": "&#127808; ", "5th place": "&#9995; " }[p.place] || "&#127942; ";
-                return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
+                return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? listLink(row.id, p.game) : listText(p.game)) + "</span>";
               }).join("") : "<span>-</span>") + "</div>" +
               '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
-                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + gameLink(d.row.id, yearName(d.row, yr)) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i></span>";
+                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + listLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i></span>";
               }).join("") : "<span>-</span>") + "</div>" ;
           },
         });
