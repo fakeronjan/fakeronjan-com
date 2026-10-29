@@ -440,28 +440,43 @@
     // Titles never wrap. Measure the longest title in each list, size the three columns to
     // fit, then lay them out beside the strip (the strip narrows, down to MIN_STRIP), under
     // it, or stacked, whichever is the first that fits
-    var MIN_STRIP = 200;
+    // The three lists always sit in line with the year's strip. When the row is short of room
+    // the strip narrows first (to MIN_STRIP), then the list text shrinks (to 10px), then the
+    // days, hours, and percentages drop out (to 9px). Narrower than that, only the strips show.
+    var MIN_STRIP = 160;
     function layoutLists() {
       var tl = document.getElementById("ghTimeline"), grid = tl.querySelector(".gh-years:not(.gh-years-compact)");
-      tl.classList.remove("gh-tl-below", "gh-tl-stack");
+      tl.classList.remove("gh-tl-nostats", "gh-tl-strips");
+      tl.style.removeProperty("--gh-fs");
       if (!grid || !grid.querySelector(".gh-sum-list")) return;
+      // Natural widths at full size: each list's longest line, with and without its numbers
       tl.classList.add("gh-tl-measure");
-      var w = [0, 0, 0], cols = { "gh-sum-tops": 0, "gh-sum-goty": 1, "gh-sum-done": 2 };
+      var w = [0, 0, 0], bare = [0, 0, 0], cols = { "gh-sum-tops": 0, "gh-sum-goty": 1, "gh-sum-done": 2 };
       grid.querySelectorAll(".gh-sum-list").forEach(function (l) {
         var i = cols[l.classList[1]];
-        l.querySelectorAll(":scope > span").forEach(function (sp) { w[i] = Math.max(w[i], Math.ceil(sp.getBoundingClientRect().width) + 2); });
+        l.querySelectorAll(":scope > span").forEach(function (sp) {
+          var full = sp.getBoundingClientRect().width, pct = sp.querySelector(".gh-pct");
+          w[i] = Math.max(w[i], Math.ceil(full) + 2);
+          bare[i] = Math.max(bare[i], Math.ceil(full - (pct ? pct.getBoundingClientRect().width + 4 : 0)) + 2);
+        });
       });
       tl.classList.remove("gh-tl-measure");
-      // The gap between lists is the shortest a connecting line can be, so keep it generous
-      var em = parseFloat(getComputedStyle(grid).fontSize), yearCol = 3.2 * em;
-      var gap = parseFloat(getComputedStyle(grid.querySelector(".gh-year-sum")).columnGap) || 2 * em;
-      var lists = w[0] + w[1] + w[2] + 2 * gap + 12;  // 12: the band overhang, with a little room
-      ["--gh-c1", "--gh-c2", "--gh-c3"].forEach(function (v, i) { tl.style.setProperty(v, w[i] + "px"); });
-      tl.style.setProperty("--gh-sum-w", lists + "px");
+      var em = parseFloat(getComputedStyle(grid).fontSize), GAP = 4.5, EDGE = 12;
+      var rowGaps = parseFloat(getComputedStyle(grid).columnGap) * 2, yearCol = 3.2 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+      function need(widths, f) { return (widths[0] + widths[1] + widths[2]) * f + 2 * GAP * em * f + EDGE; }
+      function apply(widths, f) {
+        ["--gh-c1", "--gh-c2", "--gh-c3"].forEach(function (v, i) { tl.style.setProperty(v, Math.ceil(widths[i] * f) + "px"); });
+        tl.style.setProperty("--gh-sum-w", Math.ceil(need(widths, f)) + "px");
+        if (f < 1) tl.style.setProperty("--gh-fs", f.toFixed(3));
+      }
+      apply(w, 1);
       if (innerWidth <= 640) return;  // phones show the strips only
-      var width = grid.clientWidth;
-      if (yearCol + MIN_STRIP + lists + 2 * gap <= width) return;
-      tl.classList.add(lists <= width ? "gh-tl-below" : "gh-tl-stack");
+      var room = grid.clientWidth - yearCol - rowGaps - MIN_STRIP;  // what the lists can have
+      var f = Math.min(1, (room - EDGE) / (need(w, 1) - EDGE));
+      if (f * em >= 10) return apply(w, f);
+      f = Math.min(1, (room - EDGE) / (need(bare, 1) - EDGE));
+      if (f * em >= 9) { apply(bare, f); tl.classList.add("gh-tl-nostats"); return; }
+      tl.classList.add("gh-tl-strips");
     }
     var relink = null;
     window.addEventListener("resize", function () { clearTimeout(relink); relink = setTimeout(function () { layoutLists(); linkMatches(); }, 150); });
