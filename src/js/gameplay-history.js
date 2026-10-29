@@ -376,10 +376,11 @@
         tops.querySelectorAll("span[data-gid]").forEach(function (t) {
           var p = picks.querySelector('span[data-gid="' + t.dataset.gid + '"]');
           if (!p) return;
-          var tr = t.querySelector("a").getClientRects(), pr = p.getClientRects()[0];
-          var a = tr[tr.length - 1];
-          if (!a || !pr || pr.left <= a.right) return;  // stacked lists: nothing to connect
-          lines += '<line x1="' + (a.right - box.left + 6) + '" y1="' + (a.top + a.height / 2 - box.top) + '" x2="' + (pr.left - box.left - 6) + '" y2="' + (pr.top + pr.height / 2 - box.top) + '"/>';
+          // First line to first line, so games of the same rank connect with a level line
+          var a = t.querySelector("a").getClientRects()[0], pr = (p.querySelector("a") || p).getClientRects()[0];
+          if (!a || !pr || p.getClientRects()[0].left <= a.right) return;  // stacked lists: nothing to connect
+          var medal = p.getClientRects()[0];  // end the line before the medal, level with the name
+          lines += '<line x1="' + (a.right - box.left + 6) + '" y1="' + (a.top + a.height / 2 - box.top) + '" x2="' + (medal.left - box.left - 6) + '" y2="' + (pr.top + pr.height / 2 - box.top) + '"/>';
         });
         if (lines) sum.insertAdjacentHTML("beforeend", '<svg class="gh-match" aria-hidden="true">' + lines + "</svg>");
       });
