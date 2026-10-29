@@ -7,16 +7,17 @@
   --muted: #666;
   --gold: #c8a84b;
   --silver: #868e97;
+  --bronze: #b0703c;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --fg: #eaeaea; --bg: #16161a; --muted: #999;
-    --accent: #22d3ee; --accent-2: #f472b6; --silver: #bac1c8;
+    --accent: #22d3ee; --accent-2: #f472b6; --silver: #bac1c8; --bronze: #d4955f;
   }
 }
 :root[data-theme="dark"] {
   --fg: #eaeaea; --bg: #16161a; --muted: #999;
-  --accent: #22d3ee; --accent-2: #f472b6; --silver: #bac1c8;
+  --accent: #22d3ee; --accent-2: #f472b6; --silver: #bac1c8; --bronze: #d4955f;
 }
 
 * { box-sizing: border-box; }
@@ -1973,6 +1974,9 @@ a.gh-pill:hover { background: color-mix(in srgb, var(--gold) 12%, transparent); 
 /* Runner-up wears silver wherever a pick shows as a pill or badge */
 .gh-pill.gh-silver, .gh-badge.gh-silver { color: var(--silver); border-color: var(--silver); }
 a.gh-pill.gh-silver:hover, a.gh-badge.gh-silver:hover { background: color-mix(in srgb, var(--silver) 14%, transparent); }
+/* Third place wears bronze */
+.gh-pill.gh-bronze, .gh-badge.gh-bronze { color: var(--bronze); border-color: var(--bronze); }
+a.gh-pill.gh-bronze:hover, a.gh-badge.gh-bronze:hover { background: color-mix(in srgb, var(--bronze) 14%, transparent); }
 .gh-badge { font-size: 0.78rem; font-weight: 700; color: var(--gold); border: 1px solid var(--gold); border-radius: 999px; padding: 0.15rem 0.65rem; text-decoration: none; }
 a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent); }
 .gh-h2 { font-size: 1.05rem; margin: 1.75rem 0 0.6rem; text-wrap: balance; }

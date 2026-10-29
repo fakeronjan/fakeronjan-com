@@ -284,13 +284,14 @@
 
   // Small pills after a game's name in the Games and Trophy Room tables: the medal and the
   // year of each Game of the Year pick, linking to its write-up ("2024: Runner-up" on hover)
+  var MEDAL_CLASS = { "Runner-up": " gh-silver", "3rd place": " gh-bronze" };  // gold otherwise
   var PILL_MEDALS = { "Game of the Year": "&#127942;", "Game of the Decade": "&#127942;", "Runner-up": "&#129352;", "3rd place": "&#129353;" };
   function pills(row) {
     if (!row) return "";
     if (row._pills == null) {
       row._pills = gotyFor(row).map(function (g) {
         var label = PILL_MEDALS[g.place] + " " + esc(g.year), tip = esc(g.year) + ": " + esc(g.place);
-        var cls = "gh-pill" + (g.place === "Runner-up" ? " gh-silver" : "");
+        var cls = "gh-pill" + (MEDAL_CLASS[g.place] || "");
         return g.url ? ' <a class="' + cls + '" href="' + esc(g.url) + '" title="' + tip + '">' + label + "</a>" : ' <span class="' + cls + '" title="' + tip + '">' + label + "</span>";
       }).join("");
     }
@@ -835,7 +836,7 @@
     var art = row.img ? '<img class="gh-art" src="' + BASE + "/" + row.img + '" alt="">' : '<span class="gh-art" aria-hidden="true"></span>';
     var badges = gotyFor(row).map(function (g) {
       var label = PILL_MEDALS[g.place] + " " + esc(g.year) + ": " + esc(g.place);  // "🥈 2024: Runner-up", "🏆 2010s: Game of the Decade"
-      var cls = "gh-badge" + (g.place === "Runner-up" ? " gh-silver" : "");
+      var cls = "gh-badge" + (MEDAL_CLASS[g.place] || "");
       return g.url ? '<a class="' + cls + '" href="' + esc(g.url) + '">' + label + "</a>" : '<span class="' + cls + '">' + label + "</span>";
     }).join("");
     var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + "</h1>" +
