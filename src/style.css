@@ -114,6 +114,8 @@ li:last-child { margin-bottom: 0; }
   font-size: 0.75rem;
   font-style: italic;
 }
+.goty-table a.goty-gh { margin-left: 0.15em; text-decoration: none; font-style: normal; font-weight: 400; white-space: nowrap; }
+.goty-table a.goty-gh:hover { filter: brightness(1.15); }
 /* Phones drop the Third column (2019 on only) so neither table scrolls sideways */
 @media (max-width: 640px) {
   .goty-table tr > :nth-child(4), .methodology-table tr > :nth-child(4) { display: none; }

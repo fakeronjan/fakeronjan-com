@@ -90,6 +90,39 @@ permalink: /video-games/
 
 <script src="/js/sports-url.js?v={{ buildTime }}"></script>
 <script>
+// A 🎮 after each pick that has a Gameplay History game page, matched by name the same way
+// game pages find their badges. Names and years keep their links to the posts.
+(function () {
+  function norm(s) {
+    return String(s || "").toLowerCase().replace(/[™®©]/g, "").replace(/[’']/g, "").replace(/[^a-z0-9]+/g, "");
+  }
+  var ALIASES = { valianthearts: "valiantheartsthegreatwar" };
+  fetch("https://fakeronjan.github.io/gameplay-tracking/data/games.json").then(function (r) { return r.json(); }).then(function (games) {
+    var index = {};
+    games.forEach(function (g) {
+      [g.name].concat(g.name.split(" + ")).concat(g.entries.map(function (e) { return e.name; })).forEach(function (n) {
+        index[norm(n)] = index[norm(n)] || g;
+      });
+    });
+    document.querySelectorAll(".goty-table tbody tr:not(.commentary-row)").forEach(function (tr) {
+      Array.prototype.slice.call(tr.cells, 1).forEach(function (td) {
+        var name = td.textContent.trim(), k = norm(name);
+        var g = k && (index[k] || index[ALIASES[k]]);
+        if (!g) return;
+        var a = document.createElement("a");
+        a.className = "goty-gh";
+        a.href = "/video-games/gameplay-history/game/?id=" + encodeURIComponent(g.id);
+        a.title = "Gameplay History";
+        a.setAttribute("aria-label", name + " in Gameplay History");
+        a.textContent = "🎮";
+        td.appendChild(document.createTextNode(" "));
+        td.appendChild(a);
+      });
+    });
+  }).catch(function () {});
+})();
+</script>
+<script>
 // Winners | Methodology tabs, with ?tab= links like the Gameplay History page
 (function () {
   function activateTab(name) {
