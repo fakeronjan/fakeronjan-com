@@ -379,7 +379,7 @@
           summary: function (yr, gs, nDays) {
             var picks = gotyByYear()[yr] || [];
             return '<div class="gh-sum-counts"><span>' + plural(gs.length, "game", "games") + "</span><span>" + plural(nDays, "day", "days") + "</span></div>" +
-              '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g) { return "<span>" + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>" +
+              '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g, i) { return "<span>" + ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; "][i] + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>" +
               '<div class="gh-sum-goty">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
                 var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; " }[p.place] || "&#127942; ";
