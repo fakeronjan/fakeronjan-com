@@ -329,11 +329,11 @@
     function gotyByYear() {
       if (!gotyYears) {
         gotyYears = {};
-        (window.GOTY || []).forEach(function (g) {
+        (window.GOTY || []).concat(window.GOTY_MORE || []).forEach(function (g) {
           if (!/^\d{4}$/.test(g.year)) return;
           (gotyYears[g.year] = gotyYears[g.year] || []).push(g);
         });
-        var RANK = { "Game of the Year": 0, "Runner-up": 1, "3rd place": 2 };
+        var RANK = { "Game of the Year": 0, "Runner-up": 1, "3rd place": 2, "4th place": 3, "5th place": 4 };
         Object.keys(gotyYears).forEach(function (y) { gotyYears[y].sort(function (a, b) { return RANK[a.place] - RANK[b.place]; }); });
       }
       return gotyYears;
@@ -367,36 +367,80 @@
 
     // A dotted line from a most-played game to the same game among that year's picks, drawn
     // only when the two lists sit side by side
+    // A combined row ("Persona 5 + Persona 5 Royal") named for the versions played that year
+    // ("Persona 5 Royal" in 2024). Falls back to the full name when a version can't be told apart.
+    function yearName(row, yr) {
+      if (row.name.indexOf(" + ") === -1 || row.entries.some(function (e) { return norm(e.name) === norm(row.name); })) return row.name;
+      var parts = row.name.split(" + "), used = {}, ok = true;
+      row.entries.forEach(function (e) {
+        if (!e.first || e.first.slice(0, 4) > yr || (e.last || e.first).slice(0, 4) < yr) return;
+        var k = norm(e.name), best = -1;
+        parts.forEach(function (p, i) { if (k.indexOf(norm(p)) === 0 && (best < 0 || norm(p).length > norm(parts[best]).length)) best = i; });
+        if (best < 0) ok = false; else used[best] = 1;
+      });
+      var names = parts.filter(function (p, i) { return used[i]; });
+      return ok && names.length ? names.join(" + ") : row.name;
+    }
+
+    // A game's estimated hours in one year. Each platform family's lifetime hours are spread
+    // evenly over that family's recorded days, then the year's days are added up, so Xbox
+    // hours never ride on Nintendo screenshot days (and Nintendo, with no hours, adds none)
+    function yearHours(row, yr) {
+      var total = 0, any = false;
+      Object.keys(row.days_by_family || {}).forEach(function (f) {
+        var mins = 0;
+        row.entries.forEach(function (e) { if (e.family === f) mins += e.minutes || 0; });
+        var days = row.days_by_family[f];
+        if (!mins || !days.length) return;
+        var inYear = days.filter(function (d) { return d.slice(0, 4) === yr; }).length;
+        if (inYear) { total += mins / 60 * inYear / days.length; any = true; }
+      });
+      return any ? total : null;
+    }
+
     function linkMatches() {
       document.querySelectorAll("#ghTimeline .gh-year-sum").forEach(function (sum) {
         var old = sum.querySelector("svg.gh-match");
         if (old) old.remove();
         var lists = sum.querySelectorAll(".gh-sum-list");
         if (lists.length < 3) return;
-        var box = sum.getBoundingClientRect(), lines = "";
-        // Lines run through the picks in the middle: played to picks, picks to completed (a line
-        // skipping the middle column would cross its text)
-        function join(from, to) {
-          from.querySelectorAll("span[data-gid]").forEach(function (t) {
-            var p = to.querySelector('span[data-gid="' + t.dataset.gid + '"]');
-            if (!p) return;
-            // First line to first line, so games of the same rank connect with a level line
-            var a = t.querySelector("a").getClientRects()[0], pr = (p.querySelector("a") || p).getClientRects()[0], start = p.getClientRects()[0];
-            var end = t.querySelector(".gh-pct") || t.querySelector("a");
-            var ar = end.getClientRects()[0];
-            if (!a || !pr || start.left <= ar.right) return;  // stacked lists: nothing to connect
-            lines += '<line x1="' + (ar.right - box.left + 6) + '" y1="' + (a.top + a.height / 2 - box.top) + '" x2="' + (start.left - box.left - 6) + '" y2="' + (pr.top + pr.height / 2 - box.top) + '"/>';
+        var box = sum.getBoundingClientRect(), r = [];
+        for (var i = 0; i < 3; i++) r.push(lists[i].getBoundingClientRect());
+        if (r[1].left < r[0].right || r[2].left < r[1].right) return;  // stacked lists: no gaps to draw in
+        // A column of nodes in each gap, one per title, level with it; a dotted line joins the
+        // node of a game to the node of the same game in the next column. Game of the Year in
+        // the middle has nodes on both sides, so both lines of agreement run through the picks.
+        var INSET = 10, svg = "";
+        function nodes(list, x) {
+          return Array.prototype.filter.call(list.querySelectorAll(":scope > span"), function (sp) {
+            return sp.textContent.trim() !== "-";  // an empty year has nothing to point to
+          }).map(function (sp) {
+            var q = sp.getBoundingClientRect();
+            return { gid: sp.dataset.gid, x: x - box.left, y: q.top + q.height / 2 - box.top };
           });
         }
-        join(lists[0], lists[1]);
-        join(lists[1], lists[2]);
-        if (lines) sum.insertAdjacentHTML("afterbegin", '<svg class="gh-match" aria-hidden="true">' + lines + "</svg>");
+        function gap(from, fromX, to, toX) {
+          var a = nodes(from, fromX), b = nodes(to, toX), joined = {};
+          a.forEach(function (n) {
+            var m = n.gid && b.filter(function (o) { return o.gid === n.gid; })[0];
+            if (!m) return;
+            joined[n.gid] = 1;
+            svg += '<line x1="' + n.x + '" y1="' + n.y + '" x2="' + m.x + '" y2="' + m.y + '"/>';
+          });
+          a.concat(b).forEach(function (n) {
+            svg += '<circle cx="' + n.x + '" cy="' + n.y + '" r="' + (joined[n.gid] ? 3 : 2) + '"' + (joined[n.gid] ? ' class="on"' : "") + "/>";
+          });
+        }
+        gap(lists[0], r[0].right + INSET, lists[1], r[1].left - INSET);
+        gap(lists[1], r[1].right + INSET, lists[2], r[2].left - INSET);
+        sum.insertAdjacentHTML("afterbegin", '<svg class="gh-match" aria-hidden="true">' + svg + "</svg>");
       });
     }
+
     // Titles never wrap. Measure the longest title in each list, size the three columns to
     // fit, then lay them out beside the strip (the strip narrows, down to MIN_STRIP), under
     // it, or stacked, whichever is the first that fits
-    var MIN_STRIP = 220;
+    var MIN_STRIP = 200;
     function layoutLists() {
       var tl = document.getElementById("ghTimeline"), grid = tl.querySelector(".gh-years:not(.gh-years-compact)");
       tl.classList.remove("gh-tl-below", "gh-tl-stack");
@@ -408,17 +452,21 @@
         l.querySelectorAll(":scope > span").forEach(function (sp) { w[i] = Math.max(w[i], Math.ceil(sp.getBoundingClientRect().width) + 2); });
       });
       tl.classList.remove("gh-tl-measure");
-      var em = parseFloat(getComputedStyle(grid).fontSize), gap = 0.8 * em, yearCol = 3.2 * em;
+      // The gap between lists is the shortest a connecting line can be, so keep it generous
+      var em = parseFloat(getComputedStyle(grid).fontSize), yearCol = 3.2 * em;
+      var gap = parseFloat(getComputedStyle(grid.querySelector(".gh-year-sum")).columnGap) || 2 * em;
       var lists = w[0] + w[1] + w[2] + 2 * gap + 12;  // 12: the band overhang, with a little room
       ["--gh-c1", "--gh-c2", "--gh-c3"].forEach(function (v, i) { tl.style.setProperty(v, w[i] + "px"); });
       tl.style.setProperty("--gh-sum-w", lists + "px");
       if (innerWidth <= 640) return;  // phones show the strips only
       var width = grid.clientWidth;
       if (yearCol + MIN_STRIP + lists + 2 * gap <= width) return;
-      tl.classList.add(yearCol + lists + gap <= width ? "gh-tl-below" : "gh-tl-stack");
+      tl.classList.add(lists <= width ? "gh-tl-below" : "gh-tl-stack");
     }
     var relink = null;
     window.addEventListener("resize", function () { clearTimeout(relink); relink = setTimeout(function () { layoutLists(); linkMatches(); }, 150); });
+    // Titles measured before the web font arrives come out the wrong width: measure again
+    if (document.fonts) document.fonts.ready.then(function () { layoutLists(); linkMatches(); });
 
     function renderTimeline() {
       var y = yearSel.value;
@@ -433,7 +481,7 @@
           zoom: true,
           header: "<span>Most played</span><span class=\"gh-head-goty\">Game of the Year</span><span>Most completed</span>",
           summary: function (yr, gs) {
-            var picks = gotyByYear()[yr] || [], RANKS = ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; "];
+            var picks = gotyByYear()[yr] || [], RANKS = ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; ", "4&#65039;&#8419; ", "5&#65039;&#8419; "];
             // Most completed: the share of a trophy or achievement list unlocked by the end of the
             // year, among games with an unlock that year (best list when a game has several)
             var done = gs.map(function (g) {
@@ -443,18 +491,26 @@
                 if (n && e.total && (!best || n / e.total > best.pct)) best = { pct: n / e.total, n: n };
               });
               return best && { row: g.row, pct: best.pct, n: best.n };
-            }).filter(Boolean).sort(function (p, q) { return q.pct - p.pct || q.n - p.n; }).slice(0, 3);
-            return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + gs.slice(0, 3).map(function (g, i) {
-                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + gameLink(g.row.id, g.row.name) + ' <i class="gh-pct">' + plural(g.n, "day", "days") + "</i></span>";
+            }).filter(Boolean).sort(function (p, q) { return q.pct - p.pct || q.n - p.n; }).slice(0, 5);
+            // Most played: days that year or hours that year, whichever is more (the page's own
+            // "N days or N hours" test). Platforms only report lifetime hours, so a year's share
+            // is estimated from the days played that year (see yearHours)
+            var played = gs.map(function (g) {
+              var hrs = yearHours(g.row, yr);
+              return { row: g.row, days: g.n, hrs: hrs, score: Math.max(g.n, hrs || 0) };
+            }).sort(function (p, q) { return q.score - p.score || q.days - p.days; }).slice(0, 5);
+            return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + played.map(function (g, i) {
+                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + gameLink(g.row.id, yearName(g.row, yr)) + ' <i class="gh-pct">' +
+                  (g.hrs ? "~" + plural(Math.round(g.hrs), "hr", "hrs") + ", " : "") + plural(g.days, "day", "days") + "</i></span>";
               }).join("") + "</div>" +
               '<div class="gh-sum-band"></div>' +
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
-                var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; " }[p.place] || "&#127942; ";
+                var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; ", "4th place": "&#127808; ", "5th place": "&#9995; " }[p.place] || "&#127942; ";
                 return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
               }).join("") : "<span>-</span>") + "</div>" +
               '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
-                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + gameLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i></span>";
+                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + gameLink(d.row.id, yearName(d.row, yr)) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i></span>";
               }).join("") : "<span>-</span>") + "</div>" ;
           },
         });
@@ -631,7 +687,7 @@
     return String(s || "").toLowerCase().replace(/[™®©]/g, "").replace(/[’']/g, "").replace(/[^a-z0-9]+/g, "");
   }
   // Game of the Year names that differ from every platform's name for the game
-  var GOTY_ALIASES = { valianthearts: "valiantheartsthegreatwar" };
+  var GOTY_ALIASES = { valianthearts: "valiantheartsthegreatwar", pokemonswordshield: "pokemonsword" };
 
   function gotyFor(row) {
     var names = {};
