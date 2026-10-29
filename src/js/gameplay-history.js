@@ -181,15 +181,16 @@
     years.forEach(function (y) {
       var byFam = {}, games = [], daySet = {};
       rows.forEach(function (r) {
-        var n = 0;
+        var mine = {};  // days played that year, each counted once across platforms
         Object.keys(r.days_by_family || {}).forEach(function (f) {
           r.days_by_family[f].forEach(function (d) {
             if (d.slice(0, 4) !== y) return;
             (byFam[f] = byFam[f] || {})[d] = 1;
             daySet[d] = 1;
-            n++;
+            mine[d] = 1;
           });
         });
+        var n = Object.keys(mine).length;
         if (n) games.push({ n: n, row: r });
       });
       if (!games.length) return;
@@ -392,8 +393,32 @@
         if (lines) sum.insertAdjacentHTML("afterbegin", '<svg class="gh-match" aria-hidden="true">' + lines + "</svg>");
       });
     }
+    // Titles never wrap. Measure the longest title in each list, size the three columns to
+    // fit, then lay them out beside the strip (the strip narrows, down to MIN_STRIP), under
+    // it, or stacked, whichever is the first that fits
+    var MIN_STRIP = 220;
+    function layoutLists() {
+      var tl = document.getElementById("ghTimeline"), grid = tl.querySelector(".gh-years:not(.gh-years-compact)");
+      tl.classList.remove("gh-tl-below", "gh-tl-stack");
+      if (!grid || !grid.querySelector(".gh-sum-list")) return;
+      tl.classList.add("gh-tl-measure");
+      var w = [0, 0, 0], cols = { "gh-sum-tops": 0, "gh-sum-goty": 1, "gh-sum-done": 2 };
+      grid.querySelectorAll(".gh-sum-list").forEach(function (l) {
+        var i = cols[l.classList[1]];
+        l.querySelectorAll(":scope > span").forEach(function (sp) { w[i] = Math.max(w[i], Math.ceil(sp.getBoundingClientRect().width) + 2); });
+      });
+      tl.classList.remove("gh-tl-measure");
+      var em = parseFloat(getComputedStyle(grid).fontSize), gap = 0.8 * em, yearCol = 3.2 * em;
+      var lists = w[0] + w[1] + w[2] + 2 * gap + 12;  // 12: the band overhang, with a little room
+      ["--gh-c1", "--gh-c2", "--gh-c3"].forEach(function (v, i) { tl.style.setProperty(v, w[i] + "px"); });
+      tl.style.setProperty("--gh-sum-w", lists + "px");
+      if (innerWidth <= 640) return;  // phones show the strips only
+      var width = grid.clientWidth;
+      if (yearCol + MIN_STRIP + lists + 2 * gap <= width) return;
+      tl.classList.add(yearCol + lists + gap <= width ? "gh-tl-below" : "gh-tl-stack");
+    }
     var relink = null;
-    window.addEventListener("resize", function () { clearTimeout(relink); relink = setTimeout(linkMatches, 150); });
+    window.addEventListener("resize", function () { clearTimeout(relink); relink = setTimeout(function () { layoutLists(); linkMatches(); }, 150); });
 
     function renderTimeline() {
       var y = yearSel.value;
@@ -420,7 +445,7 @@
               return best && { row: g.row, pct: best.pct, n: best.n };
             }).filter(Boolean).sort(function (p, q) { return q.pct - p.pct || q.n - p.n; }).slice(0, 3);
             return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + gs.slice(0, 3).map(function (g, i) {
-                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + gameLink(g.row.id, g.row.name) + "</span>";
+                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + gameLink(g.row.id, g.row.name) + ' <i class="gh-pct">' + plural(g.n, "day", "days") + "</i></span>";
               }).join("") + "</div>" +
               '<div class="gh-sum-band"></div>' +
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
@@ -433,6 +458,7 @@
               }).join("") : "<span>-</span>") + "</div>" ;
           },
         });
+        layoutLists();
         linkMatches();
         out.querySelectorAll("button.gh-year").forEach(function (b) {
           b.addEventListener("click", function () { yearSel.value = b.dataset.year; renderTimeline(); url.write(); });

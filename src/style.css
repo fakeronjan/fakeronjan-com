@@ -1860,40 +1860,41 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-grid { stroke: var(--muted); stroke-opacity: 0.15; }
 .gh-year-sum { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gh-year-sum b { color: var(--fg); font-weight: 600; }
-/* All years: counts and the year's top three games in their own columns, each on its own line */
-.gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, min(46rem, 58%)); row-gap: 0.7rem; }
+/* All years: the year's Most played, Game of the Year, and Most completed, one title per line,
+   never wrapped. The script measures the longest title in each list and picks a layout:
+   beside the strip (the strip narrows to fit), under it, or stacked (see layoutLists). */
+.gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr) var(--gh-sum-w, 46rem); row-gap: 0.7rem; }
 .gh-years:not(.gh-years-compact) .gh-strip { height: 64px; }
 .gh-years:not(.gh-years-compact) > .gh-year-sum,
-.gh-sum-head { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 0.8rem; white-space: normal; overflow: visible; line-height: 1.4; }
+.gh-sum-head { display: grid; grid-template-columns: var(--gh-c1, 1fr) var(--gh-c2, 1fr) var(--gh-c3, 1fr); column-gap: 0.8rem; white-space: nowrap; overflow: visible; line-height: 1.4; }
 .gh-sum-head { align-self: end; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.gh-head-goty { color: var(--gold); }
 .gh-years:not(.gh-years-compact) > .gh-year-sum { position: relative; }
 .gh-match { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .gh-match line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 2 4; stroke-linecap: round; opacity: 0.8; }
-.gh-sum-list > span { display: block; padding-left: 1.45em; text-indent: -1.45em; text-wrap: balance; }
+/* Each list is a column; titles never wrap, so rows line up across the three */
+.gh-sum-list { grid-row: 1; min-width: 0; }
+.gh-sum-tops { grid-column: 1; }
+.gh-sum-band, .gh-sum-goty { grid-column: 2; }
+.gh-sum-done { grid-column: 3; }
+.gh-sum-list > span { display: block; white-space: nowrap; }
 .gh-sum-goty > span { color: var(--fg); font-weight: 700; }
 .gh-pct { font-style: normal; font-size: 0.9em; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-/* Side by side, the three lists share rows: each #1 sits level with the winner, each #2
-   with the runner-up, each #3 with third place, however any title wraps. Game of the Year
-   sits in the middle on a light band, so both lines of agreement run through it. */
-@media (min-width: 1000px) {
-  .gh-sum-list { display: contents; }
-  .gh-sum-tops > span { grid-column: 1; }
-  .gh-sum-goty > span { grid-column: 2; }
-  .gh-sum-done > span { grid-column: 3; }
-  .gh-sum-band { grid-column: 2; grid-row: 1 / span 3; margin: -0.3rem -0.45rem; border-radius: 6px; background: color-mix(in srgb, var(--gold) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 35%, transparent); }
-  .gh-head-goty { color: var(--gold); }
-  .gh-sum-list > span:nth-child(1) { grid-row: 1; }
-  .gh-sum-list > span:nth-child(2) { grid-row: 2; }
-  .gh-sum-list > span:nth-child(3) { grid-row: 3; }
-}
-@media (max-width: 999px) {
-  .gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 17rem); }
-  .gh-years:not(.gh-years-compact) > .gh-year-sum { grid-template-columns: minmax(0, 1fr); }
-  .gh-sum-head span { display: none; }
-  .gh-sum-list + .gh-sum-list, .gh-sum-band + .gh-sum-list { margin-top: 0.35rem; }
-  .gh-sum-band { display: none; }
-  .gh-sum-list::before { content: attr(data-label); display: block; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
-}
+.gh-sum-band { grid-row: 1; margin: -0.3rem -0.45rem; border-radius: 6px; background: color-mix(in srgb, var(--gold) 12%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 35%, transparent); }
+.gh-sum-list::before { content: attr(data-label); display: none; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.gh-sum-goty::before { color: var(--gold); }
+/* Under the strip: the lists span the row below it, each list labeled */
+.gh-tl-below .gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr); }
+.gh-tl-below .gh-years:not(.gh-years-compact) > .gh-year-sum { grid-column: 2; margin-bottom: 0.6rem; }
+.gh-tl-below .gh-sum-head, .gh-tl-stack .gh-sum-head { display: none; }
+.gh-tl-below .gh-sum-list::before, .gh-tl-stack .gh-sum-list::before { display: block; }
+/* Stacked: one list after another, still one title per line */
+.gh-tl-stack .gh-years:not(.gh-years-compact) { grid-template-columns: 3.2rem minmax(0, 1fr); }
+.gh-tl-stack .gh-years:not(.gh-years-compact) > .gh-year-sum { grid-column: 2; grid-template-columns: minmax(0, 1fr); margin-bottom: 0.6rem; }
+.gh-tl-stack .gh-sum-list { grid-column: 1; grid-row: auto; }
+.gh-tl-stack .gh-sum-list + .gh-sum-list { margin-top: 0.35rem; }
+.gh-tl-stack .gh-sum-band { display: none; }
+.gh-tl-measure .gh-sum-list > span { width: max-content; }
 
 /* One year, a row per game */
 .gh-rows { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); column-gap: 0.75rem; row-gap: 1px; align-items: center; font-size: 0.78rem; }
