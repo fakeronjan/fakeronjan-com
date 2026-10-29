@@ -1,5 +1,5 @@
-// Gameplay Stats (/video-games/gameplay-history/) and its game pages
-// (/video-games/gameplay-history/game/?id=...). Data comes from the
+// Gameplay Stats (/video-games/gameplay-stats/) and its game pages
+// (/video-games/gameplay-stats/game/?id=...). Data comes from the
 // gameplay-tracking repo (refreshed daily) and the gameplay-screenshots repo.
 (function () {
   var page = document.getElementById("ghPage") || document.getElementById("ghGamePage");
@@ -11,7 +11,7 @@
   var LANE = { Nintendo: 0, PlayStation: 1, Steam: 2, Xbox: 3 };
   var MONTHS = "JFMAMJJASOND";
   var KIND_ORDER = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
-  var GAME_URL = "/video-games/gameplay-history/game/?id=";
+  var GAME_URL = "/video-games/gameplay-stats/game/?id=";
 
   // ── helpers ─────────────────────────────────────────────────────────────
 
@@ -795,7 +795,7 @@
       back.href = from.pathname + from.search;
       back.addEventListener("click", function (e) { e.preventDefault(); history.back(); });
     } else if (back) {
-      back.href = "/video-games/gameplay-history/?tab=games";
+      back.href = "/video-games/gameplay-stats/?tab=games";
     }
     var out = document.getElementById("ghGame");
     Promise.all([
