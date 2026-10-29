@@ -282,6 +282,20 @@
       '<img src="' + SHOTS + "/t/" + u.moment.img + '" alt="" loading="lazy"></button>' : "";
   }
 
+  // Small pills after a game's name in the Games and Trophy Room tables: the medal and the
+  // year of each Game of the Year pick, linking to its write-up ("2024: Runner-up" on hover)
+  var PILL_MEDALS = { "Game of the Year": "&#127942;", "Game of the Decade": "&#127942;", "Runner-up": "&#129352;", "3rd place": "&#129353;" };
+  function pills(row) {
+    if (!row) return "";
+    if (row._pills == null) {
+      row._pills = gotyFor(row).map(function (g) {
+        var label = PILL_MEDALS[g.place] + " " + esc(g.year), tip = esc(g.year) + ": " + esc(g.place);
+        return g.url ? ' <a class="gh-pill" href="' + esc(g.url) + '" title="' + tip + '">' + label + "</a>" : ' <span class="gh-pill" title="' + tip + '">' + label + "</span>";
+      }).join("");
+    }
+    return row._pills;
+  }
+
   function unlockCols(withGame, withMoments) {
     var cols = [
       { k: "n", h: "Unlock", cls: "gh-wrap gh-unlock-col", v: function (u) { return (u.name || "").toLowerCase(); }, r: function (u) {
@@ -292,7 +306,7 @@
     // The picture the PS5 took when it popped, in its own column so rows stay one block tall.
     // Phones have no room for the column and show it under the unlock's name instead.
     if (withMoments) cols.push({ k: "m", h: "", cls: "gh-moment-col gh-hide-m", nosort: true, v: function () { return 0; }, r: momentButton });
-    if (withGame) cols.push({ k: "g", h: "Game", cls: "gh-wrap gh-name", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return '<div class="gh-with-thumb">' + thumb(u.gameImg, "gh-thumb-s") + "<span>" + gameLink(u.game, u.gameName) + "</span></div>"; } });
+    if (withGame) cols.push({ k: "g", h: "Game", cls: "gh-wrap gh-name", v: function (u) { return u.gameName.toLowerCase(); }, r: function (u) { return '<div class="gh-with-thumb">' + thumb(u.gameImg, "gh-thumb-s") + "<span>" + gameLink(u.game, u.gameName) + pills(u.gameRow) + "</span></div>"; } });
     return cols.concat([
       { k: "f", h: "Platform", cls: "gh-hide-m", v: function (u) { return u.family + " " + u.platform; }, r: function (u) { return '<span class="gh-nowrap">' + dots([u.family]) + " " + esc(u.platform) + "</span>"; } },
       { k: "t", h: "Type", cls: "gh-hide-t", desc: true, v: function (u) { return KIND_ORDER[u.kind] || parseInt(u.kind, 10) || 0; }, r: function (u) { return '<span class="gh-nowrap">' + kindLabel(u.kind) + "</span>"; } },
@@ -309,6 +323,7 @@
       u.platform = entry ? platformLabel(entry) : u.family;
       u.day = etDay(u.earned);
       u.gameName = (gamesById[u.game] || {}).name || "";
+      u.gameRow = gamesById[u.game] || null;
       u.gameImg = (gamesById[u.game] || {}).img;
     });
     return unlocks;
@@ -637,7 +652,7 @@
         rows: games, sortKey: "last", desc: true,
         filter: function (r, f, q) { return minOK(r) && (f === "All" || r.families.indexOf(f) !== -1) && (!q || r.name.toLowerCase().indexOf(q) !== -1); },
         cols: [
-          { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<b>" + gameLink(r.id, r.name) + "</b></div>"; } },
+          { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<span><b>" + gameLink(r.id, r.name) + "</b>" + pills(r) + "</span></div>"; } },
           { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return platformLines(r); } },
           { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
           { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
