@@ -787,11 +787,11 @@
 
   function gamePage() {
     var id = new URLSearchParams(location.search).get("id");
-    // The back link returns to the exact Gameplay History view you came from (tab, year,
-    // filters); arriving from anywhere else, it opens the Games tab
+    // "Back to previous page" returns to whatever page on the site you came from, in the
+    // exact view you left it; arriving from outside the site, it opens the Games tab
     var back = document.querySelector(".gh-back");
     var from = document.referrer ? new URL(document.referrer) : null;
-    if (back && from && from.origin === location.origin && from.pathname === "/video-games/gameplay-history/") {
+    if (back && from && from.origin === location.origin) {
       back.href = from.pathname + from.search;
       back.addEventListener("click", function (e) { e.preventDefault(); history.back(); });
     } else if (back) {
@@ -890,9 +890,6 @@
           '<td class="gh-hide-m">' + (unlockCount(g.entries) || "-") + "</td>" +
           '<td class="gh-hide-t">' + (g.captures || "-") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
-    if (row.hours_estimated) {
-      h += '<p class="sport-note gh-after">Includes an estimate: ' + row.estimated_from.map(function (c) { return esc(c) + "'s"; }).join(" and ") + " hours are shared across its games by days played.</p>";
-    }
 
     // Screenshots: Switch, PlayStation, and Miiverse, from the gallery repo, drawn by wireGame
     // (with Nintendo / PlayStation pills when there are both). A Miiverse screenshot carries
