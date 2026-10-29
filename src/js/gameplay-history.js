@@ -639,12 +639,12 @@
                 return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + listLink(g.row.id, g.row.name) + ' <i class="gh-pct">' +
                   (g.hrs ? "~" + plural(Math.round(g.hrs), "hr", "hrs") + ", " : "") + plural(g.days, "day", "days") + "</i></span>";
               }).join("") + "</div>" +
-              '<div class="gh-sum-band"></div>' +
+              (picks.length ? '<div class="gh-sum-band"></div>' : "") +  // no picks yet: an empty cell
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
                 var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; ", "4th place": "&#127808; ", "5th place": "&#9995; " }[p.place] || "&#127942; ";
                 return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? listLink(row.id, p.game) : listText(p.game)) + "</span>";
-              }).join("") : "<span>-</span>") + "</div>" +
+              }).join("") : "") + "</div>" +
               '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
                 return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + listLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i>" +
                   (d.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</span>";
