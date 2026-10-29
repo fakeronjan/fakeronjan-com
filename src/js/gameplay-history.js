@@ -101,6 +101,26 @@
     return known ? earned + " of " + total : String(earned);
   }
 
+  // A game's most complete trophy or achievement list (Balatro: PC 26 of 31, ahead of PS5
+  // 13 of 32), which the Games tab shows and sorts by
+  function bestList(row) {
+    var best = null;
+    countedEntries(row).forEach(function (e) {
+      if (!e.total) return;
+      var pct = (e.earned || 0) / e.total;
+      if (!best || pct > best.pct || (pct === best.pct && e.total > best.entry.total)) best = { entry: e, pct: pct };
+    });
+    return best;
+  }
+
+  function unlockCell(r) {
+    if (!r.best) return r.unlocks ? r.unlocks[1] : "-";
+    var e = r.best.entry, lists = countedEntries(r).filter(function (x) { return x.total; }).length;
+    var tip = lists > 1 ? ' title="Best: ' + esc(platformLabel(e)) + ". All lists: " + esc(r.unlocks[1]) + '"' : "";
+    var plat = countedEntries(r).some(function (x) { return x.platinum; }) ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "";
+    return '<span class="gh-nowrap"' + tip + ">" + (e.earned || 0) + " of " + e.total + ' <i class="gh-pct">' + Math.floor(r.best.pct * 100) + "%</i></span>" + plat;
+  }
+
   function platKey(e) { return e.family + "|" + e.platform + "|" + (e.gamertag || ""); }
 
   // The entries a game page counts: those with activity, plus any list with nothing earned
@@ -572,12 +592,13 @@
             // Most completed: the share of a trophy or achievement list unlocked by the end of the
             // year, among games with an unlock that year (best list when a game has several)
             var done = gs.map(function (g) {
-              var best = null;
+              var best = null, plat = false;
               g.row.entries.forEach(function (e) {
                 var n = (e.earned_by_year || {})[yr];
                 if (n && e.total && (!best || n / e.total > best.pct)) best = { pct: n / e.total, n: n };
+                if (e.platinum && e.platinum.slice(0, 4) <= yr) plat = true;  // earned by then
               });
-              return best && { row: g.row, pct: best.pct, n: best.n };
+              return best && { row: g.row, pct: best.pct, n: best.n, plat: plat };
             }).filter(Boolean).sort(function (p, q) { return q.pct - p.pct || q.n - p.n; }).slice(0, 5);
             // Most played: days that year or hours that year, whichever is more (the page's own
             // "N days or N hours" test). Platforms only report lifetime hours, so a year's share
@@ -597,7 +618,8 @@
                 return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? listLink(row.id, p.game) : listText(p.game)) + "</span>";
               }).join("") : "<span>-</span>") + "</div>" +
               '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
-                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + listLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i></span>";
+                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + listLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i>" +
+                  (d.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</span>";
               }).join("") : "<span>-</span>") + "</div>" ;
           },
         });
@@ -661,7 +683,7 @@
           { k: "d", h: "Days", desc: true, v: function (r) { return r.days.length || null; }, r: function (r) { return r.days.length || "-"; } },
           { k: "h", h: "Hours", desc: true, v: function (r) { return r.hours; }, r: function (r) { return hours(r.hours, r.hours_estimated); } },
           { k: "s", h: "Sessions", cls: "gh-hide-t", desc: true, v: function (r) { return r.sessions; }, r: function (r) { return r.sessions == null ? "-" : r.sessions; } },
-          { k: "u", h: "Unlocks", cls: "gh-hide-m", desc: true, v: function (r) { return r.unlocks ? r.unlocks[0] : null; }, r: function (r) { return r.unlocks ? r.unlocks[1] : "-"; } },
+          { k: "u", h: "Unlocks", cls: "gh-hide-m", desc: true, v: function (r) { return r.best ? r.best.pct : null; }, r: unlockCell },
         ],
       });
     }
@@ -741,6 +763,7 @@
         var earned = 0;
         r.entries.forEach(function (e) { earned += e.earned || 0; });
         r.unlocks = unlockCount(countedEntries(r)) ? [earned, unlockCount(countedEntries(r))] : null;
+        r.best = bestList(r);
       });
       var ys = {};
       games.forEach(function (r) { r.days.forEach(function (d) { ys[d.slice(0, 4)] = 1; }); });
@@ -839,6 +862,8 @@
       var cls = "gh-badge" + (MEDAL_CLASS[g.place] || "");
       return g.url ? '<a class="' + cls + '" href="' + esc(g.url) + '">' + label + "</a>" : '<span class="' + cls + '">' + label + "</span>";
     }).join("");
+    // An earned platinum: not tied to a year, so just the word
+    if (row.entries.some(function (e) { return e.platinum; })) badges += '<span class="gh-badge gh-platinum">Platinum</span>';
     var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + "</h1>" +
       '<p class="gh-facts">' + dots(row.families) + " " + facts.map(esc).join('<span class="sport-updated-sep">|</span>') + "</p>" +
       (badges ? '<div class="gh-badges">' + badges + "</div>" : "") + "</div></div>";
