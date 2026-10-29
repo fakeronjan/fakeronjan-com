@@ -332,7 +332,7 @@
           if (!/^\d{4}$/.test(g.year)) return;
           (gotyYears[g.year] = gotyYears[g.year] || []).push(g);
         });
-        var RANK = { "Game of the Year": 0, "Runner-up": 1, "Third place": 2 };
+        var RANK = { "Game of the Year": 0, "Runner-up": 1, "3rd place": 2 };
         Object.keys(gotyYears).forEach(function (y) { gotyYears[y].sort(function (a, b) { return RANK[a.place] - RANK[b.place]; }); });
       }
       return gotyYears;
@@ -382,7 +382,7 @@
               '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g) { return "<span>" + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>" +
               '<div class="gh-sum-goty">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
-                var medal = { "Runner-up": "&#129352; ", "Third place": "&#129353; " }[p.place] || "&#127942; ";
+                var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; " }[p.place] || "&#127942; ";
                 return "<span>" + medal + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
               }).join("") : "<span>-</span>") + "</div>";
           },
@@ -619,7 +619,7 @@
 
     var art = row.img ? '<img class="gh-art" src="' + BASE + "/" + row.img + '" alt="">' : '<span class="gh-art" aria-hidden="true"></span>';
     var badges = gotyFor(row).map(function (g) {
-      var label = "&#127942; " + esc(g.place) + " " + esc(g.year);
+      var label = "&#127942; " + esc(g.year) + ": " + esc(g.place);  // "2023: Game of the Year", "2010s: Game of the Decade"
       return g.url ? '<a class="gh-badge" href="' + esc(g.url) + '">' + label + "</a>" : '<span class="gh-badge">' + label + "</span>";
     }).join("");
     var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + "</h1>" +

@@ -22,7 +22,7 @@ module.exports = function () {
     const decade = year.endsWith("s");
     picks.push({ year, place: decade ? "Game of the Decade" : "Game of the Year", game: text(winner), url });
     if (runnerUp) picks.push({ year, place: "Runner-up", game: text(runnerUp), url });
-    if (third && text(third) !== "-") picks.push({ year, place: "Third place", game: text(third), url });
+    if (third && text(third) !== "-") picks.push({ year, place: "3rd place", game: text(third), url });
   }
   return picks;
 };
