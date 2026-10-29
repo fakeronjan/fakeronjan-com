@@ -370,19 +370,25 @@
       document.querySelectorAll("#ghTimeline .gh-year-sum").forEach(function (sum) {
         var old = sum.querySelector("svg.gh-match");
         if (old) old.remove();
-        var tops = sum.querySelector(".gh-sum-tops"), picks = sum.querySelector(".gh-sum-goty");
-        if (!tops || !picks) return;
+        var lists = sum.querySelectorAll(".gh-sum-list");
+        if (lists.length < 3) return;
         var box = sum.getBoundingClientRect(), lines = "";
-        tops.querySelectorAll("span[data-gid]").forEach(function (t) {
-          var p = picks.querySelector('span[data-gid="' + t.dataset.gid + '"]');
-          if (!p) return;
-          // First line to first line, so games of the same rank connect with a level line
-          var a = t.querySelector("a").getClientRects()[0], pr = (p.querySelector("a") || p).getClientRects()[0];
-          if (!a || !pr || p.getClientRects()[0].left <= a.right) return;  // stacked lists: nothing to connect
-          var medal = p.getClientRects()[0];  // end the line before the medal, level with the name
-          lines += '<line x1="' + (a.right - box.left + 6) + '" y1="' + (a.top + a.height / 2 - box.top) + '" x2="' + (medal.left - box.left - 6) + '" y2="' + (pr.top + pr.height / 2 - box.top) + '"/>';
-        });
-        if (lines) sum.insertAdjacentHTML("beforeend", '<svg class="gh-match" aria-hidden="true">' + lines + "</svg>");
+        // Neighboring columns connect (a line skipping the middle column would cross its text)
+        function join(from, to) {
+          from.querySelectorAll("span[data-gid]").forEach(function (t) {
+            var p = to.querySelector('span[data-gid="' + t.dataset.gid + '"]');
+            if (!p) return;
+            // First line to first line, so games of the same rank connect with a level line
+            var a = t.querySelector("a").getClientRects()[0], pr = (p.querySelector("a") || p).getClientRects()[0], start = p.getClientRects()[0];
+            var end = t.querySelector(".gh-pct") || t.querySelector("a");
+            var ar = end.getClientRects()[0];
+            if (!a || !pr || start.left <= ar.right) return;  // stacked lists: nothing to connect
+            lines += '<line x1="' + (ar.right - box.left + 6) + '" y1="' + (a.top + a.height / 2 - box.top) + '" x2="' + (start.left - box.left - 6) + '" y2="' + (pr.top + pr.height / 2 - box.top) + '"/>';
+          });
+        }
+        join(lists[0], lists[1]);
+        join(lists[1], lists[2]);
+        if (lines) sum.insertAdjacentHTML("afterbegin", '<svg class="gh-match" aria-hidden="true">' + lines + "</svg>");
       });
     }
     var relink = null;
@@ -399,12 +405,26 @@
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
-          header: "<span></span><span>Most played</span><span>Game of the Year</span>",
-          summary: function (yr, gs, nDays) {
-            var picks = gotyByYear()[yr] || [];
-            return '<div class="gh-sum-counts"><span>' + plural(gs.length, "game", "games") + "</span><span>" + plural(nDays, "day", "days") + "</span></div>" +
-              '<div class="gh-sum-tops">' + gs.slice(0, 3).map(function (g, i) { return '<span data-gid="' + esc(g.row.id) + '">' + ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; "][i] + gameLink(g.row.id, g.row.name) + "</span>"; }).join("") + "</div>" +
-              '<div class="gh-sum-goty">' + (picks.length ? picks.map(function (p) {
+          header: "<span>Most played</span><span>Most completed</span><span>Game of the Year</span>",
+          summary: function (yr, gs) {
+            var picks = gotyByYear()[yr] || [], RANKS = ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; "];
+            // Most completed: the share of a trophy or achievement list unlocked by the end of the
+            // year, among games with an unlock that year (best list when a game has several)
+            var done = gs.map(function (g) {
+              var best = null;
+              g.row.entries.forEach(function (e) {
+                var n = (e.earned_by_year || {})[yr];
+                if (n && e.total && (!best || n / e.total > best.pct)) best = { pct: n / e.total, n: n };
+              });
+              return best && { row: g.row, pct: best.pct, n: best.n };
+            }).filter(Boolean).sort(function (p, q) { return q.pct - p.pct || q.n - p.n; }).slice(0, 3);
+            return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + gs.slice(0, 3).map(function (g, i) {
+                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + gameLink(g.row.id, g.row.name) + "</span>";
+              }).join("") + "</div>" +
+              '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
+                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + gameLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i></span>";
+              }).join("") : "<span>-</span>") + "</div>" +
+              '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
                 var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; " }[p.place] || "&#127942; ";
                 return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? gameLink(row.id, p.game) : esc(p.game)) + "</span>";
