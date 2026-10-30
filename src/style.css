@@ -624,13 +624,13 @@ footer {
 .fleet-nav-leagues a.active { color: var(--accent); font-weight: 700; }
 
 .sport-page h1 { margin-bottom: 0; color: var(--accent); text-wrap: balance; }
-.sport-subtitle {
-  font-size: 0.78rem;
+.sport-page h1 .nowrap { white-space: nowrap; }
+/* Model name + version (+ Beta/Alpha) beside a sport page's H1; wraps as one unit. */
+.sport-model-tag {
+  font-size: 0.45em;
   font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--muted);
-  margin: 0.15rem 0 0.75rem;
+  white-space: nowrap;
 }
 .sport-model-note {
   font-size: 0.82rem;
