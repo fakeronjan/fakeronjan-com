@@ -179,7 +179,7 @@
 
       var isSoccer = !!SOCCER_SPORTS[repo];
       var isHockey = !!HOCKEY_SPORTS[repo];
-      var showPlayoffs = live || (!isSoccer && top5.some(function (t) { return hasGames(t.playoff_record); }));
+      var showPlayoffs = live || top5.some(function (t) { return hasGames(t.playoff_record); });
       var showRecord = !live && !opts.hideRecord && top5.some(function (t) { return t.regular_record || t.record; });
       var showLast = !!opts.showLast;
       var showTitleOdds = live || (!showPlayoffs && top5.some(function (t) { return titleOdds(t) != null; }));
