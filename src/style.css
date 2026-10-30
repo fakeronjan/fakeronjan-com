@@ -623,7 +623,7 @@ footer {
 .fleet-nav-leagues a:hover { background: color-mix(in srgb, var(--fg) 8%, transparent); }
 .fleet-nav-leagues a.active { color: var(--accent); font-weight: 700; }
 
-.sport-page h1 { margin-bottom: 0; color: var(--accent); }
+.sport-page h1 { margin-bottom: 0; color: var(--accent); text-wrap: balance; }
 .sport-subtitle {
   font-size: 0.78rem;
   font-weight: 500;
