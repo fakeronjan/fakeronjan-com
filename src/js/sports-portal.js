@@ -188,10 +188,12 @@
 
       var columns = [{ label: opts.nameLabel || "Team", cls: "name" }];
       if (showRecord) columns.push({ label: recordLabel, cls: "record", width: recordWidth });
-      if (isSoccer && showRecord) columns.push({ label: "Pts", cls: "num" });
       if (showPlayoffs) columns.push({ label: "Playoffs", cls: "record" });
       // Playoff mode highlights Champ % (the sort column) in place of Rating.
-      if (showTitleOdds) columns.push(live ? { label: "Champ %", cls: "rating", width: 60 } : { label: "Champ %", cls: "record" });
+      if (showTitleOdds) columns.push(live ? { label: "Champ %", cls: "rating", width: 60 } : (opts.clOdds ? { label: "Lg %", cls: "record", width: 44 } : { label: "Champ %", cls: "record" }));
+      // ZIDANE: league title odds plus Champions League win odds.
+      var showClOdds = !live && !!opts.clOdds && top5.some(function (t) { return t.cl_win_odds != null; });
+      if (showClOdds) columns.push({ label: "CL %", cls: "record", width: 44 });
       if (showLast) columns.push({ label: "Last", cls: "last" });
       columns.push({ label: "Rating", cls: live ? "num" : "rating" });
 
@@ -206,11 +208,6 @@
           var reg = t.regular_record || t.record || "";
           cells.push(escapeHtml(String(reg).replace(/\s*-\s*/g, "-")));
         }
-        if (isSoccer && showRecord) {
-          var reg2 = t.regular_record || t.record || "";
-          var m = String(reg2).match(/^\s*(\d+)\s*-\s*(\d+)\s*-\s*(\d+)/);
-          cells.push(m ? String(parseInt(m[1], 10) * 3 + parseInt(m[2], 10)) : "-");
-        }
         if (showPlayoffs) {
           cells.push(hasGames(t.playoff_record) ? escapeHtml(t.playoff_record) : "-");
         }
@@ -221,6 +218,7 @@
             cells.push(oddsPct(odds));
           }
         }
+        if (showClOdds) cells.push(t.cl_win_odds == null ? "-" : oddsPct(t.cl_win_odds));
         if (showLast) cells.push(escapeHtml(fmtLast(t.last_match)));
         cells.push(t.rating.toFixed(2));
         return { rank: live ? i + 1 : t.rank, cells: cells };
@@ -404,7 +402,7 @@
     {
       label: "Soccer",
       cards: [
-        { slug: "eurosoccer", title: "Euro: ZIDANE 🇪🇺⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("zidane", badgeZIDANE, { nameLabel: "Club" }); } },
+        { slug: "eurosoccer", title: "Euro: ZIDANE 🇪🇺⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("zidane", badgeZIDANE, { nameLabel: "Club", clOdds: true }); } },
         { slug: "mls", title: "MLS: COBI 🇺🇸⚽", sectionLabel: "Current Top 5", load: function () { return loadWLS("cobi", badgeCOBI); } },
         { slug: "intlsoccer", title: "Men Intl: MESSI 🌍⚽", stage: "Beta", sectionLabel: "Current Top 5", load: function () { return loadWLS("messi", badgeMESSI, { nameLabel: "Country", showLast: true }); } },
       ],
