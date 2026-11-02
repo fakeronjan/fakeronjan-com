@@ -362,13 +362,19 @@
     { label: "Rating", cls: "rating" },
   ];
   function loadLAVINGoat(gender) {
-    return fetchJson(GH + "/lavin/data/goat_players.json").then(function (d) {
+    return Promise.all([
+      fetchJson(GH + "/lavin/data/goat_players.json"),
+      fetchJson(GH + "/lavin/data/seasons_index.json"),
+    ]).then(function (res) {
+      var d = res[0];
+      // Stamp the most recent modeled season and its finale month.
+      var latest = res[1].reduce(function (a, s) { return s.season_num > a.season_num ? s : a; });
       return {
         columns: LAVIN_COLS,
         rows: d[gender].slice(0, 5).map(function (p) {
           return { rank: p.rank, cells: [escapeHtml(p.player), p.n_seasons, p.finals_reached, p.championships > 0 ? p.championships + " 🥇" : (p.championships || 0), p.era_rating.toFixed(1)] };
         }),
-        updated: "Last updated: S41 2025-12",
+        updated: "Last updated: S" + latest.season_num + (latest.finale_aired ? " " + latest.finale_aired : ""),
       };
     });
   }
