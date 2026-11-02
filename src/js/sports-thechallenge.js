@@ -91,6 +91,11 @@
     return rank + ' <span class="finish-sub">(of ' + total + ")</span>";
   }
 
+  // Arena-only cameos: S39 "Champion Mercenary", S42 "Mercenary".
+  function isMercenary(s) {
+    return s.finish === "Champion Mercenary" || s.finish === "Mercenary";
+  }
+
   // Player-partner context for a season row: `partners_history` (rotating
   // partner chains, preserves X->Y->X transitions), else a single `partner`,
   // else a `team` label.
@@ -256,8 +261,8 @@
         var rows = standings.map(function (s) {
           var ctx = renderPartnerContext(s);
           var ctxHtml = ctx ? '<div class="partner-context">' + ctx + "</div>" : "";
-          var isMerc = s.finish === "Champion Mercenary";
-          var dagger = isMerc ? ' <sup class="footnote-marker" title="Champion Mercenary cameo">&dagger;</sup>' : "";
+          var isMerc = isMercenary(s);
+          var dagger = isMerc ? ' <sup class="footnote-marker" title="Mercenary cameo">&dagger;</sup>' : "";
           var rankCell = s.rank == null ? '<span class="sport-dim-dash">-</span>' : s.rank;
           return (
             '<tr class="' + (isMerc ? "mercenary-row" : "") + '">' +
@@ -270,9 +275,9 @@
             "</tr>"
           );
         }).join("");
-        var anyMerc = standings.some(function (s) { return s.finish === "Champion Mercenary"; });
+        var anyMerc = standings.some(isMercenary);
         var footnote = anyMerc
-          ? '<p class="data-note footnote"><sup>&dagger;</sup> Champion Mercenary cameos. Vets brought in for one Arena elimination, not full-season cast - excluded from this season\'s rank/rating and from career PEAK/ERA totals.</p>'
+          ? '<p class="data-note footnote"><sup>&dagger;</sup> Mercenary cameos. Vets brought in for one Arena elimination, not full-season cast - excluded from this season\'s rank/rating and from career PEAK/ERA totals.</p>'
           : "";
         wrap.innerHTML =
           '<table class="sport-table"><thead><tr>' +
