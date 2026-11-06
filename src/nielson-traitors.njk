@@ -1,0 +1,147 @@
+---
+permalink: "/nielson-traitors/"
+layout: base.njk
+title: "The Post-Mortem | FAKE RONJAN!!"
+---
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@800&display=swap" rel="stylesheet">
+<style>
+  /* Not in the navbar on purpose: reachable by link only, like /fantasy-traitors/.
+     Episode data lives in EPISODES and PUNDITS at the bottom of this file. Each new
+     episode: add one EPISODES row (oldest first; the page renders newest first),
+     drop its thumbnail in /img/nielson-traitors/, and update the PUNDITS records. */
+  .pm { --pm-accent: #a01c28; --pm-gold: #a87a22; --pm-panel: #f6f1ec; --pm-line: #e4d8d0; --pm-ink: #24141b; --pm-mute: #6c5a60;
+        display: grid; gap: 34px; max-width: 980px; margin: 0 auto; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .pm { --pm-accent: #e0606c; --pm-gold: #d6ac54; --pm-panel: #20131a; --pm-line: #3a2530; --pm-ink: #f0e6d6; --pm-mute: #b09ca2; }
+  }
+  :root[data-theme="dark"] .pm { --pm-accent: #e0606c; --pm-gold: #d6ac54; --pm-panel: #20131a; --pm-line: #3a2530; --pm-ink: #f0e6d6; --pm-mute: #b09ca2; }
+  .pm h1 { font-family: "Grenze Gotisch", "UnifrakturMaguntia", Georgia, serif; font-weight: 800; font-size: clamp(2.4rem, 6vw, 3.4rem);
+           line-height: 1.05; margin: 0; color: var(--pm-accent); text-wrap: balance; }
+  .pm-section { display: grid; gap: 12px; }
+  .pm-label { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--pm-gold); }
+  .pm-note { margin: -6px 0 0; color: var(--pm-mute); font-size: 0.9rem; }
+  .pm-card { background: var(--pm-panel); border: 1px solid var(--pm-line); border-radius: 12px; overflow: hidden; }
+  .pm-player { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+  .pm-player iframe, .pm-player button { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .pm-player button { padding: 0; cursor: pointer; background: #000; }
+  .pm-player button img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pm-play { position: absolute; right: 18px; bottom: 18px; width: 72px; height: 72px; border-radius: 50%;
+             background: rgba(24, 10, 16, 0.8); border: 3px solid #f4ecdc; display: grid; place-items: center; }
+  .pm-play::after { content: ""; margin-left: 6px; border-left: 24px solid #f4ecdc; border-top: 15px solid transparent; border-bottom: 15px solid transparent; }
+  .pm-player button:hover .pm-play, .pm-player button:focus-visible .pm-play { background: #a01c28; }
+  .pm-meta { padding: 14px 18px 16px; display: grid; gap: 2px; }
+  .pm-title { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--pm-ink); text-wrap: balance; }
+  .pm-ep { color: var(--pm-accent); font-weight: 700; }
+  .pm-sub { color: var(--pm-mute); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+  .pm-desk { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 760px) { .pm-desk { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .pm-pundit { text-align: center; display: grid; gap: 6px; justify-items: center; align-content: start; padding: 18px 12px; }
+  .pm-pundit img { width: 96px; height: 96px; border-radius: 50%; }
+  .pm-record { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--pm-accent); font-variant-numeric: tabular-nums; line-height: 1.1; margin-top: 2px; }
+  .pm-record-label { color: var(--pm-mute); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .pm-name { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 0.98rem; line-height: 1.25; color: var(--pm-ink); text-wrap: balance; }
+  .pm-desc { color: var(--pm-mute); font-size: 0.82rem; line-height: 1.35; display: grid; }
+  .pm-episodes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  @media (max-width: 640px) { .pm-episodes { grid-template-columns: minmax(0, 1fr); } }
+  .pm-episode { appearance: none; text-align: left; cursor: pointer; padding: 0; font: inherit; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
+  .pm-episode:hover, .pm-episode:focus-visible { border-color: var(--pm-accent); }
+  .pm-episode img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+  .pm-episode .pm-meta { padding: 10px 12px 12px; }
+  .pm-episode .pm-title { font-size: 0.98rem; }
+  .pm-episode.now { border-color: var(--pm-accent); border-width: 2px; }
+  .pm-now { color: var(--pm-accent); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+</style>
+
+<div class="pm">
+  <h1>The Post-Mortem</h1>
+
+  <section class="pm-section">
+    <div class="pm-label" id="pm-player-label">Latest Episode</div>
+    <div class="pm-card">
+      <div class="pm-player" id="pm-player"></div>
+      <div class="pm-meta"><span class="pm-title" id="pm-player-title"></span><span class="pm-sub" id="pm-player-sub"></span></div>
+    </div>
+  </section>
+
+  <section class="pm-section">
+    <div class="pm-label">The Desk</div>
+    <p class="pm-note">Suspect records since game 5</p>
+    <div class="pm-desk" id="pm-desk"></div>
+  </section>
+
+  <section class="pm-section">
+    <div class="pm-label">All Episodes</div>
+    <div class="pm-episodes" id="pm-episodes"></div>
+  </section>
+</div>
+
+<script>
+// One row per episode, oldest first (rendered newest first). date = the day the game ended.
+const EPISODES = [
+  { game: 5, youtube: 'K9YG-pJ6mjc', title: 'Silent Pete Went Seer Pete', date: '8/24/2026', runtime: '6:29' },
+  { game: 6, youtube: '74A7IPtCwQU', title: 'The Solidarity Play', date: '9/2/2026', runtime: '7:13' },
+  { game: 7, youtube: '7stWgsh43Hc', title: 'The Harry Rule', date: '9/14/2026', runtime: '9:20' },
+  { game: 8, youtube: 'eamSGYFkhR4', title: 'Flawless', date: '9/22/2026', runtime: '5:54' },
+  { game: 9, youtube: 'hk-rgHDgDjw', title: 'The AI Killed Kris', date: '10/4/2026', runtime: '6:46' },
+  { game: 10, youtube: 'u0Qn3tmCRJQ', title: 'The Second Date', date: '10/19/2026', runtime: '8:25' },
+  { game: 11, youtube: 'BBRJkK6NvT4', title: "Beef, It's What's for Dinner", date: '10/30/2026', runtime: '7:29' },
+];
+EPISODES.forEach(e => e.thumb = `/img/nielson-traitors/thumb_g${String(e.game).padStart(2, '0')}.jpg`);
+
+// Desk order. Records are every suspect named, game 5 through the latest episode.
+const PUNDITS = [
+  { name: 'Desmond "The Archive" Oyelaran', desc: 'Superfan · Plays the History', img: '/img/nielson-traitors/pundit-d.png', w: 10, l: 15 },
+  { name: 'Dr. Solveig "The Lie Detector" Bergqvist', desc: 'Body Language · Suspects the Quiet', img: '/img/nielson-traitors/pundit-s.png', w: 6, l: 19 },
+  { name: 'Lady Parveen "The Velvet Dagger" Chaudhry-Montague', desc: 'Retired Traitor · Suspects the Trusted', img: '/img/nielson-traitors/pundit-p.png', w: 7, l: 18 },
+  { name: 'Tariq "Wake Up" Haddad', desc: 'Conspiracy · Suspects the Shield', img: '/img/nielson-traitors/pundit-t.png', w: 8, l: 17 },
+];
+
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+const newest = EPISODES[EPISODES.length - 1];
+
+function showEpisode(ep, autoplay) {
+  const player = document.getElementById('pm-player');
+  const label = `The Post-Mortem, game ${ep.game}: ${ep.title}`;
+  if (autoplay) {
+    player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${ep.youtube}?autoplay=1&rel=0" title="${esc(label)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  } else {
+    player.innerHTML = `<button type="button" aria-label="Play ${esc(label)}"><img src="${ep.thumb}" alt=""><span class="pm-play"></span></button>`;
+    player.querySelector('button').addEventListener('click', () => showEpisode(ep, true));
+  }
+  document.getElementById('pm-player-label').textContent = ep === newest ? 'Latest Episode' : `Game ${ep.game} Episode`;
+  document.getElementById('pm-player-title').innerHTML = `<span class="pm-ep">Game ${ep.game}</span><br>${esc(ep.title)}`;
+  document.getElementById('pm-player-sub').textContent = `${ep.date} · ${ep.runtime}`;
+  renderEpisodes(ep);
+}
+
+function renderEpisodes(current) {
+  const list = [...EPISODES].reverse();
+  const el = document.getElementById('pm-episodes');
+  el.innerHTML = list.map((ep, i) => `
+    <button type="button" class="pm-card pm-episode${ep === current ? ' now' : ''}" data-i="${i}">
+      <img src="${ep.thumb}" alt="">
+      <span class="pm-meta">
+        ${ep === current ? '<span class="pm-now">Now playing</span>' : ''}
+        <span class="pm-title"><span class="pm-ep">Game ${ep.game}</span></span>
+        <span class="pm-title">${esc(ep.title)}</span>
+        <span class="pm-sub">${ep.date} · ${ep.runtime}</span>
+      </span>
+    </button>`).join('');
+  el.querySelectorAll('.pm-episode').forEach(b => b.addEventListener('click', () => {
+    showEpisode(list[+b.dataset.i], true);
+    document.getElementById('pm-player-label').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+}
+
+document.getElementById('pm-desk').innerHTML = PUNDITS.map(p => `
+  <div class="pm-card pm-pundit">
+    <img src="${p.img}" alt="">
+    <div class="pm-record">${p.w}-${p.l}</div>
+    <div class="pm-record-label">Suspects</div>
+    <div class="pm-name">${esc(p.name)}</div>
+    <div class="pm-desc">${p.desc.split(' · ').map(x => `<span>${esc(x)}</span>`).join('')}</div>
+  </div>`).join('');
+
+const want = +new URLSearchParams(location.search).get('game');
+showEpisode(EPISODES.find(e => e.game === want) || newest, false);
+</script>
