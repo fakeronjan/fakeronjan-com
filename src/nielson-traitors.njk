@@ -43,8 +43,13 @@ title: "The Post-Mortem | FAKE RONJAN!!"
   .pm-desc { color: var(--pm-mute); font-size: 0.82rem; line-height: 1.35; display: grid; }
   .pm-episodes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
   @media (max-width: 640px) { .pm-episodes { grid-template-columns: minmax(0, 1fr); } }
-  .pm-episode { appearance: none; text-align: left; cursor: pointer; padding: 0; font: inherit; color: inherit; display: flex; flex-direction: column; justify-content: flex-start; align-items: stretch; }
-  .pm-episode:hover, .pm-episode:focus-visible { border-color: var(--pm-accent); }
+  .pm-episode { display: flex; flex-direction: column; }
+  .pm-episode:hover, .pm-episode:focus-within { border-color: var(--pm-accent); }
+  .pm-ep-btn { appearance: none; text-align: left; cursor: pointer; padding: 0; border: 0; background: none; font: inherit; color: inherit; display: flex; flex-direction: column; }
+  .pm-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pm-episode .pm-row { margin-top: auto; padding: 0 12px 12px; }
+  .pm-yt { flex: none; font-size: 0.8rem; font-weight: 700; text-decoration: none; color: var(--pm-mute); border: 2px solid var(--pm-line); border-radius: 9px; padding: 4px 10px; }
+  .pm-yt:hover, .pm-yt:focus-visible { color: var(--pm-accent); border-color: var(--pm-accent); }
   .pm-episode img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
   .pm-episode .pm-meta { padding: 10px 12px 12px; }
   .pm-episode .pm-title { font-size: 0.98rem; }
@@ -59,7 +64,7 @@ title: "The Post-Mortem | FAKE RONJAN!!"
     <div class="pm-label" id="pm-player-label">Latest Episode</div>
     <div class="pm-card">
       <div class="pm-player" id="pm-player"></div>
-      <div class="pm-meta"><span class="pm-title" id="pm-player-title"></span><span class="pm-sub" id="pm-player-sub"></span></div>
+      <div class="pm-meta"><span class="pm-title" id="pm-player-title"></span><div class="pm-row"><span class="pm-sub" id="pm-player-sub"></span><a class="pm-yt" id="pm-player-yt" target="_blank" rel="noopener">Open on YouTube &#8599;</a></div></div>
     </div>
   </section>
 
@@ -111,6 +116,7 @@ function showEpisode(ep, autoplay) {
   document.getElementById('pm-player-label').textContent = ep === newest ? 'Latest Episode' : `Game ${ep.game} Episode`;
   document.getElementById('pm-player-title').innerHTML = `<span class="pm-ep">Game ${ep.game}</span><br>${esc(ep.title)}`;
   document.getElementById('pm-player-sub').textContent = `${ep.date} · ${ep.runtime}`;
+  document.getElementById('pm-player-yt').href = `https://www.youtube.com/watch?v=${ep.youtube}`;
   renderEpisodes(ep);
 }
 
@@ -118,16 +124,18 @@ function renderEpisodes(current) {
   const list = [...EPISODES].reverse();
   const el = document.getElementById('pm-episodes');
   el.innerHTML = list.map((ep, i) => `
-    <button type="button" class="pm-card pm-episode${ep === current ? ' now' : ''}" data-i="${i}">
-      <img src="${ep.thumb}" alt="">
-      <span class="pm-meta">
-        ${ep === current ? '<span class="pm-now">Now playing</span>' : ''}
-        <span class="pm-title"><span class="pm-ep">Game ${ep.game}</span></span>
-        <span class="pm-title">${esc(ep.title)}</span>
-        <span class="pm-sub">${ep.date} · ${ep.runtime}</span>
-      </span>
-    </button>`).join('');
-  el.querySelectorAll('.pm-episode').forEach(b => b.addEventListener('click', () => {
+    <div class="pm-card pm-episode${ep === current ? ' now' : ''}">
+      <button type="button" class="pm-ep-btn" data-i="${i}" aria-label="Play game ${ep.game}: ${esc(ep.title)}">
+        <img src="${ep.thumb}" alt="">
+        <span class="pm-meta">
+          ${ep === current ? '<span class="pm-now">Now playing</span>' : ''}
+          <span class="pm-title"><span class="pm-ep">Game ${ep.game}</span></span>
+          <span class="pm-title">${esc(ep.title)}</span>
+        </span>
+      </button>
+      <div class="pm-row"><span class="pm-sub">${ep.date} · ${ep.runtime}</span><a class="pm-yt" href="https://www.youtube.com/watch?v=${ep.youtube}" target="_blank" rel="noopener">Open on YouTube &#8599;</a></div>
+    </div>`).join('');
+  el.querySelectorAll('.pm-ep-btn').forEach(b => b.addEventListener('click', () => {
     showEpisode(list[+b.dataset.i], true);
     document.getElementById('pm-player-label').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }));
