@@ -90,15 +90,16 @@ const EPISODES = [
   { game: 9, youtube: 'hk-rgHDgDjw', title: 'The AI Killed Kris', date: '10/4/2026', runtime: '6:46' },
   { game: 10, youtube: 'u0Qn3tmCRJQ', title: 'The Second Date', date: '10/19/2026', runtime: '8:25' },
   { game: 11, youtube: 'BBRJkK6NvT4', title: "Beef, It's What's for Dinner", date: '10/30/2026', runtime: '7:29' },
+  { game: 12, youtube: 'QjhVj0hKcMQ', title: 'So We Vote Lisa?', date: '11/11/2026', runtime: '12:38' },
 ];
 EPISODES.forEach(e => e.thumb = `/img/nielson-traitors/thumb_g${String(e.game).padStart(2, '0')}.jpg`);
 
 // Desk order. Records are every suspect named, game 5 through the latest episode.
 const PUNDITS = [
-  { name: 'Desmond "The Archive" Oyelaran', desc: 'Superfan · Plays the History', img: '/img/nielson-traitors/pundit-d.png', w: 10, l: 15 },
-  { name: 'Dr. Solveig "The Lie Detector" Bergqvist', desc: 'Body Language · Suspects the Quiet', img: '/img/nielson-traitors/pundit-s.png', w: 6, l: 19 },
-  { name: 'Lady Parveen "The Velvet Dagger" Chaudhry-Montague', desc: 'Retired Traitor · Suspects the Trusted', img: '/img/nielson-traitors/pundit-p.png', w: 7, l: 18 },
-  { name: 'Tariq "Wake Up" Haddad', desc: 'Conspiracy · Suspects the Shield', img: '/img/nielson-traitors/pundit-t.png', w: 8, l: 17 },
+  { name: 'Desmond "The Archive" Oyelaran', desc: 'Superfan · Plays the History', img: '/img/nielson-traitors/pundit-d.png', w: 11, l: 17 },
+  { name: 'Dr. Solveig "The Lie Detector" Bergqvist', desc: 'Body Language · Suspects the Quiet', img: '/img/nielson-traitors/pundit-s.png', w: 7, l: 21 },
+  { name: 'Lady Parveen "The Velvet Dagger" Chaudhry-Montague', desc: 'Retired Traitor · Suspects the Trusted', img: '/img/nielson-traitors/pundit-p.png', w: 9, l: 19 },
+  { name: 'Tariq "Wake Up" Haddad', desc: 'Conspiracy · Suspects the Shield', img: '/img/nielson-traitors/pundit-t.png', w: 9, l: 19 },
 ];
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
