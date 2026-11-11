@@ -92,7 +92,10 @@ const EPISODES = [
   { game: 11, youtube: 'BBRJkK6NvT4', title: "Beef, It's What's for Dinner", date: '10/30/2026', runtime: '7:29' },
   { game: 12, youtube: 'QjhVj0hKcMQ', title: 'So We Vote Lisa?', date: '11/11/2026', runtime: '12:38' },
 ];
-EPISODES.forEach(e => e.thumb = `/img/nielson-traitors/thumb_g${String(e.game).padStart(2, '0')}.jpg`);
+// Specials (no game number): { special: 'Special 1 of 2', slug, thumb, publishAt (ISO, hidden until then), youtube, title, date, runtime }.
+EPISODES.forEach(e => e.thumb = e.thumb || `/img/nielson-traitors/thumb_g${String(e.game).padStart(2, '0')}.jpg`);
+const LIVE = EPISODES.filter(e => !e.publishAt || Date.now() >= Date.parse(e.publishAt));
+const tag = ep => ep.game ? `Game ${ep.game}` : ep.special;
 
 // Desk order. Records are every suspect named, game 5 through the latest episode.
 const PUNDITS = [
@@ -103,34 +106,34 @@ const PUNDITS = [
 ];
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
-const newest = EPISODES[EPISODES.length - 1];
+const newest = LIVE[LIVE.length - 1];
 
 function showEpisode(ep, autoplay) {
   const player = document.getElementById('pm-player');
-  const label = `The Post-Mortem, game ${ep.game}: ${ep.title}`;
+  const label = `The Post-Mortem, ${tag(ep)}: ${ep.title}`;
   if (autoplay) {
     player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${ep.youtube}?autoplay=1&rel=0" title="${esc(label)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   } else {
     player.innerHTML = `<button type="button" aria-label="Play ${esc(label)}"><img src="${ep.thumb}" alt=""><span class="pm-play"></span></button>`;
     player.querySelector('button').addEventListener('click', () => showEpisode(ep, true));
   }
-  document.getElementById('pm-player-label').textContent = ep === newest ? 'Latest Episode' : `Game ${ep.game} Episode`;
-  document.getElementById('pm-player-title').innerHTML = `<span class="pm-ep">Game ${ep.game}</span><br>${esc(ep.title)}`;
+  document.getElementById('pm-player-label').textContent = ep === newest ? 'Latest Episode' : `${tag(ep)} Episode`;
+  document.getElementById('pm-player-title').innerHTML = `<span class="pm-ep">${esc(tag(ep))}</span><br>${esc(ep.title)}`;
   document.getElementById('pm-player-sub').textContent = `${ep.date} · ${ep.runtime}`;
   document.getElementById('pm-player-yt').href = `https://www.youtube.com/watch?v=${ep.youtube}`;
   renderEpisodes(ep);
 }
 
 function renderEpisodes(current) {
-  const list = [...EPISODES].reverse();
+  const list = [...LIVE].reverse();
   const el = document.getElementById('pm-episodes');
   el.innerHTML = list.map((ep, i) => `
     <div class="pm-card pm-episode${ep === current ? ' now' : ''}">
-      <button type="button" class="pm-ep-btn" data-i="${i}" aria-label="Play game ${ep.game}: ${esc(ep.title)}">
+      <button type="button" class="pm-ep-btn" data-i="${i}" aria-label="Play ${esc(tag(ep))}: ${esc(ep.title)}">
         <img src="${ep.thumb}" alt="">
         <span class="pm-meta">
           ${ep === current ? '<span class="pm-now">Now playing</span>' : ''}
-          <span class="pm-title"><span class="pm-ep">Game ${ep.game}</span></span>
+          <span class="pm-title"><span class="pm-ep">${esc(tag(ep))}</span></span>
           <span class="pm-title">${esc(ep.title)}</span>
         </span>
       </button>
@@ -151,6 +154,7 @@ document.getElementById('pm-desk').innerHTML = PUNDITS.map(p => `
     <div class="pm-desc">${p.desc.split(' · ').map(x => `<span>${esc(x)}</span>`).join('')}</div>
   </div>`).join('');
 
-const want = +new URLSearchParams(location.search).get('game');
-showEpisode(EPISODES.find(e => e.game === want) || newest, false);
+const params = new URLSearchParams(location.search);
+const want = +params.get('game'), slug = params.get('ep');
+showEpisode(LIVE.find(e => (slug && e.slug === slug) || (want && e.game === want)) || newest, false);
 </script>
