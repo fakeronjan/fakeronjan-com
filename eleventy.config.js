@@ -29,15 +29,6 @@ module.exports = function (eleventyConfig) {
     return posts.filter((p) => (p.data.tags || []).includes(slug)).length;
   });
 
-  // Blog tag filters: biggest tags first, so the collapsed row shows the
-  // most useful ones and "More tags" reveals the rest (Ronjan, 2026-11-12).
-  eleventyConfig.addFilter("byTagCount", (tags, posts) =>
-    [...tags].sort((a, b) =>
-      posts.filter((p) => (p.data.tags || []).includes(b.slug)).length -
-      posts.filter((p) => (p.data.tags || []).includes(a.slug)).length ||
-      a.label.localeCompare(b.label))
-  );
-
   eleventyConfig.addFilter("limit", (arr, n) => arr.slice(0, n));
 
   eleventyConfig.addFilter("withTag", (posts, slug) =>

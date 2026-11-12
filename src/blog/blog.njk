@@ -9,7 +9,7 @@ permalink: /blog/
 {%- set tagsShown = 4 %}
 <div class="tag-filters collapsed" id="tagFilters">
   <button class="tag-filter active" data-filter="all">All ({{ collections.blog | countTag('all') }})</button>
-  {%- for tag in tagList | byTagCount(collections.blog) %}
+  {%- for tag in tagList %}
   <button class="tag-filter{% if loop.index0 >= tagsShown %} tag-extra{% endif %}" data-filter="{{ tag.slug }}">{{ tag.label }} ({{ collections.blog | countTag(tag.slug) }})</button>
   {%- endfor %}
   <button class="tag-filter tag-more" type="button" aria-expanded="false">More tags</button>
@@ -45,6 +45,8 @@ function balanceTagFilters() {
   const containerWidth = container.clientWidth;
   const gap = parseFloat(getComputedStyle(container).gap) || 0;
   const widths = buttons.map((b) => b.getBoundingClientRect().width);
+  // The More/Fewer toggle travels with the tag before it, so it never sits alone on a row
+  const glued = (i) => buttons[i].classList.contains("tag-more") && i > 0;
 
   // Greedy packing at a given max row width -> indexes where new rows start
   const pack = (maxW) => {
@@ -52,7 +54,11 @@ function balanceTagFilters() {
     let used = 0;
     widths.forEach((w, i) => {
       const next = used + (used > 0 ? gap : 0) + w;
-      if (next > maxW && used > 0) { starts.push(i); used = w; } else { used = next; }
+      if (next > maxW && used > 0) {
+        if (glued(i) && starts[starts.length - 1] < i - 1) {
+          starts.push(i - 1); used = widths[i - 1] + gap + w;  // carry the previous tag down with it
+        } else { starts.push(i); used = w; }
+      } else { used = next; }
     });
     return starts;
   };
