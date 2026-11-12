@@ -2051,6 +2051,7 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
 .gh-src-grid tr.gh-src-head th:first-child { font-family: 'Space Grotesk', sans-serif; font-size: 0.92rem; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--fg); }
 .gh-src-grid tr.gh-src-head .gh-dot { margin-right: 0.4rem; }
 .gh-src-con { font-weight: 700; white-space: nowrap; }
+.gh-src-acct { display: block; font-weight: 400; font-size: 0.76rem; color: var(--muted); }
 .gh-src-cell { display: grid; gap: 0.2rem; }
 .gh-src-seg { display: grid; gap: 0.1rem; }
 .gh-src-seg + .gh-src-seg { border-top: 1px dashed var(--muted); padding-top: 0.25rem; }
