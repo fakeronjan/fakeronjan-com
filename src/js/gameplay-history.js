@@ -42,10 +42,12 @@
 
   function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
 
-  // A few recorded minutes round to 0.0 hours: show "<0.1" (null means no play time at all)
+  // Hours always to the tenth ("136.0", "2.4"); a few minutes that round to 0.0 show "<0.1"
+  function fmtHours(h) { return h < 0.05 ? "<0.1" : (Math.round(h * 10) / 10).toFixed(1); }
+  // null means no play time at all
   function hours(h, estimated) {
     if (h == null) return "-";
-    return (estimated ? "~" : "") + (h === 0 ? "<0.1" : h);
+    return (estimated ? "~" : "") + fmtHours(h);
   }
 
   // A game's cover art, small, from the gameplay-tracking repo's stored copies
@@ -770,7 +772,7 @@
             }).sort(function (p, q) { return q.score - p.score || q.days - p.days; }).slice(0, 5);
             return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + played.map(function (g, i) {
                 return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + listLink(g.row.id, g.row.name) + familyMark(g.row) + ' <i class="gh-pct">' +
-                  (Math.round(g.hrs || 0) ? "~" + plural(Math.round(g.hrs), "hr", "hrs") + ", " : "") + (g.est ? "~" : "") + plural(g.days, "day", "days") + familyMark(g.row) + "</i></span>";
+                  ((g.hrs || 0) >= 0.05 ? "~" + fmtHours(g.hrs) + " hrs, " : "") + (g.est ? "~" : "") + plural(g.days, "day", "days") + familyMark(g.row) + "</i></span>";
               }).join("") + "</div>" +
               (picks.length ? '<div class="gh-sum-band"></div>' : "") +  // no picks yet: an empty cell
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
@@ -845,7 +847,7 @@
         h += '<div class="gh-row-name">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams).sort()) + "<span>" + listLink(o.row.id, o.row.name, 40) + familyMark(o.row) + medal + "</span></div>" +
           '<svg class="gh-row-svg" viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label="' + esc(tip) + '">' +
           '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + bands + ticks + "</svg>" +
-          '<div class="gh-row-stat">' + (Math.round(o.hrs || 0) ? "~" + plural(Math.round(o.hrs), "hr", "hrs") + ", " : "") + (o.est ? "~" : "") + plural(o.n, "day", "days") + familyMark(o.row) + "</div>" +
+          '<div class="gh-row-stat">' + ((o.hrs || 0) >= 0.05 ? "~" + fmtHours(o.hrs) + " hrs, " : "") + (o.est ? "~" : "") + plural(o.n, "day", "days") + familyMark(o.row) + "</div>" +
           '<div class="gh-row-stat">' + (o.prog ? progressText({ from: o.prog.from, pct: o.prog.to }) : "") + (o.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</div>";
       });
       out.innerHTML = h + "</div>";
@@ -1049,7 +1051,7 @@
     } else {
       facts.push("No play dates recorded");
     }
-    if (row.hours != null) facts.push((row.hours_estimated ? "about " : "") + (row.hours === 0 ? "<0.1 hours" : plural(row.hours, "hour", "hours")) + (row.family_play ? "*" : ""));
+    if (row.hours != null) facts.push((row.hours_estimated ? "about " : "") + fmtHours(row.hours) + " hours" + (row.family_play ? "*" : ""));
     if (row.sessions) facts.push(plural(row.sessions, "session", "sessions"));
     // Unlocks as on the Games tab: the most complete list, with its share ("on PC" when the game
     // has more than one list; the Platforms table below has each list and the total)
