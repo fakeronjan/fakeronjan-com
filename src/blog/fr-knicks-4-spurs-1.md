@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Knicks 4, Spurs 1"
 date: 2026-06-21
-tags: [sports-memories]
+tags: [sports-memories, sports]
 ---
 
 # {{ title }}

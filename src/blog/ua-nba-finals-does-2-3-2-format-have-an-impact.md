@@ -3,6 +3,7 @@ layout: post.njk
 title: "NBA Finals: does 2-3-2 format have an impact?"
 date: 2013-06-07
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

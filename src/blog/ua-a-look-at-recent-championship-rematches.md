@@ -3,6 +3,7 @@ layout: post.njk
 title: "A look at recent championship rematches"
 date: 2014-06-05
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

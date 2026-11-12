@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Tecmo Super NBA Basketball: a mini-tribute"
 date: 2024-11-17
-tags: [game-rankings]
+tags: [game-rankings, sports]
 ---
 
 # {{ title }}

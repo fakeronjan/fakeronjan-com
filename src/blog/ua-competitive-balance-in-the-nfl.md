@@ -3,6 +3,7 @@ layout: post.njk
 title: "Competitive Balance in the NFL"
 date: 2013-03-20
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

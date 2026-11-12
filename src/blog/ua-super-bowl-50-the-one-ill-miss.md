@@ -3,7 +3,7 @@ layout: post.njk
 title: "Super Bowl 50: The One I'll Miss"
 date: 2016-02-07
 original_source: uselessanalysis.com
-tags: [sports-memories]
+tags: [sports-memories, sports]
 ---
 
 # {{ title }}

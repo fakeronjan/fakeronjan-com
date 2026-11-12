@@ -2,6 +2,7 @@
 layout: post.njk
 title: "An analysis of 54 Super Bowls"
 date: 2025-02-12
+tags: [sports]
 ---
 
 # {{ title }}

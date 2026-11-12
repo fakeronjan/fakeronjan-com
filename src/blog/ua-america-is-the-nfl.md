@@ -3,6 +3,7 @@ layout: post.njk
 title: "America is the NFL"
 date: 2015-01-31
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "Sling TV Review: The Perfect Product for a Different Me"
 date: 2015-03-02
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "Showdown: LeBron and Durant fantasy draft"
 date: 2013-08-15
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

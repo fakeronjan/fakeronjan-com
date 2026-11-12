@@ -3,6 +3,7 @@ layout: post.njk
 title: "Sports fans by age: a quick look"
 date: 2015-05-21
 original_source: uselessanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

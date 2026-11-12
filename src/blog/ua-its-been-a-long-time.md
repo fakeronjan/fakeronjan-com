@@ -3,6 +3,7 @@ layout: post.njk
 title: "It's been a long time ...."
 date: 2013-04-01
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

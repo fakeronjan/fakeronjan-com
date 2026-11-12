@@ -3,6 +3,7 @@ layout: post.njk
 title: "Are NBA Superstars Paid Enough? Take #1"
 date: 2015-02-10
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

@@ -2,6 +2,7 @@
 layout: post.njk
 title: "The men's tennis GOAT chase is over"
 date: 2024-10-11
+tags: [sports]
 ---
 
 # {{ title }}

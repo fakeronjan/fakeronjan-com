@@ -3,6 +3,7 @@ layout: post.njk
 title: "NBA Finals matchups: \"easy\" vs. \"tough\" series in previous round"
 date: 2013-05-29
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

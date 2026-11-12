@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Another Super Bowl rematch"
 date: 2025-01-27
+tags: [sports]
 ---
 
 # {{ title }}

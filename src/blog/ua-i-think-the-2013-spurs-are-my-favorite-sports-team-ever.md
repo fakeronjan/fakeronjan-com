@@ -3,7 +3,7 @@ layout: post.njk
 title: "I think the 2013 Spurs are my favorite sports team ever"
 date: 2013-06-21
 original_source: uselesssportsanalysis.com
-tags: [sports-memories]
+tags: [sports-memories, sports]
 ---
 
 # {{ title }}

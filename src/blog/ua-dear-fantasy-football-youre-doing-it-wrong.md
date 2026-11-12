@@ -3,6 +3,7 @@ layout: post.njk
 title: "Dear fantasy football: you're doing it wrong!"
 date: 2013-07-26
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

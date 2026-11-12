@@ -2,7 +2,7 @@
 layout: post.njk
 title: "My first baseball game"
 date: 2019-06-22
-tags: [sports-memories]
+tags: [sports-memories, sports]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "Box Score Monday: the folly of NCAA rankings"
 date: 2013-09-02
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

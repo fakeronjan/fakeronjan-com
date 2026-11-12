@@ -3,6 +3,7 @@ layout: post.njk
 title: "Competitive Balance in the NBA"
 date: 2013-05-01
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

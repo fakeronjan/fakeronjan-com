@@ -3,6 +3,7 @@ layout: post.njk
 title: "How many gold medals will Russia win in the 2014 Winter Olympics?"
 date: 2014-02-05
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "Russia gold medal - postmortem"
 date: 2014-02-25
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

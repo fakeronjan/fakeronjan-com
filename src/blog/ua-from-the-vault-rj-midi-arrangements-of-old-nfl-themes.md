@@ -3,6 +3,7 @@ layout: post.njk
 title: "From the vault: RJ MIDI arrangements of old NFL themes"
 date: 2013-07-31
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

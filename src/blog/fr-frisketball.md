@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Frisketball"
 date: 2019-08-01
+tags: [sports]
 ---
 
 # {{ title }}

@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Thanks, Spurs, Thanks ... Take 2"
 date: 2019-06-16
-tags: [sports-memories]
+tags: [sports-memories, sports]
 ---
 
 # {{ title }}

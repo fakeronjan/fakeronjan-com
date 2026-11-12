@@ -3,6 +3,7 @@ layout: post.njk
 title: "Marginal mayhem! A Warriors follow-up"
 date: 2015-12-07
 original_source: uselessanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

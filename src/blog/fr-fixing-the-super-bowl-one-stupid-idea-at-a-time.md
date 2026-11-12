@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Fixing the Super Bowl, one stupid idea at a time"
 date: 2024-02-05
+tags: [sports]
 ---
 
 # {{ title }}

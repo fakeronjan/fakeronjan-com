@@ -3,6 +3,7 @@ layout: post.njk
 title: "How the Spurs and Warriors win: follow-up"
 date: 2016-01-07
 original_source: uselessanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

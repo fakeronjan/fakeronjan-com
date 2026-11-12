@@ -2,6 +2,7 @@
 layout: post.njk
 title: "The threepeat-pursuing Chiefs have broken my NFL model"
 date: 2025-01-20
+tags: [sports]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "The Spurs and Warriors are both making history"
 date: 2016-01-24
 original_source: uselessanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

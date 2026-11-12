@@ -3,6 +3,7 @@ layout: post.njk
 title: "Box Score Monday: a trio of game-tying triples"
 date: 2014-04-21
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

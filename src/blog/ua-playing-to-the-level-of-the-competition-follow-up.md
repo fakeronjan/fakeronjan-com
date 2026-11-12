@@ -3,6 +3,7 @@ layout: post.njk
 title: "Playing to the level of the competition, follow-up"
 date: 2013-08-07
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "Showdown: Team LeBron vs. Team Durant"
 date: 2013-09-20
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

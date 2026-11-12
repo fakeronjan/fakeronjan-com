@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Re-quitting the NFL"
 date: 2023-01-05
-tags: [sports-memories]
+tags: [sports-memories, sports]
 ---
 
 # {{ title }}

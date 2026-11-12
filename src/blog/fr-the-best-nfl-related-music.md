@@ -2,7 +2,7 @@
 layout: post.njk
 title: "The best NFL-related music"
 date: 2025-02-05
-tags: [music]
+tags: [music, sports]
 ---
 
 # {{ title }}

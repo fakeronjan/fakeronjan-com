@@ -3,6 +3,7 @@ layout: post.njk
 title: "Yes, the East really is that bad"
 date: 2014-04-30
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

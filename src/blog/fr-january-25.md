@@ -2,6 +2,7 @@
 layout: post.njk
 title: "January 25"
 date: 2023-01-25
+tags: [sports, sports-memories, game-rankings]
 ---
 
 # {{ title }}

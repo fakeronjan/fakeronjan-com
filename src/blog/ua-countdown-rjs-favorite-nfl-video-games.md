@@ -3,7 +3,7 @@ layout: post.njk
 title: "Countdown: RJ's favorite NFL video games"
 date: 2013-08-29
 original_source: uselesssportsanalysis.com
-tags: [game-rankings]
+tags: [game-rankings, sports]
 ---
 
 # {{ title }}

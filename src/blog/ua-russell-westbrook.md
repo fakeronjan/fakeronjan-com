@@ -3,6 +3,7 @@ layout: post.njk
 title: "Russell Westbrook :("
 date: 2013-04-27
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

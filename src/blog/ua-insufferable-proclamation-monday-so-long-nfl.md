@@ -3,7 +3,7 @@ layout: post.njk
 title: "Insufferable Proclamation Monday: So long, NFL!"
 date: 2013-10-21
 original_source: uselesssportsanalysis.com
-tags: [sports-memories]
+tags: [sports-memories, sports]
 ---
 
 # {{ title }}

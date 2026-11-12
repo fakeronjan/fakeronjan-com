@@ -3,6 +3,7 @@ layout: post.njk
 title: "One last check-in on the Warriors"
 date: 2018-04-12
 original_source: uselessanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

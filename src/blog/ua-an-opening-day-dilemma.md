@@ -3,6 +3,7 @@ layout: post.njk
 title: "An Opening Day dilemma"
 date: 2014-03-31
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}

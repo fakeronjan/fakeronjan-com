@@ -2,7 +2,7 @@
 layout: post.njk
 title: "NBA 2K quaransimulation"
 date: 2020-04-06
-tags: [game-rankings]
+tags: [game-rankings, sports]
 ---
 
 # {{ title }}

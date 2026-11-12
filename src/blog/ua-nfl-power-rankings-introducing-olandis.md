@@ -3,6 +3,7 @@ layout: post.njk
 title: "NFL Power Rankings: introducing OLANDIS"
 date: 2013-09-24
 original_source: uselesssportsanalysis.com
+tags: [sports]
 ---
 
 # {{ title }}
