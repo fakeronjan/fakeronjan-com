@@ -10,6 +10,7 @@
   var FAMILIES = ["Nintendo", "PlayStation", "Steam", "Xbox"];
   var LANE = { Nintendo: 0, PlayStation: 1, Steam: 2, Xbox: 3 };
   var MONTHS = "JFMAMJJASOND";
+  var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var KIND_ORDER = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
   var GAME_URL = "/video-games/gameplay-stats/game/?id=";
 
@@ -200,49 +201,58 @@
   }
 
   // ── Nintendo play history: days played and hours, but only first and last played dated ──
-  // A Nintendo record's play is spread evenly over its first-to-last span (row.spans), so a
-  // year gets the share of its days and hours that falls inside that year. An estimate.
-  function dayNum(d) { return Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10)) / 864e5; }
-  function spanShare(row, y) {
-    var all = 0, inY = 0, a = dayNum(y + "-01-01"), b = dayNum(y + "-12-31");
-    (row.spans || []).forEach(function (sp) {
-      var s = dayNum(sp[0]), e = dayNum(sp[1]);
-      all += e - s + 1;
-      inY += Math.max(0, Math.min(e, b) - Math.max(s, a) + 1);
+  // Each Nintendo record carries its play spread over its first-to-last span by the play model
+  // (build_games.py model_span): e.modeled = {"YYYY-MM": [days, minutes]}. Estimates.
+  function ninRecords(row) { return row.entries.filter(function (e) { return e.modeled; }); }
+  function modeledIn(row, prefix) {  // [days, minutes] modeled in a year ("2014") or month ("2014-03")
+    var d = 0, m = 0;
+    ninRecords(row).forEach(function (e) {
+      Object.keys(e.modeled).forEach(function (k) { if (k.indexOf(prefix) === 0) { d += e.modeled[k][0]; m += e.modeled[k][1]; } });
     });
-    return all ? inY / all : 0;
+    return [d, m];
   }
   function spanYears(row) {
     var ys = {};
-    (row.spans || []).forEach(function (sp) { for (var y = +sp[0].slice(0, 4); y <= +sp[1].slice(0, 4); y++) ys[y] = 1; });
+    ninRecords(row).forEach(function (e) { Object.keys(e.modeled).forEach(function (k) { ys[k.slice(0, 4)] = 1; }); });
     return Object.keys(ys);
   }
-  // A year's span pieces, clipped to the year: [[start, end], ...]
+  function inSpans(row, d) { return (row.spans || []).some(function (sp) { return sp[0] <= d && d <= sp[1]; }); }
+  // A year's span pieces, one per month, clipped to the span: [[start, end, opacity], ...],
+  // opacity from that month's modeled days against the game's busiest month
   function spansIn(row, y) {
-    return (row.spans || []).map(function (sp) {
-      var s = sp[0] < y + "-01-01" ? y + "-01-01" : sp[0], e = sp[1] > y + "-12-31" ? y + "-12-31" : sp[1];
-      return s <= e ? [s, e] : null;
-    }).filter(Boolean);
+    var out = [], peak = 0;
+    ninRecords(row).forEach(function (e) { Object.keys(e.modeled).forEach(function (k) { peak = Math.max(peak, modeledIn(row, k)[0]); }); });
+    (row.spans || []).forEach(function (sp) {
+      for (var mo = 1; mo <= 12; mo++) {
+        var mm = y + "-" + (mo < 10 ? "0" : "") + mo, last = new Date(Date.UTC(+y, mo, 0)).getUTCDate();
+        var s = mm + "-01", e = mm + "-" + last;
+        if (s < sp[0]) s = sp[0];
+        if (e > sp[1]) e = sp[1];
+        if (s > e) continue;
+        var md = modeledIn(row, mm)[0];
+        out.push([s, e, peak ? 0.15 + 0.85 * md / peak : 0.15]);  // shaded against the game's busiest month
+      }
+    });
+    return out;
   }
-  // Days a row's Nintendo spans hold (days played before daily tracking began, undated)
   function ninDaysPlayed(row) {
     var n = 0;
-    row.entries.forEach(function (e) { if (e.span) n += e.span_days || 0; });
+    ninRecords(row).forEach(function (e) { n += e.span_days || 0; });
     return n;
   }
-  function inSpans(row, d) { return (row.spans || []).some(function (sp) { return sp[0] <= d && d <= sp[1]; }); }
-  // Days played in a year: dated days, plus the Nintendo days the spans add beyond the dated ones in them
+  // Days played in a year: dated days outside the spans, plus the modeled days (or the dated days
+  // inside the spans, if there are more of those)
   function yearDays(row, y) {
-    var all = {}, held = 0;
+    var outside = 0, inside = 0, seen = {};
     Object.keys(row.days_by_family || {}).forEach(function (f) {
       row.days_by_family[f].forEach(function (d) {
-        if (d.slice(0, 4) !== y || all[d]) return;
-        all[d] = 1;
-        if (inSpans(row, d)) held++;
+        if (d.slice(0, 4) !== y || seen[d]) return;
+        seen[d] = 1;
+        if (inSpans(row, d)) inside++; else outside++;
       });
     });
-    var dated = Object.keys(all).length, spread = Math.round(ninDaysPlayed(row) * spanShare(row, y));
-    return spread > held ? { n: dated + spread - held, est: true } : { n: dated, est: false };
+    var modeled = Math.round(modeledIn(row, y)[0]);
+    return modeled > inside ? { n: outside + modeled, est: true } : { n: outside + inside, est: false };
   }
   function daysPlayed(row) { return row.days_played != null ? row.days_played : row.days.length; }
   // Hand-picked games someone else in the family played a lot of (Ronjan, 2026-11-12)
@@ -253,22 +263,26 @@
   // Each strip is January to December with a lane per platform family; each
   // mark is a day with activity on that platform.
 
-  function yearStrip(year, daysByFamily, bands) {
+  function yearStrip(year, daysByFamily, bands, shade) {
     var a = Date.UTC(+year, 0, 1), span = Date.UTC(+year + 1, 0, 1) - a;
     var grid = "", marks = "";
     for (var i = 1; i < 12; i++) {
       grid += '<line x1="' + (i / 12 * 100) + '" x2="' + (i / 12 * 100) + '" y1="0" y2="22" class="gh-grid" vector-effect="non-scaling-stroke"/>';
     }
     // Nintendo first-to-last spans, faint, under the day marks (overlaps read darker)
-    var merged = [];  // one faint band per stretch, so overlapping games don't stack into a solid bar
-    (bands || []).slice().sort(function (p, q) { return p[0] < q[0] ? -1 : 1; }).forEach(function (b) {
+    // One game: its monthly pieces, shaded by modeled play. Many games: one faint band per
+    // stretch, so overlapping games don't stack into a solid bar
+    var merged = [];
+    if (shade) merged = bands || [];
+    else (bands || []).slice().sort(function (p, q) { return p[0] < q[0] ? -1 : 1; }).forEach(function (b) {
       var last = merged[merged.length - 1];
       if (last && b[0] <= last[1]) { if (b[1] > last[1]) last[1] = b[1]; } else merged.push([b[0], b[1]]);
     });
     merged.forEach(function (b) {
       var x0 = (Date.UTC(+b[0].slice(0, 4), +b[0].slice(5, 7) - 1, +b[0].slice(8, 10)) - a) / span * 100;
       var x1 = (Date.UTC(+b[1].slice(0, 4), +b[1].slice(5, 7) - 1, +b[1].slice(8, 10)) + 864e5 - a) / span * 100;
-      marks += '<rect x="' + x0 + '" y="' + (2 + LANE.Nintendo * 5) + '" width="' + (x1 - x0) + '" height="4" class="gh-band gh-fill-nintendo"/>';
+      marks += '<rect x="' + x0 + '" y="' + (2 + LANE.Nintendo * 5) + '" width="' + (x1 - x0) + '" height="4" class="gh-band gh-fill-nintendo"' +
+        (shade ? ' style="opacity:' + (b[2] * 0.75).toFixed(2) + '"' : "") + "/>";
     });
     Object.keys(daysByFamily).forEach(function (f) {
       Object.keys(daysByFamily[f]).forEach(function (d) {
@@ -308,7 +322,7 @@
       if (!games.length) return;
       games.sort(function (p, q) { return q.n - p.n; });
       var label = opts.zoom ? '<button type="button" class="gh-year" data-year="' + y + '">' + y + "</button>" : '<span class="gh-year">' + y + "</span>";
-      h += label + yearStrip(y, byFam, bands) + '<div class="gh-year-sum">' + opts.summary(y, games, Object.keys(daySet).length) + "</div>";
+      h += label + yearStrip(y, byFam, bands, rows.length === 1) + '<div class="gh-year-sum">' + opts.summary(y, games, Object.keys(daySet).length) + "</div>";
     });
     return h + "</div>";
   }
@@ -586,14 +600,11 @@
         var days = row.days_by_family[f];
         var recs = row.entries.filter(function (e) { return e.id.indexOf("nintendo:") === 0; });
         if (f === "Nintendo" && recs.length) {
-          // Nintendo's records: minutes before daily tracking spread over their spans (see
-          // spanShare), and minutes on the days they were logged or dated
-          var spanMins = 0, dayMins = 0;
+          // Nintendo's records: modeled minutes (see modeledIn) plus minutes on logged or dated days
+          var m = modeledIn(row, yr)[1];
           recs.forEach(function (e) {
-            if (e.span) spanMins += e.span_minutes || 0;
-            Object.keys(e.day_minutes || {}).forEach(function (d) { if (d.slice(0, 4) === yr) dayMins += e.day_minutes[d]; });
+            Object.keys(e.day_minutes || {}).forEach(function (d) { if (d.slice(0, 4) === yr) m += e.day_minutes[d]; });
           });
-          var m = spanMins * spanShare(row, yr) + dayMins;
           if (m) { total += m / 60; any = true; }
           return;
         }
@@ -767,7 +778,7 @@
         });
         var pick = (gotyByYear()[y] || []).filter(function (p) { var g = gameForPick(p.game); return g && g.id === r.id; })[0];
         // The row's reach that year: its dated days and its Nintendo spans
-        var reach = all.concat.apply(all, sp).sort();
+        var reach = all.concat.apply(all, sp.map(function (b) { return [b[0], b[1]]; })).sort();
         if (sp.length && !fams.Nintendo) fams.Nintendo = [];
         return { row: r, fams: fams, all: all, reach: reach, sp: sp, n: yd.n, est: yd.est, hrs: hrs, score: Math.max(yd.n, hrs || 0), done: done, plat: plat, pick: pick };
       }).filter(function (o) { return o.n; })
@@ -792,8 +803,9 @@
         var s = x(o.reach[0]), e = Math.max(x(o.reach[o.reach.length - 1]), s + w);
         var tip = o.row.name + ": " + (o.est ? "about " : "") + plural(o.n, "day", "days") + " in " + y + ", " + fmtDay(o.reach[0]) + " to " + fmtDay(o.reach[o.reach.length - 1]);
         var bands = o.sp.map(function (b) {
-          return '<rect x="' + x(b[0]) + '" y="5" width="' + Math.max(w, x(b[1]) - x(b[0])) + '" height="6" class="gh-band gh-fill-nintendo"><title>' +
-            esc(o.row.name) + " (Nintendo): played " + plural(ninDaysPlayed(o.row), "day", "days") + " between " + fmtDay(b[0]) + " and " + fmtDay(b[1]) + ", dates not recorded</title></rect>";
+          var md = modeledIn(o.row, b[0].slice(0, 7))[0];
+          return '<rect x="' + x(b[0]) + '" y="5" width="' + Math.max(w, x(b[1]) + 100 / 365 - x(b[0])) + '" height="6" class="gh-band gh-fill-nintendo" style="opacity:' + (b[2] * 0.75).toFixed(2) + '"><title>' +
+            esc(o.row.name) + " (Nintendo): about " + plural(Math.round(md * 10) / 10, "day", "days") + " in " + MONTH_NAMES[+b[0].slice(5, 7) - 1] + " " + b[0].slice(0, 4) + ", estimated</title></rect>";
         }).join("");
         var ticks = Object.keys(o.fams).map(function (f) {
           return o.fams[f].map(function (d) {
@@ -1013,7 +1025,9 @@
     var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + "</h1>" +
       '<p class="gh-facts">' + dots(row.families) + " " + facts.map(esc).join('<span class="sport-updated-sep">|</span>') + "</p>" +
       (badges ? '<div class="gh-badges">' + badges + "</div>" : "") +
-      (row.family_play ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") + "</div></div>";
+      (row.family_play ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") +
+      ((row.versions || []).length ? '<p class="gh-versions">Other versions: ' + row.versions.map(function (v) { return gameLink(v.id, v.name); }).join(", ") + "</p>" : "") +
+      "</div></div>";
 
     if (row.days.length || (row.spans || []).length) {
       var ys = {};
