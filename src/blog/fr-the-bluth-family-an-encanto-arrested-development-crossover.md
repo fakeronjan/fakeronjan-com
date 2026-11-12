@@ -2,7 +2,7 @@
 layout: post.njk
 title: "\"The Bluth Family\": An Encanto-Arrested Development Crossover"
 date: 2024-01-02
-tags: [music]
+tags: [music, movies]
 ---
 
 # {{ title }}

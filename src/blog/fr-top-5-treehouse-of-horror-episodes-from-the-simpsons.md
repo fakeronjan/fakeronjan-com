@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Top 5 Simpsons Treehouse of Horror Episodes"
 date: 2021-10-28
+tags: [movies]
 ---
 
 # {{ title }}

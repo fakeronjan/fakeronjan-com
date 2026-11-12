@@ -4,7 +4,7 @@ module.exports = [
   { slug: "career", label: "Career" },
   { slug: "game-of-the-year", label: "Game of the Year" },
   { slug: "game-rankings", label: "Game Rankings" },
-  { slug: "movies", label: "Movies" },
+  { slug: "movies", label: "Movies & TV" },
   { slug: "music", label: "Music" },
   { slug: "sports-memories", label: "Sports Memories" },
 ];

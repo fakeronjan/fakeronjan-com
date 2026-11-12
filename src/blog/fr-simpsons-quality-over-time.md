@@ -3,6 +3,7 @@ layout: post.njk
 title: "Simpsons quality over time"
 date: 2013-02-11
 original_source: Facebook
+tags: [movies]
 ---
 
 # {{ title }}
