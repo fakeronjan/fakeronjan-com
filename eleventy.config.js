@@ -29,6 +29,15 @@ module.exports = function (eleventyConfig) {
     return posts.filter((p) => (p.data.tags || []).includes(slug)).length;
   });
 
+  // Blog tag filters: featured tags first (in tagList order), then the rest
+  // by post count, biggest first (Ronjan, 2026-11-12).
+  eleventyConfig.addFilter("orderTags", (tags, posts) => {
+    const count = (slug) => posts.filter((p) => (p.data.tags || []).includes(slug)).length;
+    const rest = tags.filter((t) => !t.featured)
+      .sort((a, b) => count(b.slug) - count(a.slug) || a.label.localeCompare(b.label));
+    return [...tags.filter((t) => t.featured), ...rest];
+  });
+
   eleventyConfig.addFilter("limit", (arr, n) => arr.slice(0, n));
 
   eleventyConfig.addFilter("withTag", (posts, slug) =>

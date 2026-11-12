@@ -6,10 +6,10 @@ permalink: /blog/
 
 <h1>Blog</h1>
 
-{%- set tagsShown = 4 %}
+{%- set tagsShown = tagList | selectattr('featured') | length %}
 <div class="tag-filters collapsed" id="tagFilters">
   <button class="tag-filter active" data-filter="all">All ({{ collections.blog | countTag('all') }})</button>
-  {%- for tag in tagList %}
+  {%- for tag in tagList | orderTags(collections.blog) %}
   <button class="tag-filter{% if loop.index0 >= tagsShown %} tag-extra{% endif %}" data-filter="{{ tag.slug }}">{{ tag.label }} ({{ collections.blog | countTag(tag.slug) }})</button>
   {%- endfor %}
   <button class="tag-filter tag-more" type="button" aria-expanded="false">More tags</button>
