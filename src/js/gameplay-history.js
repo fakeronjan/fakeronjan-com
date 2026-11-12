@@ -1036,9 +1036,9 @@
     // Unlocks as on the Games tab: the most complete list, with its share ("on PC" when the game
     // has more than one list; the Platforms table below has each list and the total)
     var best = bestList(row), lists = countedEntries(row).filter(function (e) { return e.total; }).length;
-    if (best) facts.push((best.entry.earned || 0) + " of " + best.entry.total + " trophies and achievements" +
+    if (best) facts.push((best.entry.earned || 0) + " of " + best.entry.total + " \uD83C\uDFC6" +
       (lists > 1 ? " on " + platformLabel(best.entry) : "") + " (" + Math.floor(best.pct * 100) + "%)");
-    else if (unlockCount(countedEntries(row))) facts.push(unlockCount(countedEntries(row)) + " trophies and achievements");
+    else if (unlockCount(countedEntries(row))) facts.push(unlockCount(countedEntries(row)) + " \uD83C\uDFC6");
 
     var art = row.img ? '<img class="gh-art" src="' + BASE + "/" + row.img + '" alt="">' : '<span class="gh-art" aria-hidden="true"></span>';
     var badges = gotyFor(row).map(function (g) {
@@ -1049,7 +1049,9 @@
     // An earned platinum: not tied to a year, so just the word
     if (row.entries.some(function (e) { return e.platinum; })) badges += '<span class="gh-badge gh-platinum">Platinum</span>';
     var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + familyMark(row) + "</h1>" +
-      '<p class="gh-facts">' + dots(row.families) + " " + facts.map(esc).join('<span class="sport-updated-sep">|</span>') + "</p>" +
+      '<p class="gh-facts">' + dots(row.families) + " " + facts.map(function (f) {  // each fact stays on one line; the line breaks between facts
+        return '<span class="gh-nowrap">' + esc(f).replace("\uD83C\uDFC6", '<span title="Trophies and achievements" aria-label="trophies and achievements">\uD83C\uDFC6</span>') + "</span>";
+      }).join('<span class="sport-updated-sep">|</span>') + "</p>" +
       (badges ? '<div class="gh-badges">' + badges + "</div>" : "") +
       (row.family_play ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") +
       ((row.versions || []).length ? '<p class="gh-versions">Other versions: ' + row.versions.map(function (v) { return gameLink(v.id, v.name); }).join(", ") + "</p>" : "") +
