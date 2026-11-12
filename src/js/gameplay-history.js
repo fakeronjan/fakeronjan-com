@@ -506,7 +506,7 @@
       if (!pickIndex) {
         pickIndex = {};
         games.forEach(function (r) {
-          [r.name].concat(r.name.split(" + ")).concat(r.entries.map(function (e) { return e.name; })).forEach(function (n) { pickIndex[norm(n)] = pickIndex[norm(n)] || r; });
+          awardNames(r).forEach(function (n) { pickIndex[norm(n)] = pickIndex[norm(n)] || r; });
         });
       }
       var k = norm(name);
@@ -986,9 +986,18 @@
   // Game of the Year names that differ from every platform's name for the game
   var GOTY_ALIASES = { valianthearts: "valiantheartsthegreatwar", pokemonswordshield: "pokemonsword" };
 
+  // Names an award pick can match a game by: its own name, each part of an "A + B" name, and its
+  // platforms' names. A game with other versions (a remake beside the original) matches only by
+  // its own name, since its platform name can be the original's: Ocarina of Time (Switch 2) is
+  // "The Legend of Zelda: Ocarina of Time" on Nintendo's records, and the 1998 pick isn't its
+  function awardNames(row) {
+    var names = [row.name].concat(row.name.split(" + "));
+    return (row.versions || []).length ? names : names.concat(row.entries.map(function (e) { return e.name; }));
+  }
+
   function gotyFor(row) {
     var names = {};
-    [row.name].concat(row.name.split(" + ")).concat(row.entries.map(function (e) { return e.name; })).forEach(function (n) { names[norm(n)] = 1; });
+    awardNames(row).forEach(function (n) { names[norm(n)] = 1; });
     return (window.GOTY || []).filter(function (g) {
       var k = norm(g.game);
       return names[k] || names[GOTY_ALIASES[k]];
