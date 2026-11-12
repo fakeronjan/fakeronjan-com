@@ -411,7 +411,8 @@
   // Small pills after a game's name in the Games and Trophy Room tables: the medal and the
   // year of each Game of the Year pick, linking to its write-up ("2024: Runner-up" on hover)
   var MEDAL_CLASS = { "Runner-up": " gh-silver", "3rd place": " gh-bronze" };  // gold otherwise
-  var PILL_MEDALS = { "Game of the Year": "&#127942;", "Game of the Decade": "&#127942;", "Runner-up": "&#129352;", "3rd place": "&#129353;" };
+  // Game of the Year is the gold medal; 🏆 means trophies on game pages
+  var PILL_MEDALS = { "Game of the Year": "&#129351;", "Game of the Decade": "&#129351;", "Runner-up": "&#129352;", "3rd place": "&#129353;" };
   function pills(row) {
     if (!row) return "";
     if (row._pills == null) {
@@ -759,7 +760,7 @@
               (picks.length ? '<div class="gh-sum-band"></div>' : "") +  // no picks yet: an empty cell
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
                 var row = gameForPick(p.game);
-                var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; ", "4th place": "&#127808; ", "5th place": "&#9995; " }[p.place] || "&#127942; ";
+                var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; ", "4th place": "&#127808; ", "5th place": "&#9995; " }[p.place] || "&#129351; ";
                 return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? listLink(row.id, p.game) : listText(p.game)) + "</span>";
               }).join("") : "") + "</div>" +
               '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
@@ -817,7 +818,7 @@
       document.getElementById("ghAllYears").addEventListener("click", function (e) {
         e.preventDefault(); yearSel.value = ""; renderTimeline(); url.write();
       });
-      var MEDAL = { "Game of the Year": "&#127942;", "Runner-up": "&#129352;", "3rd place": "&#129353;", "4th place": "&#127808;", "5th place": "&#9995;" };
+      var MEDAL = { "Game of the Year": "&#129351;", "Runner-up": "&#129352;", "3rd place": "&#129353;", "4th place": "&#127808;", "5th place": "&#9995;" };
       var w = 0.32, h = '<div class="gh-rows"><div></div>' + monthHeader() + '<div class="gh-row-head">Played</div><div class="gh-row-head">Completed</div>';
       inYear.forEach(function (o) {
         var s = x(o.reach[0]), e = Math.max(x(o.reach[o.reach.length - 1]), s + w);
@@ -1042,7 +1043,7 @@
 
     var art = row.img ? '<img class="gh-art" src="' + BASE + "/" + row.img + '" alt="">' : '<span class="gh-art" aria-hidden="true"></span>';
     var badges = gotyFor(row).map(function (g) {
-      var label = PILL_MEDALS[g.place] + " " + esc(g.year) + ": " + esc(g.place);  // "🥈 2024: Runner-up", "🏆 2010s: Game of the Decade"
+      var label = PILL_MEDALS[g.place] + " " + esc(g.year) + ": " + esc(g.place);  // "🥈 2024: Runner-up", "🥇 2010s: Game of the Decade"
       var cls = "gh-badge" + (MEDAL_CLASS[g.place] || "");
       return g.url ? '<a class="' + cls + '" href="' + esc(g.url) + '">' + label + "</a>" : '<span class="' + cls + '">' + label + "</span>";
     }).join("");
