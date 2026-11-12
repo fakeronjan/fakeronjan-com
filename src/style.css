@@ -2033,3 +2033,39 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
   .gh-post { flex-direction: column; }
   .gh-post img { width: 100%; max-width: 20rem; }
 }
+
+/* Gameplay Stats, Data Summary: where the numbers come from (Actual / Modeled / Estimated per console) */
+.gh-sources { margin-top: 0.5rem; }
+.gh-src { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; border-radius: 999px; padding: 0 0.45rem; line-height: 1.6; white-space: nowrap; }
+.gh-src-actual { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); border: 1px solid transparent; }
+.gh-src-modeled { color: var(--fg); border: 1px solid var(--muted); }
+.gh-src-estimated { color: var(--muted); border: 1px dashed var(--muted); font-style: italic; }
+.gh-src-key { list-style: none; margin: 0 0 0.4rem; padding: 0; display: grid; gap: 0.35rem; font-size: 0.85rem; }
+.gh-src-key li { display: flex; gap: 0.6rem; align-items: baseline; }
+.gh-src-key .gh-src { flex: none; width: 5.2rem; text-align: center; }
+.gh-src-note { font-size: 0.8rem; color: var(--muted); margin: 0.4rem 0; }
+.gh-src-grid td, .gh-src-grid th { white-space: normal; vertical-align: top; }
+.gh-src-grid tr.gh-src-head th { padding-top: 1.1rem; }
+.gh-src-grid tr.gh-src-head th:first-child { white-space: nowrap; }
+.gh-src-grid tbody tr.gh-src-head:first-child th { padding-top: 0.45rem; }
+.gh-src-grid tr.gh-src-head th:first-child { font-family: 'Space Grotesk', sans-serif; font-size: 0.92rem; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--fg); }
+.gh-src-grid tr.gh-src-head .gh-dot { margin-right: 0.4rem; }
+.gh-src-con { font-weight: 700; white-space: nowrap; }
+.gh-src-cell { display: grid; gap: 0.2rem; }
+.gh-src-seg { display: grid; gap: 0.1rem; }
+.gh-src-seg + .gh-src-seg { border-top: 1px dashed var(--muted); padding-top: 0.25rem; }
+.gh-src-when { font-size: 0.7rem; font-weight: 700; color: var(--accent-2); }
+.gh-src-q { color: var(--muted); font-size: 0.76rem; line-height: 1.35; }
+.gh-src-none { color: var(--muted); }
+/* Phones and tablets: one card per console, each cell labeled with its column */
+@media (max-width: 900px) {
+  .gh-src-grid, .gh-src-grid tbody, .gh-src-grid tr, .gh-src-grid td, .gh-src-grid th { display: block; width: auto; }
+  .gh-src-grid tr.gh-src-head th:not(:first-child) { display: none; }
+  .gh-src-grid tr.gh-src-head th { border-bottom: 2px solid var(--accent); padding-top: 1.1rem; }
+  .gh-src-grid tr:not(.gh-src-head) { border-bottom: 1px solid var(--muted); padding: 0.35rem 0; }
+  .gh-src-grid tr:not(.gh-src-head) td { border: 0; padding: 0.2rem 0.6rem; display: grid; grid-template-columns: 9.5rem 1fr; gap: 0.6rem; }
+  .gh-src-grid td.gh-src-con { display: block; padding-bottom: 0.1rem; }
+  .gh-src-grid td[data-col]::before { content: attr(data-col); font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding-top: 0.15rem; }
+  .gh-src-cell { min-width: 0; }
+  .gh-src-grid td > .gh-src { justify-self: start; align-self: start; }
+}
