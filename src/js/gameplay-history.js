@@ -219,21 +219,49 @@
     ninRecords(row).forEach(function (e) { Object.keys(e.modeled).forEach(function (k) { ys[k.slice(0, 4)] = 1; }); });
     return Object.keys(ys);
   }
-  function inSpans(row, d) { return (row.spans || []).some(function (sp) { return sp[0] <= d && d <= sp[1]; }); }
-  // A year's span pieces, one per month, clipped to the span: [[start, end, opacity], ...],
-  // opacity from that month's modeled days against the game's busiest month
+  // PlayStation, Steam, and Xbox play records carry modeled minutes by month (e.modeled_hours):
+  // real total hours spread over first-to-last played around the trophy and achievement days
+  function modeledMinutes(row, prefix, family) {
+    var m = 0;
+    row.entries.forEach(function (e) {
+      if (!e.modeled_hours || (family && e.family !== family)) return;
+      Object.keys(e.modeled_hours).forEach(function (k) { if (k.indexOf(prefix) === 0) m += e.modeled_hours[k]; });
+    });
+    return m;
+  }
+  function spanYears(row) {
+    var ys = {};
+    ninRecords(row).forEach(function (e) { Object.keys(e.modeled).forEach(function (k) { ys[k.slice(0, 4)] = 1; }); });
+    row.entries.forEach(function (e) { Object.keys(e.modeled_hours || {}).forEach(function (k) { ys[k.slice(0, 4)] = 1; }); });
+    return Object.keys(ys);
+  }
+  // Only Nintendo spans hold modeled days (other platforms model hours, not days)
+  function inSpans(row, d) { return (row.spans || []).some(function (sp) { return sp[2] === "Nintendo" && sp[0] <= d && d <= sp[1]; }); }
+  // How much a span's month holds: Nintendo by modeled days, other platforms by modeled minutes
+  function spanAmount(row, f, month) { return f === "Nintendo" ? modeledIn(row, month)[0] : modeledMinutes(row, month, f); }
+  // A year's span pieces, one per month, clipped to the span: [[start, end, opacity, family], ...],
+  // opacity from that month's modeled play against the game's busiest month on that platform
   function spansIn(row, y) {
-    var out = [], peak = 0;
-    ninRecords(row).forEach(function (e) { Object.keys(e.modeled).forEach(function (k) { peak = Math.max(peak, modeledIn(row, k)[0]); }); });
+    var out = [], peak = {};
     (row.spans || []).forEach(function (sp) {
+      var f = sp[2];
+      if (peak[f] == null) {
+        peak[f] = 0;
+        var months = {};
+        row.entries.forEach(function (e) {
+          if (e.family !== f) return;
+          Object.keys(e.modeled || e.modeled_hours || {}).forEach(function (k) { months[k] = 1; });
+        });
+        Object.keys(months).forEach(function (k) { peak[f] = Math.max(peak[f], spanAmount(row, f, k)); });
+      }
       for (var mo = 1; mo <= 12; mo++) {
         var mm = y + "-" + (mo < 10 ? "0" : "") + mo, last = new Date(Date.UTC(+y, mo, 0)).getUTCDate();
         var s = mm + "-01", e = mm + "-" + last;
         if (s < sp[0]) s = sp[0];
         if (e > sp[1]) e = sp[1];
         if (s > e) continue;
-        var md = modeledIn(row, mm)[0];
-        out.push([s, e, peak ? 0.15 + 0.85 * md / peak : 0.15]);  // shaded against the game's busiest month
+        var amt = spanAmount(row, f, mm);
+        out.push([s, e, peak[f] ? 0.15 + 0.85 * amt / peak[f] : 0.15, f]);  // shaded against the busiest month
       }
     });
     return out;
@@ -258,6 +286,36 @@
     return modeled > inside ? { n: outside + modeled, est: true } : { n: outside + inside, est: false };
   }
   function daysPlayed(row) { return row.days_played != null ? row.days_played : row.days.length; }
+  // A game's estimated hours in one year. Each platform family's lifetime hours are spread
+  // evenly over that family's recorded days, then the year's days are added up, so Xbox
+  // hours never ride on Nintendo screenshot days (and Nintendo, with no hours, adds none)
+  function yearHours(row, yr) {
+    var total = 0, any = false;
+    Object.keys(row.days_by_family || {}).forEach(function (f) {
+      var mins = 0;
+      row.entries.forEach(function (e) { if (e.family === f) mins += e.minutes || 0; });
+      var days = row.days_by_family[f];
+      var recs = row.entries.filter(function (e) { return e.id.indexOf("nintendo:") === 0; });
+      if (f === "Nintendo" && recs.length) {
+        // Nintendo's records: modeled minutes (see modeledIn) plus minutes on logged or dated days
+        var m = modeledIn(row, yr)[1];
+        recs.forEach(function (e) {
+          Object.keys(e.day_minutes || {}).forEach(function (d) { if (d.slice(0, 4) === yr) m += e.day_minutes[d]; });
+        });
+        if (m) { total += m / 60; any = true; }
+        return;
+      }
+      // Modeled records' minutes by month, then any other recorded minutes spread over the days
+      var mod = modeledMinutes(row, yr, f), rest = 0;
+      row.entries.forEach(function (e) { if (e.family === f && !e.modeled_hours) rest += e.minutes || 0; });
+      if (mod) { total += mod / 60; any = true; }
+      if (!rest || !days.length) return;
+      var inYear = days.filter(function (d) { return d.slice(0, 4) === yr; }).length;
+      if (inYear) { total += rest / 60 * inYear / days.length; any = true; }
+    });
+    return any ? total : null;
+  }
+
   // Hand-picked games someone else in the family played a lot of (Ronjan, 2026-11-12)
   var FAMILY_NOTE = "Includes significant play time from other family members";
   function familyMark(row) { return row.family_play ? '<span class="gh-family" title="' + FAMILY_NOTE + '">*</span>' : ""; }
@@ -272,19 +330,19 @@
     for (var i = 1; i < 12; i++) {
       grid += '<line x1="' + (i / 12 * 100) + '" x2="' + (i / 12 * 100) + '" y1="0" y2="22" class="gh-grid" vector-effect="non-scaling-stroke"/>';
     }
-    // Nintendo first-to-last spans, faint, under the day marks (overlaps read darker)
+    // First-to-last spans of modeled records, faint, under the day marks, in each platform's lane
     // One game: its monthly pieces, shaded by modeled play. Many games: one faint band per
     // stretch, so overlapping games don't stack into a solid bar
     var merged = [];
     if (shade) merged = bands || [];
-    else (bands || []).slice().sort(function (p, q) { return p[0] < q[0] ? -1 : 1; }).forEach(function (b) {
+    else (bands || []).slice().sort(function (p, q) { return p[3] < q[3] ? -1 : p[3] > q[3] ? 1 : p[0] < q[0] ? -1 : 1; }).forEach(function (b) {
       var last = merged[merged.length - 1];
-      if (last && b[0] <= last[1]) { if (b[1] > last[1]) last[1] = b[1]; } else merged.push([b[0], b[1]]);
+      if (last && last[3] === b[3] && b[0] <= last[1]) { if (b[1] > last[1]) last[1] = b[1]; } else merged.push([b[0], b[1], 0, b[3]]);
     });
     merged.forEach(function (b) {
       var x0 = (Date.UTC(+b[0].slice(0, 4), +b[0].slice(5, 7) - 1, +b[0].slice(8, 10)) - a) / span * 100;
       var x1 = (Date.UTC(+b[1].slice(0, 4), +b[1].slice(5, 7) - 1, +b[1].slice(8, 10)) + 864e5 - a) / span * 100;
-      marks += '<rect x="' + x0 + '" y="' + (2 + LANE.Nintendo * 5) + '" width="' + (x1 - x0) + '" height="4" class="gh-band gh-fill-nintendo"' +
+      marks += '<rect x="' + x0 + '" y="' + (2 + LANE[b[3]] * 5) + '" width="' + (x1 - x0) + '" height="4" class="gh-band gh-fill-' + b[3].toLowerCase() + '"' +
         (shade ? ' style="opacity:' + (b[2] * 0.75).toFixed(2) + '"' : "") + "/>";
     });
     Object.keys(daysByFamily).forEach(function (f) {
@@ -320,7 +378,8 @@
         });
         var yd = yearDays(r, y);
         bands = bands.concat(spansIn(r, y));
-        if (yd.n) games.push({ n: yd.n, est: yd.est, row: r });
+        // A year with no dated days still counts when the model puts play time in it
+        if (yd.n || modeledMinutes(r, y) >= 3) games.push({ n: yd.n, est: yd.est, row: r });
       });
       if (!games.length) return;
       games.sort(function (p, q) { return q.n - p.n; });
@@ -632,32 +691,6 @@
     }
     function progressText(d) { return Math.floor(d.from * 100) + "% \u2192 " + Math.floor(d.pct * 100) + "%"; }
 
-    // A game's estimated hours in one year. Each platform family's lifetime hours are spread
-    // evenly over that family's recorded days, then the year's days are added up, so Xbox
-    // hours never ride on Nintendo screenshot days (and Nintendo, with no hours, adds none)
-    function yearHours(row, yr) {
-      var total = 0, any = false;
-      Object.keys(row.days_by_family || {}).forEach(function (f) {
-        var mins = 0;
-        row.entries.forEach(function (e) { if (e.family === f) mins += e.minutes || 0; });
-        var days = row.days_by_family[f];
-        var recs = row.entries.filter(function (e) { return e.id.indexOf("nintendo:") === 0; });
-        if (f === "Nintendo" && recs.length) {
-          // Nintendo's records: modeled minutes (see modeledIn) plus minutes on logged or dated days
-          var m = modeledIn(row, yr)[1];
-          recs.forEach(function (e) {
-            Object.keys(e.day_minutes || {}).forEach(function (d) { if (d.slice(0, 4) === yr) m += e.day_minutes[d]; });
-          });
-          if (m) { total += m / 60; any = true; }
-          return;
-        }
-        if (!mins || !days.length) return;
-        var inYear = days.filter(function (d) { return d.slice(0, 4) === yr; }).length;
-        if (inYear) { total += mins / 60 * inYear / days.length; any = true; }
-      });
-      return any ? total : null;
-    }
-
     function linkMatches() {
       document.querySelectorAll("#ghTimeline .gh-year-sum").forEach(function (sum) {
         var old = sum.querySelector("svg.gh-match");
@@ -772,7 +805,7 @@
             }).sort(function (p, q) { return q.score - p.score || q.days - p.days; }).slice(0, 5);
             return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + played.map(function (g, i) {
                 return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + listLink(g.row.id, g.row.name) + familyMark(g.row) + ' <i class="gh-pct">' +
-                  ((g.hrs || 0) >= 0.05 ? "~" + fmtHours(g.hrs) + " hrs, " : "") + (g.est ? "~" : "") + plural(g.days, "day", "days") + familyMark(g.row) + "</i></span>";
+                  [(g.hrs || 0) >= 0.05 ? "~" + fmtHours(g.hrs) + " hrs" : "", g.days ? (g.est ? "~" : "") + plural(g.days, "day", "days") : ""].filter(Boolean).join(", ") + familyMark(g.row) + "</i></span>";
               }).join("") + "</div>" +
               (picks.length ? '<div class="gh-sum-band"></div>' : "") +  // no picks yet: an empty cell
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
@@ -810,9 +843,9 @@
         var pick = (gotyByYear()[y] || []).filter(function (p) { var g = gameForPick(p.game); return g && g.id === r.id; })[0];
         // The row's reach that year: its dated days and its Nintendo spans
         var reach = all.concat.apply(all, sp.map(function (b) { return [b[0], b[1]]; })).sort();
-        if (sp.length && !fams.Nintendo) fams.Nintendo = [];
+        sp.forEach(function (b) { if (!fams[b[3]]) fams[b[3]] = []; });
         return { row: r, fams: fams, all: all, reach: reach, sp: sp, n: yd.n, est: yd.est, hrs: hrs, score: Math.max(yd.n, hrs || 0), done: done, prog: prog, plat: plat, pick: pick };
-      }).filter(function (o) { return o.n; })
+      }).filter(function (o) { return o.n || (o.hrs || 0) >= 0.05; })
         .sort(function (p, q) {
           // Last played that year (newest first), most played (days or hours, as in the
           // summary), or most progress that year (games without a list last)
@@ -834,9 +867,11 @@
         var s = x(o.reach[0]), e = Math.max(x(o.reach[o.reach.length - 1]), s + w);
         var tip = o.row.name + ": " + (o.est ? "about " : "") + plural(o.n, "day", "days") + " in " + y + ", " + fmtDay(o.reach[0]) + " to " + fmtDay(o.reach[o.reach.length - 1]);
         var bands = o.sp.map(function (b) {
-          var md = modeledIn(o.row, b[0].slice(0, 7))[0];
-          return '<rect x="' + x(b[0]) + '" y="5" width="' + Math.max(w, x(b[1]) + 100 / 365 - x(b[0])) + '" height="6" class="gh-band gh-fill-nintendo" style="opacity:' + (b[2] * 0.75).toFixed(2) + '"><title>' +
-            esc(o.row.name) + " (Nintendo): about " + plural(Math.round(md * 10) / 10, "day", "days") + " in " + MONTH_NAMES[+b[0].slice(5, 7) - 1] + " " + b[0].slice(0, 4) + ", estimated</title></rect>";
+          var mm = b[0].slice(0, 7), when = MONTH_NAMES[+mm.slice(5, 7) - 1] + " " + mm.slice(0, 4);
+          var amt = b[3] === "Nintendo" ? "about " + plural(Math.round(modeledIn(o.row, mm)[0] * 10) / 10, "day", "days")
+            : "about " + fmtHours(modeledMinutes(o.row, mm, b[3]) / 60) + " hours";
+          return '<rect x="' + x(b[0]) + '" y="5" width="' + Math.max(w, x(b[1]) + 100 / 365 - x(b[0])) + '" height="6" class="gh-band gh-fill-' + b[3].toLowerCase() + '" style="opacity:' + (b[2] * 0.75).toFixed(2) + '"><title>' +
+            esc(o.row.name) + " (" + b[3] + "): " + amt + " in " + when + ", estimated</title></rect>";
         }).join("");
         var ticks = Object.keys(o.fams).map(function (f) {
           return o.fams[f].map(function (d) {
@@ -847,7 +882,7 @@
         h += '<div class="gh-row-name">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams).sort()) + "<span>" + listLink(o.row.id, o.row.name, 40) + familyMark(o.row) + medal + "</span></div>" +
           '<svg class="gh-row-svg" viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label="' + esc(tip) + '">' +
           '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + bands + ticks + "</svg>" +
-          '<div class="gh-row-stat">' + ((o.hrs || 0) >= 0.05 ? "~" + fmtHours(o.hrs) + " hrs, " : "") + (o.est ? "~" : "") + plural(o.n, "day", "days") + familyMark(o.row) + "</div>" +
+          '<div class="gh-row-stat">' + [(o.hrs || 0) >= 0.05 ? "~" + fmtHours(o.hrs) + " hrs" : "", o.n ? (o.est ? "~" : "") + plural(o.n, "day", "days") : ""].filter(Boolean).join(", ") + familyMark(o.row) + "</div>" +
           '<div class="gh-row-stat">' + (o.prog ? progressText({ from: o.prog.from, pct: o.prog.to }) : "") + (o.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</div>";
       });
       out.innerHTML = h + "</div>";
@@ -1083,7 +1118,11 @@
       spanYears(row).forEach(function (y) { ys[y] = 1; });
       h += '<h2 class="gh-h2">When I played</h2>' + yearStrips([row], Object.keys(ys).sort().reverse(), {
         compact: true,
-        summary: function (y, gs) { return (gs[0].est ? "~" : "") + plural(gs[0].n, "day", "days"); },
+        // Hours and days that year, as on the Timeline
+        summary: function (y, gs) {
+          var hrs = yearHours(gs[0].row, y);
+          return [(hrs || 0) >= 0.05 ? "~" + fmtHours(hrs) + " hrs" : "", gs[0].n ? (gs[0].est ? "~" : "") + plural(gs[0].n, "day", "days") : ""].filter(Boolean).join(", ");
+        },
       });
     }
 

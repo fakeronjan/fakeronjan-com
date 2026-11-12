@@ -1859,7 +1859,7 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
   .gh-page #ghTimeline .gh-rows { grid-template-columns: max-content minmax(0, 1fr) max-content max-content; }
 }
 .gh-years { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 20rem); column-gap: 0.8rem; row-gap: 0.35rem; align-items: center; font-size: 0.78rem; }
-.gh-years-compact { grid-template-columns: 3.2rem minmax(0, 1fr) minmax(0, 6rem); }
+.gh-years-compact { grid-template-columns: 3.2rem minmax(0, 1fr) max-content; }
 .gh-months { position: relative; height: 0.9rem; font-size: 0.65rem; color: var(--muted); }
 .gh-months span { position: absolute; transform: translateX(-50%); }
 .gh-year { font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -2025,7 +2025,7 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
   .gh-years:not(.gh-years-compact) > div:nth-child(3) { display: none; }
   .gh-years:not(.gh-years-compact) { grid-template-columns: 2.8rem minmax(0, 1fr); row-gap: 0.35rem; }
   .gh-years:not(.gh-years-compact) .gh-strip { height: 22px; }
-  .gh-years-compact { grid-template-columns: 2.8rem minmax(0, 1fr) minmax(0, 4.5rem); }
+  .gh-years-compact { grid-template-columns: 2.8rem minmax(0, 1fr) max-content; }
   .gh-rows { grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr); }
   .gh-row-head, .gh-row-stat { display: none; }
   .gh-row-name span { overflow: hidden; text-overflow: ellipsis; }
