@@ -610,6 +610,25 @@
       return t === name ? esc(name) : '<span title="' + esc(name) + '">' + esc(t) + "</span>";
     }
 
+    // A trophy or achievement list's progress in one year: share unlocked at the start of the year
+    // and at the end, for the list that moved most (with a platinum only when earned that year)
+    function progressIn(row, yr) {
+      var best = null, plat = false;
+      row.entries.forEach(function (e) {
+        var by = e.earned_by_year || {};
+        if (!e.total || by[yr] == null) return;
+        var before = 0;
+        Object.keys(by).forEach(function (k) { if (k < yr) before = Math.max(before, by[k]); });
+        var c = { from: before / e.total, to: by[yr] / e.total };
+        c.gain = c.to - c.from;
+        if (!best || c.gain > best.gain || (c.gain === best.gain && c.to > best.to)) best = c;
+        if (e.platinum && e.platinum.slice(0, 4) === yr) plat = true;
+      });
+      if (best) best.plat = plat;
+      return best;
+    }
+    function progressText(d) { return Math.floor(d.from * 100) + "% \u2192 " + Math.floor(d.pct * 100) + "%"; }
+
     // A game's estimated hours in one year. Each platform family's lifetime hours are spread
     // evenly over that family's recorded days, then the year's days are added up, so Xbox
     // hours never ride on Nintendo screenshot days (and Nintendo, with no hours, adds none)
@@ -732,20 +751,15 @@
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
-          header: "<span>Most played</span><span class=\"gh-head-goty\">Game of the Year</span><span>Most completed</span>",
+          header: "<span>Most played</span><span class=\"gh-head-goty\">Game of the Year</span><span>Most progress</span>",
           summary: function (yr, gs) {
             var picks = gotyByYear()[yr] || [], RANKS = ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; ", "4&#65039;&#8419; ", "5&#65039;&#8419; "];
-            // Most completed: the share of a trophy or achievement list unlocked by the end of the
-            // year, among games with an unlock that year (best list when a game has several)
+            // Most progress: how far a trophy or achievement list moved that year, start of year to
+            // end (best list when a game has several), among games with an unlock that year
             var done = gs.map(function (g) {
-              var best = null, plat = false;
-              g.row.entries.forEach(function (e) {
-                var n = (e.earned_by_year || {})[yr];
-                if (n && e.total && (!best || n / e.total > best.pct)) best = { pct: n / e.total, n: n };
-                if (e.platinum && e.platinum.slice(0, 4) <= yr) plat = true;  // earned by then
-              });
-              return best && { row: g.row, pct: best.pct, n: best.n, plat: plat };
-            }).filter(Boolean).sort(function (p, q) { return q.pct - p.pct || q.n - p.n; }).slice(0, 5);
+              var best = progressIn(g.row, yr);
+              return best && { row: g.row, from: best.from, pct: best.to, gain: best.gain, plat: best.plat };
+            }).filter(Boolean).sort(function (p, q) { return q.gain - p.gain || q.pct - p.pct; }).slice(0, 5);
             // Most played: days that year or hours that year, whichever is more (the page's own
             // "N days or N hours" test). Platforms only report lifetime hours, so a year's share
             // is estimated from the days played that year (see yearHours)
@@ -763,8 +777,8 @@
                 var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; ", "4th place": "&#127808; ", "5th place": "&#9995; " }[p.place] || "&#129351; ";
                 return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? listLink(row.id, p.game) : listText(p.game)) + "</span>";
               }).join("") : "") + "</div>" +
-              '<div class="gh-sum-list gh-sum-done" data-label="Most completed">' + (done.length ? done.map(function (d, i) {
-                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + listLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + Math.floor(d.pct * 100) + "%</i>" +
+              '<div class="gh-sum-list gh-sum-done" data-label="Most progress">' + (done.length ? done.map(function (d, i) {
+                return '<span data-gid="' + esc(d.row.id) + '">' + RANKS[i] + listLink(d.row.id, d.row.name) + ' <i class="gh-pct">' + progressText(d) + "</i>" +
                   (d.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</span>";
               }).join("") : "<span>-</span>") + "</div>" ;
           },
@@ -789,23 +803,16 @@
         var yd = yearDays(r, y), sp = spansIn(r, y);
         // The same numbers as the year's summary: days or estimated hours, the best list's share
         // at the end of the year (and a platinum earned by then), and the year's pick, if any
-        var hrs = yearHours(r, y), done = null, plat = false;
-        r.entries.forEach(function (e) {
-          if (!e.total) return;
-          var n = 0;
-          Object.keys(e.earned_by_year || {}).forEach(function (k) { if (k <= y) n = Math.max(n, e.earned_by_year[k]); });
-          if (n && (!done || n / e.total > done)) done = n / e.total;
-          if (e.platinum && e.platinum.slice(0, 4) <= y) plat = true;
-        });
+        var hrs = yearHours(r, y), prog = progressIn(r, y), done = prog && prog.gain, plat = !!(prog && prog.plat);
         var pick = (gotyByYear()[y] || []).filter(function (p) { var g = gameForPick(p.game); return g && g.id === r.id; })[0];
         // The row's reach that year: its dated days and its Nintendo spans
         var reach = all.concat.apply(all, sp.map(function (b) { return [b[0], b[1]]; })).sort();
         if (sp.length && !fams.Nintendo) fams.Nintendo = [];
-        return { row: r, fams: fams, all: all, reach: reach, sp: sp, n: yd.n, est: yd.est, hrs: hrs, score: Math.max(yd.n, hrs || 0), done: done, plat: plat, pick: pick };
+        return { row: r, fams: fams, all: all, reach: reach, sp: sp, n: yd.n, est: yd.est, hrs: hrs, score: Math.max(yd.n, hrs || 0), done: done, prog: prog, plat: plat, pick: pick };
       }).filter(function (o) { return o.n; })
         .sort(function (p, q) {
           // Last played that year (newest first), most played (days or hours, as in the
-          // summary), or most completed (games without a list last)
+          // summary), or most progress that year (games without a list last)
           var lastP = p.reach[p.reach.length - 1], lastQ = q.reach[q.reach.length - 1];
           var by = yearSort === "most" ? q.score - p.score
             : yearSort === "done" ? (q.done == null ? -1 : q.done) - (p.done == null ? -1 : p.done)
@@ -819,7 +826,7 @@
         e.preventDefault(); yearSel.value = ""; renderTimeline(); url.write();
       });
       var MEDAL = { "Game of the Year": "&#129351;", "Runner-up": "&#129352;", "3rd place": "&#129353;", "4th place": "&#127808;", "5th place": "&#9995;" };
-      var w = 0.32, h = '<div class="gh-rows"><div></div>' + monthHeader() + '<div class="gh-row-head">Played</div><div class="gh-row-head">Completed</div>';
+      var w = 0.32, h = '<div class="gh-rows"><div></div>' + monthHeader() + '<div class="gh-row-head">Played</div><div class="gh-row-head">Progress</div>';
       inYear.forEach(function (o) {
         var s = x(o.reach[0]), e = Math.max(x(o.reach[o.reach.length - 1]), s + w);
         var tip = o.row.name + ": " + (o.est ? "about " : "") + plural(o.n, "day", "days") + " in " + y + ", " + fmtDay(o.reach[0]) + " to " + fmtDay(o.reach[o.reach.length - 1]);
@@ -838,7 +845,7 @@
           '<svg class="gh-row-svg" viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label="' + esc(tip) + '">' +
           '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + bands + ticks + "</svg>" +
           '<div class="gh-row-stat">' + (Math.round(o.hrs || 0) ? "~" + plural(Math.round(o.hrs), "hr", "hrs") + ", " : "") + (o.est ? "~" : "") + plural(o.n, "day", "days") + familyMark(o.row) + "</div>" +
-          '<div class="gh-row-stat">' + (o.done != null ? Math.floor(o.done * 100) + "%" : "") + (o.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</div>";
+          '<div class="gh-row-stat">' + (o.prog ? progressText({ from: o.prog.from, pct: o.prog.to }) : "") + (o.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</div>";
       });
       out.innerHTML = h + "</div>";
     }
