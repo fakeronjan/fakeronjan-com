@@ -3,7 +3,7 @@ layout: post.njk
 title: "Stupid, Stupid Idea: ditching the owner model"
 date: 2014-04-28
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

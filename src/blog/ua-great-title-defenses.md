@@ -3,7 +3,7 @@ layout: post.njk
 title: "Great title defenses: NFL edition"
 date: 2013-04-16
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

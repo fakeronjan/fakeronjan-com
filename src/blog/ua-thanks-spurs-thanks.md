@@ -3,7 +3,7 @@ layout: post.njk
 title: "Thanks, Spurs, Thanks"
 date: 2015-05-02
 original_source: uselessanalysis.com
-tags: [sports-memories, sports]
+tags: [sports-memories, sports, useless-analysis]
 ---
 
 # {{ title }}

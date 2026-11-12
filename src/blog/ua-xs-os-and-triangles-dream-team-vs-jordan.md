@@ -3,7 +3,7 @@ layout: post.njk
 title: "X's, O's, and Triangles: Dream Team vs. Jordan"
 date: 2013-12-10
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

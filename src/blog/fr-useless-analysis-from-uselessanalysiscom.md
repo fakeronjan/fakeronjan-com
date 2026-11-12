@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Useless analysis from uselessanalysis.com"
 date: 2023-10-08
+tags: [useless-analysis]
 ---
 
 # {{ title }}

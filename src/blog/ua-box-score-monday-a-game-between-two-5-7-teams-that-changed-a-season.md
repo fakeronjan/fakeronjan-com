@@ -3,7 +3,7 @@ layout: post.njk
 title: "Box Score Monday: a game between two 5-7 teams that changed a season"
 date: 2013-07-22
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

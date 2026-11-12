@@ -3,7 +3,7 @@ layout: post.njk
 title: "Off Topic Tuesday: Game of the Generation"
 date: 2014-06-30
 original_source: uselesssportsanalysis.com
-tags: [game-rankings]
+tags: [game-rankings, useless-analysis]
 ---
 
 # {{ title }}

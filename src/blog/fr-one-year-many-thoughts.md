@@ -2,7 +2,7 @@
 layout: post.njk
 title: "One year, many thoughts"
 date: 2021-03-12
-tags: [about-me]
+tags: [about-me, politics, nyc]
 description: catalog of my thoughts from the first year of the pandemic
 ---
 

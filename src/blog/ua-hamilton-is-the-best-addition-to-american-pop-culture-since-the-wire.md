@@ -3,7 +3,7 @@ layout: post.njk
 title: "Hamilton is the best addition to American pop culture since The Wire"
 date: 2015-11-25
 original_source: uselessanalysis.com
-tags: [music]
+tags: [music, politics, nyc, useless-analysis]
 ---
 
 # {{ title }}

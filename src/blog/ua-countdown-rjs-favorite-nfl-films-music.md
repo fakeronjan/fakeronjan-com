@@ -3,7 +3,7 @@ layout: post.njk
 title: "Countdown: RJ's favorite NFL Films music"
 date: 2013-08-23
 original_source: uselesssportsanalysis.com
-tags: [music, sports]
+tags: [music, sports, useless-analysis]
 ---
 
 # {{ title }}

@@ -3,7 +3,7 @@ layout: post.njk
 title: "Home field advantage and the NFL"
 date: 2013-08-14
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

@@ -3,7 +3,7 @@ layout: post.njk
 title: "Do the Warriors win like the 96-97 Bulls?"
 date: 2015-12-14
 original_source: uselessanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

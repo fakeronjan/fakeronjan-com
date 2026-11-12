@@ -3,7 +3,7 @@ layout: post.njk
 title: "How we met: an origin story"
 date: 2020-05-12
 original_source: Instagram
-tags: [about-me]
+tags: [about-me, nyc]
 ---
 
 # {{ title }}

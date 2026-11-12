@@ -3,7 +3,7 @@ layout: post.njk
 title: "Which NFL Teams Should Move, and Where?"
 date: 2015-12-30
 original_source: uselessanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

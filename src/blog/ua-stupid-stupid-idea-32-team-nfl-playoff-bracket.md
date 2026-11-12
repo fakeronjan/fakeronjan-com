@@ -3,7 +3,7 @@ layout: post.njk
 title: "Stupid, Stupid Idea: 32-team NFL playoff bracket"
 date: 2013-12-31
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

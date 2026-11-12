@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Six is a ten"
 date: 2020-03-01
-tags: [music]
+tags: [music, nyc]
 ---
 
 # {{ title }}

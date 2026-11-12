@@ -3,7 +3,7 @@ layout: post.njk
 title: "Great Video Game Levels #2: Celeste"
 date: 2018-05-05
 original_source: uselessanalysis.com
-tags: [game-rankings]
+tags: [game-rankings, useless-analysis]
 ---
 
 # {{ title }}

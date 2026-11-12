@@ -2,6 +2,7 @@
 layout: post.njk
 title: "At least this time we know"
 date: 2024-11-06
+tags: [politics]
 ---
 
 # {{ title }}

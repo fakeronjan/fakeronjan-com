@@ -3,7 +3,7 @@ layout: post.njk
 title: "Countdown: The Best Burns in the Grinch Song"
 date: 2017-12-26
 original_source: uselessanalysis.com
-tags: [music]
+tags: [music, useless-analysis]
 ---
 
 # {{ title }}

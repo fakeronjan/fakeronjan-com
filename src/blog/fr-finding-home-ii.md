@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Finding Home II"
 date: 2024-08-04
-tags: [birthday-retro, about-me]
+tags: [birthday-retro, about-me, nyc]
 description: 42nd birthday retrospective about 20 years in New York City
 ---
 

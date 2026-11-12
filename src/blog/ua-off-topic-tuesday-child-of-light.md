@@ -3,7 +3,7 @@ layout: post.njk
 title: "Off Topic Tuesday: Child of Light"
 date: 2014-05-20
 original_source: uselesssportsanalysis.com
-tags: [game-rankings]
+tags: [game-rankings, useless-analysis]
 ---
 
 # {{ title }}

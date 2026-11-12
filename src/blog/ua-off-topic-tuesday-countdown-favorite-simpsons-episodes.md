@@ -3,7 +3,7 @@ layout: post.njk
 title: "Off Topic Tuesday Countdown: Favorite Simpsons Episodes"
 date: 2014-07-22
 original_source: uselesssportsanalysis.com
-tags: [movies]
+tags: [movies, useless-analysis]
 ---
 
 # {{ title }}

@@ -2,7 +2,7 @@
 layout: post.njk
 title: "14 songs for 41 years"
 date: 2023-08-25
-tags: [music, birthday-retro, about-me]
+tags: [music, birthday-retro, about-me, nyc]
 description: 41st birthday retrospective about 14 songs that defined my life
 ---
 

@@ -3,7 +3,7 @@ layout: post.njk
 title: "Stupid, Stupid Idea: A Smash Bros. Spectacular!"
 date: 2018-01-28
 original_source: uselessanalysis.com
-tags: [game-rankings]
+tags: [game-rankings, useless-analysis]
 ---
 
 # {{ title }}

@@ -2,7 +2,7 @@
 layout: post.njk
 title: "It turns out you can go home again"
 date: 2025-09-24
-tags: [about-me]
+tags: [about-me, nyc]
 description: recap of 25-year high school reunion
 ---
 

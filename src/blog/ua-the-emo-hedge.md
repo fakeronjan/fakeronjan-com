@@ -3,7 +3,7 @@ layout: post.njk
 title: "The emo hedge"
 date: 2014-05-28
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

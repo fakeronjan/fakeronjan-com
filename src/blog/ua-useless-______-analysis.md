@@ -3,6 +3,7 @@ layout: post.njk
 title: "Useless ______ Analysis!"
 date: 2015-03-03
 original_source: uselessanalysis.com
+tags: [useless-analysis]
 ---
 
 # {{ title }}

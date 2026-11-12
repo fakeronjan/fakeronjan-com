@@ -3,7 +3,7 @@ layout: post.njk
 title: "NBA Conference Finals: game by game series stats"
 date: 2013-05-16
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

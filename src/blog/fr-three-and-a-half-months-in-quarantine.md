@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Three and a half months in quarantine"
 date: 2020-07-05
+tags: [nyc]
 ---
 
 # {{ title }}

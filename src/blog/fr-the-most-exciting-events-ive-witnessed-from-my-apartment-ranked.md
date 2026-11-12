@@ -2,6 +2,7 @@
 layout: post.njk
 title: "The most exciting events I've witnessed from my apartment, ranked"
 date: 2024-04-05
+tags: [nyc]
 ---
 
 # {{ title }}

@@ -3,7 +3,7 @@ layout: post.njk
 title: "Great Video Game Levels: Rayman Legends"
 date: 2016-01-18
 original_source: uselessanalysis.com
-tags: [game-rankings]
+tags: [game-rankings, useless-analysis]
 ---
 
 # {{ title }}

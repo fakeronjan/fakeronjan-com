@@ -3,7 +3,7 @@ layout: post.njk
 title: "Off-Topic Tuesday: how much is your penny candy?"
 date: 2014-04-22
 original_source: uselesssportsanalysis.com
-tags: [movies]
+tags: [movies, useless-analysis]
 ---
 
 # {{ title }}

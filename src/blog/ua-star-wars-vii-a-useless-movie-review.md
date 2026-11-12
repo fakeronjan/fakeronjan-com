@@ -3,7 +3,7 @@ layout: post.njk
 title: "Star Wars VII: A Useless Movie Review"
 date: 2015-12-21
 original_source: uselessanalysis.com
-tags: [movies]
+tags: [movies, useless-analysis]
 ---
 
 # {{ title }}

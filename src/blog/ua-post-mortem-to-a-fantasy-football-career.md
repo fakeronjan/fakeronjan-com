@@ -3,7 +3,7 @@ layout: post.njk
 title: "Post-mortem to a fantasy football career"
 date: 2014-02-12
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

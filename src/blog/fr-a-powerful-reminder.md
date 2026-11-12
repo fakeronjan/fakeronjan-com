@@ -3,6 +3,7 @@ layout: post.njk
 title: "A powerful reminder"
 date: 2017-06-29
 original_source: Facebook
+tags: [politics]
 ---
 
 # {{ title }}

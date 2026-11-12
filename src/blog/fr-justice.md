@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Justice"
 date: 2024-08-03
-tags: [about-me]
+tags: [about-me, nyc]
 description: a recap of a life-changing experience as a juror in the Bronx
 ---
 

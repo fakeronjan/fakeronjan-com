@@ -311,6 +311,9 @@ nav a.active { color: var(--accent); font-weight: 700; }
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 .tag-filter:hover { border-color: var(--accent); }
+.tag-filters.collapsed .tag-extra:not(.active) { display: none; }
+.tag-filter.tag-more { border-style: dashed; color: var(--muted); }
+.tag-filter.tag-more:hover { color: var(--fg); }
 .tag-filter.active {
   color: var(--bg);
   background: var(--accent);

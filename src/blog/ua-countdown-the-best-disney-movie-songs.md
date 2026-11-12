@@ -3,7 +3,7 @@ layout: post.njk
 title: "Countdown: The Best Disney Movie Songs"
 date: 2018-02-14
 original_source: uselessanalysis.com
-tags: [music, movies]
+tags: [music, movies, useless-analysis]
 ---
 
 # {{ title }}

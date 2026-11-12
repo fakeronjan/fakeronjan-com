@@ -3,7 +3,7 @@ layout: post.njk
 title: "Showdown #2: Chris and RJ take on the NHL"
 date: 2013-09-27
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

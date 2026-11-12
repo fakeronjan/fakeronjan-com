@@ -3,7 +3,7 @@ layout: post.njk
 title: "The nerdiest story every told"
 date: 2013-07-16
 original_source: uselesssportsanalysis.com
-tags: [about-me, sports]
+tags: [about-me, sports, useless-analysis]
 ---
 
 # {{ title }}

@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Two debuts in the city"
 date: 2025-02-25
+tags: [music, game-rankings, nyc]
 ---
 
 # {{ title }}

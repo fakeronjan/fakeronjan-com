@@ -3,7 +3,7 @@ layout: post.njk
 title: "Box Score Monday: RJ's first baseball game"
 date: 2013-07-07
 original_source: uselesssportsanalysis.com
-tags: [sports-memories, sports]
+tags: [sports-memories, sports, useless-analysis]
 ---
 
 # {{ title }}

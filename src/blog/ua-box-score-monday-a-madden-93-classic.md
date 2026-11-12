@@ -3,7 +3,7 @@ layout: post.njk
 title: "Box Score Monday: a Madden 93 classic"
 date: 2013-08-26
 original_source: uselesssportsanalysis.com
-tags: [game-rankings, sports]
+tags: [game-rankings, sports, useless-analysis]
 ---
 
 # {{ title }}

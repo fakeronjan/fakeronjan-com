@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Hamilton"
 date: 2019-10-24
-tags: [music]
+tags: [music, politics, nyc]
 ---
 
 # {{ title }}

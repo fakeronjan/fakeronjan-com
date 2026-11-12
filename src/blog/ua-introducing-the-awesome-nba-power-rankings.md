@@ -3,7 +3,7 @@ layout: post.njk
 title: "Introducing: the AWESOME NBA power rankings"
 date: 2013-11-15
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

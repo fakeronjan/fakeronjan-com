@@ -3,7 +3,7 @@ layout: post.njk
 title: "Box Score Monday: Revenge Against the Titans"
 date: 2013-08-12
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

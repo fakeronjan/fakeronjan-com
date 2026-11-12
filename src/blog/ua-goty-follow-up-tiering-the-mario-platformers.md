@@ -3,7 +3,7 @@ layout: post.njk
 title: "GotY Follow-up: Tiering the Mario Platformers"
 date: 2017-12-27
 original_source: uselessanalysis.com
-tags: [game-rankings]
+tags: [game-rankings, useless-analysis]
 ---
 
 # {{ title }}

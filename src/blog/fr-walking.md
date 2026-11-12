@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Walking"
 date: 2022-07-15
+tags: [nyc]
 ---
 
 # {{ title }}

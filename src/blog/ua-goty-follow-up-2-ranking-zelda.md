@@ -3,7 +3,7 @@ layout: post.njk
 title: "GotY Follow Up #2: Ranking Zelda"
 date: 2018-01-15
 original_source: uselessanalysis.com
-tags: [game-rankings]
+tags: [game-rankings, useless-analysis]
 ---
 
 # {{ title }}

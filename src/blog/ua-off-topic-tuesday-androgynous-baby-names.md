@@ -3,6 +3,7 @@ layout: post.njk
 title: "Off Topic Tuesday: Androgynous Baby Names"
 date: 2014-07-29
 original_source: uselesssportsanalysis.com
+tags: [useless-analysis]
 ---
 
 # {{ title }}

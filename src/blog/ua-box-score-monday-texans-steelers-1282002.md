@@ -3,7 +3,7 @@ layout: post.njk
 title: "Box Score Monday: Texans @ Steelers, 12/8/2002"
 date: 2013-06-24
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

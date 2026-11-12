@@ -3,7 +3,7 @@ layout: post.njk
 title: "Useless Conversations: Quitting the NFL"
 date: 2017-01-06
 original_source: uselessanalysis.com
-tags: [sports-memories, sports]
+tags: [sports-memories, sports, useless-analysis]
 ---
 
 # {{ title }}

@@ -2,6 +2,7 @@
 layout: post.njk
 title: "Can't sleep"
 date: 2020-12-08
+tags: [politics]
 ---
 
 # {{ title }}

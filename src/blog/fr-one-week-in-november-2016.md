@@ -2,6 +2,7 @@
 layout: post.njk
 title: "One week in November 2016"
 date: 2020-09-25
+tags: [politics]
 ---
 
 # {{ title }}

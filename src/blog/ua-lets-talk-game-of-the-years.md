@@ -3,7 +3,7 @@ layout: post.njk
 title: "Let's talk game of the year(s)!"
 date: 2015-12-18
 original_source: uselessanalysis.com
-tags: [game-of-the-year, game-rankings]
+tags: [game-of-the-year, game-rankings, useless-analysis]
 ---
 
 # {{ title }}

@@ -3,7 +3,7 @@ layout: post.njk
 title: "How many games will the Knicks win this year?"
 date: 2015-02-24
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

@@ -3,7 +3,7 @@ layout: post.njk
 title: "Let's check in on the Golden State Warriors"
 date: 2018-02-19
 original_source: uselessanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

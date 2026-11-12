@@ -3,7 +3,7 @@ layout: post.njk
 title: "Box Score Monday - Champ saves the Day(ne)!"
 date: 2013-09-16
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

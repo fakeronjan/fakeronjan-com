@@ -3,7 +3,7 @@ layout: post.njk
 title: "Competitive Balance in (the?) MLB"
 date: 2013-08-21
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

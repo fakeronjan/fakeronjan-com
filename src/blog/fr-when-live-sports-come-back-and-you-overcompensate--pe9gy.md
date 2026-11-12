@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Overdoing it: the return of live sports"
 date: 2022-01-20
-tags: [sports-memories, sports]
+tags: [sports-memories, sports, nyc]
 ---
 
 # {{ title }}

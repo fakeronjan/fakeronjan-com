@@ -3,7 +3,7 @@ layout: post.njk
 title: "X's, O's, and Triangles: Small-Stars vs. Tall-Stars"
 date: 2013-11-25
 original_source: uselesssportsanalysis.com
-tags: [sports]
+tags: [sports, useless-analysis]
 ---
 
 # {{ title }}

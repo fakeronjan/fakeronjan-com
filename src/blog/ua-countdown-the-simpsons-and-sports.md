@@ -3,7 +3,7 @@ layout: post.njk
 title: "Countdown: The Simpsons and Sports!"
 date: 2013-07-04
 original_source: uselesssportsanalysis.com
-tags: [movies, sports]
+tags: [movies, sports, useless-analysis]
 ---
 
 # {{ title }}
