@@ -463,7 +463,8 @@
     var minSel = document.getElementById("ghMin");
     var yearSel = document.getElementById("ghYear");
     var sortPills = document.getElementById("ghYearSort"), yearSort = "last";
-    // Games marked * (others in the family played them a lot) stay off the Timeline unless asked for
+    // Games marked * (others in the family played them a lot) stay off the Timeline unless asked
+    // for, except ones on an awards list (see awarded)
     var familyBtn = document.getElementById("ghFamily"), showFamily = false;
     function setFamily(on) {
       showFamily = on;
@@ -486,6 +487,19 @@
         Object.keys(gotyYears).forEach(function (y) { gotyYears[y].sort(function (a, b) { return RANK[a.place] - RANK[b.place]; }); });
       }
       return gotyYears;
+    }
+    // Games on any awards list (Game of the Year, its places, decade picks): the Timeline always
+    // shows these, family play or not (Ronjan, 2026-11-12)
+    var awardedIds = null;
+    function awarded(r) {
+      if (!awardedIds) {
+        awardedIds = {};
+        (window.GOTY || []).concat(window.GOTY_MORE || []).forEach(function (g) {
+          var row = gameForPick(g.game);
+          if (row) awardedIds[row.id] = 1;
+        });
+      }
+      return !!awardedIds[r.id];
     }
     function gameForPick(name) {
       if (!pickIndex) {
@@ -708,7 +722,7 @@
 
     function renderTimeline() {
       var y = yearSel.value;
-      var rows = games.filter(function (r) { return minOK(r) && (showFamily || !r.family_play); });
+      var rows = games.filter(function (r) { return minOK(r) && (showFamily || !r.family_play || awarded(r)); });
       var out = document.getElementById("ghTimeline");
       var count = document.getElementById("ghYearCount");
       if (!y) {
