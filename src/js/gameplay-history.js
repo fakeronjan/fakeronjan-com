@@ -42,9 +42,10 @@
 
   function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
 
+  // A few recorded minutes round to 0.0 hours: show "<0.1" (null means no play time at all)
   function hours(h, estimated) {
     if (h == null) return "-";
-    return (estimated ? "~" : "") + h;
+    return (estimated ? "~" : "") + (h === 0 ? "<0.1" : h);
   }
 
   // A game's cover art, small, from the gameplay-tracking repo's stored copies
@@ -1048,7 +1049,7 @@
     } else {
       facts.push("No play dates recorded");
     }
-    if (row.hours != null) facts.push((row.hours_estimated ? "about " : "") + plural(row.hours, "hour", "hours") + (row.family_play ? "*" : ""));
+    if (row.hours != null) facts.push((row.hours_estimated ? "about " : "") + (row.hours === 0 ? "<0.1 hours" : plural(row.hours, "hour", "hours")) + (row.family_play ? "*" : ""));
     if (row.sessions) facts.push(plural(row.sessions, "session", "sessions"));
     // Unlocks as on the Games tab: the most complete list, with its share ("on PC" when the game
     // has more than one list; the Platforms table below has each list and the total)
