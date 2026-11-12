@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Fake Basketball"
 date: 2026-05-13
-tags: [about-me]
+tags: [about-me, game-rankings]
 description: a story of how I made my first computer game
 ---
 

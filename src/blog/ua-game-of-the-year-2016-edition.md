@@ -3,7 +3,7 @@ layout: post.njk
 title: "Game of the year: 2016 edition"
 date: 2016-12-13
 original_source: uselessanalysis.com
-tags: [game-of-the-year]
+tags: [game-of-the-year, game-rankings]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "Stupid, Stupid Idea: Who's the Best Street Fighter?"
 date: 2016-01-25
 original_source: uselessanalysis.com
+tags: [game-rankings]
 ---
 
 # {{ title }}

@@ -2,7 +2,7 @@
 layout: post.njk
 title: "100 days as the Mario Paint Music Guy"
 date: 2025-12-07
-tags: [music, about-me]
+tags: [music, about-me, game-rankings]
 description: reviewing my new musical composer journey
 ---
 

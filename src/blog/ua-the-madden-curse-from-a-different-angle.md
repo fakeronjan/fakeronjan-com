@@ -3,6 +3,7 @@ layout: post.njk
 title: "The Madden Curse from a different angle"
 date: 2013-08-25
 original_source: uselesssportsanalysis.com
+tags: [game-rankings]
 ---
 
 # {{ title }}

@@ -3,6 +3,7 @@ layout: post.njk
 title: "Stupid, Stupid Idea: A Street Fighter Sequel"
 date: 2016-02-15
 original_source: uselessanalysis.com
+tags: [game-rankings]
 ---
 
 # {{ title }}

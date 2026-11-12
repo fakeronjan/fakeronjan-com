@@ -2,6 +2,7 @@
 layout: post.njk
 title: "One Year, Four Balatros"
 date: 2024-12-31
+tags: [game-rankings]
 ---
 
 # {{ title }}

@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Game of the Year, Game of the Decade"
 date: 2019-12-31
-tags: [game-of-the-year]
+tags: [game-of-the-year, game-rankings]
 ---
 
 # {{ title }}

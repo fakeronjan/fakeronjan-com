@@ -3,6 +3,7 @@ layout: post.njk
 title: "Tecmo Super NBA Basketball: a mini-tribute"
 date: 2013-10-29
 original_source: uselesssportsanalysis.com
+tags: [game-rankings]
 ---
 
 # {{ title }}

@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Game of the Year 2022"
 date: 2022-12-22
-tags: [game-of-the-year]
+tags: [game-of-the-year, game-rankings]
 ---
 
 # {{ title }}

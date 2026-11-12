@@ -3,7 +3,7 @@ layout: post.njk
 title: "Nintendo's Odyssey: Breath of Fresh Air"
 date: 2017-12-20
 original_source: uselessanalysis.com
-tags: [game-of-the-year]
+tags: [game-of-the-year, game-rankings]
 ---
 
 # {{ title }}

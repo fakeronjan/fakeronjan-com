@@ -2,7 +2,7 @@
 layout: post.njk
 title: "Game of the Year 2020"
 date: 2020-12-28
-tags: [game-of-the-year]
+tags: [game-of-the-year, game-rankings]
 ---
 
 # {{ title }}

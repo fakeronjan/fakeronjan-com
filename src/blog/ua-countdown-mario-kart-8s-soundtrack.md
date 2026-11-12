@@ -3,7 +3,7 @@ layout: post.njk
 title: "Countdown: Mario Kart 8's Soundtrack"
 date: 2018-10-11
 original_source: uselessanalysis.com
-tags: [music]
+tags: [music, game-rankings]
 ---
 
 # {{ title }}

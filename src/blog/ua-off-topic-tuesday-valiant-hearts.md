@@ -3,6 +3,7 @@ layout: post.njk
 title: "Off Topic Tuesday: Valiant Hearts"
 date: 2014-07-08
 original_source: uselesssportsanalysis.com
+tags: [game-rankings]
 ---
 
 # {{ title }}

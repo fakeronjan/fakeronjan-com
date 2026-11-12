@@ -3,6 +3,7 @@ layout: post.njk
 title: "Uncharted 4: A Conflicting End"
 date: 2016-05-31
 original_source: uselessanalysis.com
+tags: [game-rankings]
 ---
 
 # {{ title }}

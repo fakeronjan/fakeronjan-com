@@ -3,7 +3,7 @@ module.exports = [
   { slug: "birthday-retro", label: "Birthday Retro" },
   { slug: "career", label: "Career" },
   { slug: "game-of-the-year", label: "Game of the Year" },
-  { slug: "game-rankings", label: "Game Rankings" },
+  { slug: "game-rankings", label: "Gaming" },
   { slug: "movies", label: "Movies & TV" },
   { slug: "music", label: "Music" },
   { slug: "sports-memories", label: "Sports Memories" },
