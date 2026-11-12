@@ -224,23 +224,25 @@
       return s <= e ? [s, e] : null;
     }).filter(Boolean);
   }
+  // Days a row's Nintendo spans hold (days played before daily tracking began, undated)
   function ninDaysPlayed(row) {
     var n = 0;
-    row.entries.forEach(function (e) { n += e.days_played || 0; });
+    row.entries.forEach(function (e) { if (e.span) n += e.span_days || 0; });
     return n;
   }
-  // Days played in a year: dated days, plus the Nintendo days the spans add beyond the dated ones
+  function inSpans(row, d) { return (row.spans || []).some(function (sp) { return sp[0] <= d && d <= sp[1]; }); }
+  // Days played in a year: dated days, plus the Nintendo days the spans add beyond the dated ones in them
   function yearDays(row, y) {
-    var all = {}, nin = 0;
+    var all = {}, held = 0;
     Object.keys(row.days_by_family || {}).forEach(function (f) {
       row.days_by_family[f].forEach(function (d) {
-        if (d.slice(0, 4) !== y) return;
+        if (d.slice(0, 4) !== y || all[d]) return;
         all[d] = 1;
-        if (f === "Nintendo") nin++;
+        if (inSpans(row, d)) held++;
       });
     });
     var dated = Object.keys(all).length, spread = Math.round(ninDaysPlayed(row) * spanShare(row, y));
-    return spread > nin ? { n: dated + spread - nin, est: true } : { n: dated, est: false };
+    return spread > held ? { n: dated + spread - held, est: true } : { n: dated, est: false };
   }
   function daysPlayed(row) { return row.days_played != null ? row.days_played : row.days.length; }
   // Hand-picked games someone else in the family played a lot of (Ronjan, 2026-11-12)
@@ -582,9 +584,17 @@
         var mins = 0;
         row.entries.forEach(function (e) { if (e.family === f) mins += e.minutes || 0; });
         var days = row.days_by_family[f];
-        if (f === "Nintendo" && (row.spans || []).length) {  // spread over the spans (see spanShare)
-          var share = spanShare(row, yr);
-          if (mins && share) { total += mins / 60 * share; any = true; }
+        var recs = row.entries.filter(function (e) { return e.id.indexOf("nintendo:") === 0; });
+        if (f === "Nintendo" && recs.length) {
+          // Nintendo's records: minutes before daily tracking spread over their spans (see
+          // spanShare), and minutes on the days they were logged or dated
+          var spanMins = 0, dayMins = 0;
+          recs.forEach(function (e) {
+            if (e.span) spanMins += e.span_minutes || 0;
+            Object.keys(e.day_minutes || {}).forEach(function (d) { if (d.slice(0, 4) === yr) dayMins += e.day_minutes[d]; });
+          });
+          var m = spanMins * spanShare(row, yr) + dayMins;
+          if (m) { total += m / 60; any = true; }
           return;
         }
         if (!mins || !days.length) return;
