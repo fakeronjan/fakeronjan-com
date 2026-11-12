@@ -463,6 +463,13 @@
     var minSel = document.getElementById("ghMin");
     var yearSel = document.getElementById("ghYear");
     var sortPills = document.getElementById("ghYearSort"), yearSort = "last";
+    // Games marked * (others in the family played them a lot) stay off the Timeline unless asked for
+    var familyBtn = document.getElementById("ghFamily"), showFamily = false;
+    function setFamily(on) {
+      showFamily = on;
+      familyBtn.classList.toggle("active", on);
+      familyBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    }
     var games = [], gamesById = {}, years = [];
     var drawGames = null, drawUnlocks = null, unlocksLoaded = null;
 
@@ -702,7 +709,7 @@
 
     function renderTimeline() {
       var y = yearSel.value;
-      var rows = games.filter(minOK);
+      var rows = games.filter(function (r) { return minOK(r) && (showFamily || !r.family_play); });
       var out = document.getElementById("ghTimeline");
       var count = document.getElementById("ghYearCount");
       if (!y) {
@@ -872,8 +879,13 @@
       tabs: {
         "data-summary": { query: function () {}, apply: function () {} },
         timeline: {
-          query: function (add) { if (yearSel.value) add("year", yearSel.value); if (yearSel.value && yearSort !== "last") add("sort", yearSort); },
+          query: function (add) {
+            if (yearSel.value) add("year", yearSel.value);
+            if (yearSel.value && yearSort !== "last") add("sort", yearSort);
+            if (showFamily) add("family", "1");
+          },
           apply: function (p) {
+            setFamily(p.get("family") === "1");
             yearSel.value = years.indexOf(p.get("year")) !== -1 ? p.get("year") : "";
             yearSort = ["most", "done"].indexOf(p.get("sort")) !== -1 ? p.get("sort") : "last";
             window.SportUrl.setPills("ghYearSort", yearSort);
@@ -892,6 +904,7 @@
       url.write(true);
     });
     yearSel.addEventListener("change", function () { renderTimeline(); url.write(); });
+    familyBtn.addEventListener("click", function () { setFamily(!showFamily); renderTimeline(); url.write(); });
     sortPills.addEventListener("click", function (e) {
       var b = e.target.closest(".pill");
       if (!b) return;
