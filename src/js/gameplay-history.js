@@ -733,7 +733,7 @@
               return { row: g.row, days: g.n, est: g.est, hrs: hrs, score: Math.max(g.n, hrs || 0) };
             }).sort(function (p, q) { return q.score - p.score || q.days - p.days; }).slice(0, 5);
             return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + played.map(function (g, i) {
-                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + listLink(g.row.id, g.row.name) + ' <i class="gh-pct">' +
+                return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + listLink(g.row.id, g.row.name) + familyMark(g.row) + ' <i class="gh-pct">' +
                   (Math.round(g.hrs || 0) ? "~" + plural(Math.round(g.hrs), "hr", "hrs") + ", " : "") + (g.est ? "~" : "") + plural(g.days, "day", "days") + familyMark(g.row) + "</i></span>";
               }).join("") + "</div>" +
               (picks.length ? '<div class="gh-sum-band"></div>' : "") +  // no picks yet: an empty cell
@@ -813,7 +813,7 @@
           }).join("");
         }).join("");
         var medal = o.pick ? ' <span class="gh-row-pick" title="' + esc(y + ": " + o.pick.place) + '">' + MEDAL[o.pick.place] + "</span>" : "";
-        h += '<div class="gh-row-name">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams).sort()) + "<span>" + listLink(o.row.id, o.row.name, 40) + medal + "</span></div>" +
+        h += '<div class="gh-row-name">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams).sort()) + "<span>" + listLink(o.row.id, o.row.name, 40) + familyMark(o.row) + medal + "</span></div>" +
           '<svg class="gh-row-svg" viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label="' + esc(tip) + '">' +
           '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + bands + ticks + "</svg>" +
           '<div class="gh-row-stat">' + (Math.round(o.hrs || 0) ? "~" + plural(Math.round(o.hrs), "hr", "hrs") + ", " : "") + (o.est ? "~" : "") + plural(o.n, "day", "days") + familyMark(o.row) + "</div>" +
@@ -829,11 +829,11 @@
         rows: games, sortKey: "last", desc: true,
         filter: function (r, f, q) { return minOK(r) && (f === "All" || r.families.indexOf(f) !== -1) && (!q || r.name.toLowerCase().indexOf(q) !== -1); },
         cols: [
-          { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<span><b>" + gameLink(r.id, r.name) + "</b>" + pills(r) + "</span></div>"; } },
+          { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<span><b>" + gameLink(r.id, r.name) + familyMark(r) + "</b>" + pills(r) + "</span></div>"; } },
           { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return platformLines(r); } },
           { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
           { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
-          { k: "d", h: "Days", desc: true, v: function (r) { return daysPlayed(r) || null; }, r: function (r) { return daysPlayed(r) || "-"; } },
+          { k: "d", h: "Days", desc: true, v: function (r) { return daysPlayed(r) || null; }, r: function (r) { return daysPlayed(r) ? daysPlayed(r) + familyMark(r) : "-"; } },
           { k: "h", h: "Hours", desc: true, v: function (r) { return r.hours; }, r: function (r) { return hours(r.hours, r.hours_estimated) + familyMark(r); } },
           { k: "s", h: "Sessions", cls: "gh-hide-t", desc: true, v: function (r) { return r.sessions; }, r: function (r) { return r.sessions == null ? "-" : r.sessions; } },
           { k: "u", h: "Unlocks", cls: "gh-hide-m", desc: true, v: function (r) { return r.best ? r.best.pct : null; }, r: unlockCell },
@@ -1001,7 +1001,7 @@
     if (row.first) {
       facts.push("First played " + fmtDay(row.first));
       if (row.last !== row.first) facts.push("Last played " + fmtDay(row.last));
-      facts.push(plural(daysPlayed(row), "day", "days"));
+      facts.push(plural(daysPlayed(row), "day", "days") + (row.family_play ? "*" : ""));
     } else {
       facts.push("No play dates recorded");
     }
@@ -1022,7 +1022,7 @@
     }).join("");
     // An earned platinum: not tied to a year, so just the word
     if (row.entries.some(function (e) { return e.platinum; })) badges += '<span class="gh-badge gh-platinum">Platinum</span>';
-    var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + "</h1>" +
+    var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + familyMark(row) + "</h1>" +
       '<p class="gh-facts">' + dots(row.families) + " " + facts.map(esc).join('<span class="sport-updated-sep">|</span>') + "</p>" +
       (badges ? '<div class="gh-badges">' + badges + "</div>" : "") +
       (row.family_play ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") +
