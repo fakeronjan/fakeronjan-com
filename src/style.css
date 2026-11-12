@@ -1830,6 +1830,9 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 #ghMinBar[hidden] { display: none; }
 .gh-year-controls { flex-direction: column; align-items: flex-start; gap: 0.35rem; }
 .gh-year-controls .sport-count { margin-left: 0; }
+.gh-year-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.gh-family-toggle { display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; white-space: nowrap; }
+.gh-family-toggle input { margin: 0; accent-color: var(--accent); }
 .gh-hint { font-style: italic; }
 .gh-min-label { font-size: 0.82rem; color: var(--muted); }
 .gh-search { font-family: inherit; font-size: 0.85rem; color: var(--fg); background: var(--bg); border: 1px solid var(--muted); border-radius: 6px; padding: 0.35rem 0.6rem; width: min(100%, 15rem); }

@@ -71,14 +71,16 @@ permalink: /video-games/gameplay-stats/
 
   <section class="sport-view active" data-view="timeline" id="timeline">
     <div class="sport-controls gh-year-controls">
-      <select id="ghYear" class="sport-select" aria-label="Year"><option value="">All years</option></select>
+      <div class="gh-year-row">
+        <select id="ghYear" class="sport-select" aria-label="Year"><option value="">All years</option></select>
+        <label class="sport-select gh-family-toggle" title="Games marked * include significant play time from other family members"><input type="checkbox" id="ghFamily"> Include family play*</label>
+      </div>
       <span class="sport-count" id="ghYearCount"></span>
       <div class="pill-group" id="ghYearSort" hidden>
         <button type="button" class="pill active" data-value="last">Last played</button>
         <button type="button" class="pill" data-value="most">Most played</button>
         <button type="button" class="pill" data-value="done">Most completed</button>
       </div>
-      <button type="button" class="pill gh-family-toggle" id="ghFamily" aria-pressed="false" title="Games marked * include significant play time from other family members">Include family play*</button>
     </div>
     <div class="gh-legend" id="ghLegend"></div>
     <div id="ghTimeline"><p class="sport-loading">Loading...</p></div>

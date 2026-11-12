@@ -467,8 +467,7 @@
     var familyBtn = document.getElementById("ghFamily"), showFamily = false;
     function setFamily(on) {
       showFamily = on;
-      familyBtn.classList.toggle("active", on);
-      familyBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      familyBtn.checked = on;
     }
     var games = [], gamesById = {}, years = [];
     var drawGames = null, drawUnlocks = null, unlocksLoaded = null;
@@ -904,7 +903,7 @@
       url.write(true);
     });
     yearSel.addEventListener("change", function () { renderTimeline(); url.write(); });
-    familyBtn.addEventListener("click", function () { setFamily(!showFamily); renderTimeline(); url.write(); });
+    familyBtn.addEventListener("change", function () { setFamily(familyBtn.checked); renderTimeline(); url.write(); });
     sortPills.addEventListener("click", function (e) {
       var b = e.target.closest(".pill");
       if (!b) return;
