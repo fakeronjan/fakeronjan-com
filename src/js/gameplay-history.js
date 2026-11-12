@@ -464,7 +464,7 @@
     var yearSel = document.getElementById("ghYear");
     var sortPills = document.getElementById("ghYearSort"), yearSort = "last";
     // Games marked * (others in the family played them a lot) stay off the Timeline unless asked
-    // for, except ones on an awards list (see awarded)
+    // for, except ones on an awards list (see awarded) or picked to stay (timeline_always)
     var familyBtn = document.getElementById("ghFamily"), showFamily = false;
     function setFamily(on) {
       showFamily = on;
@@ -722,7 +722,7 @@
 
     function renderTimeline() {
       var y = yearSel.value;
-      var rows = games.filter(function (r) { return minOK(r) && (showFamily || !r.family_play || awarded(r)); });
+      var rows = games.filter(function (r) { return minOK(r) && (showFamily || !r.family_play || awarded(r) || r.timeline_always); });
       var out = document.getElementById("ghTimeline");
       var count = document.getElementById("ghYearCount");
       if (!y) {
