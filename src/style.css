@@ -1907,6 +1907,10 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-row-pick { margin-left: 0.15rem; }
 .gh-row-svg { display: block; width: 100%; height: 16px; overflow: visible; }
 .gh-span { stroke: var(--muted); stroke-opacity: 0.35; stroke-width: 1.5; }
+/* Nintendo play history: first-to-last played, dates not recorded */
+.gh-band { opacity: 0.22; }
+.gh-family { margin-left: 1px; }
+.gh-family-note { font-size: 0.78rem; color: var(--muted); margin: 0.5rem 0 0; }
 .gh-all-years { margin-left: 0.6rem; color: var(--accent); }
 
 .gh-with-thumb { display: flex; align-items: center; gap: 0.55rem; }
