@@ -1915,6 +1915,8 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-family { margin-left: 1px; }
 .gh-family-note { font-size: 0.78rem; color: var(--muted); margin: 0.5rem 0 0; }
 .gh-versions { font-size: 0.82rem; margin: 0.4rem 0 0; }
+.gh-day-notes { margin: 0.35rem 0 0; display: grid; gap: 0.1rem; }
+.gh-day-notes p { font-size: 0.78rem; color: var(--muted); margin: 0; }
 .gh-versions .gh-glink { color: var(--accent); text-decoration: underline; }
 .gh-all-years { margin-left: 0.6rem; color: var(--accent); }
 
@@ -2078,4 +2080,11 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
 @media (max-width: 360px) {
   #ghYearSort { gap: 0.2rem; }
   #ghYearSort .pill { font-size: 0.68rem; padding-left: 0.4rem; padding-right: 0.4rem; }
+}
+/* Gameplay Stats tables: two-word headers ("Days played†", "Hours played") may wrap so the table fits */
+.gh-table th, .gh-table th.gh-sort { white-space: normal; }
+@media (max-width: 360px) {
+  .gh-table th, .gh-table td { padding-left: 0.3rem; padding-right: 0.3rem; }
+  .gh-table td { font-size: 0.76rem; }
+  .gh-table th { font-size: 0.62rem; }
 }

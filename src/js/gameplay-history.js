@@ -135,25 +135,38 @@
   }
 
   // A Total row under a game's Platforms table when it was played on two or more: first and
-  // last played across them, and summed hours, sessions, unlocks, and screenshots
-  function platformTotals(plats) {
+  // last played across them, the game's days played, and summed hours, unlocks, and screenshots
+  function platformTotals(plats, row) {
     if (plats.length < 2) return "";
-    var first = null, last = null, mins = 0, est = false, sessions = 0, captures = 0, all = [];
+    var first = null, last = null, mins = 0, est = false, captures = 0, all = [];
     plats.forEach(function (g) {
       if (g.first && (!first || g.first < first)) first = g.first;
       if (g.last && (!last || g.last > last)) last = g.last;
-      mins += g.minutes; est = est || g.estimated; sessions += g.sessions; captures += g.captures;
+      mins += g.minutes; est = est || g.estimated; captures += g.captures;
       all = all.concat(g.entries);
     });
     return '<tfoot><tr class="gh-total"><td class="gh-wrap">Total</td>' +
       '<td class="gh-hide-m">' + fmtDay(first) + "</td><td>" + fmtDay(last) + "</td>" +
+      "<td>" + (daysPlayed(row) || "-") + "</td>" +
       "<td>" + (mins ? hours(Math.round(mins / 6) / 10, est) : "-") + "</td>" +
-      '<td class="gh-hide-t">' + (sessions || "-") + "</td>" +
       '<td class="gh-hide-m">' + (unlockCount(all) || "-") + "</td>" +
       '<td class="gh-hide-t">' + (captures || "-") + "</td></tr></tfoot>";
   }
 
   function platKey(e) { return e.family + "|" + e.platform + "|" + (e.gamertag || ""); }
+
+  // Days played on PlayStation, Steam, and Xbox count only days with a trophy or achievement: the
+  // footnote for the Days played† column, in the Data Summary grid's own words
+  var DAY_NOTES = [
+    { test: function (g) { return g.family === "PlayStation" && /PS3|Vita/.test(g.label); }, text: "PS3, Vita: Counts days with a trophy" },
+    { test: function (g) { return g.family === "PlayStation" && /PS4|PS5/.test(g.label); }, text: "PS4, PS5: Counts days with a trophy, plus first and last played" },
+    { test: function (g) { return g.family === "Steam" || (g.family === "Xbox" && !/360/.test(g.label)); }, text: "Steam, Xbox One, Series X|S: Counts days with an achievement, plus last played" },
+    { test: function (g) { return g.family === "Xbox" && /360/.test(g.label); }, text: "360: Counts days with an achievement" },
+  ];
+  function dayNotes(groups) {
+    var lines = DAY_NOTES.filter(function (n) { return groups.some(n.test); });
+    return lines.length ? '<div class="gh-day-notes">' + lines.map(function (n) { return "<p>&dagger; " + esc(n.text) + "</p>"; }).join("") + "</div>" : "";
+  }
 
   // The entries a game page counts: those with activity, plus any list with nothing earned
   // (Vice City's 0 of 68) on a platform that has activity. Owned-but-unplayed platforms don't count.
@@ -913,9 +926,8 @@
           { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return platformLines(r); } },
           { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
           { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
-          { k: "d", h: "Days", desc: true, v: function (r) { return daysPlayed(r) || null; }, r: function (r) { return daysPlayed(r) ? daysPlayed(r) + familyMark(r) : "-"; } },
-          { k: "h", h: "Hours", desc: true, v: function (r) { return r.hours; }, r: function (r) { return hours(r.hours, r.hours_estimated) + familyMark(r); } },
-          { k: "s", h: "Sessions", cls: "gh-hide-t", desc: true, v: function (r) { return r.sessions; }, r: function (r) { return r.sessions == null ? "-" : r.sessions; } },
+          { k: "d", h: "Days played&dagger;", desc: true, v: function (r) { return daysPlayed(r) || null; }, r: function (r) { return daysPlayed(r) ? daysPlayed(r) + familyMark(r) : "-"; } },
+          { k: "h", h: "Hours played", desc: true, v: function (r) { return r.hours; }, r: function (r) { return hours(r.hours, r.hours_estimated) + familyMark(r); } },
           { k: "u", h: "Unlocks", cls: "gh-hide-m", desc: true, v: function (r) { return r.best ? r.best.pct : null; }, r: unlockCell },
         ],
       });
@@ -1101,7 +1113,6 @@
       facts.push("No play dates recorded");
     }
     if (row.hours != null) facts.push((row.hours_estimated ? "about " : "") + fmtHours(row.hours) + " hours" + (row.family_play ? "*" : ""));
-    if (row.sessions) facts.push(plural(row.sessions, "session", "sessions"));
     // Unlocks as on the Games tab: the most complete list, with its share ("on PC" when the game
     // has more than one list; the Platforms table below has each list and the total)
     var best = bestList(row), lists = countedEntries(row).filter(function (e) { return e.total; }).length;
@@ -1144,11 +1155,10 @@
     var groups = {}, order = [];
     countedEntries(row).forEach(function (e) {
       var k = platKey(e);
-      if (!groups[k]) { groups[k] = { entries: [], family: e.family, label: platformLabel(e), gamertag: e.gamertag, minutes: 0, sessions: 0, earned: 0, total: 0, first: null, last: null, captures: 0, estimated: false }; order.push(k); }
+      if (!groups[k]) { groups[k] = { key: k, entries: [], family: e.family, label: platformLabel(e), gamertag: e.gamertag, minutes: 0, earned: 0, total: 0, first: null, last: null, captures: 0, estimated: false }; order.push(k); }
       var g = groups[k];
       g.entries.push(e);
       g.minutes += e.minutes || 0;
-      g.sessions += e.sessions || 0;
       g.earned += e.earned || 0;
       g.total += e.total || 0;
       g.captures += e.captures || (e.id.indexOf("miiverse") === 0 && gallery[e.id] ? gallery[e.id].total : 0);
@@ -1169,15 +1179,17 @@
     });
     // Most recently played first, like every time-ordered list on the site
     var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) { return (b.last || "") < (a.last || "") ? -1 : 1; });
-    h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Hours</th><th class="gh-hide-t">Sessions</th><th class="gh-hide-m">Unlocks</th><th class="gh-hide-t">Screenshots</th></tr></thead><tbody>' +
+    var notes = dayNotes(plats);
+    h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Days played' + (notes ? "&dagger;" : "") + "</th><th>Hours played</th>" + '<th class="gh-hide-m">Unlocks</th><th class="gh-hide-t">Screenshots</th></tr></thead><tbody>' +
       plats.map(function (g) {
+        var days = (row.days_by_platform || {})[g.key];
         return '<tr><td class="gh-wrap">' + dots([g.family]) + " " + esc(g.label) + "</td>" +
           '<td class="gh-hide-m">' + fmtDay(g.first) + "</td><td>" + fmtDay(g.last) + "</td>" +
+          "<td>" + (days || "-") + "</td>" +
           "<td>" + (g.minutes ? hours(Math.round(g.minutes / 6) / 10, g.estimated) : "-") + "</td>" +
-          '<td class="gh-hide-t">' + (g.sessions || "-") + "</td>" +
           '<td class="gh-hide-m">' + unlockShare(g.entries) + "</td>" +
           '<td class="gh-hide-t">' + (g.captures || "-") + "</td></tr>";
-      }).join("") + "</tbody>" + platformTotals(plats) + "</table></div>";
+      }).join("") + "</tbody>" + platformTotals(plats, row) + "</table></div>" + notes;
 
     // Screenshots: Switch, PlayStation, and Miiverse, from the gallery repo, drawn by wireGame
     // (with Nintendo / PlayStation pills when there are both). A Miiverse screenshot carries
