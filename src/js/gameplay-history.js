@@ -1,4 +1,4 @@
-// Gameplay Stats (/video-games/gameplay-stats/) and its game pages
+// Gameplay Stats (/video-games/) and its game pages
 // (/video-games/gameplay-stats/game/?id=...). Data comes from the
 // gameplay-tracking repo (refreshed daily) and the gameplay-screenshots repo.
 (function () {
@@ -1097,7 +1097,7 @@
       back.href = from.pathname + from.search;
       back.addEventListener("click", function (e) { e.preventDefault(); history.back(); });
     } else if (back) {
-      back.href = "/video-games/gameplay-stats/?tab=games";
+      back.href = "/video-games/?tab=games";
     }
     var out = document.getElementById("ghGame");
     Promise.all([

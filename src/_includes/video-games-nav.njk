@@ -1,6 +1,6 @@
 <nav class="fleet-nav video-games-nav">
   <div class="fleet-nav-inner">
-    <a class="fleet-nav-home{% if page.url == "/video-games/" %} active{% endif %}" href="/video-games/">🥇 Game of the Year</a>
-    <a class="fleet-nav-home{% if page.url.startsWith("/video-games/gameplay-stats/") %} active{% endif %}" href="/video-games/gameplay-stats/">📊 Gameplay Stats</a>
+    <a class="fleet-nav-home{% if page.url == "/video-games/" or page.url.startsWith("/video-games/gameplay-stats/") %} active{% endif %}" href="/video-games/">📊 Gameplay Stats</a>
+    <a class="fleet-nav-home{% if page.url.startsWith("/video-games/game-of-the-year/") %} active{% endif %}" href="/video-games/game-of-the-year/">🥇 Game of the Year</a>
   </div>
 </nav>
