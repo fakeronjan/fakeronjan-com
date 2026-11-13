@@ -672,6 +672,18 @@
       return t === name ? esc(name) : '<span title="' + esc(name) + '">' + esc(t) + "</span>";
     }
 
+    // Most played: hours that year (recorded or modeled); a game with no hours at all goes after,
+    // by its days. playedText shows the hours, or the days when there are no hours
+    function byHours(p, q) {
+      var a = (p.hrs || 0) >= 0.05 ? p.hrs : -1, b = (q.hrs || 0) >= 0.05 ? q.hrs : -1;
+      return b - a || (q.days || q.n || 0) - (p.days || p.n || 0);
+    }
+    function playedText(g) {
+      if ((g.hrs || 0) >= 0.05) return "~" + fmtHours(g.hrs) + " hrs";
+      var n = g.days || g.n || 0;
+      return n ? (g.est ? "~" : "") + plural(n, "day", "days") : "";
+    }
+
     // A trophy or achievement list's progress in one year: share unlocked at the start of the year
     // and at the end, for the list that moved most (with a platinum only when earned that year)
     function progressIn(row, yr) {
@@ -796,16 +808,14 @@
               var best = progressIn(g.row, yr);
               return best && { row: g.row, from: best.from, pct: best.to, gain: best.gain, plat: best.plat };
             }).filter(Boolean).sort(function (p, q) { return q.gain - p.gain || q.pct - p.pct; }).slice(0, 5);
-            // Most played: days that year or hours that year, whichever is more (the page's own
-            // "N days or N hours" test). Platforms only report lifetime hours, so a year's share
-            // is estimated from the days played that year (see yearHours)
+            // Most played: hours that year, recorded or modeled (see yearHours and byHours)
             var played = gs.map(function (g) {
               var hrs = yearHours(g.row, yr);
-              return { row: g.row, days: g.n, est: g.est, hrs: hrs, score: Math.max(g.n, hrs || 0) };
-            }).sort(function (p, q) { return q.score - p.score || q.days - p.days; }).slice(0, 5);
+              return { row: g.row, days: g.n, est: g.est, hrs: hrs };
+            }).sort(byHours).slice(0, 5);
             return '<div class="gh-sum-list gh-sum-tops" data-label="Most played">' + played.map(function (g, i) {
                 return '<span data-gid="' + esc(g.row.id) + '">' + RANKS[i] + listLink(g.row.id, g.row.name) + familyMark(g.row) + ' <i class="gh-pct">' +
-                  [(g.hrs || 0) >= 0.05 ? "~" + fmtHours(g.hrs) + " hrs" : "", g.days ? (g.est ? "~" : "") + plural(g.days, "day", "days") : ""].filter(Boolean).join(", ") + familyMark(g.row) + "</i></span>";
+                  playedText(g) + "</i></span>";
               }).join("") + "</div>" +
               (picks.length ? '<div class="gh-sum-band"></div>' : "") +  // no picks yet: an empty cell
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
@@ -844,13 +854,13 @@
         // The row's reach that year: its dated days and its Nintendo spans
         var reach = all.concat.apply(all, sp.map(function (b) { return [b[0], b[1]]; })).sort();
         sp.forEach(function (b) { if (!fams[b[3]]) fams[b[3]] = []; });
-        return { row: r, fams: fams, all: all, reach: reach, sp: sp, n: yd.n, est: yd.est, hrs: hrs, score: Math.max(yd.n, hrs || 0), done: done, prog: prog, plat: plat, pick: pick };
+        return { row: r, fams: fams, all: all, reach: reach, sp: sp, n: yd.n, est: yd.est, hrs: hrs, done: done, prog: prog, plat: plat, pick: pick };
       }).filter(function (o) { return o.n || (o.hrs || 0) >= 0.05; })
         .sort(function (p, q) {
-          // Last played that year (newest first), most played (days or hours, as in the
+          // Last played that year (newest first), most played (hours that year, as in the
           // summary), or most progress that year (games without a list last)
           var lastP = p.reach[p.reach.length - 1], lastQ = q.reach[q.reach.length - 1];
-          var by = yearSort === "most" ? q.score - p.score
+          var by = yearSort === "most" ? byHours(p, q)
             : yearSort === "done" ? (q.done == null ? -1 : q.done) - (p.done == null ? -1 : p.done)
             : lastQ < lastP ? -1 : lastQ > lastP ? 1 : 0;
           return by || p.row.name.localeCompare(q.row.name);
