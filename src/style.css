@@ -2070,3 +2070,12 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
   .gh-src-cell { min-width: 0; }
   .gh-src-grid td > .gh-src { justify-self: start; align-self: start; }
 }
+/* Gameplay Stats Timeline: the three sort buttons stay on one row on phones */
+@media (max-width: 480px) {
+  #ghYearSort { flex-wrap: nowrap; gap: 0.3rem; }
+  #ghYearSort .pill { font-size: 0.74rem; padding-left: 0.5rem; padding-right: 0.5rem; white-space: nowrap; }
+}
+@media (max-width: 360px) {
+  #ghYearSort { gap: 0.2rem; }
+  #ghYearSort .pill { font-size: 0.68rem; padding-left: 0.4rem; padding-right: 0.4rem; }
+}

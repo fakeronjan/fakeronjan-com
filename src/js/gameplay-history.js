@@ -803,7 +803,7 @@
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
-          header: "<span>Most played</span><span class=\"gh-head-goty\">Game of the Year</span><span>Most progress</span>",
+          header: "<span>&#128338; Most played</span><span class=\"gh-head-goty\">Game of the Year</span><span>&#127942; Most progress</span>",
           summary: function (yr, gs) {
             var picks = gotyByYear()[yr] || [], RANKS = ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; ", "4&#65039;&#8419; ", "5&#65039;&#8419; "];
             // Most progress: how far a trophy or achievement list moved that year, start of year to
