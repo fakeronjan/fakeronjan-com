@@ -672,6 +672,10 @@
       return t === name ? esc(name) : '<span title="' + esc(name) + '">' + esc(t) + "</span>";
     }
 
+    // The Timeline tab rounds hours to the whole hour ("~62 hrs", "<1 hr"); everywhere else keeps
+    // the tenth (fmtHours) (Ronjan, 2026-11-12)
+    function timelineHours(h) { return h < 0.5 ? "<1 hr" : "~" + plural(Math.round(h), "hr", "hrs"); }
+
     // Most played: hours that year (recorded or modeled); a game with no hours at all goes after,
     // by its days. playedText shows the hours, or the days when there are no hours
     function byHours(p, q) {
@@ -679,7 +683,7 @@
       return b - a || (q.days || q.n || 0) - (p.days || p.n || 0);
     }
     function playedText(g) {
-      if ((g.hrs || 0) >= 0.05) return "~" + fmtHours(g.hrs) + " hrs";
+      if ((g.hrs || 0) >= 0.05) return timelineHours(g.hrs);
       var n = g.days || g.n || 0;
       return n ? (g.est ? "~" : "") + plural(n, "day", "days") : "";
     }
@@ -892,7 +896,7 @@
         h += '<div class="gh-row-name">' + thumb(o.row.img, "gh-thumb-xs") + dots(Object.keys(o.fams).sort()) + "<span>" + listLink(o.row.id, o.row.name, 40) + familyMark(o.row) + medal + "</span></div>" +
           '<svg class="gh-row-svg" viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label="' + esc(tip) + '">' +
           '<line x1="' + s + '" x2="' + e + '" y1="8" y2="8" class="gh-span" vector-effect="non-scaling-stroke"><title>' + esc(tip) + "</title></line>" + bands + ticks + "</svg>" +
-          '<div class="gh-row-stat">' + [(o.hrs || 0) >= 0.05 ? "~" + fmtHours(o.hrs) + " hrs" : "", o.n ? (o.est ? "~" : "") + plural(o.n, "day", "days") : ""].filter(Boolean).join(", ") + familyMark(o.row) + "</div>" +
+          '<div class="gh-row-stat">' + [(o.hrs || 0) >= 0.05 ? timelineHours(o.hrs) : "", o.n ? (o.est ? "~" : "") + plural(o.n, "day", "days") : ""].filter(Boolean).join(", ") + familyMark(o.row) + "</div>" +
           '<div class="gh-row-stat">' + (o.prog ? progressText({ from: o.prog.from, pct: o.prog.to }) : "") + (o.plat ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "") + "</div>";
       });
       out.innerHTML = h + "</div>";
