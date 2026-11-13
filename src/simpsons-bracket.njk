@@ -1,22 +1,18 @@
 ---
 permalink: "/simpsons-bracket/"
-layout: base.njk
-title: "Simpsons Episode Bracket | FAKE RONJAN!!"
+eleventyExcludeFromCollections: true
 ---
-<div class="sports-embed"><div class="sports-embed-inner" style="max-width: none;">
-<iframe
-  id="bracket-frame"
-  src="https://fakeronjan.github.io/simpsons-bracket/"
-  width="100%"
-  height="2400"
-  style="border:none; display:block;"
-  loading="lazy"
-></iframe>
-</div></div>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Simpsons: best episode ever | FAKE RONJAN!!</title>
+<link rel="canonical" href="/blog/fr-simpsons-best-episode-ever/">
+<meta http-equiv="refresh" content="0; url=/blog/fr-simpsons-best-episode-ever/">
 <script>
-window.addEventListener('message', function (e) {
-  if (e.origin !== 'https://fakeronjan.github.io') return;
-  if (!e.data || e.data.type !== 'fakeronjan-resize') return;
-  document.getElementById('bracket-frame').style.setProperty('height', (e.data.height + 8) + 'px', 'important');
-});
+  // The bracket finished 11/13/2026; its final version lives in the blog post
+  location.replace("/blog/fr-simpsons-best-episode-ever/");
 </script>
+</head>
+<body><p><a href="/blog/fr-simpsons-best-episode-ever/">The final Simpsons bracket is in this post</a></p></body>
+</html>
