@@ -397,6 +397,11 @@
       if (!games.length) return;
       games.sort(function (p, q) { return q.n - p.n; });
       var label = opts.zoom ? '<button type="button" class="gh-year" data-year="' + y + '">' + y + "</button>" : '<span class="gh-year">' + y + "</span>";
+      if (opts.totals) {  // the year's games and hours, small under the year
+        var t = opts.totals(y);
+        label = '<div class="gh-year-cell">' + label + '<span class="gh-year-tot">' + plural(t.games, "game", "games") + "</span>" +
+          (t.hours >= 0.5 ? '<span class="gh-year-tot">~' + Math.round(t.hours).toLocaleString() + " hrs</span>" : "") + "</div>";
+      }
       h += label + yearStrip(y, byFam, bands, rows.length === 1) + '<div class="gh-year-sum">' + opts.summary(y, games, Object.keys(daySet).length) + "</div>";
     });
     return h + "</div>";
@@ -784,7 +789,7 @@
       });
       tl.classList.remove("gh-tl-measure");
       var em = parseFloat(getComputedStyle(grid).fontSize), GAP = 4.5, EDGE = 12;
-      var rowGaps = parseFloat(getComputedStyle(grid).columnGap) * 2, yearCol = 3.2 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+      var rowGaps = parseFloat(getComputedStyle(grid).columnGap) * 2, yearCol = 4 * parseFloat(getComputedStyle(document.documentElement).fontSize);
       function need(widths, f) { return (widths[0] + widths[1] + widths[2]) * f + 2 * GAP * em * f + EDGE; }
       function apply(widths, f) {
         ["--gh-c1", "--gh-c2", "--gh-c3"].forEach(function (v, i) { tl.style.setProperty(v, Math.ceil(widths[i] * f) + "px"); });
@@ -816,6 +821,20 @@
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
+          // Every game played that year, whatever the 'played at least' filter; family-play games
+          // only when they're included (their hours are partly other people's) (Ronjan, 2026-11-12)
+          totals: function (yr) {
+            var n = 0, hrs = 0;
+            games.forEach(function (r) {
+              if (r.family_play && !showFamily && !awarded(r) && !r.timeline_always) return;
+              // Every hour counts; a game counts as played that year with a real day in it, or
+              // an hour or more of modeled play (a model's faint tail alone doesn't)
+              var h = yearHours(r, yr) || 0;
+              hrs += h;
+              if (yearDays(r, yr).n || h >= 1) n++;
+            });
+            return { games: n, hours: hrs };
+          },
           header: "<span>&#128338; Most played</span><span class=\"gh-head-goty\">Game of the Year</span><span>&#127942; Most progress</span>",
           summary: function (yr, gs) {
             var picks = gotyByYear()[yr] || [], RANKS = ["1&#65039;&#8419; ", "2&#65039;&#8419; ", "3&#65039;&#8419; ", "4&#65039;&#8419; ", "5&#65039;&#8419; "];
