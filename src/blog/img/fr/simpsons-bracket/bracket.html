@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simpsons Episode Bracketpalooza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; font-family: 'Quicksand', sans-serif; background: #DFF5FD; }
+  .headline { font-family: 'Luckiest Guy', cursive; letter-spacing: 1px; }
+  .cloud { position: absolute; background: #FFFFFF; border-radius: 100px; box-shadow: 0 8px 18px rgba(20,60,90,0.08); }
+  html, body { height: 100%; overflow: hidden; }
+  .board-wrap { position: fixed; inset: 0; overflow: hidden; touch-action: pan-y; cursor: default; }
+  .board-wrap.zoomed { touch-action: none; cursor: grab; }
+  .board-wrap.dragging { cursor: grabbing; }
+  .zoom-ctl { position: fixed; right: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 6px; z-index: 5; }
+  .zoom-ctl button { width: 40px; height: 40px; border-radius: 10px; border: 2px solid rgba(20,50,70,0.35); background: #FFF9E8; color: #1d3a4f; font: 700 22px/1 Quicksand, sans-serif; cursor: pointer; box-shadow: 0 2px 6px rgba(20,50,70,0.2); padding: 0; }
+  .zoom-ctl button:hover { background: #fff; }
+  @media (max-width: 420px) { .zoom-ctl { right: 6px; bottom: 6px; gap: 4px; } .zoom-ctl button { width: 30px; height: 30px; font-size: 17px; border-radius: 8px; } }
+  .board { position: absolute; left: 0; top: 0; transform-origin: top left; }
+</style>
+</head>
+<body>
+<div class="board-wrap" id="boardWrap">
+<div class="board" id="board" style="width: 2180px; height: 2370px; box-sizing: border-box; overflow: hidden; background: linear-gradient(180deg, #2C9FE0 0%, #6FCBF2 25%, #BFEAFB 55%, #DFF5FD 100%);">
+
+  <div style="position: absolute; top: -100px; right: -80px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(255,240,180,0.5) 0%, rgba(255,240,180,0) 70%);"></div>
+  <div class="cloud" style="left:2015px; top:2220px; width:127px; height:40px; opacity:0.81;"></div>
+<div class="cloud" style="left:2105px; top:391px; width:94px; height:30px; opacity:0.69;"></div>
+<div class="cloud" style="left:1924px; top:374px; width:148px; height:47px; opacity:0.64;"></div>
+<div class="cloud" style="left:182px; top:375px; width:81px; height:25px; opacity:0.75;"></div>
+<div class="cloud" style="left:1903px; top:472px; width:148px; height:47px; opacity:0.71;"></div>
+<div class="cloud" style="left:77px; top:485px; width:77px; height:24px; opacity:0.62;"></div>
+<div class="cloud" style="left:1983px; top:2185px; width:73px; height:23px; opacity:0.73;"></div>
+<div class="cloud" style="left:2063px; top:335px; width:95px; height:30px; opacity:0.7;"></div>
+<div class="cloud" style="left:2067px; top:2102px; width:80px; height:25px; opacity:0.67;"></div>
+<div class="cloud" style="left:110px; top:340px; width:140px; height:44px; opacity:0.78;"></div>
+<div class="cloud" style="left:-5px; top:1995px; width:135px; height:43px; opacity:0.72;"></div>
+<div class="cloud" style="left:1927px; top:2108px; width:83px; height:26px; opacity:0.67;"></div>
+<div class="cloud" style="left:89px; top:313px; width:72px; height:23px; opacity:0.83;"></div>
+<div class="cloud" style="left:1996px; top:2163px; width:76px; height:24px; opacity:0.68;"></div>
+
+  <div class="headline" style="position: absolute; left: 0; right: 0; top: 60px; text-align: center; font-size: 88px; color: #FFF9E8; text-shadow: 0 4px 0 rgba(20,50,70,0.35);">Simpsons Episode Bracketpalooza</div>
+  <div style="position: absolute; left: 40px; right: 40px; top: 178px; text-align: center; font-size: 34px; font-weight: 700; color: rgba(20,40,60,0.6); letter-spacing: 1px;">as voted on by the nielson #simpsons slack channel</div>
+  <div style="position: absolute; left: 40px; right: 40px; top: 224px; text-align: center; font-size: 18px; font-weight: 600; color: rgba(20,40,60,0.5);">seeds from <a href="https://www.theringer.com/2017/04/16/tv/top-100-simpsons-episodes-944725de5843" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">The Ringer&#x27;s Best. Episodes. Ever.</a> (2017)</div>
+
+  <div style="position: absolute; left: 90px; top: 260px; width: 2000px; height: 2000px;">
+<svg width="2000" height="2000" viewBox="0 0 2000 2000" xmlns="http://www.w3.org/2000/svg">
+<circle cx="1000" cy="1000" r="140" fill="none" stroke="rgba(45,58,74,0.2)" stroke-width="1" />
+<circle cx="1000" cy="1000" r="220" fill="none" stroke="rgba(45,58,74,0.2)" stroke-width="1" />
+<circle cx="1000" cy="1000" r="300" fill="none" stroke="rgba(45,58,74,0.2)" stroke-width="1" />
+<circle cx="1000" cy="1000" r="400" fill="none" stroke="rgba(45,58,74,0.2)" stroke-width="1" />
+<circle cx="1000" cy="1000" r="530" fill="none" stroke="rgba(45,58,74,0.2)" stroke-width="1" />
+<circle cx="1000" cy="1000" r="700" fill="none" stroke="rgba(45,58,74,0.2)" stroke-width="1" />
+<path d="M 1853.3 1169.7 A 870.0 870.0 0 0 1 1843.9 1211.4 L 1679.0 1170.1 A 700.0 700.0 0 0 0 1686.5 1136.6 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1843.9 1211.4 A 870.0 870.0 0 0 1 1832.5 1252.5 L 1669.9 1203.2 A 700.0 700.0 0 0 0 1679.0 1170.1 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1853.3 1169.7 A 870.0 870.0 0 0 1 1832.5 1252.5 L 1669.9 1203.2 A 700.0 700.0 0 0 0 1686.5 1136.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1679.0" y1="1170.1" x2="1843.9" y2="1211.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1716.0 1142.4 A 730.0 730.0 0 0 1 1698.6 1211.9" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1780.6" y="1175.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(12.7 1780.6 1175.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1780.6" dy="0">#29 Separate Vocations</tspan></text>
+<text x="1697.6" y="1156.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(12.7 1697.6 1156.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1771.0" y="1206.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(15.5 1771.0 1213.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1771.0" dy="0">#100 Marge</tspan><tspan x="1771.0" dy="13">Be Not Proud</tspan></text>
+<text x="1689.1" y="1190.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(15.5 1689.1 1190.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 146.7 830.3 A 870.0 870.0 0 0 1 156.1 788.6 L 321.0 829.9 A 700.0 700.0 0 0 0 313.5 863.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 156.1 788.6 A 870.0 870.0 0 0 1 167.5 747.5 L 330.1 796.8 A 700.0 700.0 0 0 0 321.0 829.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 146.7 830.3 A 870.0 870.0 0 0 1 167.5 747.5 L 330.1 796.8 A 700.0 700.0 0 0 0 313.5 863.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="321.0" y1="829.9" x2="156.1" y2="788.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 284.0 857.6 A 730.0 730.0 0 0 1 301.4 788.1" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="219.4" y="818.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(372.7 219.4 824.7)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="219.4" dy="0">#30 Simpsons Roasting</tspan><tspan x="219.4" dy="13">on an Open Fire</tspan></text>
+<text x="302.4" y="843.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(372.7 302.4 843.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="229.0" y="786.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(375.5 229.0 786.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="229.0" dy="0">#99 Lemon of Troy</tspan></text>
+<text x="310.9" y="809.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(375.5 310.9 809.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 830.3 1853.3 A 870.0 870.0 0 0 1 788.6 1843.9 L 829.9 1679.0 A 700.0 700.0 0 0 0 863.4 1686.5 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 788.6 1843.9 A 870.0 870.0 0 0 1 747.5 1832.5 L 796.8 1669.9 A 700.0 700.0 0 0 0 829.9 1679.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 830.3 1853.3 A 870.0 870.0 0 0 1 747.5 1832.5 L 796.8 1669.9 A 700.0 700.0 0 0 0 863.4 1686.5 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="829.9" y1="1679.0" x2="788.6" y2="1843.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 857.6 1716.0 A 730.0 730.0 0 0 1 788.1 1698.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="824.7" y="1780.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(282.7 824.7 1780.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="824.7" dy="0">#31 Flaming Moe&#x27;s</tspan></text>
+<text x="843.3" y="1697.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(282.7 843.3 1697.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="786.6" y="1764.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(285.5 786.6 1771.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="786.6" dy="0">#98 Much Apu</tspan><tspan x="786.6" dy="13">About Nothing</tspan></text>
+<text x="809.3" y="1689.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(285.5 809.3 1689.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 1169.7 146.7 A 870.0 870.0 0 0 1 1211.4 156.1 L 1170.1 321.0 A 700.0 700.0 0 0 0 1136.6 313.5 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1211.4 156.1 A 870.0 870.0 0 0 1 1252.5 167.5 L 1203.2 330.1 A 700.0 700.0 0 0 0 1170.1 321.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1169.7 146.7 A 870.0 870.0 0 0 1 1252.5 167.5 L 1203.2 330.1 A 700.0 700.0 0 0 0 1136.6 313.5 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1170.1" y1="321.0" x2="1211.4" y2="156.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1142.4 284.0 A 730.0 730.0 0 0 1 1211.9 301.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1175.3" y="219.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-77.3 1175.3 219.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1175.3" dy="0">#32 Whacking Day</tspan></text>
+<text x="1156.7" y="302.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-77.3 1156.7 302.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<text x="1213.4" y="222.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-74.5 1213.4 229.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1213.4" dy="0">#97 Like Father,</tspan><tspan x="1213.4" dy="13">Like Clown</tspan></text>
+<text x="1190.7" y="310.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-74.5 1190.7 310.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1252.5 167.5 A 870.0 870.0 0 0 1 1293.1 180.9 L 1235.8 340.9 A 700.0 700.0 0 0 0 1203.2 330.1 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1293.1 180.9 A 870.0 870.0 0 0 1 1332.9 196.2 L 1267.9 353.3 A 700.0 700.0 0 0 0 1235.8 340.9 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1252.5 167.5 A 870.0 870.0 0 0 1 1332.9 196.2 L 1267.9 353.3 A 700.0 700.0 0 0 0 1203.2 330.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1235.8" y1="340.9" x2="1293.1" y2="180.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1211.9 301.4 A 730.0 730.0 0 0 1 1279.4 325.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1250.9" y="240.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-71.7 1250.9 240.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1250.9" dy="0">#33 Bart the Daredevil</tspan></text>
+<text x="1224.3" y="321.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-71.7 1224.3 321.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<text x="1287.9" y="253.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(-68.9 1287.9 253.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1287.9" dy="0">#96 Homer Alone</tspan></text>
+<text x="1257.3" y="332.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-68.9 1257.3 332.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 747.5 1832.5 A 870.0 870.0 0 0 1 706.9 1819.1 L 764.2 1659.1 A 700.0 700.0 0 0 0 796.8 1669.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 706.9 1819.1 A 870.0 870.0 0 0 1 667.1 1803.8 L 732.1 1646.7 A 700.0 700.0 0 0 0 764.2 1659.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 747.5 1832.5 A 870.0 870.0 0 0 1 667.1 1803.8 L 732.1 1646.7 A 700.0 700.0 0 0 0 796.8 1669.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="764.2" y1="1659.1" x2="706.9" y2="1819.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 788.1 1698.6 A 730.0 730.0 0 0 1 720.6 1674.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="749.1" y="1753.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(288.3 749.1 1759.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="749.1" dy="0">#34 The Itchy &amp; Scratchy</tspan><tspan x="749.1" dy="13">&amp; Poochie Show</tspan></text>
+<text x="775.7" y="1678.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(288.3 775.7 1678.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="712.1" y="1746.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(291.1 712.1 1746.4)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="712.1" dy="0">#95 Bart&#x27;s Girlfriend</tspan></text>
+<text x="742.7" y="1667.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(291.1 742.7 1667.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 167.5 747.5 A 870.0 870.0 0 0 1 180.9 706.9 L 340.9 764.2 A 700.0 700.0 0 0 0 330.1 796.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 180.9 706.9 A 870.0 870.0 0 0 1 196.2 667.1 L 353.3 732.1 A 700.0 700.0 0 0 0 340.9 764.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 167.5 747.5 A 870.0 870.0 0 0 1 196.2 667.1 L 353.3 732.1 A 700.0 700.0 0 0 0 330.1 796.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="340.9" y1="764.2" x2="180.9" y2="706.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 301.4 788.1 A 730.0 730.0 0 0 1 325.6 720.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="240.4" y="749.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(378.3 240.4 749.1)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="240.4" dy="0">#35 Colonel Homer</tspan></text>
+<text x="321.1" y="775.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(378.3 321.1 775.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="253.6" y="712.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(381.1 253.6 712.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="253.6" dy="0">#94 The Joy of Sect</tspan></text>
+<text x="332.9" y="742.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(381.1 332.9 742.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 1832.5 1252.5 A 870.0 870.0 0 0 1 1819.1 1293.1 L 1659.1 1235.8 A 700.0 700.0 0 0 0 1669.9 1203.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1819.1 1293.1 A 870.0 870.0 0 0 1 1803.8 1332.9 L 1646.7 1267.9 A 700.0 700.0 0 0 0 1659.1 1235.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1832.5 1252.5 A 870.0 870.0 0 0 1 1803.8 1332.9 L 1646.7 1267.9 A 700.0 700.0 0 0 0 1669.9 1203.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1659.1" y1="1235.8" x2="1819.1" y2="1293.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1698.6 1211.9 A 730.0 730.0 0 0 1 1674.4 1279.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1759.6" y="1250.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(18.3 1759.6 1250.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1759.6" dy="0">#36 Bart&#x27;s Inner Child</tspan></text>
+<text x="1678.9" y="1224.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(18.3 1678.9 1224.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="1746.4" y="1287.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(21.1 1746.4 1287.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1746.4" dy="0">#93 Bart on the Road</tspan></text>
+<text x="1667.1" y="1257.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(21.1 1667.1 1257.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 1410.1 1767.3 A 870.0 870.0 0 0 1 1372.0 1786.5 L 1299.3 1632.8 A 700.0 700.0 0 0 0 1330.0 1617.3 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1372.0 1786.5 A 870.0 870.0 0 0 1 1332.9 1803.8 L 1267.9 1646.7 A 700.0 700.0 0 0 0 1299.3 1632.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1410.1 1767.3 A 870.0 870.0 0 0 1 1332.9 1803.8 L 1267.9 1646.7 A 700.0 700.0 0 0 0 1330.0 1617.3 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1299.3" y1="1632.8" x2="1372.0" y2="1786.5" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1344.1 1643.8 A 730.0 730.0 0 0 1 1279.4 1674.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1359.7" y="1708.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(63.3 1359.7 1714.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1359.7" dy="0">#37 When</tspan><tspan x="1359.7" dy="13">Flanders Failed</tspan></text>
+<text x="1321.5" y="1638.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(63.3 1321.5 1638.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1324.2" y="1731.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(66.1 1324.2 1731.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1324.2" dy="0">#92 Bart the General</tspan></text>
+<text x="1289.7" y="1653.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(66.1 1289.7 1653.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">1</text>
+<path d="M 589.9 232.7 A 870.0 870.0 0 0 1 628.0 213.5 L 700.7 367.2 A 700.0 700.0 0 0 0 670.0 382.7 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 628.0 213.5 A 870.0 870.0 0 0 1 667.1 196.2 L 732.1 353.3 A 700.0 700.0 0 0 0 700.7 367.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 589.9 232.7 A 870.0 870.0 0 0 1 667.1 196.2 L 732.1 353.3 A 700.0 700.0 0 0 0 670.0 382.7 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="700.7" y1="367.2" x2="628.0" y2="213.5" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 655.9 356.2 A 730.0 730.0 0 0 1 720.6 325.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="640.3" y="278.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(423.3 640.3 285.4)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="640.3" dy="0">#38 Homer vs. Lisa and</tspan><tspan x="640.3" dy="13">the 8th Commandment</tspan></text>
+<text x="678.5" y="361.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(423.3 678.5 361.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="675.8" y="262.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(426.1 675.8 268.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="675.8" dy="0">#91 Bart vs.</tspan><tspan x="675.8" dy="13">Thanksgiving</tspan></text>
+<text x="710.3" y="346.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(426.1 710.3 346.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 232.7 1410.1 A 870.0 870.0 0 0 1 213.5 1372.0 L 367.2 1299.3 A 700.0 700.0 0 0 0 382.7 1330.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 213.5 1372.0 A 870.0 870.0 0 0 1 196.2 1332.9 L 353.3 1267.9 A 700.0 700.0 0 0 0 367.2 1299.3 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 232.7 1410.1 A 870.0 870.0 0 0 1 196.2 1332.9 L 353.3 1267.9 A 700.0 700.0 0 0 0 382.7 1330.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="367.2" y1="1299.3" x2="213.5" y2="1372.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 356.2 1344.1 A 730.0 730.0 0 0 1 325.6 1279.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="285.4" y="1353.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(333.3 285.4 1359.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="285.4" dy="0">#39 Homer&#x27;s</tspan><tspan x="285.4" dy="13">Barbershop Quartet</tspan></text>
+<text x="361.3" y="1321.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(333.3 361.3 1321.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<text x="268.6" y="1324.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(336.1 268.6 1324.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="268.6" dy="0">#90 Lisa&#x27;s First Word</tspan></text>
+<text x="346.3" y="1289.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(336.1 346.3 1289.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 1767.3 589.9 A 870.0 870.0 0 0 1 1786.5 628.0 L 1632.8 700.7 A 700.0 700.0 0 0 0 1617.3 670.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1786.5 628.0 A 870.0 870.0 0 0 1 1803.8 667.1 L 1646.7 732.1 A 700.0 700.0 0 0 0 1632.8 700.7 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1767.3 589.9 A 870.0 870.0 0 0 1 1803.8 667.1 L 1646.7 732.1 A 700.0 700.0 0 0 0 1617.3 670.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1632.8" y1="700.7" x2="1786.5" y2="628.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1643.8 655.9 A 730.0 730.0 0 0 1 1674.4 720.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1714.6" y="633.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(-26.7 1714.6 640.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1714.6" dy="0">#40 Sweet Seymour</tspan><tspan x="1714.6" dy="13">Skinner&#x27;s Baadasssss S…</tspan></text>
+<text x="1638.7" y="678.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-26.7 1638.7 678.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1731.4" y="675.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(-23.9 1731.4 675.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1731.4" dy="0">#89 Bart Gets an F</tspan></text>
+<text x="1653.7" y="710.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-23.9 1653.7 710.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1865.8 914.7 A 870.0 870.0 0 0 1 1869.0 957.3 L 1699.2 965.7 A 700.0 700.0 0 0 0 1696.6 931.4 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1869.0 957.3 A 870.0 870.0 0 0 1 1870.0 1000.0 L 1700.0 1000.0 A 700.0 700.0 0 0 0 1699.2 965.7 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1865.8 914.7 A 870.0 870.0 0 0 1 1870.0 1000.0 L 1700.0 1000.0 A 700.0 700.0 0 0 0 1696.6 931.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1699.2" y1="965.7" x2="1869.0" y2="957.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1726.5 928.4 A 730.0 730.0 0 0 1 1730.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1797.8" y="941.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-4.2 1797.8 941.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1797.8" dy="0">#41 Lisa the Iconoclast</tspan></text>
+<text x="1713.1" y="947.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-4.2 1713.1 947.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1799.8" y="973.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-1.4 1799.8 980.4)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1799.8" dy="0">#88 Boy-Scoutz</tspan><tspan x="1799.8" dy="13">&#x27;n the Hood</tspan></text>
+<text x="1714.8" y="982.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-1.4 1714.8 982.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 134.2 1085.3 A 870.0 870.0 0 0 1 131.0 1042.7 L 300.8 1034.3 A 700.0 700.0 0 0 0 303.4 1068.6 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 131.0 1042.7 A 870.0 870.0 0 0 1 130.0 1000.0 L 300.0 1000.0 A 700.0 700.0 0 0 0 300.8 1034.3 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 134.2 1085.3 A 870.0 870.0 0 0 1 130.0 1000.0 L 300.0 1000.0 A 700.0 700.0 0 0 0 303.4 1068.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="300.8" y1="1034.3" x2="131.0" y2="1042.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 273.5 1071.6 A 730.0 730.0 0 0 1 270.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="202.2" y="1052.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(355.8 202.2 1058.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="202.2" dy="0">#42 The Last</tspan><tspan x="202.2" dy="13">Temptation of Homer</tspan></text>
+<text x="286.9" y="1052.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(355.8 286.9 1052.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="200.2" y="1019.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(358.6 200.2 1019.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="200.2" dy="0">#87 A Fish Called Selma</tspan></text>
+<text x="285.2" y="1017.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(358.6 285.2 1017.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 914.7 134.2 A 870.0 870.0 0 0 1 957.3 131.0 L 965.7 300.8 A 700.0 700.0 0 0 0 931.4 303.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 957.3 131.0 A 870.0 870.0 0 0 1 1000.0 130.0 L 1000.0 300.0 A 700.0 700.0 0 0 0 965.7 300.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 914.7 134.2 A 870.0 870.0 0 0 1 1000.0 130.0 L 1000.0 300.0 A 700.0 700.0 0 0 0 931.4 303.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="965.7" y1="300.8" x2="957.3" y2="131.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 928.4 273.5 A 730.0 730.0 0 0 1 1000.0 270.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="941.1" y="195.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(445.8 941.1 202.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="941.1" dy="0">#43 A Streetcar</tspan><tspan x="941.1" dy="13">Named Marge</tspan></text>
+<text x="947.4" y="286.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(445.8 947.4 286.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<text x="980.4" y="193.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(448.6 980.4 200.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="980.4" dy="0">#86 El Viaje Misterioso</tspan><tspan x="980.4" dy="13">de Nuestro Jomer (The…</tspan></text>
+<text x="982.5" y="285.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(448.6 982.5 285.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1085.3 1865.8 A 870.0 870.0 0 0 1 1042.7 1869.0 L 1034.3 1699.2 A 700.0 700.0 0 0 0 1068.6 1696.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1042.7 1869.0 A 870.0 870.0 0 0 1 1000.0 1870.0 L 1000.0 1700.0 A 700.0 700.0 0 0 0 1034.3 1699.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1085.3 1865.8 A 870.0 870.0 0 0 1 1000.0 1870.0 L 1000.0 1700.0 A 700.0 700.0 0 0 0 1068.6 1696.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1034.3" y1="1699.2" x2="1042.7" y2="1869.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1071.6 1726.5 A 730.0 730.0 0 0 1 1000.0 1730.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1058.9" y="1797.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(85.8 1058.9 1797.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1058.9" dy="0">#44 I Love Lisa</tspan></text>
+<text x="1052.6" y="1713.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(85.8 1052.6 1713.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1019.6" y="1793.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(88.6 1019.6 1799.8)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1019.6" dy="0">#85 $pringfield (or, How</tspan><tspan x="1019.6" dy="13">I Learned to Stop Worr…</tspan></text>
+<text x="1017.5" y="1714.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(88.6 1017.5 1714.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1672.5 1551.9 A 870.0 870.0 0 0 1 1644.6 1584.3 L 1518.7 1470.1 A 700.0 700.0 0 0 0 1541.1 1444.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1644.6 1584.3 A 870.0 870.0 0 0 1 1615.2 1615.2 L 1495.0 1495.0 A 700.0 700.0 0 0 0 1518.7 1470.1 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1672.5 1551.9 A 870.0 870.0 0 0 1 1615.2 1615.2 L 1495.0 1495.0 A 700.0 700.0 0 0 0 1541.1 1444.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1518.7" y1="1470.1" x2="1644.6" y2="1584.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1564.3 1463.1 A 730.0 730.0 0 0 1 1516.2 1516.2" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1605.8" y="1522.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(40.8 1605.8 1522.5)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1605.8" dy="0">#45 Lisa&#x27;s Wedding</tspan></text>
+<text x="1541.4" y="1467.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(40.8 1541.4 1467.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="1579.4" y="1545.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(43.6 1579.4 1551.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1579.4" dy="0">#84 Treehouse</tspan><tspan x="1579.4" dy="13">of Horror IV</tspan></text>
+<text x="1517.8" y="1493.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(43.6 1517.8 1493.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 327.5 448.1 A 870.0 870.0 0 0 1 355.4 415.7 L 481.3 529.9 A 700.0 700.0 0 0 0 458.9 555.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 355.4 415.7 A 870.0 870.0 0 0 1 384.8 384.8 L 505.0 505.0 A 700.0 700.0 0 0 0 481.3 529.9 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 327.5 448.1 A 870.0 870.0 0 0 1 384.8 384.8 L 505.0 505.0 A 700.0 700.0 0 0 0 458.9 555.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="481.3" y1="529.9" x2="355.4" y2="415.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 435.7 536.9 A 730.0 730.0 0 0 1 483.8 483.8" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="394.2" y="477.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(400.8 394.2 477.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="394.2" dy="0">#46 Selma&#x27;s Choice</tspan></text>
+<text x="458.6" y="533.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(400.8 458.6 533.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<text x="420.6" y="441.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(403.6 420.6 448.4)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="420.6" dy="0">#83 Life on</tspan><tspan x="420.6" dy="13">the Fast Lane</tspan></text>
+<text x="482.2" y="507.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(403.6 482.2 507.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 448.1 1672.5 A 870.0 870.0 0 0 1 415.7 1644.6 L 529.9 1518.7 A 700.0 700.0 0 0 0 555.9 1541.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 415.7 1644.6 A 870.0 870.0 0 0 1 384.8 1615.2 L 505.0 1495.0 A 700.0 700.0 0 0 0 529.9 1518.7 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 448.1 1672.5 A 870.0 870.0 0 0 1 384.8 1615.2 L 505.0 1495.0 A 700.0 700.0 0 0 0 555.9 1541.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="529.9" y1="1518.7" x2="415.7" y2="1644.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 536.9 1564.3 A 730.0 730.0 0 0 1 483.8 1516.2" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="477.5" y="1605.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(310.8 477.5 1605.8)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="477.5" dy="0">#47 Homer the Great</tspan></text>
+<text x="533.0" y="1541.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(310.8 533.0 1541.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="448.4" y="1579.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(313.6 448.4 1579.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="448.4" dy="0">#82 Lisa on Ice</tspan></text>
+<text x="507.0" y="1517.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(313.6 507.0 1517.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1551.9 327.5 A 870.0 870.0 0 0 1 1584.3 355.4 L 1470.1 481.3 A 700.0 700.0 0 0 0 1444.1 458.9 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1584.3 355.4 A 870.0 870.0 0 0 1 1615.2 384.8 L 1495.0 505.0 A 700.0 700.0 0 0 0 1470.1 481.3 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1551.9 327.5 A 870.0 870.0 0 0 1 1615.2 384.8 L 1495.0 505.0 A 700.0 700.0 0 0 0 1444.1 458.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1470.1" y1="481.3" x2="1584.3" y2="355.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1463.1 435.7 A 730.0 730.0 0 0 1 1516.2 483.8" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1522.5" y="387.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(-49.2 1522.5 394.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1522.5" dy="0">#48 Brother From</tspan><tspan x="1522.5" dy="13">the Same Planet</tspan></text>
+<text x="1467.0" y="458.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(-49.2 1467.0 458.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="1551.6" y="414.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-46.4 1551.6 420.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1551.6" dy="0">#81 22 Short Films</tspan><tspan x="1551.6" dy="13">About Springfield</tspan></text>
+<text x="1493.0" y="482.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(-46.4 1493.0 482.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">7</text>
+<path d="M 1410.1 232.7 A 870.0 870.0 0 0 1 1447.3 253.8 L 1359.9 399.6 A 700.0 700.0 0 0 0 1330.0 382.7 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1447.3 253.8 A 870.0 870.0 0 0 1 1483.3 276.6 L 1388.9 418.0 A 700.0 700.0 0 0 0 1359.9 399.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1410.1 232.7 A 870.0 870.0 0 0 1 1483.3 276.6 L 1388.9 418.0 A 700.0 700.0 0 0 0 1330.0 382.7 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1359.9" y1="399.6" x2="1447.3" y2="253.8" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1344.1 356.2 A 730.0 730.0 0 0 1 1405.6 393.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1394.3" y="297.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-60.5 1394.3 303.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1394.3" dy="0">#49 Bart Gets</tspan><tspan x="1394.3" dy="13">an Elephant</tspan></text>
+<text x="1352.4" y="377.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-60.5 1352.4 377.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="1428.0" y="317.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(-57.7 1428.0 324.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1428.0" dy="0">#80 One Fish, Two Fish,</tspan><tspan x="1428.0" dy="13">Blowfish, Blue Fish</tspan></text>
+<text x="1382.5" y="395.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-57.7 1382.5 395.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 589.9 1767.3 A 870.0 870.0 0 0 1 552.7 1746.2 L 640.1 1600.4 A 700.0 700.0 0 0 0 670.0 1617.3 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 552.7 1746.2 A 870.0 870.0 0 0 1 516.7 1723.4 L 611.1 1582.0 A 700.0 700.0 0 0 0 640.1 1600.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 589.9 1767.3 A 870.0 870.0 0 0 1 516.7 1723.4 L 611.1 1582.0 A 700.0 700.0 0 0 0 670.0 1617.3 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="640.1" y1="1600.4" x2="552.7" y2="1746.2" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 655.9 1643.8 A 730.0 730.0 0 0 1 594.4 1607.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="605.7" y="1696.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(299.5 605.7 1696.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="605.7" dy="0">#50 Lisa the Vegetarian</tspan></text>
+<text x="647.6" y="1622.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(299.5 647.6 1622.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="572.0" y="1669.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(302.3 572.0 1675.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="572.0" dy="0">#79 Who Shot Mr.</tspan><tspan x="572.0" dy="13">Burns? Part One</tspan></text>
+<text x="617.5" y="1604.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(302.3 617.5 1604.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 232.7 589.9 A 870.0 870.0 0 0 1 253.8 552.7 L 399.6 640.1 A 700.0 700.0 0 0 0 382.7 670.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 253.8 552.7 A 870.0 870.0 0 0 1 276.6 516.7 L 418.0 611.1 A 700.0 700.0 0 0 0 399.6 640.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 232.7 589.9 A 870.0 870.0 0 0 1 276.6 516.7 L 418.0 611.1 A 700.0 700.0 0 0 0 382.7 670.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="399.6" y1="640.1" x2="253.8" y2="552.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 356.2 655.9 A 730.0 730.0 0 0 1 393.0 594.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="303.9" y="605.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(389.5 303.9 605.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="303.9" dy="0">#51 Homie the Clown</tspan></text>
+<text x="377.9" y="647.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(389.5 377.9 647.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="324.1" y="565.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(392.3 324.1 572.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="324.1" dy="0">#78 Who Shot Mr.</tspan><tspan x="324.1" dy="13">Burns? Part Two</tspan></text>
+<text x="395.9" y="617.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(392.3 395.9 617.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1767.3 1410.1 A 870.0 870.0 0 0 1 1746.2 1447.3 L 1600.4 1359.9 A 700.0 700.0 0 0 0 1617.3 1330.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1746.2 1447.3 A 870.0 870.0 0 0 1 1723.4 1483.3 L 1582.0 1388.9 A 700.0 700.0 0 0 0 1600.4 1359.9 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1767.3 1410.1 A 870.0 870.0 0 0 1 1723.4 1483.3 L 1582.0 1388.9 A 700.0 700.0 0 0 0 1617.3 1330.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1600.4" y1="1359.9" x2="1746.2" y2="1447.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1643.8 1344.1 A 730.0 730.0 0 0 1 1607.0 1405.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1696.1" y="1394.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(29.5 1696.1 1394.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1696.1" dy="0">#52 The PTA Disbands</tspan></text>
+<text x="1622.1" y="1352.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(29.5 1622.1 1352.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="1675.9" y="1421.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(32.3 1675.9 1428.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1675.9" dy="0">#77 The</tspan><tspan x="1675.9" dy="13">Cartridge Family</tspan></text>
+<text x="1604.1" y="1382.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(32.3 1604.1 1382.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1252.5 1832.5 A 870.0 870.0 0 0 1 1211.4 1843.9 L 1170.1 1679.0 A 700.0 700.0 0 0 0 1203.2 1669.9 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1211.4 1843.9 A 870.0 870.0 0 0 1 1169.7 1853.3 L 1136.6 1686.5 A 700.0 700.0 0 0 0 1170.1 1679.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1252.5 1832.5 A 870.0 870.0 0 0 1 1169.7 1853.3 L 1136.6 1686.5 A 700.0 700.0 0 0 0 1203.2 1669.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1170.1" y1="1679.0" x2="1211.4" y2="1843.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1211.9 1698.6 A 730.0 730.0 0 0 1 1142.4 1716.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1213.4" y="1764.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(74.5 1213.4 1771.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1213.4" dy="0">#53 Homer&#x27;s</tspan><tspan x="1213.4" dy="13">Triple Bypass</tspan></text>
+<text x="1190.7" y="1689.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(74.5 1190.7 1689.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="1175.3" y="1774.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(77.3 1175.3 1780.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1175.3" dy="0">#76 Itchy &amp;</tspan><tspan x="1175.3" dy="13">Scratchy: The Movie</tspan></text>
+<text x="1156.7" y="1697.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(77.3 1156.7 1697.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 747.5 167.5 A 870.0 870.0 0 0 1 788.6 156.1 L 829.9 321.0 A 700.0 700.0 0 0 0 796.8 330.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 788.6 156.1 A 870.0 870.0 0 0 1 830.3 146.7 L 863.4 313.5 A 700.0 700.0 0 0 0 829.9 321.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 747.5 167.5 A 870.0 870.0 0 0 1 830.3 146.7 L 863.4 313.5 A 700.0 700.0 0 0 0 796.8 330.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="829.9" y1="321.0" x2="788.6" y2="156.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 788.1 301.4 A 730.0 730.0 0 0 1 857.6 284.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="786.6" y="229.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(434.5 786.6 229.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="786.6" dy="0">#54 Simpson and Delilah</tspan></text>
+<text x="809.3" y="310.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(434.5 809.3 310.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="824.7" y="219.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(437.3 824.7 219.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="824.7" dy="0">#75 Summer of 4 Ft. 2</tspan></text>
+<text x="843.3" y="302.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(437.3 843.3 302.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 167.5 1252.5 A 870.0 870.0 0 0 1 156.1 1211.4 L 321.0 1170.1 A 700.0 700.0 0 0 0 330.1 1203.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 156.1 1211.4 A 870.0 870.0 0 0 1 146.7 1169.7 L 313.5 1136.6 A 700.0 700.0 0 0 0 321.0 1170.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 167.5 1252.5 A 870.0 870.0 0 0 1 146.7 1169.7 L 313.5 1136.6 A 700.0 700.0 0 0 0 330.1 1203.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="321.0" y1="1170.1" x2="156.1" y2="1211.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 301.4 1211.9 A 730.0 730.0 0 0 1 284.0 1142.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="229.0" y="1206.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(344.5 229.0 1213.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="229.0" dy="0">#55 Homer vs. the</tspan><tspan x="229.0" dy="13">Eighteenth Amendment</tspan></text>
+<text x="310.9" y="1190.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(344.5 310.9 1190.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="219.4" y="1175.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(347.3 219.4 1175.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="219.4" dy="0">#74 Treehouse of Horror</tspan></text>
+<text x="302.4" y="1156.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(347.3 302.4 1156.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1832.5 747.5 A 870.0 870.0 0 0 1 1843.9 788.6 L 1679.0 829.9 A 700.0 700.0 0 0 0 1669.9 796.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1843.9 788.6 A 870.0 870.0 0 0 1 1853.3 830.3 L 1686.5 863.4 A 700.0 700.0 0 0 0 1679.0 829.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1832.5 747.5 A 870.0 870.0 0 0 1 1853.3 830.3 L 1686.5 863.4 A 700.0 700.0 0 0 0 1669.9 796.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1679.0" y1="829.9" x2="1843.9" y2="788.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1698.6 788.1 A 730.0 730.0 0 0 1 1716.0 857.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1771.0" y="780.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-15.5 1771.0 786.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1771.0" dy="0">#56 Brush With</tspan><tspan x="1771.0" dy="13">Greatness</tspan></text>
+<text x="1689.1" y="809.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-15.5 1689.1 809.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="1780.6" y="818.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(-12.7 1780.6 824.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1780.6" dy="0">#73 Lisa vs.</tspan><tspan x="1780.6" dy="13">Malibu Stacy</tspan></text>
+<text x="1697.6" y="843.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-12.7 1697.6 843.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 1672.5 448.1 A 870.0 870.0 0 0 1 1698.8 481.7 L 1562.2 583.0 A 700.0 700.0 0 0 0 1541.1 555.9 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1698.8 481.7 A 870.0 870.0 0 0 1 1723.4 516.7 L 1582.0 611.1 A 700.0 700.0 0 0 0 1562.2 583.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1672.5 448.1 A 870.0 870.0 0 0 1 1723.4 516.7 L 1582.0 611.1 A 700.0 700.0 0 0 0 1541.1 555.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1562.2" y1="583.0" x2="1698.8" y2="481.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1564.3 536.9 A 730.0 730.0 0 0 1 1607.0 594.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1630.7" y="507.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(-38.0 1630.7 507.8)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1630.7" dy="0">#57 Homer Defined</tspan></text>
+<text x="1563.7" y="560.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-38.0 1563.7 560.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1654.1" y="539.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-35.2 1654.1 539.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1654.1" dy="0">#72 Bart of Darkness</tspan></text>
+<text x="1584.6" y="588.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-35.2 1584.6 588.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 327.5 1551.9 A 870.0 870.0 0 0 1 301.2 1518.3 L 437.8 1417.0 A 700.0 700.0 0 0 0 458.9 1444.1 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 301.2 1518.3 A 870.0 870.0 0 0 1 276.6 1483.3 L 418.0 1388.9 A 700.0 700.0 0 0 0 437.8 1417.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 327.5 1551.9 A 870.0 870.0 0 0 1 276.6 1483.3 L 418.0 1388.9 A 700.0 700.0 0 0 0 458.9 1444.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="437.8" y1="1417.0" x2="301.2" y2="1518.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 435.7 1463.1 A 730.0 730.0 0 0 1 393.0 1405.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="369.3" y="1485.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(322.0 369.3 1492.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="369.3" dy="0">#58 Itchy and</tspan><tspan x="369.3" dy="13">Scratchy Land</tspan></text>
+<text x="436.3" y="1439.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(322.0 436.3 1439.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">6</text>
+<text x="345.9" y="1460.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(324.8 345.9 1460.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="345.9" dy="0">#71 Bart the Murderer</tspan></text>
+<text x="415.4" y="1411.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(324.8 415.4 1411.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 448.1 327.5 A 870.0 870.0 0 0 1 481.7 301.2 L 583.0 437.8 A 700.0 700.0 0 0 0 555.9 458.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 481.7 301.2 A 870.0 870.0 0 0 1 516.7 276.6 L 611.1 418.0 A 700.0 700.0 0 0 0 583.0 437.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 448.1 327.5 A 870.0 870.0 0 0 1 516.7 276.6 L 611.1 418.0 A 700.0 700.0 0 0 0 555.9 458.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="583.0" y1="437.8" x2="481.7" y2="301.2" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 536.9 435.7 A 730.0 730.0 0 0 1 594.4 393.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="507.8" y="362.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(412.0 507.8 369.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="507.8" dy="0">#59 Two Dozen and</tspan><tspan x="507.8" dy="13">One Greyhounds</tspan></text>
+<text x="560.1" y="436.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(412.0 560.1 436.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="539.4" y="339.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(414.8 539.4 345.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="539.4" dy="0">#70 Mr. Lisa Goes</tspan><tspan x="539.4" dy="13">to Washington</tspan></text>
+<text x="588.3" y="415.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(414.8 588.3 415.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1551.9 1672.5 A 870.0 870.0 0 0 1 1518.3 1698.8 L 1417.0 1562.2 A 700.0 700.0 0 0 0 1444.1 1541.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1518.3 1698.8 A 870.0 870.0 0 0 1 1483.3 1723.4 L 1388.9 1582.0 A 700.0 700.0 0 0 0 1417.0 1562.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1551.9 1672.5 A 870.0 870.0 0 0 1 1483.3 1723.4 L 1388.9 1582.0 A 700.0 700.0 0 0 0 1444.1 1541.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1417.0" y1="1562.2" x2="1518.3" y2="1698.8" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1463.1 1564.3 A 730.0 730.0 0 0 1 1405.6 1607.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1492.2" y="1630.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(52.0 1492.2 1630.7)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1492.2" dy="0">#60 Bart Gets Famous</tspan></text>
+<text x="1439.9" y="1563.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(52.0 1439.9 1563.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="1460.6" y="1647.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(54.8 1460.6 1654.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1460.6" dy="0">#69 Oh Brother,</tspan><tspan x="1460.6" dy="13">Where Art Thou?</tspan></text>
+<text x="1411.7" y="1584.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(54.8 1411.7 1584.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 1865.8 1085.3 A 870.0 870.0 0 0 1 1860.6 1127.7 L 1692.4 1102.7 A 700.0 700.0 0 0 0 1696.6 1068.6 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1860.6 1127.7 A 870.0 870.0 0 0 1 1853.3 1169.7 L 1686.5 1136.6 A 700.0 700.0 0 0 0 1692.4 1102.7 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1865.8 1085.3 A 870.0 870.0 0 0 1 1853.3 1169.7 L 1686.5 1136.6 A 700.0 700.0 0 0 0 1696.6 1068.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1692.4" y1="1102.7" x2="1860.6" y2="1127.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1726.5 1071.6 A 730.0 730.0 0 0 1 1716.0 1142.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1794.0" y="1091.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(7.0 1794.0 1097.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1794.0" dy="0">#61 Three Men</tspan><tspan x="1794.0" dy="13">and a Comic Book</tspan></text>
+<text x="1709.6" y="1087.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(7.0 1709.6 1087.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1788.2" y="1136.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(9.8 1788.2 1136.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1788.2" dy="0">#68 Homerpalooza</tspan></text>
+<text x="1704.5" y="1122.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(9.8 1704.5 1122.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 134.2 914.7 A 870.0 870.0 0 0 1 139.4 872.3 L 307.6 897.3 A 700.0 700.0 0 0 0 303.4 931.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 139.4 872.3 A 870.0 870.0 0 0 1 146.7 830.3 L 313.5 863.4 A 700.0 700.0 0 0 0 307.6 897.3 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 134.2 914.7 A 870.0 870.0 0 0 1 146.7 830.3 L 313.5 863.4 A 700.0 700.0 0 0 0 303.4 931.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="307.6" y1="897.3" x2="139.4" y2="872.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 273.5 928.4 A 730.0 730.0 0 0 1 284.0 857.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="206.0" y="902.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(367.0 206.0 902.1)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="206.0" dy="0">#62 Blood Feud</tspan></text>
+<text x="290.4" y="912.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(367.0 290.4 912.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="211.8" y="856.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(369.8 211.8 863.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="211.8" dy="0">#67 New Kid</tspan><tspan x="211.8" dy="13">on the Block</tspan></text>
+<text x="295.5" y="877.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(369.8 295.5 877.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 914.7 1865.8 A 870.0 870.0 0 0 1 872.3 1860.6 L 897.3 1692.4 A 700.0 700.0 0 0 0 931.4 1696.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 872.3 1860.6 A 870.0 870.0 0 0 1 830.3 1853.3 L 863.4 1686.5 A 700.0 700.0 0 0 0 897.3 1692.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 914.7 1865.8 A 870.0 870.0 0 0 1 830.3 1853.3 L 863.4 1686.5 A 700.0 700.0 0 0 0 931.4 1696.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="897.3" y1="1692.4" x2="872.3" y2="1860.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 928.4 1726.5 A 730.0 730.0 0 0 1 857.6 1716.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="902.1" y="1794.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(277.0 902.1 1794.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="902.1" dy="0">#63 Bart&#x27;s Comet</tspan></text>
+<text x="912.5" y="1709.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(277.0 912.5 1709.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="863.2" y="1781.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(279.8 863.2 1788.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="863.2" dy="0">#66 Saturdays</tspan><tspan x="863.2" dy="13">of Thunder</tspan></text>
+<text x="877.8" y="1704.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(279.8 877.8 1704.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1085.3 134.2 A 870.0 870.0 0 0 1 1127.7 139.4 L 1102.7 307.6 A 700.0 700.0 0 0 0 1068.6 303.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1127.7 139.4 A 870.0 870.0 0 0 1 1169.7 146.7 L 1136.6 313.5 A 700.0 700.0 0 0 0 1102.7 307.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1085.3 134.2 A 870.0 870.0 0 0 1 1169.7 146.7 L 1136.6 313.5 A 700.0 700.0 0 0 0 1068.6 303.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1102.7" y1="307.6" x2="1127.7" y2="139.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1071.6 273.5 A 730.0 730.0 0 0 1 1142.4 284.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1097.9" y="199.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-83.0 1097.9 206.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1097.9" dy="0">#64 Homer</tspan><tspan x="1097.9" dy="13">Loves Flanders</tspan></text>
+<text x="1087.5" y="290.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-83.0 1087.5 290.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="1136.8" y="205.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-80.2 1136.8 211.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1136.8" dy="0">#65 Sideshow</tspan><tspan x="1136.8" dy="13">Bob Roberts</tspan></text>
+<text x="1122.2" y="295.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-80.2 1122.2 295.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 1000.0 300.0 A 700.0 700.0 0 0 1 1068.6 303.4 L 1051.9 472.6 A 530.0 530.0 0 0 0 1000.0 470.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1068.6 303.4 A 700.0 700.0 0 0 1 1136.6 313.5 L 1103.4 480.2 A 530.0 530.0 0 0 0 1051.9 472.6 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1000.0 300.0 A 700.0 700.0 0 0 1 1136.6 313.5 L 1103.4 480.2 A 530.0 530.0 0 0 0 1000.0 470.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1051.9" y1="472.6" x2="1068.6" y2="303.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 440.0 A 560.0 560.0 0 0 1 1109.3 450.8" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1030.9" y="364.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-87.2 1030.9 370.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1030.9" dy="0">#1 Last Exit</tspan><tspan x="1030.9" dy="13">to Springfield</tspan></text>
+<text x="1026.7" y="455.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(-87.2 1026.7 455.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<text x="1092.4" y="370.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-81.6 1092.4 376.8)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1092.4" dy="0">#65 Sideshow</tspan><tspan x="1092.4" dy="13">Bob Roberts</tspan></text>
+<text x="1080.0" y="460.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-81.6 1080.0 460.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 1000.0 1700.0 A 700.0 700.0 0 0 1 931.4 1696.6 L 948.1 1527.4 A 530.0 530.0 0 0 0 1000.0 1530.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 931.4 1696.6 A 700.0 700.0 0 0 1 863.4 1686.5 L 896.6 1519.8 A 530.0 530.0 0 0 0 948.1 1527.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1000.0 1700.0 A 700.0 700.0 0 0 1 863.4 1686.5 L 896.6 1519.8 A 530.0 530.0 0 0 0 1000.0 1530.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="948.1" y1="1527.4" x2="931.4" y2="1696.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 1560.0 A 560.0 560.0 0 0 1 890.7 1549.2" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="969.1" y="1629.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(272.8 969.1 1629.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="969.1" dy="0">#2 Lisa&#x27;s Substitute</tspan></text>
+<text x="973.3" y="1544.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(272.8 973.3 1544.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="907.6" y="1623.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(278.4 907.6 1623.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="907.6" dy="0">#63 Bart&#x27;s Comet</tspan></text>
+<text x="920.0" y="1539.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(278.4 920.0 1539.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 300.0 1000.0 A 700.0 700.0 0 0 1 303.4 931.4 L 472.6 948.1 A 530.0 530.0 0 0 0 470.0 1000.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 303.4 931.4 A 700.0 700.0 0 0 1 313.5 863.4 L 480.2 896.6 A 530.0 530.0 0 0 0 472.6 948.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 300.0 1000.0 A 700.0 700.0 0 0 1 313.5 863.4 L 480.2 896.6 A 530.0 530.0 0 0 0 470.0 1000.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="472.6" y1="948.1" x2="303.4" y2="931.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 440.0 1000.0 A 560.0 560.0 0 0 1 450.8 890.7" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="370.8" y="969.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(362.8 370.8 969.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="370.8" dy="0">#3 Mr. Plow</tspan></text>
+<text x="455.7" y="973.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(362.8 455.7 973.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="376.8" y="901.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(368.4 376.8 907.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="376.8" dy="0">#67 New Kid</tspan><tspan x="376.8" dy="13">on the Block</tspan></text>
+<text x="460.9" y="920.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(368.4 460.9 920.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1700.0 1000.0 A 700.0 700.0 0 0 1 1696.6 1068.6 L 1527.4 1051.9 A 530.0 530.0 0 0 0 1530.0 1000.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1696.6 1068.6 A 700.0 700.0 0 0 1 1686.5 1136.6 L 1519.8 1103.4 A 530.0 530.0 0 0 0 1527.4 1051.9 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1700.0 1000.0 A 700.0 700.0 0 0 1 1686.5 1136.6 L 1519.8 1103.4 A 530.0 530.0 0 0 0 1530.0 1000.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1527.4" y1="1051.9" x2="1696.6" y2="1068.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1560.0 1000.0 A 560.0 560.0 0 0 1 1549.2 1109.3" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1629.2" y="1024.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(2.8 1629.2 1030.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1629.2" dy="0">#4 Marge vs.</tspan><tspan x="1629.2" dy="13">the Monorail</tspan></text>
+<text x="1544.3" y="1026.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(2.8 1544.3 1026.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="1623.2" y="1092.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(8.4 1623.2 1092.4)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1623.2" dy="0">#68 Homerpalooza</tspan></text>
+<text x="1539.1" y="1080.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(8.4 1539.1 1080.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1495.0 1495.0 A 700.0 700.0 0 0 1 1444.1 1541.1 L 1336.2 1409.7 A 530.0 530.0 0 0 0 1374.8 1374.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1444.1 1541.1 A 700.0 700.0 0 0 1 1388.9 1582.0 L 1294.5 1440.7 A 530.0 530.0 0 0 0 1336.2 1409.7 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1495.0 1495.0 A 700.0 700.0 0 0 1 1388.9 1582.0 L 1294.5 1440.7 A 530.0 530.0 0 0 0 1374.8 1374.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1336.2" y1="1409.7" x2="1444.1" y2="1541.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1396.0 1396.0 A 560.0 560.0 0 0 1 1311.1 1465.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1423.1" y="1466.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(47.8 1423.1 1466.8)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1423.1" dy="0">#5 Homer the Heretic</tspan></text>
+<text x="1366.0" y="1403.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(47.8 1366.0 1403.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="1375.3" y="1499.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(53.4 1375.3 1506.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1375.3" dy="0">#69 Oh Brother,</tspan><tspan x="1375.3" dy="13">Where Art Thou?</tspan></text>
+<text x="1324.7" y="1437.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(53.4 1324.7 1437.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 505.0 505.0 A 700.0 700.0 0 0 1 555.9 458.9 L 663.8 590.3 A 530.0 530.0 0 0 0 625.2 625.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 555.9 458.9 A 700.0 700.0 0 0 1 611.1 418.0 L 705.5 559.3 A 530.0 530.0 0 0 0 663.8 590.3 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 505.0 505.0 A 700.0 700.0 0 0 1 611.1 418.0 L 705.5 559.3 A 530.0 530.0 0 0 0 625.2 625.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="663.8" y1="590.3" x2="555.9" y2="458.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 604.0 604.0 A 560.0 560.0 0 0 1 688.9 534.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="576.9" y="533.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(407.8 576.9 533.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="576.9" dy="0">#6 Radio Bart</tspan></text>
+<text x="634.0" y="596.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(407.8 634.0 596.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="624.7" y="487.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(413.4 624.7 494.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="624.7" dy="0">#59 Two Dozen and</tspan><tspan x="624.7" dy="13">One Greyhounds</tspan></text>
+<text x="675.3" y="562.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(413.4 675.3 562.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 505.0 1495.0 A 700.0 700.0 0 0 1 458.9 1444.1 L 590.3 1336.2 A 530.0 530.0 0 0 0 625.2 1374.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 458.9 1444.1 A 700.0 700.0 0 0 1 418.0 1388.9 L 559.3 1294.5 A 530.0 530.0 0 0 0 590.3 1336.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 505.0 1495.0 A 700.0 700.0 0 0 1 418.0 1388.9 L 559.3 1294.5 A 530.0 530.0 0 0 0 625.2 1374.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="590.3" y1="1336.2" x2="458.9" y2="1444.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 604.0 1396.0 A 560.0 560.0 0 0 1 534.4 1311.1" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="533.2" y="1416.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(317.8 533.2 1423.1)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="533.2" dy="0">#7 Itchy &amp;</tspan><tspan x="533.2" dy="13">Scratchy &amp; Marge</tspan></text>
+<text x="596.2" y="1366.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(317.8 596.2 1366.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="494.0" y="1368.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(323.4 494.0 1375.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="494.0" dy="0">#58 Itchy and</tspan><tspan x="494.0" dy="13">Scratchy Land</tspan></text>
+<text x="562.3" y="1324.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(323.4 562.3 1324.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">6</text>
+<path d="M 1495.0 505.0 A 700.0 700.0 0 0 1 1541.1 555.9 L 1409.7 663.8 A 530.0 530.0 0 0 0 1374.8 625.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1541.1 555.9 A 700.0 700.0 0 0 1 1582.0 611.1 L 1440.7 705.5 A 530.0 530.0 0 0 0 1409.7 663.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1495.0 505.0 A 700.0 700.0 0 0 1 1582.0 611.1 L 1440.7 705.5 A 530.0 530.0 0 0 0 1374.8 625.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1409.7" y1="663.8" x2="1541.1" y2="555.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1396.0 604.0 A 560.0 560.0 0 0 1 1465.6 688.9" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1466.8" y="576.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-42.2 1466.8 576.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1466.8" dy="0">#8 Homer at the Bat</tspan></text>
+<text x="1403.8" y="634.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-42.2 1403.8 634.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="1506.0" y="624.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(-36.6 1506.0 624.7)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1506.0" dy="0">#72 Bart of Darkness</tspan></text>
+<text x="1437.7" y="675.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-36.6 1437.7 675.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 1646.7 732.1 A 700.0 700.0 0 0 1 1669.9 796.8 L 1507.2 846.1 A 530.0 530.0 0 0 0 1489.7 797.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1669.9 796.8 A 700.0 700.0 0 0 1 1686.5 863.4 L 1519.8 896.6 A 530.0 530.0 0 0 0 1507.2 846.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1646.7 732.1 A 700.0 700.0 0 0 1 1686.5 863.4 L 1519.8 896.6 A 530.0 530.0 0 0 0 1489.7 797.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1507.2" y1="846.1" x2="1669.9" y2="796.8" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1517.4 785.7 A 560.0 560.0 0 0 1 1549.2 890.7" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1593.2" y="787.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(-19.7 1593.2 787.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1593.2" dy="0">#9 Bart Sells His Soul</tspan></text>
+<text x="1513.1" y="816.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-19.7 1513.1 816.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1611.1" y="840.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-14.1 1611.1 846.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1611.1" dy="0">#73 Lisa vs.</tspan><tspan x="1611.1" dy="13">Malibu Stacy</tspan></text>
+<text x="1528.7" y="867.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(-14.1 1528.7 867.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 353.3 1267.9 A 700.0 700.0 0 0 1 330.1 1203.2 L 492.8 1153.9 A 530.0 530.0 0 0 0 510.3 1202.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 330.1 1203.2 A 700.0 700.0 0 0 1 313.5 1136.6 L 480.2 1103.4 A 530.0 530.0 0 0 0 492.8 1153.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 353.3 1267.9 A 700.0 700.0 0 0 1 313.5 1136.6 L 480.2 1103.4 A 530.0 530.0 0 0 0 510.3 1202.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="492.8" y1="1153.9" x2="330.1" y2="1203.2" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 482.6 1214.3 A 560.0 560.0 0 0 1 450.8 1109.3" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="406.8" y="1212.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(340.3 406.8 1212.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="406.8" dy="0">#10 Stark Raving Dad</tspan></text>
+<text x="486.9" y="1183.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(340.3 486.9 1183.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="388.9" y="1146.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(345.9 388.9 1153.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="388.9" dy="0">#55 Homer vs. the</tspan><tspan x="388.9" dy="13">Eighteenth Amendment</tspan></text>
+<text x="471.3" y="1132.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(345.9 471.3 1132.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<path d="M 732.1 353.3 A 700.0 700.0 0 0 1 796.8 330.1 L 846.1 492.8 A 530.0 530.0 0 0 0 797.2 510.3 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 796.8 330.1 A 700.0 700.0 0 0 1 863.4 313.5 L 896.6 480.2 A 530.0 530.0 0 0 0 846.1 492.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 732.1 353.3 A 700.0 700.0 0 0 1 863.4 313.5 L 896.6 480.2 A 530.0 530.0 0 0 0 797.2 510.3 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="846.1" y1="492.8" x2="796.8" y2="330.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 785.7 482.6 A 560.0 560.0 0 0 1 890.7 450.8" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="787.8" y="406.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(430.3 787.8 406.8)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="787.8" dy="0">#11 The Way We Was</tspan></text>
+<text x="816.4" y="486.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(430.3 816.4 486.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="846.9" y="388.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(435.9 846.9 388.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="846.9" dy="0">#75 Summer of 4 Ft. 2</tspan></text>
+<text x="867.6" y="471.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(435.9 867.6 471.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<path d="M 1267.9 1646.7 A 700.0 700.0 0 0 1 1203.2 1669.9 L 1153.9 1507.2 A 530.0 530.0 0 0 0 1202.8 1489.7 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1203.2 1669.9 A 700.0 700.0 0 0 1 1136.6 1686.5 L 1103.4 1519.8 A 530.0 530.0 0 0 0 1153.9 1507.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1267.9 1646.7 A 700.0 700.0 0 0 1 1136.6 1686.5 L 1103.4 1519.8 A 530.0 530.0 0 0 0 1202.8 1489.7 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1153.9" y1="1507.2" x2="1203.2" y2="1669.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1214.3 1517.4 A 560.0 560.0 0 0 1 1109.3 1549.2" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1212.2" y="1593.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(70.3 1212.2 1593.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1212.2" dy="0">#12 Cape Feare</tspan></text>
+<text x="1183.6" y="1513.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(70.3 1183.6 1513.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">6</text>
+<text x="1153.1" y="1604.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(75.9 1153.1 1611.1)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1153.1" dy="0">#76 Itchy &amp;</tspan><tspan x="1153.1" dy="13">Scratchy: The Movie</tspan></text>
+<text x="1132.4" y="1528.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(75.9 1132.4 1528.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1646.7 1267.9 A 700.0 700.0 0 0 1 1617.3 1330.0 L 1467.4 1249.8 A 530.0 530.0 0 0 0 1489.7 1202.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1617.3 1330.0 A 700.0 700.0 0 0 1 1582.0 1388.9 L 1440.7 1294.5 A 530.0 530.0 0 0 0 1467.4 1249.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1646.7 1267.9 A 700.0 700.0 0 0 1 1582.0 1388.9 L 1440.7 1294.5 A 530.0 530.0 0 0 0 1489.7 1202.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1467.4" y1="1249.8" x2="1617.3" y2="1330.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1517.4 1214.3 A 560.0 560.0 0 0 1 1465.6 1311.1" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1569.5" y="1269.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(25.3 1569.5 1269.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1569.5" dy="0">#13 You Only Move Twice</tspan></text>
+<text x="1492.7" y="1233.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(25.3 1492.7 1233.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1540.4" y="1323.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(30.9 1540.4 1323.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1540.4" dy="0">#52 The PTA Disbands</tspan></text>
+<text x="1467.5" y="1280.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(30.9 1467.5 1280.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 353.3 732.1 A 700.0 700.0 0 0 1 382.7 670.0 L 532.6 750.2 A 530.0 530.0 0 0 0 510.3 797.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 382.7 670.0 A 700.0 700.0 0 0 1 418.0 611.1 L 559.3 705.5 A 530.0 530.0 0 0 0 532.6 750.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 353.3 732.1 A 700.0 700.0 0 0 1 418.0 611.1 L 559.3 705.5 A 530.0 530.0 0 0 0 510.3 797.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="532.6" y1="750.2" x2="382.7" y2="670.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 482.6 785.7 A 560.0 560.0 0 0 1 534.4 688.9" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="430.5" y="730.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(385.3 430.5 730.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="430.5" dy="0">#14 Duffless</tspan></text>
+<text x="507.3" y="767.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(385.3 507.3 767.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="459.6" y="676.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(390.9 459.6 676.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="459.6" dy="0">#51 Homie the Clown</tspan></text>
+<text x="532.5" y="719.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(390.9 532.5 719.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<path d="M 732.1 1646.7 A 700.0 700.0 0 0 1 670.0 1617.3 L 750.2 1467.4 A 530.0 530.0 0 0 0 797.2 1489.7 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 670.0 1617.3 A 700.0 700.0 0 0 1 611.1 1582.0 L 705.5 1440.7 A 530.0 530.0 0 0 0 750.2 1467.4 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 732.1 1646.7 A 700.0 700.0 0 0 1 611.1 1582.0 L 705.5 1440.7 A 530.0 530.0 0 0 0 797.2 1489.7 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="750.2" y1="1467.4" x2="670.0" y2="1617.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 785.7 1517.4 A 560.0 560.0 0 0 1 688.9 1465.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="730.6" y="1569.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(295.3 730.6 1569.5)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="730.6" dy="0">#15 Kamp Krusty</tspan></text>
+<text x="767.0" y="1492.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(295.3 767.0 1492.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="676.1" y="1540.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(300.9 676.1 1540.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="676.1" dy="0">#50 Lisa the Vegetarian</tspan></text>
+<text x="719.8" y="1467.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(300.9 719.8 1467.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<path d="M 1267.9 353.3 A 700.0 700.0 0 0 1 1330.0 382.7 L 1249.8 532.6 A 530.0 530.0 0 0 0 1202.8 510.3 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1330.0 382.7 A 700.0 700.0 0 0 1 1388.9 418.0 L 1294.5 559.3 A 530.0 530.0 0 0 0 1249.8 532.6 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1267.9 353.3 A 700.0 700.0 0 0 1 1388.9 418.0 L 1294.5 559.3 A 530.0 530.0 0 0 0 1202.8 510.3 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1249.8" y1="532.6" x2="1330.0" y2="382.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1214.3 482.6 A 560.0 560.0 0 0 1 1311.1 534.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1269.4" y="430.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-64.7 1269.4 430.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1269.4" dy="0">#16 Deep Space Homer</tspan></text>
+<text x="1233.0" y="507.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-64.7 1233.0 507.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1323.9" y="453.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-59.1 1323.9 459.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1323.9" dy="0">#80 One Fish, Two Fish,</tspan><tspan x="1323.9" dy="13">Blowfish, Blue Fish</tspan></text>
+<text x="1280.2" y="532.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-59.1 1280.2 532.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1388.9 418.0 A 700.0 700.0 0 0 1 1444.1 458.9 L 1336.2 590.3 A 530.0 530.0 0 0 0 1294.5 559.3 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1444.1 458.9 A 700.0 700.0 0 0 1 1495.0 505.0 L 1374.8 625.2 A 530.0 530.0 0 0 0 1336.2 590.3 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1388.9 418.0 A 700.0 700.0 0 0 1 1495.0 505.0 L 1374.8 625.2 A 530.0 530.0 0 0 0 1294.5 559.3 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1336.2" y1="590.3" x2="1444.1" y2="458.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1311.1 534.4 A 560.0 560.0 0 0 1 1396.0 604.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1375.3" y="487.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-53.4 1375.3 494.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1375.3" dy="0">#17 And Maggie</tspan><tspan x="1375.3" dy="13">Makes Three</tspan></text>
+<text x="1324.7" y="562.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-53.4 1324.7 562.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1423.1" y="526.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(-47.8 1423.1 533.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1423.1" dy="0">#81 22 Short Films</tspan><tspan x="1423.1" dy="13">About Springfield</tspan></text>
+<text x="1366.0" y="596.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(-47.8 1366.0 596.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 611.1 1582.0 A 700.0 700.0 0 0 1 555.9 1541.1 L 663.8 1409.7 A 530.0 530.0 0 0 0 705.5 1440.7 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 555.9 1541.1 A 700.0 700.0 0 0 1 505.0 1495.0 L 625.2 1374.8 A 530.0 530.0 0 0 0 663.8 1409.7 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 611.1 1582.0 A 700.0 700.0 0 0 1 505.0 1495.0 L 625.2 1374.8 A 530.0 530.0 0 0 0 705.5 1440.7 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="663.8" y1="1409.7" x2="555.9" y2="1541.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 688.9 1465.6 A 560.0 560.0 0 0 1 604.0 1396.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="624.7" y="1499.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(306.6 624.7 1506.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="624.7" dy="0">#18 Krusty</tspan><tspan x="624.7" dy="13">Gets Kancelled</tspan></text>
+<text x="675.3" y="1437.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(306.6 675.3 1437.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="576.9" y="1466.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(312.2 576.9 1466.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="576.9" dy="0">#82 Lisa on Ice</tspan></text>
+<text x="634.0" y="1403.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(312.2 634.0 1403.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<path d="M 418.0 611.1 A 700.0 700.0 0 0 1 458.9 555.9 L 590.3 663.8 A 530.0 530.0 0 0 0 559.3 705.5 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 458.9 555.9 A 700.0 700.0 0 0 1 505.0 505.0 L 625.2 625.2 A 530.0 530.0 0 0 0 590.3 663.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 418.0 611.1 A 700.0 700.0 0 0 1 505.0 505.0 L 625.2 625.2 A 530.0 530.0 0 0 0 559.3 705.5 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="590.3" y1="663.8" x2="458.9" y2="555.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 534.4 688.9 A 560.0 560.0 0 0 1 604.0 604.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="494.0" y="624.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(396.6 494.0 624.7)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="494.0" dy="0">#19 Bart the Lover</tspan></text>
+<text x="562.3" y="675.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(396.6 562.3 675.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="533.2" y="576.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(402.2 533.2 576.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="533.2" dy="0">#46 Selma&#x27;s Choice</tspan></text>
+<text x="596.2" y="634.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(402.2 596.2 634.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1582.0 1388.9 A 700.0 700.0 0 0 1 1541.1 1444.1 L 1409.7 1336.2 A 530.0 530.0 0 0 0 1440.7 1294.5 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1541.1 1444.1 A 700.0 700.0 0 0 1 1495.0 1495.0 L 1374.8 1374.8 A 530.0 530.0 0 0 0 1409.7 1336.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1582.0 1388.9 A 700.0 700.0 0 0 1 1495.0 1495.0 L 1374.8 1374.8 A 530.0 530.0 0 0 0 1440.7 1294.5 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1409.7" y1="1336.2" x2="1541.1" y2="1444.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1465.6 1311.1 A 560.0 560.0 0 0 1 1396.0 1396.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1506.0" y="1368.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(36.6 1506.0 1375.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1506.0" dy="0">#20 Burns Verkaufen</tspan><tspan x="1506.0" dy="13">der Kraftwerk</tspan></text>
+<text x="1437.7" y="1324.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(36.6 1437.7 1324.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<text x="1466.8" y="1416.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(42.2 1466.8 1423.1)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1466.8" dy="0">#84 Treehouse</tspan><tspan x="1466.8" dy="13">of Horror IV</tspan></text>
+<text x="1403.8" y="1366.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(42.2 1403.8 1366.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 1136.6 1686.5 A 700.0 700.0 0 0 1 1068.6 1696.6 L 1051.9 1527.4 A 530.0 530.0 0 0 0 1103.4 1519.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1068.6 1696.6 A 700.0 700.0 0 0 1 1000.0 1700.0 L 1000.0 1530.0 A 530.0 530.0 0 0 0 1051.9 1527.4 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1136.6 1686.5 A 700.0 700.0 0 0 1 1000.0 1700.0 L 1000.0 1530.0 A 530.0 530.0 0 0 0 1103.4 1519.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1051.9" y1="1527.4" x2="1068.6" y2="1696.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1109.3 1549.2 A 560.0 560.0 0 0 1 1000.0 1560.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1092.4" y="1623.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(81.6 1092.4 1623.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1092.4" dy="0">#21 Rosebud</tspan></text>
+<text x="1080.0" y="1539.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(81.6 1080.0 1539.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1030.9" y="1629.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(87.2 1030.9 1629.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1030.9" dy="0">#44 I Love Lisa</tspan></text>
+<text x="1026.7" y="1544.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(87.2 1026.7 1544.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<path d="M 863.4 313.5 A 700.0 700.0 0 0 1 931.4 303.4 L 948.1 472.6 A 530.0 530.0 0 0 0 896.6 480.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 931.4 303.4 A 700.0 700.0 0 0 1 1000.0 300.0 L 1000.0 470.0 A 530.0 530.0 0 0 0 948.1 472.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 863.4 313.5 A 700.0 700.0 0 0 1 1000.0 300.0 L 1000.0 470.0 A 530.0 530.0 0 0 0 896.6 480.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="948.1" y1="472.6" x2="931.4" y2="303.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 890.7 450.8 A 560.0 560.0 0 0 1 1000.0 440.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="907.6" y="370.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(441.6 907.6 376.8)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="907.6" dy="0">#22 Secrets of a</tspan><tspan x="907.6" dy="13">Successful Marriage</tspan></text>
+<text x="920.0" y="460.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(441.6 920.0 460.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="969.1" y="357.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(447.2 969.1 370.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="969.1" dy="0">#86 El Viaje Misterioso</tspan><tspan x="969.1" dy="13">de Nuestro Jomer (The</tspan><tspan x="969.1" dy="13">Mysterious Voyage of…</tspan></text>
+<text x="973.3" y="455.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(447.2 973.3 455.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<path d="M 313.5 1136.6 A 700.0 700.0 0 0 1 303.4 1068.6 L 472.6 1051.9 A 530.0 530.0 0 0 0 480.2 1103.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 303.4 1068.6 A 700.0 700.0 0 0 1 300.0 1000.0 L 470.0 1000.0 A 530.0 530.0 0 0 0 472.6 1051.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 313.5 1136.6 A 700.0 700.0 0 0 1 300.0 1000.0 L 470.0 1000.0 A 530.0 530.0 0 0 0 480.2 1103.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="472.6" y1="1051.9" x2="303.4" y2="1068.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 450.8 1109.3 A 560.0 560.0 0 0 1 440.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="376.8" y="1092.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(351.6 376.8 1092.4)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="376.8" dy="0">#23 Homer&#x27;s Enemy</tspan></text>
+<text x="460.9" y="1080.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(351.6 460.9 1080.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<text x="370.8" y="1030.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(357.2 370.8 1030.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="370.8" dy="0">#87 A Fish Called Selma</tspan></text>
+<text x="455.7" y="1026.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(357.2 455.7 1026.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1686.5 863.4 A 700.0 700.0 0 0 1 1696.6 931.4 L 1527.4 948.1 A 530.0 530.0 0 0 0 1519.8 896.6 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1696.6 931.4 A 700.0 700.0 0 0 1 1700.0 1000.0 L 1530.0 1000.0 A 530.0 530.0 0 0 0 1527.4 948.1 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1686.5 863.4 A 700.0 700.0 0 0 1 1700.0 1000.0 L 1530.0 1000.0 A 530.0 530.0 0 0 0 1519.8 896.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1527.4" y1="948.1" x2="1696.6" y2="931.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1549.2 890.7 A 560.0 560.0 0 0 1 1560.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1623.2" y="907.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(-8.4 1623.2 907.6)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1623.2" dy="0">#24 Lisa the Greek</tspan></text>
+<text x="1539.1" y="920.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-8.4 1539.1 920.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<text x="1629.2" y="969.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-2.8 1629.2 969.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1629.2" dy="0">#41 Lisa the Iconoclast</tspan></text>
+<text x="1544.3" y="973.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-2.8 1544.3 973.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 1582.0 611.1 A 700.0 700.0 0 0 1 1617.3 670.0 L 1467.4 750.2 A 530.0 530.0 0 0 0 1440.7 705.5 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1617.3 670.0 A 700.0 700.0 0 0 1 1646.7 732.1 L 1489.7 797.2 A 530.0 530.0 0 0 0 1467.4 750.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1582.0 611.1 A 700.0 700.0 0 0 1 1646.7 732.1 L 1489.7 797.2 A 530.0 530.0 0 0 0 1440.7 705.5 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1467.4" y1="750.2" x2="1617.3" y2="670.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1465.6 688.9 A 560.0 560.0 0 0 1 1517.4 785.7" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1540.4" y="669.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(-30.9 1540.4 676.1)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1540.4" dy="0">#25 Homer</tspan><tspan x="1540.4" dy="13">Goes to College</tspan></text>
+<text x="1467.5" y="719.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(-30.9 1467.5 719.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1569.5" y="730.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(-25.3 1569.5 730.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1569.5" dy="0">#89 Bart Gets an F</tspan></text>
+<text x="1492.7" y="767.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-25.3 1492.7 767.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 418.0 1388.9 A 700.0 700.0 0 0 1 382.7 1330.0 L 532.6 1249.8 A 530.0 530.0 0 0 0 559.3 1294.5 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 382.7 1330.0 A 700.0 700.0 0 0 1 353.3 1267.9 L 510.3 1202.8 A 530.0 530.0 0 0 0 532.6 1249.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 418.0 1388.9 A 700.0 700.0 0 0 1 353.3 1267.9 L 510.3 1202.8 A 530.0 530.0 0 0 0 559.3 1294.5 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="532.6" y1="1249.8" x2="382.7" y2="1330.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 534.4 1311.1 A 560.0 560.0 0 0 1 482.6 1214.3" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="459.6" y="1323.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(329.1 459.6 1323.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="459.6" dy="0">#26 Homer Badman</tspan></text>
+<text x="532.5" y="1280.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(329.1 532.5 1280.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="430.5" y="1262.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(334.7 430.5 1269.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="430.5" dy="0">#39 Homer&#x27;s</tspan><tspan x="430.5" dy="13">Barbershop Quartet</tspan></text>
+<text x="507.3" y="1233.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(334.7 507.3 1233.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 611.1 418.0 A 700.0 700.0 0 0 1 670.0 382.7 L 750.2 532.6 A 530.0 530.0 0 0 0 705.5 559.3 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 670.0 382.7 A 700.0 700.0 0 0 1 732.1 353.3 L 797.2 510.3 A 530.0 530.0 0 0 0 750.2 532.6 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 611.1 418.0 A 700.0 700.0 0 0 1 732.1 353.3 L 797.2 510.3 A 530.0 530.0 0 0 0 705.5 559.3 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="750.2" y1="532.6" x2="670.0" y2="382.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 688.9 534.4 A 560.0 560.0 0 0 1 785.7 482.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="676.1" y="459.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(419.1 676.1 459.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="676.1" dy="0">#27 A Milhouse Divided</tspan></text>
+<text x="719.8" y="532.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(419.1 719.8 532.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="730.6" y="424.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(424.7 730.6 430.5)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="730.6" dy="0">#91 Bart vs.</tspan><tspan x="730.6" dy="13">Thanksgiving</tspan></text>
+<text x="767.0" y="507.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(424.7 767.0 507.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1388.9 1582.0 A 700.0 700.0 0 0 1 1330.0 1617.3 L 1249.8 1467.4 A 530.0 530.0 0 0 0 1294.5 1440.7 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1330.0 1617.3 A 700.0 700.0 0 0 1 1267.9 1646.7 L 1202.8 1489.7 A 530.0 530.0 0 0 0 1249.8 1467.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1388.9 1582.0 A 700.0 700.0 0 0 1 1267.9 1646.7 L 1202.8 1489.7 A 530.0 530.0 0 0 0 1294.5 1440.7 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1249.8" y1="1467.4" x2="1330.0" y2="1617.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1311.1 1465.6 A 560.0 560.0 0 0 1 1214.3 1517.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1323.9" y="1540.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(59.1 1323.9 1540.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1323.9" dy="0">#28 Homer&#x27;s Phobia</tspan></text>
+<text x="1280.2" y="1467.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(59.1 1280.2 1467.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1269.4" y="1569.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(64.7 1269.4 1569.5)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1269.4" dy="0">#92 Bart the General</tspan></text>
+<text x="1233.0" y="1492.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(64.7 1233.0 1492.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1686.5 1136.6 A 700.0 700.0 0 0 1 1669.9 1203.2 L 1507.2 1153.9 A 530.0 530.0 0 0 0 1519.8 1103.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1669.9 1203.2 A 700.0 700.0 0 0 1 1646.7 1267.9 L 1489.7 1202.8 A 530.0 530.0 0 0 0 1507.2 1153.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1686.5 1136.6 A 700.0 700.0 0 0 1 1646.7 1267.9 L 1489.7 1202.8 A 530.0 530.0 0 0 0 1519.8 1103.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1507.2" y1="1153.9" x2="1669.9" y2="1203.2" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1549.2 1109.3 A 560.0 560.0 0 0 1 1517.4 1214.3" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1611.1" y="1146.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(14.1 1611.1 1153.1)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1611.1" dy="0">#100 Marge</tspan><tspan x="1611.1" dy="13">Be Not Proud</tspan></text>
+<text x="1528.7" y="1132.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(14.1 1528.7 1132.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="1593.2" y="1212.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(19.7 1593.2 1212.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1593.2" dy="0">#93 Bart on the Road</tspan></text>
+<text x="1513.1" y="1183.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(19.7 1513.1 1183.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 313.5 863.4 A 700.0 700.0 0 0 1 330.1 796.8 L 492.8 846.1 A 530.0 530.0 0 0 0 480.2 896.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 330.1 796.8 A 700.0 700.0 0 0 1 353.3 732.1 L 510.3 797.2 A 530.0 530.0 0 0 0 492.8 846.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 313.5 863.4 A 700.0 700.0 0 0 1 353.3 732.1 L 510.3 797.2 A 530.0 530.0 0 0 0 480.2 896.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="492.8" y1="846.1" x2="330.1" y2="796.8" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 450.8 890.7 A 560.0 560.0 0 0 1 482.6 785.7" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="388.9" y="846.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(374.1 388.9 846.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="388.9" dy="0">#99 Lemon of Troy</tspan></text>
+<text x="471.3" y="867.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(374.1 471.3 867.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="406.8" y="787.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(379.7 406.8 787.8)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="406.8" dy="0">#94 The Joy of Sect</tspan></text>
+<text x="486.9" y="816.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(379.7 486.9 816.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 863.4 1686.5 A 700.0 700.0 0 0 1 796.8 1669.9 L 846.1 1507.2 A 530.0 530.0 0 0 0 896.6 1519.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 796.8 1669.9 A 700.0 700.0 0 0 1 732.1 1646.7 L 797.2 1489.7 A 530.0 530.0 0 0 0 846.1 1507.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 863.4 1686.5 A 700.0 700.0 0 0 1 732.1 1646.7 L 797.2 1489.7 A 530.0 530.0 0 0 0 896.6 1519.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="846.1" y1="1507.2" x2="796.8" y2="1669.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 890.7 1549.2 A 560.0 560.0 0 0 1 785.7 1517.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="846.9" y="1604.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(284.1 846.9 1611.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="846.9" dy="0">#98 Much Apu</tspan><tspan x="846.9" dy="13">About Nothing</tspan></text>
+<text x="867.6" y="1528.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(284.1 867.6 1528.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="787.8" y="1586.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(289.7 787.8 1593.2)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="787.8" dy="0">#34 The Itchy &amp; Scratchy</tspan><tspan x="787.8" dy="13">&amp; Poochie Show</tspan></text>
+<text x="816.4" y="1513.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(289.7 816.4 1513.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 1136.6 313.5 A 700.0 700.0 0 0 1 1203.2 330.1 L 1153.9 492.8 A 530.0 530.0 0 0 0 1103.4 480.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1203.2 330.1 A 700.0 700.0 0 0 1 1267.9 353.3 L 1202.8 510.3 A 530.0 530.0 0 0 0 1153.9 492.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1136.6 313.5 A 700.0 700.0 0 0 1 1267.9 353.3 L 1202.8 510.3 A 530.0 530.0 0 0 0 1103.4 480.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1153.9" y1="492.8" x2="1203.2" y2="330.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1109.3 450.8 A 560.0 560.0 0 0 1 1214.3 482.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1153.1" y="388.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-75.9 1153.1 388.9)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1153.1" dy="0">#32 Whacking Day</tspan></text>
+<text x="1132.4" y="471.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-75.9 1132.4 471.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1212.2" y="406.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(-70.3 1212.2 406.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1212.2" dy="0">#33 Bart the Daredevil</tspan></text>
+<text x="1183.6" y="486.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-70.3 1183.6 486.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1000.0 470.0 A 530.0 530.0 0 0 1 1103.4 480.2 L 1078.0 607.7 A 400.0 400.0 0 0 0 1000.0 600.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1103.4 480.2 A 530.0 530.0 0 0 1 1202.8 510.3 L 1153.1 630.4 A 400.0 400.0 0 0 0 1078.0 607.7 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1000.0 470.0 A 530.0 530.0 0 0 1 1202.8 510.3 L 1153.1 630.4 A 400.0 400.0 0 0 0 1000.0 600.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1078.0" y1="607.7" x2="1103.4" y2="480.2" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 570.0 A 430.0 430.0 0 0 1 1164.6 602.7" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1047.0" y="515.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(-84.4 1047.0 522.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1047.0" dy="0">#1 Last Exit</tspan><tspan x="1047.0" dy="13">to Springfield</tspan></text>
+<text x="1040.7" y="587.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-84.4 1040.7 587.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1139.3" y="534.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(-73.1 1139.3 540.7)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1139.3" dy="0">#33 Bart the</tspan><tspan x="1139.3" dy="13">Daredevil</tspan></text>
+<text x="1120.5" y="602.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(-73.1 1120.5 602.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1000.0 1530.0 A 530.0 530.0 0 0 1 896.6 1519.8 L 922.0 1392.3 A 400.0 400.0 0 0 0 1000.0 1400.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 896.6 1519.8 A 530.0 530.0 0 0 1 797.2 1489.7 L 846.9 1369.6 A 400.0 400.0 0 0 0 922.0 1392.3 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1000.0 1530.0 A 530.0 530.0 0 0 1 797.2 1489.7 L 846.9 1369.6 A 400.0 400.0 0 0 0 1000.0 1400.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="922.0" y1="1392.3" x2="896.6" y2="1519.8" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 1430.0 A 430.0 430.0 0 0 1 835.4 1397.3" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="953.0" y="1471.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(275.6 953.0 1477.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="953.0" dy="0">#2 Lisa&#x27;s</tspan><tspan x="953.0" dy="13">Substitute</tspan></text>
+<text x="959.3" y="1413.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(275.6 959.3 1413.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<text x="860.7" y="1452.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(286.9 860.7 1459.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="860.7" dy="0">#98 Much Apu</tspan><tspan x="860.7" dy="13">About Nothing</tspan></text>
+<text x="879.5" y="1397.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(286.9 879.5 1397.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 470.0 1000.0 A 530.0 530.0 0 0 1 480.2 896.6 L 607.7 922.0 A 400.0 400.0 0 0 0 600.0 1000.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 480.2 896.6 A 530.0 530.0 0 0 1 510.3 797.2 L 630.4 846.9 A 400.0 400.0 0 0 0 607.7 922.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 470.0 1000.0 A 530.0 530.0 0 0 1 510.3 797.2 L 630.4 846.9 A 400.0 400.0 0 0 0 600.0 1000.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="607.7" y1="922.0" x2="480.2" y2="896.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 570.0 1000.0 A 430.0 430.0 0 0 1 602.7 835.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="522.3" y="953.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(365.6 522.3 953.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="522.3" dy="0">#3 Mr. Plow</tspan></text>
+<text x="587.0" y="959.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(365.6 587.0 959.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="540.7" y="854.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(376.9 540.7 860.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="540.7" dy="0">#99 Lemon</tspan><tspan x="540.7" dy="13">of Troy</tspan></text>
+<text x="602.9" y="879.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(376.9 602.9 879.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path d="M 1530.0 1000.0 A 530.0 530.0 0 0 1 1519.8 1103.4 L 1392.3 1078.0 A 400.0 400.0 0 0 0 1400.0 1000.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1519.8 1103.4 A 530.0 530.0 0 0 1 1489.7 1202.8 L 1369.6 1153.1 A 400.0 400.0 0 0 0 1392.3 1078.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1530.0 1000.0 A 530.0 530.0 0 0 1 1489.7 1202.8 L 1369.6 1153.1 A 400.0 400.0 0 0 0 1400.0 1000.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1392.3" y1="1078.0" x2="1519.8" y2="1103.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1430.0 1000.0 A 430.0 430.0 0 0 1 1397.3 1164.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1477.7" y="1040.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(5.6 1477.7 1047.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1477.7" dy="0">#4 Marge vs.</tspan><tspan x="1477.7" dy="13">the Monorail</tspan></text>
+<text x="1413.0" y="1040.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(5.6 1413.0 1040.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1459.3" y="1132.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(16.9 1459.3 1139.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1459.3" dy="0">#93 Bart on</tspan><tspan x="1459.3" dy="13">the Road</tspan></text>
+<text x="1397.1" y="1120.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(16.9 1397.1 1120.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1374.8 1374.8 A 530.0 530.0 0 0 1 1294.5 1440.7 L 1222.2 1332.6 A 400.0 400.0 0 0 0 1282.8 1282.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1294.5 1440.7 A 530.0 530.0 0 0 1 1202.8 1489.7 L 1153.1 1369.6 A 400.0 400.0 0 0 0 1222.2 1332.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1374.8 1374.8 A 530.0 530.0 0 0 1 1202.8 1489.7 L 1153.1 1369.6 A 400.0 400.0 0 0 0 1282.8 1282.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1222.2" y1="1332.6" x2="1294.5" y2="1440.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1304.1 1304.1 A 430.0 430.0 0 0 1 1164.6 1397.3" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1304.5" y="1358.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(50.6 1304.5 1371.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1304.5" dy="0">#69 Oh</tspan><tspan x="1304.5" dy="13">Brother, Where</tspan><tspan x="1304.5" dy="13">Art Thou?</tspan></text>
+<text x="1263.3" y="1320.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(50.6 1263.3 1320.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<text x="1226.3" y="1416.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(61.9 1226.3 1423.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1226.3" dy="0">#28 Homer&#x27;s</tspan><tspan x="1226.3" dy="13">Phobia</tspan></text>
+<text x="1195.6" y="1366.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(61.9 1195.6 1366.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 625.2 625.2 A 530.0 530.0 0 0 1 705.5 559.3 L 777.8 667.4 A 400.0 400.0 0 0 0 717.2 717.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 705.5 559.3 A 530.0 530.0 0 0 1 797.2 510.3 L 846.9 630.4 A 400.0 400.0 0 0 0 777.8 667.4 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 625.2 625.2 A 530.0 530.0 0 0 1 797.2 510.3 L 846.9 630.4 A 400.0 400.0 0 0 0 717.2 717.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="777.8" y1="667.4" x2="705.5" y2="559.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 695.9 695.9 A 430.0 430.0 0 0 1 835.4 602.7" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="695.5" y="616.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(410.6 695.5 629.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="695.5" dy="0">#59 Two Dozen</tspan><tspan x="695.5" dy="13">and One</tspan><tspan x="695.5" dy="13">Greyhounds</tspan></text>
+<text x="736.7" y="679.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(410.6 736.7 679.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="773.7" y="570.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(421.9 773.7 576.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="773.7" dy="0">#27 A Milhouse</tspan><tspan x="773.7" dy="13">Divided</tspan></text>
+<text x="804.4" y="634.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(421.9 804.4 634.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 625.2 1374.8 A 530.0 530.0 0 0 1 559.3 1294.5 L 667.4 1222.2 A 400.0 400.0 0 0 0 717.2 1282.8 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 559.3 1294.5 A 530.0 530.0 0 0 1 510.3 1202.8 L 630.4 1153.1 A 400.0 400.0 0 0 0 667.4 1222.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 625.2 1374.8 A 530.0 530.0 0 0 1 510.3 1202.8 L 630.4 1153.1 A 400.0 400.0 0 0 0 717.2 1282.8 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="667.4" y1="1222.2" x2="559.3" y2="1294.5" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 695.9 1304.1 A 430.0 430.0 0 0 1 602.7 1164.6" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="629.0" y="1298.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(320.6 629.0 1304.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="629.0" dy="0">#58 Itchy and</tspan><tspan x="629.0" dy="13">Scratchy Land</tspan></text>
+<text x="679.2" y="1263.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(320.6 679.2 1263.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="576.7" y="1213.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(331.9 576.7 1226.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="576.7" dy="0">#39 Homer&#x27;s</tspan><tspan x="576.7" dy="13">Barbershop</tspan><tspan x="576.7" dy="13">Quartet</tspan></text>
+<text x="634.0" y="1195.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(331.9 634.0 1195.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1374.8 625.2 A 530.0 530.0 0 0 1 1440.7 705.5 L 1332.6 777.8 A 400.0 400.0 0 0 0 1282.8 717.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1440.7 705.5 A 530.0 530.0 0 0 1 1489.7 797.2 L 1369.6 846.9 A 400.0 400.0 0 0 0 1332.6 777.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1374.8 625.2 A 530.0 530.0 0 0 1 1489.7 797.2 L 1369.6 846.9 A 400.0 400.0 0 0 0 1282.8 717.2 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1332.6" y1="777.8" x2="1440.7" y2="705.5" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1304.1 695.9 A 430.0 430.0 0 0 1 1397.3 835.4" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1371.0" y="689.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-39.4 1371.0 695.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1371.0" dy="0">#8 Homer</tspan><tspan x="1371.0" dy="13">at the Bat</tspan></text>
+<text x="1320.8" y="736.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(-39.4 1320.8 736.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">5</text>
+<text x="1423.3" y="767.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(-28.1 1423.3 773.7)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1423.3" dy="0">#89 Bart</tspan><tspan x="1423.3" dy="13">Gets an F</tspan></text>
+<text x="1366.0" y="804.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(-28.1 1366.0 804.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1489.7 797.2 A 530.0 530.0 0 0 1 1519.8 896.6 L 1392.3 922.0 A 400.0 400.0 0 0 0 1369.6 846.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1519.8 896.6 A 530.0 530.0 0 0 1 1530.0 1000.0 L 1400.0 1000.0 A 400.0 400.0 0 0 0 1392.3 922.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1489.7 797.2 A 530.0 530.0 0 0 1 1530.0 1000.0 L 1400.0 1000.0 A 400.0 400.0 0 0 0 1369.6 846.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1392.3" y1="922.0" x2="1519.8" y2="896.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1397.3 835.4 A 430.0 430.0 0 0 1 1430.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1459.3" y="854.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(-16.9 1459.3 860.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1459.3" dy="0">#9 Bart Sells</tspan><tspan x="1459.3" dy="13">His Soul</tspan></text>
+<text x="1397.1" y="879.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-16.9 1397.1 879.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="1477.7" y="946.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-5.6 1477.7 953.0)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1477.7" dy="0">#41 Lisa the</tspan><tspan x="1477.7" dy="13">Iconoclast</tspan></text>
+<text x="1413.0" y="959.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(-5.6 1413.0 959.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 510.3 1202.8 A 530.0 530.0 0 0 1 480.2 1103.4 L 607.7 1078.0 A 400.0 400.0 0 0 0 630.4 1153.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 480.2 1103.4 A 530.0 530.0 0 0 1 470.0 1000.0 L 600.0 1000.0 A 400.0 400.0 0 0 0 607.7 1078.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 510.3 1202.8 A 530.0 530.0 0 0 1 470.0 1000.0 L 600.0 1000.0 A 400.0 400.0 0 0 0 630.4 1153.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="607.7" y1="1078.0" x2="480.2" y2="1103.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 602.7 1164.6 A 430.0 430.0 0 0 1 570.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="540.7" y="1126.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(343.1 540.7 1139.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="540.7" dy="0">#55 Homer vs.</tspan><tspan x="540.7" dy="13">the Eighteenth</tspan><tspan x="540.7" dy="13">Amendment</tspan></text>
+<text x="602.9" y="1120.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(343.1 602.9 1120.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<text x="522.3" y="1040.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(354.4 522.3 1047.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="522.3" dy="0">#87 A Fish</tspan><tspan x="522.3" dy="13">Called Selma</tspan></text>
+<text x="587.0" y="1040.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(354.4 587.0 1040.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">2</text>
+<path d="M 797.2 510.3 A 530.0 530.0 0 0 1 896.6 480.2 L 922.0 607.7 A 400.0 400.0 0 0 0 846.9 630.4 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 896.6 480.2 A 530.0 530.0 0 0 1 1000.0 470.0 L 1000.0 600.0 A 400.0 400.0 0 0 0 922.0 607.7 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 797.2 510.3 A 530.0 530.0 0 0 1 1000.0 470.0 L 1000.0 600.0 A 400.0 400.0 0 0 0 846.9 630.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="922.0" y1="607.7" x2="896.6" y2="480.2" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 835.4 602.7 A 430.0 430.0 0 0 1 1000.0 570.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="860.7" y="534.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(433.1 860.7 540.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="860.7" dy="0">#75 Summer</tspan><tspan x="860.7" dy="13">of 4 Ft. 2</tspan></text>
+<text x="879.5" y="602.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(433.1 879.5 602.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<text x="953.0" y="509.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(444.4 953.0 522.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="953.0" dy="0">#86 El Viaje</tspan><tspan x="953.0" dy="13">Misterioso de</tspan><tspan x="953.0" dy="13">Nuestro Jomer…</tspan></text>
+<text x="959.3" y="587.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(444.4 959.3 587.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<path d="M 1202.8 1489.7 A 530.0 530.0 0 0 1 1103.4 1519.8 L 1078.0 1392.3 A 400.0 400.0 0 0 0 1153.1 1369.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1103.4 1519.8 A 530.0 530.0 0 0 1 1000.0 1530.0 L 1000.0 1400.0 A 400.0 400.0 0 0 0 1078.0 1392.3 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1202.8 1489.7 A 530.0 530.0 0 0 1 1000.0 1530.0 L 1000.0 1400.0 A 400.0 400.0 0 0 0 1153.1 1369.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1078.0" y1="1392.3" x2="1103.4" y2="1519.8" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1164.6 1397.3 A 430.0 430.0 0 0 1 1000.0 1430.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1139.3" y="1459.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(73.1 1139.3 1459.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1139.3" dy="0">#12 Cape Feare</tspan></text>
+<text x="1120.5" y="1397.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(73.1 1120.5 1397.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="1047.0" y="1477.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(84.4 1047.0 1477.7)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1047.0" dy="0">#44 I Love Lisa</tspan></text>
+<text x="1040.7" y="1413.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(84.4 1040.7 1413.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 1489.7 1202.8 A 530.0 530.0 0 0 1 1440.7 1294.5 L 1332.6 1222.2 A 400.0 400.0 0 0 0 1369.6 1153.1 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1440.7 1294.5 A 530.0 530.0 0 0 1 1374.8 1374.8 L 1282.8 1282.8 A 400.0 400.0 0 0 0 1332.6 1222.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1489.7 1202.8 A 530.0 530.0 0 0 1 1374.8 1374.8 L 1282.8 1282.8 A 400.0 400.0 0 0 0 1369.6 1153.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1332.6" y1="1222.2" x2="1440.7" y2="1294.5" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1397.3 1164.6 A 430.0 430.0 0 0 1 1304.1 1304.1" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1423.3" y="1219.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(28.1 1423.3 1226.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1423.3" dy="0">#13 You Only</tspan><tspan x="1423.3" dy="13">Move Twice</tspan></text>
+<text x="1366.0" y="1195.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(28.1 1366.0 1195.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">6</text>
+<text x="1371.0" y="1291.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(39.4 1371.0 1304.5)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1371.0" dy="0">#20 Burns</tspan><tspan x="1371.0" dy="13">Verkaufen</tspan><tspan x="1371.0" dy="13">der Kraftwerk</tspan></text>
+<text x="1320.8" y="1263.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(39.4 1320.8 1263.3)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 510.3 797.2 A 530.0 530.0 0 0 1 559.3 705.5 L 667.4 777.8 A 400.0 400.0 0 0 0 630.4 846.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 559.3 705.5 A 530.0 530.0 0 0 1 625.2 625.2 L 717.2 717.2 A 400.0 400.0 0 0 0 667.4 777.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 510.3 797.2 A 530.0 530.0 0 0 1 625.2 625.2 L 717.2 717.2 A 400.0 400.0 0 0 0 630.4 846.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="667.4" y1="777.8" x2="559.3" y2="705.5" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 602.7 835.4 A 430.0 430.0 0 0 1 695.9 695.9" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="576.7" y="767.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(388.1 576.7 773.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="576.7" dy="0">#51 Homie</tspan><tspan x="576.7" dy="13">the Clown</tspan></text>
+<text x="634.0" y="804.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(388.1 634.0 804.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<text x="629.0" y="689.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(399.4 629.0 695.5)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="629.0" dy="0">#46 Selma&#x27;s</tspan><tspan x="629.0" dy="13">Choice</tspan></text>
+<text x="679.2" y="736.7" text-anchor="middle" dominant-baseline="middle" transform="rotate(399.4 679.2 736.7)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">2</text>
+<path d="M 797.2 1489.7 A 530.0 530.0 0 0 1 705.5 1440.7 L 777.8 1332.6 A 400.0 400.0 0 0 0 846.9 1369.6 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 705.5 1440.7 A 530.0 530.0 0 0 1 625.2 1374.8 L 717.2 1282.8 A 400.0 400.0 0 0 0 777.8 1332.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 797.2 1489.7 A 530.0 530.0 0 0 1 625.2 1374.8 L 717.2 1282.8 A 400.0 400.0 0 0 0 846.9 1369.6 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="777.8" y1="1332.6" x2="705.5" y2="1440.7" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 835.4 1397.3 A 430.0 430.0 0 0 1 695.9 1304.1" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="773.7" y="1416.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(298.1 773.7 1423.3)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="773.7" dy="0">#50 Lisa the</tspan><tspan x="773.7" dy="13">Vegetarian</tspan></text>
+<text x="804.4" y="1366.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(298.1 804.4 1366.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<text x="695.5" y="1371.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(309.4 695.5 1371.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="695.5" dy="0">#82 Lisa on Ice</tspan></text>
+<text x="736.7" y="1320.8" text-anchor="middle" dominant-baseline="middle" transform="rotate(309.4 736.7 1320.8)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1202.8 510.3 A 530.0 530.0 0 0 1 1294.5 559.3 L 1222.2 667.4 A 400.0 400.0 0 0 0 1153.1 630.4 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1294.5 559.3 A 530.0 530.0 0 0 1 1374.8 625.2 L 1282.8 717.2 A 400.0 400.0 0 0 0 1222.2 667.4 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1202.8 510.3 A 530.0 530.0 0 0 1 1374.8 625.2 L 1282.8 717.2 A 400.0 400.0 0 0 0 1153.1 630.4 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1222.2" y1="667.4" x2="1294.5" y2="559.3" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1164.6 602.7 A 430.0 430.0 0 0 1 1304.1 695.9" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<text x="1226.3" y="570.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(-61.9 1226.3 576.7)" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><tspan x="1226.3" dy="0">#16 Deep</tspan><tspan x="1226.3" dy="13">Space Homer</tspan></text>
+<text x="1195.6" y="634.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-61.9 1195.6 634.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<text x="1304.5" y="616.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-50.6 1304.5 629.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><tspan x="1304.5" dy="0">#81 22 Short</tspan><tspan x="1304.5" dy="13">Films About</tspan><tspan x="1304.5" dy="13">Springfield</tspan></text>
+<text x="1263.3" y="679.2" text-anchor="middle" dominant-baseline="middle" transform="rotate(-50.6 1263.3 679.2)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1000.0 600.0 A 400.0 400.0 0 0 1 1153.1 630.4 L 1114.8 722.8 A 300.0 300.0 0 0 0 1000.0 700.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1153.1 630.4 A 400.0 400.0 0 0 1 1282.8 717.2 L 1212.1 787.9 A 300.0 300.0 0 0 0 1114.8 722.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1000.0 600.0 A 400.0 400.0 0 0 1 1282.8 717.2 L 1212.1 787.9 A 300.0 300.0 0 0 0 1000.0 700.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1114.8" y1="722.8" x2="1153.1" y2="630.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 670.0 A 330.0 330.0 0 0 1 1233.3 766.7" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="sweet_16_0-0-0" fill="none" stroke="none" d="M 1000.0 635.0 A 365.0 365.0 0 0 1 1139.7 662.8" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_0-0-0" startOffset="50%" text-anchor="middle">#1 Last Exit to Springfield</textPath></text>
+<text x="1061.5" y="691.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(11.2 1061.5 691.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path id="sweet_16_0-1-0" fill="none" stroke="none" d="M 1142.2 656.8 A 371.5 371.5 0 0 1 1262.7 737.3" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_0-1-0" startOffset="50%" text-anchor="middle">#81 22 Short Films</textPath></text><path id="sweet_16_0-1-1" fill="none" stroke="none" d="M 1137.2 668.8 A 358.5 358.5 0 0 1 1253.5 746.5" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_0-1-1" startOffset="50%" text-anchor="middle">About Springfield</textPath></text>
+<text x="1175.0" y="738.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(33.8 1175.0 738.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<path d="M 1000.0 1400.0 A 400.0 400.0 0 0 1 846.9 1369.6 L 885.2 1277.2 A 300.0 300.0 0 0 0 1000.0 1300.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 846.9 1369.6 A 400.0 400.0 0 0 1 717.2 1282.8 L 787.9 1212.1 A 300.0 300.0 0 0 0 885.2 1277.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1000.0 1400.0 A 400.0 400.0 0 0 1 717.2 1282.8 L 787.9 1212.1 A 300.0 300.0 0 0 0 1000.0 1300.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="885.2" y1="1277.2" x2="846.9" y2="1369.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 1330.0 A 330.0 330.0 0 0 1 766.7 1233.3" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="sweet_16_1-0-0" fill="none" stroke="none" d="M 860.3 1337.2 A 365.0 365.0 0 0 0 1000.0 1365.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_1-0-0" startOffset="50%" text-anchor="middle">#2 Lisa&#x27;s Substitute</textPath></text>
+<text x="938.5" y="1308.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(371.2 938.5 1308.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path id="sweet_16_1-1-0" fill="none" stroke="none" d="M 741.9 1258.1 A 365.0 365.0 0 0 0 860.3 1337.2" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_1-1-0" startOffset="50%" text-anchor="middle">#82 Lisa on Ice</textPath></text>
+<text x="825.0" y="1261.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(393.8 825.0 1261.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<path d="M 600.0 1000.0 A 400.0 400.0 0 0 1 630.4 846.9 L 722.8 885.2 A 300.0 300.0 0 0 0 700.0 1000.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 630.4 846.9 A 400.0 400.0 0 0 1 717.2 717.2 L 787.9 787.9 A 300.0 300.0 0 0 0 722.8 885.2 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 600.0 1000.0 A 400.0 400.0 0 0 1 717.2 717.2 L 787.9 787.9 A 300.0 300.0 0 0 0 700.0 1000.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="722.8" y1="885.2" x2="630.4" y2="846.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 670.0 1000.0 A 330.0 330.0 0 0 1 766.7 766.7" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="sweet_16_2-0-0" fill="none" stroke="none" d="M 635.0 1000.0 A 365.0 365.0 0 0 1 662.8 860.3" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_2-0-0" startOffset="50%" text-anchor="middle">#99 Lemon of Troy</textPath></text>
+<text x="691.1" y="938.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(281.2 691.1 938.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path id="sweet_16_2-1-0" fill="none" stroke="none" d="M 662.8 860.3 A 365.0 365.0 0 0 1 741.9 741.9" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_2-1-0" startOffset="50%" text-anchor="middle">#51 Homie the Clown</textPath></text>
+<text x="738.1" y="825.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(303.8 738.1 825.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 1400.0 1000.0 A 400.0 400.0 0 0 1 1369.6 1153.1 L 1277.2 1114.8 A 300.0 300.0 0 0 0 1300.0 1000.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1369.6 1153.1 A 400.0 400.0 0 0 1 1282.8 1282.8 L 1212.1 1212.1 A 300.0 300.0 0 0 0 1277.2 1114.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1400.0 1000.0 A 400.0 400.0 0 0 1 1282.8 1282.8 L 1212.1 1212.1 A 300.0 300.0 0 0 0 1300.0 1000.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1277.2" y1="1114.8" x2="1369.6" y2="1153.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1330.0 1000.0 A 330.0 330.0 0 0 1 1233.3 1233.3" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="sweet_16_3-0-0" fill="none" stroke="none" d="M 1331.2 1137.2 A 358.5 358.5 0 0 0 1358.5 1000.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_3-0-0" startOffset="50%" text-anchor="middle">#4 Marge vs.</textPath></text><path id="sweet_16_3-0-1" fill="none" stroke="none" d="M 1343.2 1142.2 A 371.5 371.5 0 0 0 1371.5 1000.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_3-0-1" startOffset="50%" text-anchor="middle">the Monorail</textPath></text>
+<text x="1308.9" y="1061.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(281.2 1308.9 1061.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path id="sweet_16_3-1-0" fill="none" stroke="none" d="M 1258.1 1258.1 A 365.0 365.0 0 0 0 1337.2 1139.7" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_3-1-0" startOffset="50%" text-anchor="middle">#13 You Only Move Twice</textPath></text>
+<text x="1261.9" y="1175.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(303.8 1261.9 1175.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<path d="M 1282.8 1282.8 A 400.0 400.0 0 0 1 1153.1 1369.6 L 1114.8 1277.2 A 300.0 300.0 0 0 0 1212.1 1212.1 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1153.1 1369.6 A 400.0 400.0 0 0 1 1000.0 1400.0 L 1000.0 1300.0 A 300.0 300.0 0 0 0 1114.8 1277.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1282.8 1282.8 A 400.0 400.0 0 0 1 1000.0 1400.0 L 1000.0 1300.0 A 300.0 300.0 0 0 0 1212.1 1212.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1114.8" y1="1277.2" x2="1153.1" y2="1369.6" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1233.3 1233.3 A 330.0 330.0 0 0 1 1000.0 1330.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="sweet_16_4-0-0" fill="none" stroke="none" d="M 1139.7 1337.2 A 365.0 365.0 0 0 0 1258.1 1258.1" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_4-0-0" startOffset="50%" text-anchor="middle">#28 Homer&#x27;s Phobia</textPath></text>
+<text x="1175.0" y="1261.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(326.2 1175.0 1261.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path id="sweet_16_4-1-0" fill="none" stroke="none" d="M 1000.0 1365.0 A 365.0 365.0 0 0 0 1139.7 1337.2" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_4-1-0" startOffset="50%" text-anchor="middle">#12 Cape Feare</textPath></text>
+<text x="1061.5" y="1308.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(348.8 1061.5 1308.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">6</text>
+<path d="M 717.2 717.2 A 400.0 400.0 0 0 1 846.9 630.4 L 885.2 722.8 A 300.0 300.0 0 0 0 787.9 787.9 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 846.9 630.4 A 400.0 400.0 0 0 1 1000.0 600.0 L 1000.0 700.0 A 300.0 300.0 0 0 0 885.2 722.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 717.2 717.2 A 400.0 400.0 0 0 1 1000.0 600.0 L 1000.0 700.0 A 300.0 300.0 0 0 0 787.9 787.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="885.2" y1="722.8" x2="846.9" y2="630.4" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 766.7 766.7 A 330.0 330.0 0 0 1 1000.0 670.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="sweet_16_5-0-0" fill="none" stroke="none" d="M 741.9 741.9 A 365.0 365.0 0 0 1 860.3 662.8" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_5-0-0" startOffset="50%" text-anchor="middle">#27 A Milhouse Divided</textPath></text>
+<text x="825.0" y="738.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(326.2 825.0 738.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">4</text>
+<path id="sweet_16_5-1-0" fill="none" stroke="none" d="M 860.3 662.8 A 365.0 365.0 0 0 1 1000.0 635.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_5-1-0" startOffset="50%" text-anchor="middle">#75 Summer of 4 Ft. 2</textPath></text>
+<text x="938.5" y="691.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(348.8 938.5 691.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">1</text>
+<path d="M 717.2 1282.8 A 400.0 400.0 0 0 1 630.4 1153.1 L 722.8 1114.8 A 300.0 300.0 0 0 0 787.9 1212.1 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 630.4 1153.1 A 400.0 400.0 0 0 1 600.0 1000.0 L 700.0 1000.0 A 300.0 300.0 0 0 0 722.8 1114.8 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 717.2 1282.8 A 400.0 400.0 0 0 1 600.0 1000.0 L 700.0 1000.0 A 300.0 300.0 0 0 0 787.9 1212.1 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="722.8" y1="1114.8" x2="630.4" y2="1153.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 766.7 1233.3 A 330.0 330.0 0 0 1 670.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="sweet_16_6-0-0" fill="none" stroke="none" d="M 668.8 1137.2 A 358.5 358.5 0 0 0 746.5 1253.5" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_6-0-0" startOffset="50%" text-anchor="middle">#58 Itchy and</textPath></text><path id="sweet_16_6-0-1" fill="none" stroke="none" d="M 656.8 1142.2 A 371.5 371.5 0 0 0 737.3 1262.7" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_6-0-1" startOffset="50%" text-anchor="middle">Scratchy Land</textPath></text>
+<text x="738.1" y="1175.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(416.2 738.1 1175.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">6</text>
+<path id="sweet_16_6-1-0" fill="none" stroke="none" d="M 635.0 1000.0 A 365.0 365.0 0 0 0 662.8 1139.7" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_6-1-0" startOffset="50%" text-anchor="middle">#87 A Fish Called Selma</textPath></text>
+<text x="691.1" y="1061.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(438.8 691.1 1061.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">0</text>
+<path d="M 1282.8 717.2 A 400.0 400.0 0 0 1 1369.6 846.9 L 1277.2 885.2 A 300.0 300.0 0 0 0 1212.1 787.9 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1369.6 846.9 A 400.0 400.0 0 0 1 1400.0 1000.0 L 1300.0 1000.0 A 300.0 300.0 0 0 0 1277.2 885.2 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1282.8 717.2 A 400.0 400.0 0 0 1 1400.0 1000.0 L 1300.0 1000.0 A 300.0 300.0 0 0 0 1212.1 787.9 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1277.2" y1="885.2" x2="1369.6" y2="846.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1233.3 766.7 A 330.0 330.0 0 0 1 1330.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="sweet_16_7-0-0" fill="none" stroke="none" d="M 1258.1 741.9 A 365.0 365.0 0 0 1 1337.2 860.3" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="10" fill="#9BA6AF" text-decoration="line-through"><textPath href="#sweet_16_7-0-0" startOffset="50%" text-anchor="middle">#8 Homer at the Bat</textPath></text>
+<text x="1261.9" y="825.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(56.2 1261.9 825.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#9BA6AF">3</text>
+<path id="sweet_16_7-1-0" fill="none" stroke="none" d="M 1337.2 860.3 A 365.0 365.0 0 0 1 1365.0 1000.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C"><textPath href="#sweet_16_7-1-0" startOffset="50%" text-anchor="middle">#9 Bart Sells His Soul</textPath></text>
+<text x="1308.9" y="938.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(78.8 1308.9 938.5)" font-family="Quicksand, sans-serif" font-weight="700" font-size="10" fill="#23303C">3</text>
+<path d="M 1000.0 700.0 A 300.0 300.0 0 0 1 1212.1 787.9 L 1155.6 844.4 A 220.0 220.0 0 0 0 1000.0 780.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1212.1 787.9 A 300.0 300.0 0 0 1 1300.0 1000.0 L 1220.0 1000.0 A 220.0 220.0 0 0 0 1155.6 844.4 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1000.0 700.0 A 300.0 300.0 0 0 1 1300.0 1000.0 L 1220.0 1000.0 A 220.0 220.0 0 0 0 1000.0 780.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1155.6" y1="844.4" x2="1212.1" y2="787.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 750.0 A 250.0 250.0 0 0 1 1250.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="elite_8_0-0-0" fill="none" stroke="none" d="M 1000.0 725.0 A 275.0 275.0 0 0 1 1194.5 805.5" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="11" fill="#9BA6AF" text-decoration="line-through"><textPath href="#elite_8_0-0-0" startOffset="50%" text-anchor="middle">#1 Last Exit to Springfield</textPath></text>
+<text x="1089.9" y="782.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(22.5 1089.9 782.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#9BA6AF">1</text>
+<path id="elite_8_0-1-0" fill="none" stroke="none" d="M 1194.5 805.5 A 275.0 275.0 0 0 1 1275.0 1000.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#23303C"><textPath href="#elite_8_0-1-0" startOffset="50%" text-anchor="middle">#9 Bart Sells His Soul</textPath></text>
+<text x="1217.1" y="910.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(67.5 1217.1 910.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#23303C">2</text>
+<path d="M 1000.0 1300.0 A 300.0 300.0 0 0 1 787.9 1212.1 L 844.4 1155.6 A 220.0 220.0 0 0 0 1000.0 1220.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 787.9 1212.1 A 300.0 300.0 0 0 1 700.0 1000.0 L 780.0 1000.0 A 220.0 220.0 0 0 0 844.4 1155.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1000.0 1300.0 A 300.0 300.0 0 0 1 700.0 1000.0 L 780.0 1000.0 A 220.0 220.0 0 0 0 1000.0 1220.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="844.4" y1="1155.6" x2="787.9" y2="1212.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 1250.0 A 250.0 250.0 0 0 1 750.0 1000.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="elite_8_1-0-0" fill="none" stroke="none" d="M 805.5 1194.5 A 275.0 275.0 0 0 0 1000.0 1275.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="11" fill="#9BA6AF" text-decoration="line-through"><textPath href="#elite_8_1-0-0" startOffset="50%" text-anchor="middle">#2 Lisa&#x27;s Substitute</textPath></text>
+<text x="910.1" y="1217.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(382.5 910.1 1217.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#9BA6AF">1</text>
+<path id="elite_8_1-1-0" fill="none" stroke="none" d="M 725.0 1000.0 A 275.0 275.0 0 0 0 805.5 1194.5" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#23303C"><textPath href="#elite_8_1-1-0" startOffset="50%" text-anchor="middle">#58 Itchy and Scratchy Land</textPath></text>
+<text x="782.9" y="1089.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(427.5 782.9 1089.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#23303C">5</text>
+<path d="M 700.0 1000.0 A 300.0 300.0 0 0 1 787.9 787.9 L 844.4 844.4 A 220.0 220.0 0 0 0 780.0 1000.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 787.9 787.9 A 300.0 300.0 0 0 1 1000.0 700.0 L 1000.0 780.0 A 220.0 220.0 0 0 0 844.4 844.4 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 700.0 1000.0 A 300.0 300.0 0 0 1 1000.0 700.0 L 1000.0 780.0 A 220.0 220.0 0 0 0 780.0 1000.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="844.4" y1="844.4" x2="787.9" y2="787.9" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 750.0 1000.0 A 250.0 250.0 0 0 1 1000.0 750.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="elite_8_2-0-0" fill="none" stroke="none" d="M 725.0 1000.0 A 275.0 275.0 0 0 1 805.5 805.5" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="11" fill="#9BA6AF" text-decoration="line-through"><textPath href="#elite_8_2-0-0" startOffset="50%" text-anchor="middle">#99 Lemon of Troy</textPath></text>
+<text x="782.9" y="910.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(292.5 782.9 910.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#9BA6AF">2</text>
+<path id="elite_8_2-1-0" fill="none" stroke="none" d="M 805.5 805.5 A 275.0 275.0 0 0 1 1000.0 725.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#23303C"><textPath href="#elite_8_2-1-0" startOffset="50%" text-anchor="middle">#27 A Milhouse Divided</textPath></text>
+<text x="910.1" y="782.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(337.5 910.1 782.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#23303C">3</text>
+<path d="M 1300.0 1000.0 A 300.0 300.0 0 0 1 1212.1 1212.1 L 1155.6 1155.6 A 220.0 220.0 0 0 0 1220.0 1000.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1212.1 1212.1 A 300.0 300.0 0 0 1 1000.0 1300.0 L 1000.0 1220.0 A 220.0 220.0 0 0 0 1155.6 1155.6 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1300.0 1000.0 A 300.0 300.0 0 0 1 1000.0 1300.0 L 1000.0 1220.0 A 220.0 220.0 0 0 0 1220.0 1000.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1155.6" y1="1155.6" x2="1212.1" y2="1212.1" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1250.0 1000.0 A 250.0 250.0 0 0 1 1000.0 1250.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="elite_8_3-0-0" fill="none" stroke="none" d="M 1194.5 1194.5 A 275.0 275.0 0 0 0 1275.0 1000.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="11" fill="#9BA6AF" text-decoration="line-through"><textPath href="#elite_8_3-0-0" startOffset="50%" text-anchor="middle">#4 Marge vs. the Monorail</textPath></text>
+<text x="1217.1" y="1089.9" text-anchor="middle" dominant-baseline="middle" transform="rotate(292.5 1217.1 1089.9)" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#9BA6AF">3</text>
+<path id="elite_8_3-1-0" fill="none" stroke="none" d="M 1000.0 1275.0 A 275.0 275.0 0 0 0 1194.5 1194.5" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#23303C"><textPath href="#elite_8_3-1-0" startOffset="50%" text-anchor="middle">#12 Cape Feare</textPath></text>
+<text x="1089.9" y="1217.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(337.5 1089.9 1217.1)" font-family="Quicksand, sans-serif" font-weight="700" font-size="11" fill="#23303C">3</text>
+<path d="M 1000.0 780.0 A 220.0 220.0 0 0 1 1220.0 1000.0 L 1140.0 1000.0 A 140.0 140.0 0 0 0 1000.0 860.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1220.0 1000.0 A 220.0 220.0 0 0 1 1000.0 1220.0 L 1000.0 1140.0 A 140.0 140.0 0 0 0 1140.0 1000.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1000.0 780.0 A 220.0 220.0 0 0 1 1000.0 1220.0 L 1000.0 1140.0 A 140.0 140.0 0 0 0 1000.0 860.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1140.0" y1="1000.0" x2="1220.0" y2="1000.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 830.0 A 170.0 170.0 0 0 1 1000.0 1170.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="final_four_0-0-0" fill="none" stroke="none" d="M 1000.0 805.0 A 195.0 195.0 0 0 1 1195.0 1000.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="12" fill="#9BA6AF" text-decoration="line-through"><textPath href="#final_four_0-0-0" startOffset="50%" text-anchor="middle">#9 Bart Sells His Soul</textPath></text>
+<text x="1109.6" y="890.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(45.0 1109.6 890.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#9BA6AF">2</text>
+<path id="final_four_0-1-0" fill="none" stroke="none" d="M 1000.0 1195.0 A 195.0 195.0 0 0 0 1195.0 1000.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#23303C"><textPath href="#final_four_0-1-0" startOffset="50%" text-anchor="middle">#12 Cape Feare</textPath></text>
+<text x="1109.6" y="1109.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(315.0 1109.6 1109.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#23303C">3</text>
+<path d="M 1000.0 1220.0 A 220.0 220.0 0 0 1 780.0 1000.0 L 860.0 1000.0 A 140.0 140.0 0 0 0 1000.0 1140.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 780.0 1000.0 A 220.0 220.0 0 0 1 1000.0 780.0 L 1000.0 860.0 A 140.0 140.0 0 0 0 860.0 1000.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1000.0 1220.0 A 220.0 220.0 0 0 1 1000.0 780.0 L 1000.0 860.0 A 140.0 140.0 0 0 0 1000.0 1140.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="860.0" y1="1000.0" x2="780.0" y2="1000.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path d="M 1000.0 1170.0 A 170.0 170.0 0 0 1 1000.0 830.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="final_four_1-0-0" fill="none" stroke="none" d="M 805.0 1000.0 A 195.0 195.0 0 0 0 1000.0 1195.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#23303C"><textPath href="#final_four_1-0-0" startOffset="50%" text-anchor="middle">#58 Itchy and Scratchy Land</textPath></text>
+<text x="890.4" y="1109.6" text-anchor="middle" dominant-baseline="middle" transform="rotate(405.0 890.4 1109.6)" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#23303C">5</text>
+<path id="final_four_1-1-0" fill="none" stroke="none" d="M 805.0 1000.0 A 195.0 195.0 0 0 1 1000.0 805.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="12" fill="#9BA6AF" text-decoration="line-through"><textPath href="#final_four_1-1-0" startOffset="50%" text-anchor="middle">#27 A Milhouse Divided</textPath></text>
+<text x="890.4" y="890.4" text-anchor="middle" dominant-baseline="middle" transform="rotate(315.0 890.4 890.4)" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#9BA6AF">1</text>
+<path d="M 1000.0 860.0 A 140.0 140.0 0 0 1 1000.0 1140.0 L 1000.0 1060.0 A 60.0 60.0 0 0 0 1000.0 940.0 Z" fill="#EDEFF1" stroke="none" />
+<path d="M 1000.0 1140.0 A 140.0 140.0 0 0 1 1000.0 860.0 L 1000.0 940.0 A 60.0 60.0 0 0 0 1000.0 1060.0 Z" fill="#FFF3D6" stroke="none" />
+<path d="M 1000.0 860.0 A 140.0 140.0 0 1 1 1000.0 860.0 L 1000.0 940.0 A 60.0 60.0 0 1 0 1000.0 940.0 Z" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.5"  />
+<line x1="1000.0" y1="1060.0" x2="1000.0" y2="1140.0" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<circle cx="1000" cy="1000" r="90.0" fill="none" stroke="rgba(35,48,60,0.45)" stroke-width="1.2" />
+<path id="championship_0-0-0" fill="none" stroke="none" d="M 1000.0 885.0 A 115.0 115.0 0 0 1 1000.0 1115.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="600" font-size="12" fill="#9BA6AF" text-decoration="line-through"><textPath href="#championship_0-0-0" startOffset="50%" text-anchor="middle">#12 Cape Feare</textPath></text>
+<text x="1075.0" y="1000.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(90.0 1075.0 1000.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#9BA6AF">2</text>
+<path id="championship_0-1-0" fill="none" stroke="none" d="M 1000.0 1115.0 A 115.0 115.0 0 0 1 1000.0 885.0" /><text dominant-baseline="middle" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#23303C"><textPath href="#championship_0-1-0" startOffset="50%" text-anchor="middle">#58 Itchy and Scratchy Land</textPath></text>
+<text x="925.0" y="1000.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(270.0 925.0 1000.0)" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#23303C">4</text>
+<circle cx="1000" cy="1000" r="60" fill="#FFFDF7" stroke="#FFD400" stroke-width="3" />
+<text x="1000.0" y="993.0" text-anchor="middle" dominant-baseline="central" font-family="Quicksand, sans-serif" font-weight="700" font-size="12" fill="#23303C"><tspan x="1000.0" dy="0">#58 Itchy and</tspan><tspan x="1000.0" dy="14">Scratchy Land</tspan></text>
+</svg>
+  </div>
+
+  <div style="position: absolute; left: 90px; right: 90px; top: 2280px; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 32px; background: rgba(255,253,247,0.88); border-radius: 999px; padding: 12px 28px;">
+    <div style="display:flex; align-items:center; gap:8px;"><div style="width:14px; height:14px; border-radius:4px; background:#FFF3D6; border:1px solid rgba(45,58,74,0.3); flex:0 0 auto;"></div><div style="font-size:13px; font-weight:600; color:#23303C;">Winner</div></div>
+<div style="display:flex; align-items:center; gap:8px;"><div style="width:14px; height:14px; border-radius:4px; background:#EDEFF1; border:1px solid rgba(45,58,74,0.3); flex:0 0 auto;"></div><div style="font-size:13px; font-weight:600; color:#23303C;">Loser / not yet decided</div></div>
+<div style="display:flex; align-items:center; gap:8px;"><div style="width:14px; height:14px; border-radius:4px; background:#FFF0EA; border:1px solid rgba(45,58,74,0.3); flex:0 0 auto;"></div><div style="font-size:13px; font-weight:600; color:#23303C;">Voting open now</div></div>
+  </div>
+
+</div>
+</div>
+<div class="zoom-ctl">
+  <button type="button" id="zIn" aria-label="Zoom in">+</button>
+  <button type="button" id="zOut" aria-label="Zoom out">&ndash;</button>
+  <button type="button" id="zFit" aria-label="Fit whole bracket">&#x2922;</button>
+</div>
+<script>
+(function () {
+  // Frozen final bracket for the blog post: fits the frame, then pinch,
+  // ctrl/cmd + scroll, double-click, or the buttons to zoom; drag to pan.
+  var BW = 2180, BH = 2370, MAXZ = 6;
+  var wrap = document.getElementById('boardWrap'), board = document.getElementById('board');
+  var fit = 1, s = 1, x = 0, y = 0;
+  function clamp() {
+    var W = wrap.clientWidth, H = wrap.clientHeight, w = BW * s, h = BH * s;
+    x = w <= W ? (W - w) / 2 : Math.min(0, Math.max(W - w, x));
+    y = h <= H ? (H - h) / 2 : Math.min(0, Math.max(H - h, y));
+  }
+  function apply() {
+    clamp();
+    board.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + s + ')';
+    wrap.classList.toggle('zoomed', s > fit * 1.001);
+  }
+  function zoomAt(ns, px, py) {
+    ns = Math.min(fit * MAXZ, Math.max(fit, ns));
+    x = px - (px - x) * ns / s; y = py - (py - y) * ns / s; s = ns; apply();
+  }
+  function reset() {
+    fit = Math.min(wrap.clientWidth / BW, wrap.clientHeight / BH); s = fit; apply();
+  }
+  function mid() { return [wrap.clientWidth / 2, wrap.clientHeight / 2]; }
+  document.getElementById('zIn').onclick = function () { var m = mid(); zoomAt(s * 1.6, m[0], m[1]); };
+  document.getElementById('zOut').onclick = function () { var m = mid(); zoomAt(s / 1.6, m[0], m[1]); };
+  document.getElementById('zFit').onclick = reset;
+  wrap.addEventListener('dblclick', function (e) {
+    if (s >= fit * MAXZ * 0.99) reset(); else zoomAt(s * 2, e.clientX, e.clientY);
+  });
+  wrap.addEventListener('wheel', function (e) {
+    if (e.ctrlKey || e.metaKey) {           // trackpad pinch arrives as ctrl + wheel
+      e.preventDefault(); zoomAt(s * Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY);
+    } else if (s > fit * 1.001) {           // zoomed in: scrolling pans the bracket
+      e.preventDefault(); x -= e.deltaX; y -= e.deltaY; apply();
+    }                                        // at full view: the page scrolls as usual
+  }, { passive: false });
+  var pts = {}, last = null;
+  function info() {
+    var p = Object.keys(pts).map(function (k) { return pts[k]; });
+    if (p.length >= 2) return { cx: (p[0].x + p[1].x) / 2, cy: (p[0].y + p[1].y) / 2,
+      d: Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y), n: 2 };
+    return p.length ? { cx: p[0].x, cy: p[0].y, d: 0, n: 1 } : null;
+  }
+  wrap.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('.zoom-ctl')) return;
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY }; last = info();
+    if (last.n === 2 || s > fit * 1.001) { wrap.setPointerCapture(e.pointerId); wrap.classList.add('dragging'); }
+  });
+  wrap.addEventListener('pointermove', function (e) {
+    if (!pts[e.pointerId]) return;
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var cur = info();
+    if (!last || cur.n !== last.n) { last = cur; return; }
+    if (cur.n === 2 && last.d > 0) {
+      x += cur.cx - last.cx; y += cur.cy - last.cy;
+      zoomAt(s * cur.d / last.d, cur.cx, cur.cy);
+    } else if (cur.n === 1 && s > fit * 1.001) {
+      x += cur.cx - last.cx; y += cur.cy - last.cy; apply();
+    }
+    last = cur;
+  });
+  function up(e) { delete pts[e.pointerId]; last = info(); if (!last) wrap.classList.remove('dragging'); }
+  wrap.addEventListener('pointerup', up); wrap.addEventListener('pointercancel', up);
+  window.addEventListener('resize', reset);
+  reset();
+})();
+</script>
+</body>
+</html>
