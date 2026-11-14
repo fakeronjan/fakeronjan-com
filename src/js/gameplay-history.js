@@ -541,7 +541,13 @@
   // ── Gameplay Stats page ───────────────────────────────────────────────
 
   function historyPage() {
-    var minSel = document.getElementById("ghMin");
+    // Games played under an hour (recorded or estimated) stay hidden unless asked for, except
+    // ones on an awards list (Ronjan, 2026-11-14: replaced the "played at least" dropdown)
+    var shortBtn = document.getElementById("ghShort"), showShort = false;
+    function setShort(on) {
+      showShort = on;
+      shortBtn.checked = on;
+    }
     var yearSel = document.getElementById("ghYear");
     var sortPills = document.getElementById("ghYearSort"), yearSort = "last";
     // Games marked * (others in the family played them a lot) stay off the Timeline unless asked
@@ -597,8 +603,7 @@
     }
 
     function minOK(r) {
-      var n = +minSel.value;
-      return daysPlayed(r) >= n || (r.hours || 0) >= n;
+      return showShort || (r.hours || 0) >= 1 || awarded(r);
     }
 
     function activateTab(name) {
@@ -824,7 +829,7 @@
         count.classList.add("gh-hint");
         out.innerHTML = yearStrips(rows, years, {
           zoom: true,
-          // Every game played that year, whatever the 'played at least' filter; family-play games
+          // Every game played that year, whatever the under-an-hour filter; family-play games
           // only when they're included (their hours are partly other people's) (Ronjan, 2026-11-12)
           totals: function (yr) {
             var n = 0, hrs = 0;
@@ -990,17 +995,26 @@
             if (yearSel.value) add("year", yearSel.value);
             if (yearSel.value && yearSort !== "last") add("sort", yearSort);
             if (showFamily) add("family", "1");
+            if (showShort) add("short", "1");
           },
           apply: function (p) {
             setFamily(p.get("family") === "1");
+            setShort(p.get("short") === "1");
+            updateMinCount();
             yearSel.value = years.indexOf(p.get("year")) !== -1 ? p.get("year") : "";
             yearSort = ["most", "done"].indexOf(p.get("sort")) !== -1 ? p.get("sort") : "last";
             window.SportUrl.setPills("ghYearSort", yearSort);
             renderTimeline();
           },
         },
-        games: { query: function () {}, apply: function () {} },
-        "trophy-room": { query: function () {}, apply: function () { return loadUnlocks(); } },
+        games: {
+          query: function (add) { if (showShort) add("short", "1"); },
+          apply: function (p) { setShort(p.get("short") === "1"); updateMinCount(); if (drawGames) drawGames(); },
+        },
+        "trophy-room": {
+          query: function (add) { if (showShort) add("short", "1"); },
+          apply: function (p) { setShort(p.get("short") === "1"); updateMinCount(); return loadUnlocks(); },
+        },
       },
     });
 
@@ -1020,7 +1034,9 @@
       renderTimeline();
       url.write();
     });
-    minSel.addEventListener("change", function () {
+    shortBtn.addEventListener("change", function () {
+      setShort(shortBtn.checked);
+      url.write();
       updateMinCount();
       renderTimeline();
       if (drawGames) drawGames();
