@@ -576,21 +576,24 @@
       if (!awardedIds) {
         awardedIds = {};
         (window.GOTY || []).concat(window.GOTY_MORE || []).forEach(function (g) {
-          var row = gameForPick(g.game);
+          var row = gameForPick(g.game, g.year);
           if (row) awardedIds[row.id] = 1;
         });
       }
       return !!awardedIds[r.id];
     }
-    function gameForPick(name) {
+    function gameForPick(name, year) {
       if (!pickIndex) {
         pickIndex = {};
         games.forEach(function (r) {
-          awardNames(r).forEach(function (n) { pickIndex[norm(n)] = pickIndex[norm(n)] || r; });
+          awardNames(r).forEach(function (n) {
+            var list = pickIndex[norm(n)] = pickIndex[norm(n)] || [];
+            if (list.indexOf(r) < 0) list.push(r);
+          });
         });
       }
       var k = norm(name);
-      return pickIndex[k] || pickIndex[GOTY_ALIASES[k]] || null;
+      return (pickIndex[k] || pickIndex[GOTY_ALIASES[k]] || []).filter(function (r) { return pickFits(r, year); })[0] || null;
     }
 
     function minOK(r) {
@@ -855,7 +858,7 @@
               }).join("") + "</div>" +
               (picks.length ? '<div class="gh-sum-band"></div>' : "") +  // no picks yet: an empty cell
               '<div class="gh-sum-list gh-sum-goty" data-label="Game of the Year">' + (picks.length ? picks.map(function (p) {
-                var row = gameForPick(p.game);
+                var row = gameForPick(p.game, p.year);
                 var medal = { "Runner-up": "&#129352; ", "3rd place": "&#129353; ", "4th place": "&#127808; ", "5th place": "&#9995; " }[p.place] || "&#129351; ";
                 return (row ? '<span data-gid="' + esc(row.id) + '">' : "<span>") + medal + (row ? listLink(row.id, p.game) : listText(p.game)) + "</span>";
               }).join("") : "") + "</div>" +
@@ -886,7 +889,7 @@
         // The same numbers as the year's summary: days or estimated hours, the best list's share
         // at the end of the year (and a platinum earned by then), and the year's pick, if any
         var hrs = yearHours(r, y), prog = progressIn(r, y), done = prog && prog.gain, plat = !!(prog && prog.plat);
-        var pick = (gotyByYear()[y] || []).filter(function (p) { var g = gameForPick(p.game); return g && g.id === r.id; })[0];
+        var pick = (gotyByYear()[y] || []).filter(function (p) { var g = gameForPick(p.game, p.year); return g && g.id === r.id; })[0];
         // The row's reach that year: its dated days and its Nintendo spans
         var reach = all.concat.apply(all, sp.map(function (b) { return [b[0], b[1]]; })).sort();
         sp.forEach(function (b) { if (!fams[b[3]]) fams[b[3]] = []; });
@@ -1074,8 +1077,28 @@
   // its own name, since its platform name can be the original's: Ocarina of Time (Switch 2) is
   // "The Legend of Zelda: Ocarina of Time" on Nintendo's records, and the 1998 pick isn't its
   function awardNames(row) {
-    var names = [row.name].concat(row.name.split(" + "));
+    var names = [row.name, baseName(row.name)].concat(row.name.split(" + "));
     return (row.versions || []).length ? names : names.concat(row.entries.map(function (e) { return e.name; }));
+  }
+
+  // Games sharing a name carry a suffix: the year for a different game reusing the name, God of
+  // War (2005) / (2018), or the console for a remake, Paper Mario: The Thousand-Year Door (Switch).
+  // A pick matches one only from a year that fits: the suffix year itself, or a year the console
+  // was out, so the 2004 GameCube pick isn't the Switch remake and the 2009 Wii Punch-Out!! isn't
+  // Punch-Out!! (1987)
+  var CONSOLE_LAUNCH = { N64: 1996, PS4: 2013, Switch: 2017, "Switch 2": 2025 };
+  function nameSuffix(name) {
+    var m = /\s\(([^()]+)\)$/.exec(name);
+    return m ? m[1] : null;
+  }
+  function baseName(name) {
+    return nameSuffix(name) ? name.replace(/\s\([^()]+\)$/, "") : name;
+  }
+  function pickFits(row, year) {
+    var suf = nameSuffix(row.name), y = parseInt(year, 10), last = /s$/.test(year) ? y + 9 : y;  // "2010s" = 2010-2019
+    if (!suf || isNaN(y)) return true;
+    if (/^\d{4}$/.test(suf)) return +suf >= y && +suf <= last;
+    return CONSOLE_LAUNCH[suf] == null || last >= CONSOLE_LAUNCH[suf];
   }
 
   function gotyFor(row) {
@@ -1083,7 +1106,7 @@
     awardNames(row).forEach(function (n) { names[norm(n)] = 1; });
     return (window.GOTY || []).filter(function (g) {
       var k = norm(g.game);
-      return names[k] || names[GOTY_ALIASES[k]];
+      return (names[k] || names[GOTY_ALIASES[k]]) && pickFits(row, g.year);
     });
   }
 
