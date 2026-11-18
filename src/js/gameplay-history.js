@@ -1321,10 +1321,11 @@
       bl.forEach(function (b, i) {
         if (!i || bl[i - 1].post !== b.post) {
           if (i) html += "</div>";
-          html += '<p class="gh-blog-post"><a href="' + esc(b.post) + '">' + esc(b.title) + "</a> | " + fmtDay(b.date) + '</p><div class="gh-shots" data-n="' +
-            bl.filter(function (x) { return x.post === b.post; }).length + '">';
+          var mine = bl.filter(function (x) { return x.post === b.post; });
+          html += '<p class="gh-blog-post"><a href="' + esc(b.post) + '">' + esc(b.title) + "</a> | " + fmtDay(b.date) + '</p><div class="gh-shots' +
+            (mine.every(function (x) { return x.tall; }) ? " gh-portrait" : "") + '" data-n="' + mine.length + '">';
         }
-        html += '<button type="button" class="gh-shot" data-i="' + i + '" aria-label="' + esc("From " + b.title) + '"><img src="' + SHOTS + "/t/" + b.img + '" alt="" loading="lazy"><span>' + fmtDay(b.date) + "</span></button>";
+        html += '<button type="button" class="gh-shot' + (b.tall ? " gh-tall" : "") + '" data-i="' + i + '" aria-label="' + esc("From " + b.title) + '"><img src="' + SHOTS + "/t/" + b.img + '" alt="" loading="lazy"><span>' + fmtDay(b.date) + "</span></button>";
       });
       bgrid.innerHTML = html + "</div>";
       bgrid.querySelectorAll(".gh-shots").forEach(function (g) { grids.push(g); balance(g); });
@@ -1371,12 +1372,22 @@
       fams.forEach(function (f) { if (fam === "All" || f === fam) total += row._shotTotals[f]; });
       document.getElementById("ghShotCap").textContent = shots.length === total ? (total > 1 ? "All " : "") + plural(total, "screenshot", "screenshots")
         : shots.length + " of " + total + " screenshots, chosen at random from across the time I played";
-      grid.dataset.n = shots.length;
-      grid.innerHTML = shots.map(function (s, i) {
-        var tile = '<button type="button" class="gh-shot" data-i="' + i + '" aria-label="Screenshot from ' + fmtDay(s.time) + '"><img src="' + SHOTS + "/t/" + s.img + '" alt="" loading="lazy"><span>' + fmtDay(s.time) + "</span></button>";
-        return s.text ? '<figure class="gh-shot-fig">' + tile + "<figcaption>" + esc(s.text) + "</figcaption></figure>" : tile;
-      }).join("");
-      balance(grid);
+      // Landscape screenshots first, then portrait ones (phones) in a grid of tall tiles
+      var wide = shots.filter(function (s) { return !s.tall; }), tall = shots.filter(function (s) { return s.tall; });
+      shots = wide.concat(tall);
+      var tile = function (s, i) {
+        var t = '<button type="button" class="gh-shot' + (s.tall ? " gh-tall" : "") + '" data-i="' + i + '" aria-label="Screenshot from ' + fmtDay(s.time) + '"><img src="' + SHOTS + "/t/" + s.img + '" alt="" loading="lazy"><span>' + fmtDay(s.time) + "</span></button>";
+        return s.text ? '<figure class="gh-shot-fig">' + t + "<figcaption>" + esc(s.text) + "</figcaption></figure>" : t;
+      };
+      grid.dataset.n = wide.length;
+      grid.hidden = !wide.length;
+      grid.innerHTML = wide.map(tile).join("");
+      var pgrid = document.getElementById("ghShotsTall");
+      if (!pgrid) { pgrid = document.createElement("div"); pgrid.id = "ghShotsTall"; pgrid.className = "gh-shots gh-portrait"; grid.after(pgrid); }
+      pgrid.dataset.n = tall.length;
+      pgrid.hidden = !tall.length;
+      pgrid.innerHTML = tall.map(function (s, j) { return tile(s, wide.length + j); }).join("");
+      balance(grid); balance(pgrid);
     }
 
     var pills = document.getElementById("ghShotPills");
@@ -1393,8 +1404,9 @@
       });
     }
     drawShots("All");
-    window.addEventListener("resize", function () { balance(grid); });
-    grid.addEventListener("click", function (e) {
+    window.addEventListener("resize", function () { balance(grid); var pg = document.getElementById("ghShotsTall"); if (pg) balance(pg); });
+    grid.parentNode.addEventListener("click", function (e) {
+      if (!e.target.closest("#ghShots, #ghShotsTall")) return;
       var b = e.target.closest(".gh-shot");
       if (!b) return;
       openLightbox(shots, +b.dataset.i, function (x, i) {
@@ -1414,7 +1426,7 @@
       if (!gallery[eid]) return;
       var family = shotFamily(eid);
       shots = shots.concat(gallery[eid].shots.map(function (s) {
-        return { time: s.time, img: s.img, text: s.post ? text[s.post] || "" : "", family: family };
+        return { time: s.time, img: s.img, text: s.post ? text[s.post] || "" : "", family: family, tall: !!s.tall };
       }));
     });
     return shots.sort(function (a, b) { return a.time < b.time ? -1 : 1; });
@@ -1465,7 +1477,8 @@
   // row leaves space at the end, never bigger tiles.
   function balance(grid) {
     var n = +grid.dataset.n, width = grid.clientWidth || 800, GAP = 6;
-    var max = Math.max(2, Math.min(6, Math.floor(width / 150)));
+    var portrait = grid.classList.contains("gh-portrait");
+    var max = Math.max(portrait ? 3 : 2, Math.min(portrait ? 9 : 6, Math.floor(width / (portrait ? 100 : 150))));
     var cols = Math.min(n, max);
     for (var c = max; n > max && c >= Math.max(2, max - 2); c--) {
       if (n % c !== 1) { cols = c; break; }
