@@ -1060,6 +1060,48 @@
     legend(document.getElementById("ghLegend"));
 
     var seriesList = [];
+    // Each series' box art wraps into rows of equal length (no orphan row): the strip gets just
+    // the width its row count needs
+    function balanceArt() {
+      var els = document.querySelectorAll("#ghSeriesTable .gh-series-art");
+      els.forEach(function (el) { el.style.maxWidth = ""; });
+      els.forEach(function (el) {
+        var n = el.children.length, first = el.firstElementChild;
+        if (!n || !first) return;
+        var tile = first.getBoundingClientRect().width + 3, td = el.closest("td"), cs = getComputedStyle(td);
+        var avail = td.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        var per = Math.max(1, Math.floor((avail + 3) / tile));
+        if (per >= n) return;
+        // Fewest rows, then the widest row length that leaves no single tile alone on the last row
+        var cols = per;
+        for (var c = per; c >= Math.max(2, per - 3); c--) { if (n % c !== 1) { cols = c; break; } }
+        var rows = Math.ceil(n / cols);
+        cols = Math.ceil(n / rows);
+        el.style.maxWidth = cols * tile - 3 + 2 + "px";  // 2px slack for subpixel widths
+        el._cols = cols; el._tile = tile;
+      });
+      // Narrowing one strip can narrow the whole column; settle any strip that's left with a lone tile
+      for (var pass = 0; pass < 4; pass++) {
+        var moved = false;
+        els.forEach(function (el) {
+          if (lastRowCount(el) !== 1) return;
+          var tile = el._tile || el.firstElementChild.getBoundingClientRect().width + 3;
+          var top = Math.round(el.firstElementChild.getBoundingClientRect().top), perRow = 0;
+          for (var i = 0; i < el.children.length; i++) if (Math.round(el.children[i].getBoundingClientRect().top) === top) perRow++;
+          if (perRow <= 2) return;
+          el._tile = tile;
+          el.style.maxWidth = (perRow - 1) * tile - 3 + 2 + "px";
+          moved = true;
+        });
+        if (!moved) break;
+      }
+    }
+    function lastRowCount(el) {
+      var tops = [];
+      for (var i = 0; i < el.children.length; i++) tops.push(Math.round(el.children[i].getBoundingClientRect().top));
+      var last = Math.max.apply(null, tops);
+      return tops.length > 1 && tops.some(function (t) { return t !== last; }) ? tops.filter(function (t) { return t === last; }).length : 0;
+    }
     function renderSeries() {
       var rows = seriesList.map(function (s) { var o = seriesSummary(s, gamesById); o.s = s; return o; });
       table({
@@ -1067,7 +1109,13 @@
         search: document.getElementById("ghSeriesSearch"), rows: rows, sortKey: "h", desc: true,
         filter: function (o, f, q) { return !q || o.s.name.toLowerCase().indexOf(q) !== -1; },
         cols: [
-          { k: "n", h: "Series", cls: "gh-wrap gh-name", v: function (o) { return o.s.name.toLowerCase(); }, r: function (o) { return '<b><a class="gh-glink" href="' + SERIES_URL + encodeURIComponent(o.s.id) + '">' + esc(o.s.name) + "</a>" + seriesFamily(o) + "</b>"; } },
+          { k: "n", h: "Series", cls: "gh-wrap gh-name", v: function (o) { return o.s.name.toLowerCase(); }, r: function (o) {
+            // Under the name: every game's box art, newest first, each linking to its game
+            var art = o.rows.slice().sort(function (p, q) { return (q.last || "") < (p.last || "") ? -1 : 1; }).map(function (r) {
+              return '<a class="gh-sy-art" href="' + GAME_URL + encodeURIComponent(r.id) + '" title="' + esc(r.name) + '">' + thumb(r.img, "gh-thumb-xs") + "</a>";
+            }).join("");
+            return '<b><a class="gh-glink" href="' + SERIES_URL + encodeURIComponent(o.s.id) + '">' + esc(o.s.name) + "</a>" + seriesFamily(o) + '</b><span class="gh-series-art">' + art + "</span>";
+          } },
           { k: "g", h: "Games", desc: true, v: function (o) { return o.n; }, r: function (o) { return o.n; } },
           { k: "y", h: "Years", cls: "gh-hide-m", desc: true, v: function (o) { return o.last; }, r: seriesYears },
           { k: "d", h: "Days played", desc: true, v: function (o) { return o.days || null; }, r: function (o) { return (o.days || "-") + seriesFamily(o); } },
@@ -1109,6 +1157,11 @@
       renderGames();
       seriesList = res[2];
       renderSeries();
+      var tbl = document.getElementById("ghSeriesTable");
+      if ("MutationObserver" in window) new MutationObserver(function () { requestAnimationFrame(balanceArt); }).observe(tbl, { childList: true, subtree: true });
+      window.addEventListener("resize", balanceArt);
+      document.querySelector('#ghTabs [data-tab="series"]').addEventListener("click", function () { requestAnimationFrame(balanceArt); });
+      requestAnimationFrame(balanceArt);
       gamesReadyResolve();
     }).catch(showError);
 
