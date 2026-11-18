@@ -1064,7 +1064,10 @@
     // the width its row count needs
     function balanceArt() {
       var els = document.querySelectorAll("#ghSeriesTable .gh-series-art");
-      els.forEach(function (el) { el.style.maxWidth = ""; });
+      els.forEach(function (el) {
+        el.style.maxWidth = "";
+        if (el._shrunk) { el._shrunk = false; Array.prototype.forEach.call(el.querySelectorAll(".gh-thumb"), function (t) { t.style.width = t.style.height = ""; }); }
+      });
       els.forEach(function (el) {
         var n = el.children.length, first = el.firstElementChild;
         if (!n || !first) return;
@@ -1088,7 +1091,20 @@
           var tile = el._tile || el.firstElementChild.getBoundingClientRect().width + 3;
           var top = Math.round(el.firstElementChild.getBoundingClientRect().top), perRow = 0;
           for (var i = 0; i < el.children.length; i++) if (Math.round(el.children[i].getBoundingClientRect().top) === top) perRow++;
-          if (perRow <= 2) return;
+          if (perRow <= 3 || (n_ok(el.children.length, perRow - 1) === false && el.children.length % (perRow - 1) === 1)) {
+            // Narrower can't fix it (13 games at 4 a row leave one alone at 4 and at 3): make this
+            // strip's art just small enough for one more per row
+            var td = el.closest("td"), cs = getComputedStyle(td);
+            var avail = td.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+            var size = Math.floor((avail - perRow * 3) / (perRow + 1));
+            if (size >= 16 && !el._shrunk) {
+              el._shrunk = true;
+              el.style.maxWidth = "";
+              Array.prototype.forEach.call(el.querySelectorAll(".gh-thumb"), function (t) { t.style.width = t.style.height = size + "px"; });
+              moved = true;
+            }
+            return;
+          }
           el._tile = tile;
           el.style.maxWidth = (perRow - 1) * tile - 3 + 2 + "px";
           moved = true;
@@ -1096,6 +1112,7 @@
         if (!moved) break;
       }
     }
+    function n_ok(n, c) { return c >= 2 && n % c !== 1; }
     function lastRowCount(el) {
       var tops = [];
       for (var i = 0; i < el.children.length; i++) tops.push(Math.round(el.children[i].getBoundingClientRect().top));

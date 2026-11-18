@@ -1854,6 +1854,9 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .gh-sy-games { display: inline-flex; flex-wrap: wrap; gap: 3px; margin-left: 0.45rem; vertical-align: middle; }
 .gh-sy-art { display: inline-flex; line-height: 0; }
 .gh-series-art { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 0.3rem; }
+/* Series box art reads at 28px (the Timeline's 18px is too small for it) */
+.gh-series-art .gh-thumb.gh-thumb-xs, .gh-sy-games .gh-thumb.gh-thumb-xs { width: 28px; height: 28px; border-radius: 4px; }
+@media (max-width: 640px) { .gh-series-art .gh-thumb.gh-thumb-xs { width: 22px; height: 22px; border-radius: 3px; } }
 /* Phones: the box art drops under the hours, so the strips keep their width */
 @media (max-width: 640px) {
   .gh-series-strips .gh-years-compact { grid-template-columns: 2.8rem minmax(0, 1fr) 5.2rem; }
