@@ -2,7 +2,7 @@
 // (/video-games/gameplay-stats/game/?id=...). Data comes from the
 // gameplay-tracking repo (refreshed daily) and the gameplay-screenshots repo.
 (function () {
-  var page = document.getElementById("ghPage") || document.getElementById("ghGamePage");
+  var page = document.getElementById("ghPage") || document.getElementById("ghGamePage") || document.getElementById("ghSeriesPage");
   if (!page) return;
   var BASE = page.dataset.source;
   var SHOTS = page.dataset.shots;
@@ -15,6 +15,7 @@
   var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var KIND_ORDER = { platinum: 4, master: 3.5, gold: 3, silver: 2, bronze: 1 };  // master: Zelda Notes medals
   var GAME_URL = "/video-games/gameplay-stats/game/?id=";
+  var SERIES_URL = "/video-games/gameplay-stats/series/?id=";
 
   // ── helpers ─────────────────────────────────────────────────────────────
 
@@ -624,7 +625,7 @@
       var minBar = document.getElementById("ghMinBar"), shortLabel = shortBtn.closest("label");
       if (name === "timeline") document.querySelector(".gh-year-row").appendChild(shortLabel);
       else minBar.insertBefore(shortLabel, minBar.firstChild);
-      minBar.hidden = name === "data-summary" || name === "timeline";
+      minBar.hidden = name === "data-summary" || name === "timeline" || name === "series";
       if (name === "trophy-room") loadUnlocks();
     }
 
@@ -1003,6 +1004,7 @@
       activateTab: activateTab,
       tabs: {
         "data-summary": { query: function () {}, apply: function () {} },
+        series: { query: function () {}, apply: function () {} },
         timeline: {
           query: function (add) {
             if (yearSel.value) add("year", yearSel.value);
@@ -1057,7 +1059,24 @@
     });
     legend(document.getElementById("ghLegend"));
 
-    var loaded = Promise.all([getJSON(BASE + "/data/games.json"), getJSON(BASE + "/data/status.json")]).then(function (res) {
+    var seriesList = [];
+    function renderSeries() {
+      var rows = seriesList.map(function (s) { var o = seriesSummary(s, gamesById); o.s = s; return o; });
+      table({
+        el: document.getElementById("ghSeriesTable"), count: document.getElementById("ghSeriesCount"),
+        search: document.getElementById("ghSeriesSearch"), rows: rows, sortKey: "h", desc: true,
+        filter: function (o, f, q) { return !q || o.s.name.toLowerCase().indexOf(q) !== -1; },
+        cols: [
+          { k: "n", h: "Series", cls: "gh-wrap gh-name", v: function (o) { return o.s.name.toLowerCase(); }, r: function (o) { return '<b><a class="gh-glink" href="' + SERIES_URL + encodeURIComponent(o.s.id) + '">' + esc(o.s.name) + "</a>" + seriesFamily(o) + "</b>"; } },
+          { k: "g", h: "Games", desc: true, v: function (o) { return o.n; }, r: function (o) { return o.n; } },
+          { k: "y", h: "Years", cls: "gh-hide-m", desc: true, v: function (o) { return o.last; }, r: seriesYears },
+          { k: "d", h: "Days played", desc: true, v: function (o) { return o.days || null; }, r: function (o) { return (o.days || "-") + seriesFamily(o); } },
+          { k: "h", h: "Hours played", desc: true, v: function (o) { return o.hours; }, r: function (o) { return hours(o.hours, o.est) + seriesFamily(o); } },
+        ],
+      });
+    }
+
+    var loaded = Promise.all([getJSON(BASE + "/data/games.json"), getJSON(BASE + "/data/status.json"), getJSON(BASE + "/data/series.json").catch(function () { return []; })]).then(function (res) {
       games = res[0];
       games.forEach(function (r) {
         r.families.sort();
@@ -1088,10 +1107,12 @@
       updateMinCount();
       renderTimeline();
       renderGames();
+      seriesList = res[2];
+      renderSeries();
       gamesReadyResolve();
     }).catch(showError);
 
-    url.start({ timeline: loaded, games: loaded, "trophy-room": loaded }, [loaded]);
+    url.start({ timeline: loaded, games: loaded, series: loaded, "trophy-room": loaded }, [loaded]);
   }
 
   // ── game page ───────────────────────────────────────────────────────────
@@ -1161,6 +1182,7 @@
       getJSON(SHOTS + "/moments.json").catch(function () { return {}; }),
       getJSON(SHOTS + "/milestones.json").catch(function () { return {}; }),
       getJSON(SHOTS + "/blog.json").catch(function () { return {}; }),
+      getJSON(BASE + "/data/series.json").catch(function () { return []; }),
     ]).then(function (res) {
       var games = res[0], gamesById = {};
       games.forEach(function (r) { r.families.sort(); gamesById[r.id] = r; });
@@ -1172,6 +1194,14 @@
       var gallery = res[3];
       var mvNames = row.entries.filter(function (e) { return e.id.indexOf("miiverse:") === 0; }).map(function (e) { return e.id.slice(9); });
       var posts = res[2].posts.filter(function (p) { return mvNames.indexOf(p.game) !== -1; }).reverse();
+      row._seriesLines = (row.series || []).map(function (sid) {
+        var s = res[7].filter(function (x) { return x.id === sid; })[0];
+        if (!s) return "";
+        var o = seriesSummary(s, gamesById);
+        var bits = [plural(o.n, "game", "games"), seriesYears(o)];
+        if (o.hours != null) bits.push((o.est ? "~" : "") + fmtHours(o.hours) + " hours");
+        return '<p class="gh-series-line">Part of ' + seriesLabel(s.name).replace(s.name, '<a href="' + SERIES_URL + encodeURIComponent(s.id) + '">' + esc(s.name) + " series</a>") + ": " + esc(bits.join(", ")) + seriesFamily(o) + "</p>";
+      }).join("");
       out.innerHTML = gameHtml(row, unlocks, entryIds, gallery, posts, res[5], res[6]);
       wireGame(row, unlocks, entryIds, gallery);
     }).catch(function () { out.innerHTML = ""; showError(); });
@@ -1212,6 +1242,7 @@
           .replace("\uD83C\uDFC5", '<span title="Medals" aria-label="medals">\uD83C\uDFC5</span>') + "</span>";
       }).join('<span class="sport-updated-sep">|</span>') + "</p>" +
       (badges ? '<div class="gh-badges">' + badges + "</div>" : "") +
+      (row._seriesLines || "") +
       (row.family_play ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") +
       ((row.versions || []).length ? '<p class="gh-versions">Other versions: ' + row.versions.map(function (v) { return gameLink(v.id, v.name); }).join(", ") + "</p>" : "") +
       "</div></div>";
@@ -1488,6 +1519,113 @@
     grid.style.setProperty("--tile", Math.floor((width - GAP * (max - 1)) / max) + "px");
   }
 
+  // ── series (config/series.json, curated by Ronjan) ──────────────────────
+  // A series' totals from its games: counts, first and last played, days, hours (estimated if
+  // any game's are), unlocks, and whether any game includes family play
+  function seriesSummary(s, gamesById) {
+    var rows = s.games.map(function (id) { return gamesById[id]; }).filter(Boolean);
+    var o = { rows: rows, n: rows.length, first: null, last: null, days: 0, hours: null, est: false, earned: 0, total: 0, family: false };
+    rows.forEach(function (r) {
+      if (r.first && (!o.first || r.first < o.first)) o.first = r.first;
+      if (r.last && (!o.last || r.last > o.last)) o.last = r.last;
+      o.days += daysPlayed(r);
+      if (r.hours != null) o.hours = (o.hours || 0) + r.hours;
+      o.est = o.est || !!r.hours_estimated;
+      o.family = o.family || !!r.family_play;
+      countedEntries(r).forEach(function (e) { o.earned += e.earned || 0; o.total += e.total || 0; });
+    });
+    return o;
+  }
+  function seriesYears(o) {
+    if (!o.first) return "-";
+    var a = o.first.slice(0, 4), b = o.last.slice(0, 4);
+    return a === b ? a : a + "\u2013" + b;
+  }
+  function seriesLabel(name) { return /^The /.test(name) ? name : "the " + name; }
+  function seriesFamily(o) { return o.family ? '<span class="gh-family" title="' + FAMILY_NOTE + '">*</span>' : ""; }
+
+  function seriesPage() {
+    var id = new URLSearchParams(location.search).get("id");
+    var back = document.querySelector(".gh-back");
+    var from = document.referrer ? new URL(document.referrer) : null;
+    if (back && from && from.origin === location.origin) {
+      back.href = from.pathname + from.search;
+      back.addEventListener("click", function (e) { e.preventDefault(); history.back(); });
+    } else if (back) {
+      back.href = "/video-games/gameplay-stats/?tab=series";
+    }
+    var out = document.getElementById("ghSeries");
+    Promise.all([getJSON(BASE + "/data/games.json"), getJSON(BASE + "/data/series.json")]).then(function (res) {
+      var gamesById = {};
+      res[0].forEach(function (r) { r.families.sort(); gamesById[r.id] = r; r.best = bestList(r); });
+      var s = res[1].filter(function (x) { return x.id === id; })[0];
+      if (!s) { out.innerHTML = ""; showError(); return; }
+      document.title = s.name + " | FAKE RONJAN!!";
+      var o = seriesSummary(s, gamesById);
+      var newest = o.rows.slice().sort(function (a, b) { return (b.last || "") < (a.last || "") ? -1 : 1; });
+      var fams = {};
+      o.rows.forEach(function (r) { r.families.forEach(function (f) { fams[f] = 1; }); });
+      var facts = [plural(o.n, "game", "games")];
+      if (o.first) {
+        facts.push("First played " + fmtDay(o.first));
+        if (o.last !== o.first) facts.push("Last played " + fmtDay(o.last));
+        facts.push(plural(o.days, "day", "days") + (o.family ? "*" : ""));
+      }
+      if (o.hours != null) facts.push((o.est ? "about " : "") + fmtHours(o.hours) + " hours" + (o.family ? "*" : ""));
+      if (o.total) facts.push(o.earned + " of " + o.total + " \uD83C\uDFC6");
+      // The series' awards, newest first: "🥇 2017: Super Mario Odyssey"
+      var awards = [];
+      o.rows.forEach(function (r) { gotyFor(r).forEach(function (g) { awards.push({ g: g, r: r }); }); });
+      awards.sort(function (a, b) { return a.g.year < b.g.year ? 1 : a.g.year > b.g.year ? -1 : 0; });
+      var badges = awards.map(function (a) {
+        var label = PILL_MEDALS[a.g.place] + " " + esc(a.g.year) + ": " + esc(a.r.name), tip = esc(a.g.year) + ": " + esc(a.g.place);
+        var cls = "gh-badge" + (MEDAL_CLASS[a.g.place] || "");
+        return g_link(a.g, cls, label, tip);
+      }).join("");
+      function g_link(g, cls, label, tip) { return g.url ? '<a class="' + cls + '" href="' + esc(g.url) + '" title="' + tip + '">' + label + "</a>" : '<span class="' + cls + '" title="' + tip + '">' + label + "</span>"; }
+      var art = newest[0] && newest[0].img ? '<img class="gh-art" src="' + BASE + "/" + newest[0].img + '" alt="">' : '<span class="gh-art" aria-hidden="true"></span>';
+      var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(s.name) + ' <span class="gh-series-tag">Series</span></h1>' +
+        '<p class="gh-facts">' + dots(Object.keys(fams).sort()) + " " + facts.map(function (f) {
+          return '<span class="gh-nowrap">' + esc(f).replace("\uD83C\uDFC6", '<span title="Trophies and achievements" aria-label="trophies and achievements">\uD83C\uDFC6</span>') + "</span>";
+        }).join('<span class="sport-updated-sep">|</span>') + "</p>" +
+        (badges ? '<div class="gh-badges">' + badges + "</div>" : "") +
+        (o.family ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") + "</div></div>";
+      // Hours by year, newest first: each game's estimated hours in the year, added up
+      var ys = {};
+      o.rows.forEach(function (r) {
+        Object.keys(allDays(r)).forEach(function (d) { ys[d.slice(0, 4)] = 1; });
+        spanYears(r).forEach(function (y) { ys[y] = 1; });
+      });
+      var yrs = Object.keys(ys).sort().reverse().map(function (y) {
+        var t = 0, any = false;
+        o.rows.forEach(function (r) { var v = yearHours(r, y); if (v != null) { t += v; any = true; } });
+        return [y, any ? t : null];
+      }).filter(function (x) { return x[1] != null && x[1] >= 0.05; });
+      if (yrs.length) {
+        var max = Math.max.apply(null, yrs.map(function (x) { return x[1]; }));
+        h += '<h2 class="gh-h2">Hours by year</h2><div class="gh-series-years">' + yrs.map(function (x) {
+          return '<div class="gh-sy"><span>' + x[0] + '</span><i style="width:' + Math.max(1, x[1] / max * 100).toFixed(1) + '%"></i><em>~' + fmtHours(x[1]) + " hrs</em></div>";
+        }).join("") + "</div>";
+      }
+      h += '<h2 class="gh-h2">Games (' + o.n + ')</h2><div class="sport-table-wrap" id="ghSeriesGames"></div>';
+      out.innerHTML = h;
+      table({
+        el: document.getElementById("ghSeriesGames"), rows: o.rows, sortKey: "last", desc: true,
+        filter: function () { return true; },
+        cols: [
+          { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<span><b>" + gameLink(r.id, r.name) + familyMark(r) + "</b>" + pills(r) + "</span></div>"; } },
+          { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return platformLines(r); } },
+          { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
+          { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
+          { k: "d", h: "Days played&dagger;", desc: true, v: function (r) { return daysPlayed(r) || null; }, r: function (r) { return daysPlayed(r) ? daysPlayed(r) + familyMark(r) : "-"; } },
+          { k: "h", h: "Hours played", desc: true, v: function (r) { return r.hours; }, r: function (r) { return hours(r.hours, r.hours_estimated) + familyMark(r); } },
+          { k: "u", h: "Unlocks", cls: "gh-hide-m", desc: true, v: function (r) { return r.best ? r.best.pct : null; }, r: unlockCell },
+        ],
+      });
+    }).catch(function () { out.innerHTML = ""; showError(); });
+  }
+
   if (document.getElementById("ghPage")) historyPage();
+  else if (document.getElementById("ghSeriesPage")) seriesPage();
   else gamePage();
 })();

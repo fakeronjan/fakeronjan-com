@@ -11,6 +11,7 @@ permalink: /video-games/gameplay-stats/
   <nav class="sport-tabs" id="ghTabs">
     <button class="sport-tab active" data-tab="timeline" type="button">Timeline</button>
     <button class="sport-tab" data-tab="games" type="button">Games</button>
+    <button class="sport-tab" data-tab="series" type="button">Series</button>
     <button class="sport-tab" data-tab="trophy-room" type="button">Trophy Room</button>
     <button class="sport-tab" data-tab="data-summary" type="button">Data Summary</button>
   </nav>
@@ -132,6 +133,15 @@ permalink: /video-games/gameplay-stats/
       <p>&dagger; Steam, Xbox One, Series X|S: Counts days with an achievement, plus last played</p>
       <p>&dagger; 360: Counts days with an achievement</p>
     </div>
+  </section>
+
+  <section class="sport-view" data-view="series" id="series" hidden>
+    <div class="sport-controls">
+      <input id="ghSeriesSearch" class="gh-search" type="search" placeholder="Search series" aria-label="Search series">
+      <span class="sport-count" id="ghSeriesCount"></span>
+    </div>
+    <div class="sport-table-wrap" id="ghSeriesTable"></div>
+    <p class="gh-family-note">* Includes significant play time from other family members</p>
   </section>
 
   <section class="sport-view" data-view="trophy-room" id="trophy-room" hidden>
