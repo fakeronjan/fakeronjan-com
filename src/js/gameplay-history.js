@@ -1110,8 +1110,9 @@
         filter: function (o, f, q) { return !q || o.s.name.toLowerCase().indexOf(q) !== -1; },
         cols: [
           { k: "n", h: "Series", cls: "gh-wrap gh-name", v: function (o) { return o.s.name.toLowerCase(); }, r: function (o) {
-            // Under the name: every game's box art, newest first, each linking to its game
-            var art = o.rows.slice().sort(function (p, q) { return (q.last || "") < (p.last || "") ? -1 : 1; }).map(function (r) {
+            // Under the name: every game's box art, by first played (newest first, so the order
+            // holds when an old game is replayed), each linking to its game
+            var art = o.rows.slice().sort(byFirstPlayed).map(function (r) {
               return '<a class="gh-sy-art" href="' + GAME_URL + encodeURIComponent(r.id) + '" title="' + esc(r.name) + '">' + thumb(r.img, "gh-thumb-xs") + "</a>";
             }).join("");
             return '<b><a class="gh-glink" href="' + SERIES_URL + encodeURIComponent(o.s.id) + '">' + esc(o.s.name) + "</a>" + seriesFamily(o) + '</b><span class="gh-series-art">' + art + "</span>";
@@ -1589,6 +1590,11 @@
     });
     return o;
   }
+  // Newest first played first (ties by name), the order a series reads in everywhere
+  function byFirstPlayed(p, q) {
+    var a = p.first || "", b = q.first || "";
+    return a !== b ? (a < b ? 1 : -1) : p.name < q.name ? -1 : 1;
+  }
   function seriesYears(o) {
     if (!o.first) return "-";
     var a = o.first.slice(0, 4), b = o.last.slice(0, 4);
@@ -1662,8 +1668,9 @@
           summary: function (y, gs) {
             var t = 0;
             gs.forEach(function (g) { g.h = yearHours(g.row, y) || 0; t += g.h; });
-            // The year's games as small box art at the end, most played that year first, each linking to its page
-            var art = gs.slice().sort(function (p, q) { return q.h - p.h; }).map(function (g) {
+            // The year's games as small box art at the end, by first played (newest first), each
+            // linking to its page
+            var art = gs.slice().sort(function (p, q) { return byFirstPlayed(p.row, q.row); }).map(function (g) {
               return '<a class="gh-sy-art" href="' + GAME_URL + encodeURIComponent(g.row.id) + '" title="' + esc(g.row.name) + '">' + thumb(g.row.img, "gh-thumb-xs") + "</a>";
             }).join("");
             return (t >= 0.05 ? "~" + fmtHours(t) + " hrs" : "") + '<span class="gh-sy-games">' + art + "</span>";
@@ -1673,7 +1680,7 @@
       h += '<h2 class="gh-h2">Games (' + o.n + ')</h2><div class="sport-table-wrap" id="ghSeriesGames"></div>';
       out.innerHTML = h;
       table({
-        el: document.getElementById("ghSeriesGames"), rows: o.rows, sortKey: "last", desc: true,
+        el: document.getElementById("ghSeriesGames"), rows: o.rows, sortKey: "first", desc: true,
         filter: function () { return true; },
         cols: [
           { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<span><b>" + gameLink(r.id, r.name) + familyMark(r) + "</b>" + pills(r) + "</span></div>"; } },
