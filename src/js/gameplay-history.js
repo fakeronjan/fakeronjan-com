@@ -1595,22 +1595,23 @@
         }).join('<span class="sport-updated-sep">|</span>') + "</p>" +
         (badges ? '<div class="gh-badges">' + badges + "</div>" : "") +
         (o.family ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") + "</div></div>";
-      // Hours by year, newest first: each game's estimated hours in the year, added up
+      // When I played: the game page's year strips, for every game in the series at once, with
+      // the year's hours (and how many of the series' games had play that year) at the end
       var ys = {};
       o.rows.forEach(function (r) {
         Object.keys(allDays(r)).forEach(function (d) { ys[d.slice(0, 4)] = 1; });
         spanYears(r).forEach(function (y) { ys[y] = 1; });
       });
-      var yrs = Object.keys(ys).sort().reverse().map(function (y) {
-        var t = 0, any = false;
-        o.rows.forEach(function (r) { var v = yearHours(r, y); if (v != null) { t += v; any = true; } });
-        return [y, any ? t : null];
-      }).filter(function (x) { return x[1] != null && x[1] >= 0.05; });
-      if (yrs.length) {
-        var max = Math.max.apply(null, yrs.map(function (x) { return x[1]; }));
-        h += '<h2 class="gh-h2">Hours by year</h2><div class="gh-series-years">' + yrs.map(function (x) {
-          return '<div class="gh-sy"><span>' + x[0] + '</span><i style="width:' + Math.max(1, x[1] / max * 100).toFixed(1) + '%"></i><em>~' + fmtHours(x[1]) + " hrs</em></div>";
-        }).join("") + "</div>";
+      var years = Object.keys(ys).sort().reverse();
+      if (years.length) {
+        h += '<h2 class="gh-h2">When I played</h2>' + yearStrips(o.rows, years, {
+          compact: true,
+          summary: function (y, gs) {
+            var t = 0;
+            gs.forEach(function (g) { t += yearHours(g.row, y) || 0; });
+            return [t >= 0.05 ? "~" + fmtHours(t) + " hrs" : "", plural(gs.length, "game", "games")].filter(Boolean).join(", ");
+          },
+        });
       }
       h += '<h2 class="gh-h2">Games (' + o.n + ')</h2><div class="sport-table-wrap" id="ghSeriesGames"></div>';
       out.innerHTML = h;
