@@ -1557,7 +1557,12 @@
     var out = document.getElementById("ghSeries");
     Promise.all([getJSON(BASE + "/data/games.json"), getJSON(BASE + "/data/series.json")]).then(function (res) {
       var gamesById = {};
-      res[0].forEach(function (r) { r.families.sort(); gamesById[r.id] = r; r.best = bestList(r); });
+      res[0].forEach(function (r) {  // as on the Games tab: the unlock counts its Unlocks column shows
+        r.families.sort(); gamesById[r.id] = r; r.best = bestList(r);
+        var earned = 0;
+        r.entries.forEach(function (e) { earned += e.earned || 0; });
+        r.unlocks = unlockCount(countedEntries(r)) ? [earned, unlockCount(countedEntries(r))] : null;
+      });
       var s = res[1].filter(function (x) { return x.id === id; })[0];
       if (!s) { out.innerHTML = ""; showError(); return; }
       document.title = s.name + " | FAKE RONJAN!!";
