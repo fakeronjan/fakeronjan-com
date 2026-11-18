@@ -1268,14 +1268,14 @@
           '<td class="gh-hide-t">' + (g.captures || "-") + "</td></tr>";
       }).join("") + "</tbody>" + platformTotals(plats, row) + "</table></div>" + notes;
 
-    // Screenshots: Switch, PlayStation, and Miiverse, from the gallery repo, drawn by wireGame
-    // (with Nintendo / PlayStation pills when there are both). A Miiverse screenshot carries
+    // Screenshots: Switch, PlayStation, iOS, and Miiverse, from the gallery repo, drawn by wireGame
+    // (with platform pills when there are two or more). A Miiverse screenshot carries
     // its post's text as the caption under it.
     var shots = row._shots = gameShots(entryIds, gallery, posts);
     row._shotTotals = {};
     entryIds.forEach(function (eid) {
       if (!gallery[eid]) return;
-      var f = eid.indexOf("psn") === 0 ? "PlayStation" : "Nintendo";
+      var f = shotFamily(eid);
       row._shotTotals[f] = (row._shotTotals[f] || 0) + gallery[eid].total;
     });
     if (shots.length) {
@@ -1373,13 +1373,16 @@
     });
   }
 
+  // Gallery keys: psn:, ios:, or Nintendo's switch: and miiverse:
+  function shotFamily(eid) { return eid.indexOf("psn") === 0 ? "PlayStation" : eid.indexOf("ios:") === 0 ? "Apple" : "Nintendo"; }
+
   function gameShots(entryIds, gallery, posts) {
     var text = {};
     posts.forEach(function (p) { text[p.id] = (p.body || "").replace(/\s*\n\s*/g, " ").trim(); });
     var shots = [];
     entryIds.forEach(function (eid) {
       if (!gallery[eid]) return;
-      var family = eid.indexOf("psn") === 0 ? "PlayStation" : "Nintendo";
+      var family = shotFamily(eid);
       shots = shots.concat(gallery[eid].shots.map(function (s) {
         return { time: s.time, img: s.img, text: s.post ? text[s.post] || "" : "", family: family };
       }));
