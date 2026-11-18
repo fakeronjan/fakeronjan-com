@@ -1596,7 +1596,7 @@
         (badges ? '<div class="gh-badges">' + badges + "</div>" : "") +
         (o.family ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") + "</div></div>";
       // When I played: the game page's year strips, for every game in the series at once, with
-      // the year's hours (and how many of the series' games had play that year) at the end
+      // the year's hours, then the box art of that year's games, at the end
       var ys = {};
       o.rows.forEach(function (r) {
         Object.keys(allDays(r)).forEach(function (d) { ys[d.slice(0, 4)] = 1; });
@@ -1604,14 +1604,18 @@
       });
       var years = Object.keys(ys).sort().reverse();
       if (years.length) {
-        h += '<h2 class="gh-h2">When I played</h2>' + yearStrips(o.rows, years, {
+        h += '<h2 class="gh-h2">When I played</h2><div class="gh-series-strips">' + yearStrips(o.rows, years, {
           compact: true,
           summary: function (y, gs) {
             var t = 0;
-            gs.forEach(function (g) { t += yearHours(g.row, y) || 0; });
-            return [t >= 0.05 ? "~" + fmtHours(t) + " hrs" : "", plural(gs.length, "game", "games")].filter(Boolean).join(", ");
+            gs.forEach(function (g) { g.h = yearHours(g.row, y) || 0; t += g.h; });
+            // The year's games as small box art at the end, most played that year first, each linking to its page
+            var art = gs.slice().sort(function (p, q) { return q.h - p.h; }).map(function (g) {
+              return '<a class="gh-sy-art" href="' + GAME_URL + encodeURIComponent(g.row.id) + '" title="' + esc(g.row.name) + '">' + thumb(g.row.img, "gh-thumb-xs") + "</a>";
+            }).join("");
+            return (t >= 0.05 ? "~" + fmtHours(t) + " hrs" : "") + '<span class="gh-sy-games">' + art + "</span>";
           },
-        });
+        }) + "</div>";
       }
       h += '<h2 class="gh-h2">Games (' + o.n + ')</h2><div class="sport-table-wrap" id="ghSeriesGames"></div>';
       out.innerHTML = h;

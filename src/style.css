@@ -1851,6 +1851,14 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .gh-sy { display: grid; grid-template-columns: 3rem minmax(0, 1fr) 5.5rem; gap: 0.6rem; align-items: center; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
 .gh-sy i { display: block; height: 10px; border-radius: 2px; background: var(--accent); }
 .gh-sy em { font-style: normal; color: var(--muted); }
+.gh-sy-games { display: inline-flex; flex-wrap: wrap; gap: 3px; margin-left: 0.45rem; vertical-align: middle; }
+.gh-sy-art { display: inline-flex; line-height: 0; }
+/* Phones: the box art drops under the hours, so the strips keep their width */
+@media (max-width: 640px) {
+  .gh-series-strips .gh-years-compact { grid-template-columns: 2.8rem minmax(0, 1fr) 5.2rem; }
+  .gh-series-strips .gh-year-sum { white-space: normal; overflow: visible; }
+  .gh-series-strips .gh-sy-games { display: flex; margin: 3px 0 0; }
+}
 .gh-blog-post:first-child { margin-top: 0; }
 .gh-fill-playstation { fill: var(--gh-playstation); }
 .gh-fill-xbox { fill: var(--gh-xbox); }
