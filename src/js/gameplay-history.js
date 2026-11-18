@@ -1160,6 +1160,7 @@
       getJSON(SHOTS + "/gallery.json").catch(function () { return {}; }),
       getJSON(SHOTS + "/moments.json").catch(function () { return {}; }),
       getJSON(SHOTS + "/milestones.json").catch(function () { return {}; }),
+      getJSON(SHOTS + "/blog.json").catch(function () { return {}; }),
     ]).then(function (res) {
       var games = res[0], gamesById = {};
       games.forEach(function (r) { r.families.sort(); gamesById[r.id] = r; });
@@ -1171,13 +1172,14 @@
       var gallery = res[3];
       var mvNames = row.entries.filter(function (e) { return e.id.indexOf("miiverse:") === 0; }).map(function (e) { return e.id.slice(9); });
       var posts = res[2].posts.filter(function (p) { return mvNames.indexOf(p.game) !== -1; }).reverse();
-      out.innerHTML = gameHtml(row, unlocks, entryIds, gallery, posts, res[5]);
+      out.innerHTML = gameHtml(row, unlocks, entryIds, gallery, posts, res[5], res[6]);
       wireGame(row, unlocks, entryIds, gallery);
     }).catch(function () { out.innerHTML = ""; showError(); });
   }
 
-  function gameHtml(row, unlocks, entryIds, gallery, posts, milestones) {
+  function gameHtml(row, unlocks, entryIds, gallery, posts, milestones, blog) {
     milestones = milestones || {};
+    blog = blog || {};
     var facts = [];
     if (row.first) {
       facts.push("First played " + fmtDay(row.first));
@@ -1257,7 +1259,8 @@
     // Most recently played first, like every time-ordered list on the site
     var plats = order.map(function (k) { return groups[k]; }).sort(function (a, b) { return (b.last || "") < (a.last || "") ? -1 : 1; });
     var notes = dayNotes(plats);
-    h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Days played' + (notes ? "&dagger;" : "") + "</th><th>Hours played</th>" + '<th class="gh-hide-m">Unlocks</th><th class="gh-hide-t">Screenshots</th></tr></thead><tbody>' +
+    // A row with only blog screenshots (Tecmo Super NBA Basketball) has no platforms to list
+    if (plats.length) h += '<h2 class="gh-h2">Platforms</h2><div class="sport-table-wrap"><table class="sport-table gh-table"><thead><tr><th class="gh-wrap">Platform</th><th class="gh-hide-m">First played</th><th>Last played</th><th>Days played' + (notes ? "&dagger;" : "") + "</th><th>Hours played</th>" + '<th class="gh-hide-m">Unlocks</th><th class="gh-hide-t">Screenshots</th></tr></thead><tbody>' +
       plats.map(function (g) {
         var days = (row.days_by_platform || {})[g.key];
         return '<tr><td class="gh-wrap">' + dots([g.family]) + " " + esc(g.label) + "</td>" +
@@ -1283,6 +1286,12 @@
         '<p class="gh-caption" id="ghShotCap"></p><div class="gh-shots" id="ghShots"></div>';
     }
 
+    // Screenshots from Ronjan's posts, newest post first, each linking to its post
+    var bl = row._blog = [];
+    entryIds.forEach(function (eid) { if (blog[eid]) bl.push.apply(bl, blog[eid]); });
+    bl.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+    if (bl.length) h += '<h2 class="gh-h2">From the blog</h2><div id="ghBlog"></div>';
+
     if (unlocks.length) {
       var fams = FAMILIES.filter(function (f) { return unlocks.some(function (u) { return u.family === f; }); });
       // Nintendo's only unlocks are Zelda Notes medals
@@ -1305,6 +1314,27 @@
   }
 
   function wireGame(row, unlocks, entryIds, gallery) {
+    var bgrid = document.getElementById("ghBlog");
+    if (bgrid) {
+      // One line per post (its title links to it), then that post's screenshots
+      var bl = row._blog, html = "", grids = [];
+      bl.forEach(function (b, i) {
+        if (!i || bl[i - 1].post !== b.post) {
+          if (i) html += "</div>";
+          html += '<p class="gh-blog-post"><a href="' + esc(b.post) + '">' + esc(b.title) + "</a> | " + fmtDay(b.date) + '</p><div class="gh-shots" data-n="' +
+            bl.filter(function (x) { return x.post === b.post; }).length + '">';
+        }
+        html += '<button type="button" class="gh-shot" data-i="' + i + '" aria-label="' + esc("From " + b.title) + '"><img src="' + SHOTS + "/t/" + b.img + '" alt="" loading="lazy"><span>' + fmtDay(b.date) + "</span></button>";
+      });
+      bgrid.innerHTML = html + "</div>";
+      bgrid.querySelectorAll(".gh-shots").forEach(function (g) { grids.push(g); balance(g); });
+      window.addEventListener("resize", function () { grids.forEach(balance); });
+      bgrid.addEventListener("click", function (e) {
+        var b = e.target.closest(".gh-shot");
+        if (!b) return;
+        openLightbox(bl, +b.dataset.i, function (x, i) { return "From " + x.title + " | " + fmtDay(x.date) + " (" + (i + 1) + " of " + bl.length + ")"; });
+      });
+    }
     var mgrid = document.getElementById("ghMilestones");
     if (mgrid) {
       var ms = row._milestones;

@@ -1844,6 +1844,8 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .gh-dot.gh-nintendo { background: var(--gh-nintendo); }
 .gh-dot.gh-steam { background: var(--gh-steam); }
 .gh-fill-apple { fill: var(--gh-apple); }
+.gh-blog-post { margin: 0.9rem 0 0.4rem; font-size: 0.95rem; }
+.gh-blog-post:first-child { margin-top: 0; }
 .gh-fill-playstation { fill: var(--gh-playstation); }
 .gh-fill-xbox { fill: var(--gh-xbox); }
 .gh-fill-nintendo { fill: var(--gh-nintendo); }
