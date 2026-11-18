@@ -11,7 +11,7 @@
   var LANE = { Nintendo: 0, PlayStation: 1, Steam: 2, Xbox: 3 };
   var MONTHS = "JFMAMJJASOND";
   var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  var KIND_ORDER = { platinum: 4, gold: 3, silver: 2, bronze: 1 };
+  var KIND_ORDER = { platinum: 4, master: 3.5, gold: 3, silver: 2, bronze: 1 };  // master: Zelda Notes medals
   var GAME_URL = "/video-games/gameplay-stats/game/?id=";
 
   // ── helpers ─────────────────────────────────────────────────────────────
@@ -194,7 +194,7 @@
   }
 
   function familyOfEntry(entryId) {
-    return { psn: "PlayStation", xbox: "Xbox", steam: "Steam" }[entryId.split(":")[0]];
+    return { psn: "PlayStation", xbox: "Xbox", steam: "Steam", nintendo: "Nintendo" }[entryId.split(":")[0]];  // nintendo: Zelda Notes medals
   }
 
   var cache = {};
@@ -558,6 +558,9 @@
       familyBtn.checked = on;
     }
     var games = [], gamesById = {}, years = [];
+    // Resolves once games.json is in gamesById. The Trophy Room can be opened (a direct
+    // ?tab=trophy-room link) before that, and its unlocks need each game's name, art, and platform.
+    var gamesReadyResolve, gamesReady = new Promise(function (r) { gamesReadyResolve = r; });
     var drawGames = null, drawUnlocks = null, unlocksLoaded = null;
 
     // Game of the Year winner, runner-up, and third place by year (decade picks left out), and the game page
@@ -969,11 +972,13 @@
       if (unlocksLoaded) return unlocksLoaded;
       var total = games.reduce(function (s, r) { return s + (r.unlocks ? r.unlocks[0] : 0); }, 0);
       document.getElementById("ghUnlockLoading").textContent = "Loading " + total.toLocaleString() + " trophies and achievements";
-      unlocksLoaded = Promise.all([getJSON(BASE + "/data/unlocks.json"), getJSON(SHOTS + "/moments.json").catch(function () { return {}; })]).then(function (res) {
+      // Waits for gamesReady (see above); seen 11/18 in a local preview, where the medal rows came up
+      // with no game name or platform
+      unlocksLoaded = Promise.all([getJSON(BASE + "/data/unlocks.json"), getJSON(SHOTS + "/moments.json").catch(function () { return {}; }), gamesReady]).then(function (res) {
         var unlocks = prepUnlocks(res[0], gamesById, res[1]);
         drawUnlocks = table({
           el: document.getElementById("ghUnlockTable"), count: document.getElementById("ghUnlockCount"),
-          pills: document.getElementById("ghUnlockPills"), families: ["PlayStation", "Steam", "Xbox"], search: document.getElementById("ghUnlockSearch"),
+          pills: document.getElementById("ghUnlockPills"), families: FAMILIES, search: document.getElementById("ghUnlockSearch"),
           rows: unlocks, sortKey: "e", desc: true,
           filter: function (u, f, q) {
             var g = gamesById[u.game];
@@ -1080,6 +1085,7 @@
       updateMinCount();
       renderTimeline();
       renderGames();
+      gamesReadyResolve();
     }).catch(showError);
 
     url.start({ timeline: loaded, games: loaded, "trophy-room": loaded }, [loaded]);
@@ -1150,6 +1156,7 @@
       getJSON(BASE + "/data/miiverse.json"),
       getJSON(SHOTS + "/gallery.json").catch(function () { return {}; }),
       getJSON(SHOTS + "/moments.json").catch(function () { return {}; }),
+      getJSON(SHOTS + "/milestones.json").catch(function () { return {}; }),
     ]).then(function (res) {
       var games = res[0], gamesById = {};
       games.forEach(function (r) { r.families.sort(); gamesById[r.id] = r; });
@@ -1161,12 +1168,13 @@
       var gallery = res[3];
       var mvNames = row.entries.filter(function (e) { return e.id.indexOf("miiverse:") === 0; }).map(function (e) { return e.id.slice(9); });
       var posts = res[2].posts.filter(function (p) { return mvNames.indexOf(p.game) !== -1; }).reverse();
-      out.innerHTML = gameHtml(row, unlocks, entryIds, gallery, posts);
+      out.innerHTML = gameHtml(row, unlocks, entryIds, gallery, posts, res[5]);
       wireGame(row, unlocks, entryIds, gallery);
     }).catch(function () { out.innerHTML = ""; showError(); });
   }
 
-  function gameHtml(row, unlocks, entryIds, gallery, posts) {
+  function gameHtml(row, unlocks, entryIds, gallery, posts, milestones) {
+    milestones = milestones || {};
     var facts = [];
     if (row.first) {
       facts.push("First played " + fmtDay(row.first));
@@ -1179,7 +1187,9 @@
     // Unlocks as on the Games tab: the most complete list, with its share ("on PC" when the game
     // has more than one list; the Platforms table below has each list and the total)
     var best = bestList(row), lists = countedEntries(row).filter(function (e) { return e.total; }).length;
-    if (best) facts.push((best.entry.earned || 0) + " of " + best.entry.total + " \uD83C\uDFC6" +
+    // 🏅 for Zelda Notes medals (Ocarina of Time on Switch 2), 🏆 for trophies and achievements
+    var unitMark = function (e) { return e && e.unlock_unit === "medals" ? " \uD83C\uDFC5" : " \uD83C\uDFC6"; };
+    if (best) facts.push((best.entry.earned || 0) + " of " + best.entry.total + unitMark(best.entry) +
       (lists > 1 ? " on " + platformLabel(best.entry) : "") + " (" + Math.floor(best.pct * 100) + "%)");
     else if (unlockCount(countedEntries(row))) facts.push(unlockCount(countedEntries(row)) + " \uD83C\uDFC6");
 
@@ -1193,7 +1203,8 @@
     if (row.entries.some(function (e) { return e.platinum; })) badges += '<span class="gh-badge gh-platinum">Platinum</span>';
     var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + familyMark(row) + "</h1>" +
       '<p class="gh-facts">' + dots(row.families) + " " + facts.map(function (f) {  // each fact stays on one line; the line breaks between facts
-        return '<span class="gh-nowrap">' + esc(f).replace("\uD83C\uDFC6", '<span title="Trophies and achievements" aria-label="trophies and achievements">\uD83C\uDFC6</span>') + "</span>";
+        return '<span class="gh-nowrap">' + esc(f).replace("\uD83C\uDFC6", '<span title="Trophies and achievements" aria-label="trophies and achievements">\uD83C\uDFC6</span>')
+          .replace("\uD83C\uDFC5", '<span title="Medals" aria-label="medals">\uD83C\uDFC5</span>') + "</span>";
       }).join('<span class="sport-updated-sep">|</span>') + "</p>" +
       (badges ? '<div class="gh-badges">' + badges + "</div>" : "") +
       (row.family_play ? '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>" : "") +
@@ -1271,15 +1282,42 @@
 
     if (unlocks.length) {
       var fams = FAMILIES.filter(function (f) { return unlocks.some(function (u) { return u.family === f; }); });
-      h += '<h2 class="gh-h2">Trophies and achievements (' + unlocks.length + ')</h2>' +
+      // Nintendo's only unlocks are Zelda Notes medals
+      var medals = unlocks.filter(function (u) { return u.family === "Nintendo"; }).length;
+      var heading = medals === unlocks.length ? "Medals" : medals ? "Trophies, achievements, and medals" : "Trophies and achievements";
+      h += '<h2 class="gh-h2">' + heading + " (" + unlocks.length + ')</h2>' +
         '<div class="sport-controls"><div class="pill-group" id="ghGameUnlockPills"' + (fams.length > 1 ? "" : " hidden") + "></div></div>" +
         '<div class="sport-table-wrap" id="ghGameUnlocks"></div>';
       row._fams = fams;
+    }
+
+    // Zelda Notes milestones: the game's own pictures of a stat passing a round number, newest first
+    var ms = row._milestones = [];
+    entryIds.forEach(function (eid) { if (milestones[eid]) ms.push.apply(ms, milestones[eid]); });
+    ms.sort(function (a, b) { return a.time < b.time ? 1 : -1; });
+    if (ms.length) {
+      h += '<h2 class="gh-h2">Milestones (' + ms.length + ')</h2><div class="gh-shots" id="ghMilestones"></div>';
     }
     return h;
   }
 
   function wireGame(row, unlocks, entryIds, gallery) {
+    var mgrid = document.getElementById("ghMilestones");
+    if (mgrid) {
+      var ms = row._milestones;
+      mgrid.dataset.n = ms.length;
+      mgrid.innerHTML = ms.map(function (m, i) {
+        var label = m.stat + ": " + m.value;
+        return '<figure class="gh-shot-fig"><button type="button" class="gh-shot" data-i="' + i + '" aria-label="' + esc(label) + '"><img src="' + SHOTS + "/t/" + m.img + '" alt="" loading="lazy"><span>' + fmtDay(m.time) + "</span></button><figcaption>" + esc(label) + "</figcaption></figure>";
+      }).join("");
+      balance(mgrid);
+      window.addEventListener("resize", function () { balance(mgrid); });
+      mgrid.addEventListener("click", function (e) {
+        var b = e.target.closest(".gh-shot");
+        if (!b) return;
+        openLightbox(ms, +b.dataset.i, function (x, i) { return x.stat + ": " + x.value + " | " + when(x.time) + " (" + (i + 1) + " of " + ms.length + ")"; });
+      });
+    }
     if (unlocks.length) {
       table({
         el: document.getElementById("ghGameUnlocks"), pills: document.getElementById("ghGameUnlockPills"),
