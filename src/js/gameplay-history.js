@@ -1289,7 +1289,8 @@
     // Screenshots from Ronjan's posts, newest post first, each linking to its post
     var bl = row._blog = [];
     entryIds.forEach(function (eid) { if (blog[eid]) bl.push.apply(bl, blog[eid]); });
-    bl.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+    // Newest post first; within a post, the order the screenshots appear in it
+    bl.sort(function (a, b) { return a.date !== b.date ? (a.date < b.date ? 1 : -1) : a.post !== b.post ? (a.post < b.post ? -1 : 1) : (a.pos || 0) - (b.pos || 0); });
     if (bl.length) h += '<h2 class="gh-h2">From the blog</h2><div id="ghBlog"></div>';
 
     if (unlocks.length) {
