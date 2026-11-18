@@ -7,8 +7,10 @@
   var BASE = page.dataset.source;
   var SHOTS = page.dataset.shots;
   // Alphabetical everywhere platforms are listed: legends, pills, lanes, and table cells
-  var FAMILIES = ["Nintendo", "PlayStation", "Steam", "Xbox"];
-  var LANE = { Nintendo: 0, PlayStation: 1, Steam: 2, Xbox: 3 };
+  var FAMILIES = ["Apple", "Nintendo", "PlayStation", "Steam", "Xbox"];
+  var LANE = { Apple: 0, Nintendo: 1, PlayStation: 2, Steam: 3, Xbox: 4 };
+  // Apple has screenshots only: no trophies, so no Trophy Room pill
+  var UNLOCK_FAMILIES = FAMILIES.filter(function (f) { return f !== "Apple"; });
   var MONTHS = "JFMAMJJASOND";
   var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var KIND_ORDER = { platinum: 4, master: 3.5, gold: 3, silver: 2, bronze: 1 };  // master: Zelda Notes medals
@@ -162,6 +164,7 @@
     { test: function (g) { return g.family === "PlayStation" && /PS4|PS5/.test(g.label); }, text: "PS4, PS5: Counts days with a trophy, plus first and last played" },
     { test: function (g) { return g.family === "Steam" || (g.family === "Xbox" && !/360/.test(g.label)); }, text: "Steam, Xbox One, Series X|S: Counts days with an achievement, plus last played" },
     { test: function (g) { return g.family === "Xbox" && /360/.test(g.label); }, text: "360: Counts days with an achievement" },
+    { test: function (g) { return g.family === "Apple"; }, text: "iOS: Counts days with a screenshot" },
   ];
   function dayNotes(groups) {
     var lines = DAY_NOTES.filter(function (n) { return groups.some(n.test); });
@@ -194,7 +197,7 @@
   }
 
   function familyOfEntry(entryId) {
-    return { psn: "PlayStation", xbox: "Xbox", steam: "Steam", nintendo: "Nintendo" }[entryId.split(":")[0]];  // nintendo: Zelda Notes medals
+    return { psn: "PlayStation", xbox: "Xbox", steam: "Steam", nintendo: "Nintendo", ios: "Apple" }[entryId.split(":")[0]];  // nintendo: Zelda Notes medals
   }
 
   var cache = {};
@@ -341,7 +344,7 @@
     var a = Date.UTC(+year, 0, 1), span = Date.UTC(+year + 1, 0, 1) - a;
     var grid = "", marks = "";
     for (var i = 1; i < 12; i++) {
-      grid += '<line x1="' + (i / 12 * 100) + '" x2="' + (i / 12 * 100) + '" y1="0" y2="22" class="gh-grid" vector-effect="non-scaling-stroke"/>';
+      grid += '<line x1="' + (i / 12 * 100) + '" x2="' + (i / 12 * 100) + '" y1="0" y2="27" class="gh-grid" vector-effect="non-scaling-stroke"/>';
     }
     // First-to-last spans of modeled records, faint, under the day marks, in each platform's lane
     // One game: its monthly pieces, shaded by modeled play. Many games: one faint band per
@@ -364,7 +367,7 @@
         marks += '<rect x="' + (x - 0.14) + '" y="' + (2 + LANE[f] * 5) + '" width="0.28" height="4" class="gh-fill-' + f.toLowerCase() + '"><title>' + f + ": " + fmtDay(d) + "</title></rect>";
       });
     });
-    return '<svg class="gh-strip" viewBox="0 0 100 22" preserveAspectRatio="none" role="img" aria-label="' + year + '">' + grid + marks + "</svg>";
+    return '<svg class="gh-strip" viewBox="0 0 100 27" preserveAspectRatio="none" role="img" aria-label="' + year + '">' + grid + marks + "</svg>";
   }
 
   function monthHeader() {
@@ -978,7 +981,7 @@
         var unlocks = prepUnlocks(res[0], gamesById, res[1]);
         drawUnlocks = table({
           el: document.getElementById("ghUnlockTable"), count: document.getElementById("ghUnlockCount"),
-          pills: document.getElementById("ghUnlockPills"), families: FAMILIES, search: document.getElementById("ghUnlockSearch"),
+          pills: document.getElementById("ghUnlockPills"), families: UNLOCK_FAMILIES, search: document.getElementById("ghUnlockSearch"),
           rows: unlocks, sortKey: "e", desc: true,
           filter: function (u, f, q) {
             var g = gamesById[u.game];
