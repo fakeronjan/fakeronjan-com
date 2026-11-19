@@ -1129,7 +1129,7 @@
           { k: "n", h: "Series", cls: "gh-wrap gh-name", v: function (o) { return o.s.name.toLowerCase(); }, r: function (o) {
             // Under the name: every game's box art, by first played (newest first, so the order
             // holds when an old game is replayed), each linking to its game
-            var art = o.rows.slice().sort(byFirstPlayed).map(function (r) {
+            var art = o.rows.slice().sort(byRelease).map(function (r) {
               return '<a class="gh-sy-art" href="' + GAME_URL + encodeURIComponent(r.id) + '" title="' + esc(r.name) + '">' + thumb(r.img, "gh-thumb-xs") + "</a>";
             }).join("");
             return '<b><a class="gh-glink" href="' + SERIES_URL + encodeURIComponent(o.s.id) + '">' + esc(o.s.name) + "</a>" + seriesFamily(o) + '</b><span class="gh-series-art">' + art + "</span>";
@@ -1258,7 +1258,11 @@
       var games = res[0], gamesById = {};
       games.forEach(function (r) { r.families.sort(); gamesById[r.id] = r; });
       var row = gamesById[id];
-      if (!row) { out.innerHTML = ""; showError(); return; }
+      if (!row) {  // an old id (the row was merged or renamed): go to the row it became
+        var now = games.filter(function (r) { return (r.old_ids || []).indexOf(id) !== -1; })[0];
+        if (now) { location.replace(GAME_URL + encodeURIComponent(now.id) + location.hash); return; }
+        out.innerHTML = ""; showError(); return;
+      }
       document.title = row.name + " | FAKE RONJAN!!";
       var unlocks = prepUnlocks(res[1].filter(function (u) { return u.game === id; }), gamesById, res[4]);
       var entryIds = row.entries.map(function (e) { return e.id; });
@@ -1607,9 +1611,10 @@
     });
     return o;
   }
-  // Newest first played first (ties by name), the order a series reads in everywhere
-  function byFirstPlayed(p, q) {
-    var a = p.first || "", b = q.first || "";
+  // Newest release first (North American release date; first played when a game has none),
+  // ties by name: the order a series reads in everywhere
+  function byRelease(p, q) {
+    var a = p.released || p.first || "", b = q.released || q.first || "";
     return a !== b ? (a < b ? 1 : -1) : p.name < q.name ? -1 : 1;
   }
   function seriesYears(o) {
@@ -1687,7 +1692,7 @@
             gs.forEach(function (g) { g.h = yearHours(g.row, y) || 0; t += g.h; });
             // The year's games as small box art at the end, by first played (newest first), each
             // linking to its page
-            var art = gs.slice().sort(function (p, q) { return byFirstPlayed(p.row, q.row); }).map(function (g) {
+            var art = gs.slice().sort(function (p, q) { return byRelease(p.row, q.row); }).map(function (g) {
               return '<a class="gh-sy-art" href="' + GAME_URL + encodeURIComponent(g.row.id) + '" title="' + esc(g.row.name) + '">' + thumb(g.row.img, "gh-thumb-xs") + "</a>";
             }).join("");
             return (t >= 0.05 ? "~" + fmtHours(t) + " hrs" : "") + '<span class="gh-sy-games">' + art + "</span>";
@@ -1697,11 +1702,12 @@
       h += '<h2 class="gh-h2">Games (' + o.n + ')</h2><div class="sport-table-wrap" id="ghSeriesGames"></div>';
       out.innerHTML = h;
       table({
-        el: document.getElementById("ghSeriesGames"), rows: o.rows, sortKey: "first", desc: true,
+        el: document.getElementById("ghSeriesGames"), rows: o.rows, sortKey: "h", desc: true,  // most played first; the box art keeps release order
         filter: function () { return true; },
         cols: [
           { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<span><b>" + gameLink(r.id, r.name) + familyMark(r) + "</b>" + pills(r) + "</span></div>"; } },
           { k: "f", h: "Platforms", cls: "gh-wrap gh-plat gh-hide-m", v: function (r) { return r.families.join(); }, r: function (r) { return platformLines(r); } },
+          { k: "rel", h: "Released", cls: "gh-hide-m", desc: true, v: function (r) { return r.released || r.first; }, r: function (r) { return fmtDay(r.released); } },
           { k: "first", h: "First played", cls: "gh-hide-t", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } },
           { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } },
           { k: "d", h: "Days played&dagger;", desc: true, v: function (r) { return daysPlayed(r) || null; }, r: function (r) { return daysPlayed(r) ? daysPlayed(r) + familyMark(r) : "-"; } },
