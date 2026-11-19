@@ -1380,9 +1380,11 @@
     // Screenshots: Switch, PlayStation, iOS, and Miiverse, from the gallery repo, drawn by wireGame
     // (with platform pills when there are two or more). A Miiverse screenshot carries
     // its post's text as the caption under it.
-    var shots = row._shots = gameShots(entryIds, gallery, posts);
+    // Camera photos of the screen live under "camera:<row name>" (Photos)
+    var shotIds = entryIds.indexOf("camera:" + row.name) === -1 ? entryIds.concat(["camera:" + row.name]) : entryIds;
+    var shots = row._shots = gameShots(shotIds, gallery, posts);
     row._shotTotals = {};
-    entryIds.forEach(function (eid) {
+    shotIds.forEach(function (eid) {
       if (!gallery[eid]) return;
       var f = shotFamily(eid);
       row._shotTotals[f] = (row._shotTotals[f] || 0) + gallery[eid].total;
@@ -1470,7 +1472,7 @@
     var grid = document.getElementById("ghShots");
     if (!grid) return;
     var shots = [];
-    var fams = FAMILIES.filter(function (f) { return row._shotTotals[f]; });
+    var fams = FAMILIES.concat(["Photos"]).filter(function (f) { return row._shotTotals[f]; });
 
     // One family's screenshots, or all of them; the caption says how many of how many
     function drawShots(fam) {
@@ -1523,7 +1525,7 @@
   }
 
   // Gallery keys: psn:, ios:, or Nintendo's switch: and miiverse:
-  function shotFamily(eid) { return eid.indexOf("psn") === 0 ? "PlayStation" : eid.indexOf("ios:") === 0 ? "Apple" : "Nintendo"; }
+  function shotFamily(eid) { return eid.indexOf("psn") === 0 ? "PlayStation" : eid.indexOf("ios:") === 0 ? "Apple" : eid.indexOf("camera:") === 0 ? "Photos" : "Nintendo"; }
 
   function gameShots(entryIds, gallery, posts) {
     var text = {};
