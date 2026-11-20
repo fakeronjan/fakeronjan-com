@@ -1806,11 +1806,11 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 /* ── Video Games: sub-nav and Gameplay Stats ─────────────────────────── */
 /* Platform colors were checked for color-blind separation in both themes;
    every use also names the platform, so color is never the only cue. */
-:root { --gh-playstation: #2a78d6; --gh-xbox: #008300; --gh-nintendo: #e04a5a; --gh-steam: #eda100; --gh-apple: #7a7a80; }
+:root { --gh-playstation: #2a78d6; --gh-xbox: #008300; --gh-nintendo: #e04a5a; --gh-steam: #eda100; --gh-apple: #7a7a80; --gh-meta: #1f3f8f; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --gh-playstation: #3987e5; --gh-steam: #c98500; --gh-apple: #9a9aa0; }
+  :root:not([data-theme="light"]) { --gh-playstation: #3987e5; --gh-steam: #c98500; --gh-apple: #9a9aa0; --gh-meta: #a3a9f5; }
 }
-:root[data-theme="dark"] { --gh-playstation: #3987e5; --gh-steam: #c98500; --gh-apple: #9a9aa0; }
+:root[data-theme="dark"] { --gh-playstation: #3987e5; --gh-steam: #c98500; --gh-apple: #9a9aa0; --gh-meta: #a3a9f5; }
 
 .video-games-nav .fleet-nav-home { padding: 0.35rem 0.6rem; }
 .video-games-nav .fleet-nav-home:last-child { border-right: none; }
@@ -1839,11 +1839,13 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 
 .gh-dot { width: 0.6rem; height: 0.6rem; border-radius: 2px; display: inline-block; flex: none; vertical-align: 0; }
 .gh-dot.gh-apple { background: var(--gh-apple); }
+.gh-dot.gh-meta { background: var(--gh-meta); }
 .gh-dot.gh-playstation { background: var(--gh-playstation); }
 .gh-dot.gh-xbox { background: var(--gh-xbox); }
 .gh-dot.gh-nintendo { background: var(--gh-nintendo); }
 .gh-dot.gh-steam { background: var(--gh-steam); }
 .gh-fill-apple { fill: var(--gh-apple); }
+.gh-fill-meta { fill: var(--gh-meta); }
 .gh-blog-post { margin: 0.9rem 0 0.4rem; font-size: 0.95rem; }
 .gh-series-line { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--muted); }
 .gh-series-tag { font-size: 0.8rem; font-weight: 500; color: var(--muted); vertical-align: middle; }
@@ -1890,7 +1892,7 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .gh-year-tot { font-size: 0.66rem; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 button.gh-year { font: inherit; font-weight: 700; color: var(--accent); background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
 button.gh-year:hover { text-decoration: underline; }
-.gh-strip { display: block; width: 100%; height: 27px; background: color-mix(in srgb, var(--fg) 5%, transparent); border-radius: 3px; }
+.gh-strip { display: block; width: 100%; height: 32px; background: color-mix(in srgb, var(--fg) 5%, transparent); border-radius: 3px; }
 .gh-grid { stroke: var(--muted); stroke-opacity: 0.15; }
 .gh-year-sum { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gh-year-sum b { color: var(--fg); font-weight: 600; }
@@ -1898,7 +1900,7 @@ button.gh-year:hover { text-decoration: underline; }
    never wrapped. The script measures the longest title in each list and picks a layout:
    beside the strip (the strip narrows to fit), under it, or stacked (see layoutLists). */
 .gh-years:not(.gh-years-compact) { grid-template-columns: 4rem minmax(0, 1fr) var(--gh-sum-w, 46rem); row-gap: 0.7rem; }
-.gh-years:not(.gh-years-compact) .gh-strip { height: 78px; }
+.gh-years:not(.gh-years-compact) .gh-strip { height: 92px; }
 .gh-years:not(.gh-years-compact) > .gh-year-sum,
 .gh-sum-head { display: grid; grid-template-columns: var(--gh-c1, 1fr) var(--gh-c2, 1fr) var(--gh-c3, 1fr); column-gap: calc(var(--gh-fs, 1) * 3.51rem); font-size: calc(var(--gh-fs, 1) * 1em); white-space: nowrap; overflow: visible; line-height: 1.4; }
 .gh-sum-head { align-self: end; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
@@ -2055,7 +2057,7 @@ a.gh-badge:hover { background: color-mix(in srgb, var(--gold) 12%, transparent);
   .gh-years:not(.gh-years-compact) > .gh-year-sum,
   .gh-years:not(.gh-years-compact) > div:nth-child(3) { display: none; }
   .gh-years:not(.gh-years-compact) { grid-template-columns: 3.6rem minmax(0, 1fr); row-gap: 0.5rem; }
-  .gh-years:not(.gh-years-compact) .gh-strip { height: 27px; }
+  .gh-years:not(.gh-years-compact) .gh-strip { height: 32px; }
   .gh-years-compact { grid-template-columns: 2.8rem minmax(0, 1fr) max-content; }
   .gh-rows { grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr); }
   .gh-row-head, .gh-row-stat { display: none; }

@@ -7,10 +7,10 @@
   var BASE = page.dataset.source;
   var SHOTS = page.dataset.shots;
   // Alphabetical everywhere platforms are listed: legends, pills, lanes, and table cells
-  var FAMILIES = ["Apple", "Nintendo", "PlayStation", "Steam", "Xbox"];
-  var LANE = { Apple: 0, Nintendo: 1, PlayStation: 2, Steam: 3, Xbox: 4 };
-  // Apple has screenshots only: no trophies, so no Trophy Room pill
-  var UNLOCK_FAMILIES = FAMILIES.filter(function (f) { return f !== "Apple"; });
+  var FAMILIES = ["Apple", "Meta", "Nintendo", "PlayStation", "Steam", "Xbox"];
+  var LANE = { Apple: 0, Meta: 1, Nintendo: 2, PlayStation: 3, Steam: 4, Xbox: 5 };
+  // Apple has screenshots only and Meta has no achievement names: no Trophy Room pill for either
+  var UNLOCK_FAMILIES = FAMILIES.filter(function (f) { return f !== "Apple" && f !== "Meta"; });
   var MONTHS = "JFMAMJJASOND";
   var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var KIND_ORDER = { platinum: 4, master: 3.5, gold: 3, silver: 2, bronze: 1 };  // master: Zelda Notes medals
@@ -166,6 +166,7 @@
     { test: function (g) { return g.family === "Steam" || (g.family === "Xbox" && !/360/.test(g.label)); }, text: "Steam, Xbox One, Series X|S: Counts days with an achievement, plus last played" },
     { test: function (g) { return g.family === "Xbox" && /360/.test(g.label); }, text: "360: Counts days with an achievement" },
     { test: function (g) { return g.family === "Apple"; }, text: "iOS: Counts days with a screenshot" },
+    { test: function (g) { return g.family === "Meta"; }, text: "Quest: Counts days with a first save or a new Beat Saber song" },
   ];
   function dayNotes(groups) {
     var lines = DAY_NOTES.filter(function (n) { return groups.some(n.test); });
@@ -198,7 +199,7 @@
   }
 
   function familyOfEntry(entryId) {
-    return { psn: "PlayStation", xbox: "Xbox", steam: "Steam", nintendo: "Nintendo", ios: "Apple" }[entryId.split(":")[0]];  // nintendo: Zelda Notes medals
+    return { psn: "PlayStation", xbox: "Xbox", steam: "Steam", nintendo: "Nintendo", ios: "Apple", meta: "Meta" }[entryId.split(":")[0]];  // nintendo: Zelda Notes medals
   }
 
   var cache = {};
@@ -345,7 +346,7 @@
     var a = Date.UTC(+year, 0, 1), span = Date.UTC(+year + 1, 0, 1) - a;
     var grid = "", marks = "";
     for (var i = 1; i < 12; i++) {
-      grid += '<line x1="' + (i / 12 * 100) + '" x2="' + (i / 12 * 100) + '" y1="0" y2="27" class="gh-grid" vector-effect="non-scaling-stroke"/>';
+      grid += '<line x1="' + (i / 12 * 100) + '" x2="' + (i / 12 * 100) + '" y1="0" y2="32" class="gh-grid" vector-effect="non-scaling-stroke"/>';
     }
     // First-to-last spans of modeled records, faint, under the day marks, in each platform's lane
     // One game: its monthly pieces, shaded by modeled play. Many games: one faint band per
@@ -368,7 +369,7 @@
         marks += '<rect x="' + (x - 0.14) + '" y="' + (2 + LANE[f] * 5) + '" width="0.28" height="4" class="gh-fill-' + f.toLowerCase() + '"><title>' + f + ": " + fmtDay(d) + "</title></rect>";
       });
     });
-    return '<svg class="gh-strip" viewBox="0 0 100 27" preserveAspectRatio="none" role="img" aria-label="' + year + '">' + grid + marks + "</svg>";
+    return '<svg class="gh-strip" viewBox="0 0 100 32" preserveAspectRatio="none" role="img" aria-label="' + year + '">' + grid + marks + "</svg>";
   }
 
   function monthHeader() {
