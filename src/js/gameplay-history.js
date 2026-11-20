@@ -1748,8 +1748,10 @@
     if (s.last.kind === "have") return "Still have one";
     return s.last.kind === "played" ? fmtDay(s.last.date) : s.last.kind + " " + fmtDay(s.last.date);
   }
+  // The date never breaks; "Sold" can wrap above it in a narrow card
   function sysLastHtml(s) {
-    return '<span class="gh-nowrap">' + esc(sysLast(s)) + "</span>";
+    if (!s.last || s.last.kind === "have" || s.last.kind === "played") return '<span class="gh-nowrap">' + esc(sysLast(s)) + "</span>";
+    return esc(s.last.kind) + ' <span class="gh-nowrap">' + fmtDay(s.last.date) + "</span>";
   }
   function sysHours(o) {
     return o.hours ? (o.est ? "~" : "") + o.hours.toLocaleString("en-US") + (o.family_play ? '<span class="gh-family" title="' + FAMILY_NOTE + '">*</span>' : "") : "-";
@@ -1767,7 +1769,7 @@
       '<span class="gh-sys-ph"><img src="' + BASE + "/" + s.img + '" alt="" loading="lazy"></span><span class="gh-sys-body">' +
       '<span class="gh-sys-name"><i class="gh-dot gh-' + s.family.toLowerCase() + '"></i>' + esc(s.name) + "</span>" +
       '<span class="gh-sys-years">' + sysYears(s) + "</span>" +
-      sysDl([["First played", s.first ? fmtDay(s.first) : "Unknown"], ["Last used", sysLastHtml(s)]]) +
+      sysDl([["First played", s.first ? fmtDay(s.first) : "Unknown"], ["Last played", sysLastHtml(s)]]) +
       '<span class="gh-sys-h">Played on this system</span>' +
       (s.on ? sysStats(s.on) : '<span class="gh-sys-none">No play records from this hardware</span>');
     if (s.elsewhere) h += '<span class="gh-sys-h">Its games on other systems</span>' + sysStats(s.elsewhere);
@@ -1790,7 +1792,7 @@
       if (!s) { out.innerHTML = ""; showError(); return; }
       document.title = s.name + " | FAKE RONJAN!!";
       var hrs = (s.on ? s.on.hours : 0) || 0;
-      var facts = ["First played " + (s.first ? fmtDay(s.first) : "unknown"), (s.last && s.last.kind === "played" ? "Last used " : "") + sysLast(s)];
+      var facts = ["First played " + (s.first ? fmtDay(s.first) : "unknown"), (s.last && s.last.kind === "played" ? "Last played " : "") + sysLast(s)];
       if (hrs) facts.push((s.on.est ? "about " : "") + hrs.toLocaleString("en-US") + " hours on this system");
       var h = '<div class="gh-head"><img class="gh-art gh-sys-art" src="' + BASE + "/" + s.img + '" alt=""><div class="gh-head-text"><h1>' + esc(s.name) + "</h1>" +
         '<p class="gh-sys-versions">' + s.versions.map(esc).join(", ") + "</p>" +
