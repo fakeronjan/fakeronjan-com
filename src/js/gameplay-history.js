@@ -2,7 +2,7 @@
 // (/video-games/gameplay-stats/game/?id=...). Data comes from the
 // gameplay-tracking repo (refreshed daily) and the gameplay-screenshots repo.
 (function () {
-  var page = document.getElementById("ghPage") || document.getElementById("ghGamePage") || document.getElementById("ghSeriesPage");
+  var page = document.getElementById("ghPage") || document.getElementById("ghGamePage") || document.getElementById("ghSeriesPage") || document.getElementById("ghSystemPage");
   if (!page) return;
   var BASE = page.dataset.source;
   var SHOTS = page.dataset.shots;
@@ -16,6 +16,7 @@
   var KIND_ORDER = { platinum: 4, master: 3.5, gold: 3, silver: 2, bronze: 1 };  // master: Zelda Notes medals
   var GAME_URL = "/video-games/gameplay-stats/game/?id=";
   var SERIES_URL = "/video-games/gameplay-stats/series/?id=";
+  var SYSTEM_URL = "/video-games/gameplay-stats/system/?id=";
 
   // ── helpers ─────────────────────────────────────────────────────────────
 
@@ -626,7 +627,7 @@
       var minBar = document.getElementById("ghMinBar"), shortLabel = shortBtn.closest("label");
       if (name === "timeline") document.querySelector(".gh-year-row").appendChild(shortLabel);
       else minBar.insertBefore(shortLabel, minBar.firstChild);
-      minBar.hidden = name === "data-summary" || name === "timeline" || name === "series";
+      minBar.hidden = name === "data-summary" || name === "timeline" || name === "series" || name === "systems";
       if (name === "trophy-room") loadUnlocks();
     }
 
@@ -1006,6 +1007,7 @@
       tabs: {
         "data-summary": { query: function () {}, apply: function () {} },
         series: { query: function () {}, apply: function () {} },
+        systems: { query: function () {}, apply: function () {} },
         timeline: {
           query: function (add) {
             if (yearSel.value) add("year", yearSel.value);
@@ -1184,7 +1186,12 @@
       gamesReadyResolve();
     }).catch(showError);
 
-    url.start({ timeline: loaded, games: loaded, series: loaded, "trophy-room": loaded }, [loaded]);
+    // Systems: one card per system, from systems.json (built beside games.json)
+    var systemsLoaded = getJSON(BASE + "/data/systems.json").then(function (list) {
+      document.getElementById("ghSystems").innerHTML = '<div class="gh-sys-grid">' + sortSystems(list).map(systemCard).join("") + "</div>";
+    }).catch(function () { document.getElementById("ghSystems").innerHTML = ""; showError(); });
+
+    url.start({ timeline: loaded, games: loaded, series: loaded, systems: systemsLoaded, "trophy-room": loaded }, [loaded]);
   }
 
   // ── game page ───────────────────────────────────────────────────────────
@@ -1721,7 +1728,96 @@
     }).catch(function () { out.innerHTML = ""; showError(); });
   }
 
+
+  // ── systems ─────────────────────────────────────────────────────────────
+
+  // Newest first, by first played; a system with no known first date goes by its launch
+  function sortSystems(list) {
+    return list.slice().sort(function (a, b) {
+      var x = a.first || a.launched || "", y = b.first || b.launched || "";
+      return x < y ? 1 : x > y ? -1 : 0;
+    });
+  }
+  function sysYears(s) {
+    var a = s.first ? s.first.slice(0, 4) : "Unknown";
+    var b = s.last && s.last.kind === "have" ? "now" : s.last ? s.last.date.slice(0, 4) : "Unknown";
+    return a === b ? a : a + " - " + b;
+  }
+  function sysLast(s) {
+    if (!s.last) return "-";
+    if (s.last.kind === "have") return "Still have one";
+    return s.last.kind === "played" ? fmtDay(s.last.date) : s.last.kind + " " + fmtDay(s.last.date);
+  }
+  function sysLastHtml(s) {
+    return '<span class="gh-nowrap">' + esc(sysLast(s)) + "</span>";
+  }
+  function sysHours(o) {
+    return o.hours ? (o.est ? "~" : "") + o.hours.toLocaleString("en-US") + (o.family_play ? '<span class="gh-family" title="' + FAMILY_NOTE + '">*</span>' : "") : "-";
+  }
+  function sysStats(o) {
+    var rows = [["Games", String(o.games)], ["Hours", sysHours(o)]];
+    if (o.rows[0] && o.rows[0].hours) rows.push(["Most played", esc(o.top)]);
+    return sysDl(rows);
+  }
+  function sysDl(rows) {
+    return "<dl>" + rows.map(function (r) { return "<div><dt>" + r[0] + "</dt><dd>" + r[1] + "</dd></div>"; }).join("") + "</dl>";
+  }
+  function systemCard(s) {
+    var h = '<a class="gh-sys" href="' + SYSTEM_URL + encodeURIComponent(s.id) + '">' +
+      '<span class="gh-sys-ph"><img src="' + BASE + "/" + s.img + '" alt="" loading="lazy"></span><span class="gh-sys-body">' +
+      '<span class="gh-sys-name"><i class="gh-dot gh-' + s.family.toLowerCase() + '"></i>' + esc(s.name) + "</span>" +
+      '<span class="gh-sys-years">' + sysYears(s) + "</span>" +
+      sysDl([["First played", s.first ? fmtDay(s.first) : "Unknown"], ["Last used", sysLastHtml(s)]]) +
+      '<span class="gh-sys-h">Played on this system</span>' +
+      (s.on ? sysStats(s.on) : '<span class="gh-sys-none">No play records from this hardware</span>');
+    if (s.elsewhere) h += '<span class="gh-sys-h">Its games on other systems</span>' + sysStats(s.elsewhere);
+    return h + "</span></a>";
+  }
+
+  function systemPage() {
+    var id = new URLSearchParams(location.search).get("id");
+    var back = document.querySelector(".gh-back");
+    var from = document.referrer ? new URL(document.referrer) : null;
+    if (back && from && from.origin === location.origin) {
+      back.href = from.pathname + from.search;
+      back.addEventListener("click", function (e) { e.preventDefault(); history.back(); });
+    } else if (back) {
+      back.href = "/video-games/gameplay-stats/?tab=systems";
+    }
+    var out = document.getElementById("ghSystem");
+    getJSON(BASE + "/data/systems.json").then(function (list) {
+      var s = list.filter(function (x) { return x.id === id; })[0];
+      if (!s) { out.innerHTML = ""; showError(); return; }
+      document.title = s.name + " | FAKE RONJAN!!";
+      var hrs = (s.on ? s.on.hours : 0) || 0;
+      var facts = ["First played " + (s.first ? fmtDay(s.first) : "unknown"), (s.last && s.last.kind === "played" ? "Last used " : "") + sysLast(s)];
+      if (hrs) facts.push((s.on.est ? "about " : "") + hrs.toLocaleString("en-US") + " hours on this system");
+      var h = '<div class="gh-head"><img class="gh-art gh-sys-art" src="' + BASE + "/" + s.img + '" alt=""><div class="gh-head-text"><h1>' + esc(s.name) + "</h1>" +
+        '<p class="gh-sys-versions">' + s.versions.map(esc).join(", ") + "</p>" +
+        '<p class="gh-facts">' + dots([s.family]) + " " + facts.map(function (f) { return '<span class="gh-nowrap">' + esc(f) + "</span>"; }).join('<span class="sport-updated-sep">|</span>') + "</p></div></div>";
+      if (s.photos.length) {
+        h += '<h2 class="gh-h2">My photos</h2><div class="gh-sys-photos">' + s.photos.map(function (p) {
+          return '<figure><img src="' + BASE + "/" + p.img + '" alt="' + esc(p.caption) + '" loading="lazy"><figcaption>' + esc(p.caption) + "<span>" + fmtDay(p.date) + "</span></figcaption></figure>";
+        }).join("") + "</div>";
+      }
+      if (s.on) h += '<h2 class="gh-h2">Played on this system (' + s.on.games + ')</h2><div class="sport-table-wrap" id="ghSysOn"></div>';
+      if (s.elsewhere) h += '<h2 class="gh-h2">Its games on other systems (' + s.elsewhere.games + ')</h2><div class="sport-table-wrap" id="ghSysElse"></div>';
+      if ((s.on && s.on.family_play) || (s.elsewhere && s.elsewhere.family_play)) h += '<p class="gh-family-note">* ' + FAMILY_NOTE + "</p>";
+      out.innerHTML = h;
+      var nameCol = { k: "n", h: "Game", cls: "gh-wrap gh-name", v: function (r) { return r.name.toLowerCase(); }, r: function (r) { return '<div class="gh-with-thumb">' + thumb(r.img) + "<span><b>" + gameLink(r.id, r.name) + familyMark(r) + "</b></span></div>"; } };
+      var hoursCol = { k: "h", h: "Hours played", desc: true, v: function (r) { return r.hours; }, r: function (r) { return hours(r.hours, r.est) + familyMark(r); } };
+      var firstCol = { k: "first", h: "First played", cls: "gh-hide-m", desc: true, v: function (r) { return r.first; }, r: function (r) { return fmtDay(r.first); } };
+      var lastCol = { k: "last", h: "Last played", desc: true, v: function (r) { return r.last; }, r: function (r) { return fmtDay(r.last); } };
+      if (s.on) table({ el: document.getElementById("ghSysOn"), rows: s.on.rows, sortKey: "h", desc: true, filter: function () { return true; }, cols: [nameCol, hoursCol, firstCol, lastCol] });
+      if (s.elsewhere) table({
+        el: document.getElementById("ghSysElse"), rows: s.elsewhere.rows, sortKey: "h", desc: true, filter: function () { return true; },
+        cols: [nameCol, { k: "on", h: "Played on", cls: "gh-wrap gh-hide-m", v: function (r) { return r.on; }, r: function (r) { return esc(r.on); } }, hoursCol, lastCol],
+      });
+    }).catch(function () { out.innerHTML = ""; showError(); });
+  }
+
   if (document.getElementById("ghPage")) historyPage();
   else if (document.getElementById("ghSeriesPage")) seriesPage();
+  else if (document.getElementById("ghSystemPage")) systemPage();
   else gamePage();
 })();
