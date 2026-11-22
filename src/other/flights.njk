@@ -1,0 +1,227 @@
+---
+layout: base.njk
+title: Flight Stats | FAKE RONJAN!!
+permalink: /flights/
+---
+
+<style>
+/* Status colors for the on-time split; bars and logos follow the site's tokens */
+.fl { --ok: #15803d; --late: #d97706; --cancel: #b91c1c; --divert: #7c7f86; --bar: var(--accent); --panel: color-mix(in srgb, var(--fg) 5%, transparent); --line: color-mix(in srgb, var(--fg) 12%, transparent); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fl { --ok: #34d399; --late: #fbbf24; --cancel: #f87171; --divert: #9ca3af; } }
+:root[data-theme="dark"] .fl { --ok: #34d399; --late: #fbbf24; --cancel: #f87171; --divert: #9ca3af; }
+
+.fl h2 { margin: 2rem 0 0.6rem; font-size: 1.2rem; text-wrap: balance; }
+.fl h3 { margin: 1rem 0 0.4rem; font-size: 0.95rem; }
+.fl-controls { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-end; margin: 0.5rem 0 0.6rem; }
+.fl-field { position: relative; flex: 1 1 200px; max-width: 300px; }
+.fl-field label, .fl-period label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.15rem; }
+.fl-field input, .fl select {
+  width: 100%; box-sizing: border-box; font: inherit; font-size: 0.95rem; padding: 0.45rem 0.6rem; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--muted); border-radius: 6px;
+}
+.fl select { width: auto; }
+.fl-field input:focus, .fl select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.fl-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 10; margin: 0; padding: 0.25rem 0; list-style: none; background: var(--bg); border: 1px solid var(--muted); border-radius: 6px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.fl-list[hidden] { display: none; }
+.fl-list button { display: block; width: 100%; text-align: left; font: inherit; font-size: 0.9rem; padding: 0.4rem 0.7rem; color: var(--fg); background: none; border: 0; cursor: pointer; }
+.fl-list button:hover, .fl-list button:focus { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.fl-none { padding: 0.4rem 0.7rem; color: var(--muted); font-size: 0.9rem; }
+.fl-swap { width: 2.3rem; height: 2.3rem; border-radius: 50%; border: 1px solid var(--muted); background: none; color: var(--accent); font-size: 1.15rem; cursor: pointer; flex: none; }
+.fl-swap:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.fl-row2 { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; }
+.fl-seg { display: inline-flex; border: 1px solid var(--accent); border-radius: 999px; padding: 3px; }
+.fl-seg button { font: inherit; font-size: 0.8rem; font-weight: 600; color: var(--accent); background: none; border: 0; border-radius: 999px; padding: 0.3rem 0.8rem; cursor: pointer; white-space: nowrap; }
+.fl-seg button.active { background: var(--accent); color: var(--bg); }
+.fl-period { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.fl-period label { margin: 0; }
+.fl-period [hidden] { display: none; }
+
+.fl-route { font-family: "Space Grotesk", sans-serif; font-size: 1.7rem; font-weight: 700; margin: 1.4rem 0 0; }
+.fl-route-sub { color: var(--muted); margin: 0; text-wrap: pretty; }
+.fl-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0 1.4rem; margin: 0.7rem 0 0; }
+.fl-facts div { display: flex; justify-content: space-between; gap: 0.6rem; padding: 0.4rem 0; border-bottom: 1px solid var(--line); }
+.fl-facts dt { color: var(--muted); } .fl-facts dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+
+.fl-stack { display: flex; gap: 2px; height: 28px; border-radius: 6px; overflow: hidden; }
+.fl-stack span { min-width: 2px; }
+.s-ok { --c: var(--ok); } .s-late { --c: var(--late); } .s-cancel { --c: var(--cancel); } .s-divert { --c: var(--divert); }
+.fl-stack span { background: var(--c); }
+.fl-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; margin: 0.5rem 0 0; font-size: 0.88rem; }
+.fl-legend span::before { content: ""; display: inline-block; width: 0.65rem; height: 0.65rem; border-radius: 2px; margin-right: 0.4rem; background: var(--c); vertical-align: -0.05rem; }
+.fl-legend b { font-variant-numeric: tabular-nums; }
+.fl-rank { margin: 0.8rem 0 0; padding-left: 1.2rem; } .fl-rank li { margin: 0.2rem 0; }
+.fl-note { color: var(--muted); font-size: 0.85rem; margin: 0.3rem 0 0; text-wrap: pretty; }
+
+.fl table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.fl th, .fl td { text-align: right; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; vertical-align: middle; }
+.fl th:first-child, .fl td:first-child { text-align: left; padding-left: 0; }
+.fl thead th { color: var(--muted); font-size: 0.8rem; font-weight: 700; }
+.fl td small { display: block; color: var(--muted); font-size: 0.78rem; }
+.fl-logo { display: inline-flex; align-items: center; background: #fff; border-radius: 4px; padding: 2px 5px; }
+.fl-logo img { height: 20px; width: auto; max-width: 110px; object-fit: contain; display: block; }
+.fl-logo.sm img { height: 14px; max-width: 70px; }
+.fl-brand { font-weight: 600; }
+@media (max-width: 560px) { .hide-sm { display: none; } .fl-logo img { height: 16px; max-width: 86px; } }
+.fl-scroll { overflow-x: auto; }
+
+.fl-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.6rem 1.6rem; }
+.fl-bars { display: flex; align-items: flex-end; gap: 2px; height: 120px; border-bottom: 1px solid var(--muted); }
+.fl-bars div { flex: 1; background: var(--bar); border-radius: 3px 3px 0 0; opacity: 0.85; }
+.fl-bars div:hover { opacity: 1; outline: 2px solid var(--fg); }
+.fl-bars div.best { background: var(--ok); } .fl-bars div.worst { background: var(--cancel); }
+.fl-bars div.empty { background: none; }
+.fl-ticks { display: flex; gap: 2px; font-size: 0.7rem; color: var(--muted); }
+.fl-ticks span { flex: 1; text-align: center; white-space: nowrap; min-width: 0; }
+
+.fl-causes div { display: grid; grid-template-columns: 11.5rem 1fr 3rem; gap: 0.6rem; align-items: center; margin: 0.35rem 0; font-size: 0.9rem; }
+.fl-causes .track { height: 12px; background: var(--panel); border-radius: 4px; overflow: hidden; }
+.fl-causes .fill { display: block; height: 100%; background: var(--late); border-radius: 4px; }
+.fl-causes b { text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) { .fl-causes div { grid-template-columns: 8.5rem 1fr 2.6rem; font-size: 0.85rem; } }
+
+.fl-fun { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.6rem; }
+.fl-fun div { background: var(--panel); border-radius: 8px; padding: 0.6rem 0.8rem; }
+.fl-fun small { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.fl-fun b { display: block; font-family: "Space Grotesk", sans-serif; font-size: 1.15rem; margin: 0.1rem 0; }
+.fl-fun span { color: var(--muted); font-size: 0.85rem; }
+.fl-tip { position: fixed; pointer-events: none; z-index: 20; background: var(--fg); color: var(--bg); font-size: 0.8rem; padding: 0.3rem 0.5rem; border-radius: 6px; white-space: nowrap; }
+.fl-tip[hidden], #fl-body[hidden] { display: none; }
+
+.fl-tabs { margin: 0.2rem 0 1rem; }
+.fl-badge {
+  display: inline-block; font-size: 0.72rem; font-weight: 700; line-height: 1.2; padding: 0.15rem 0.5rem; border-radius: 999px;
+  color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); text-decoration: none; white-space: nowrap; vertical-align: 0.1rem;
+}
+.fl-badge.b-top { color: var(--bg); background: var(--accent); }
+.fl-badge:hover { outline: 1px solid var(--accent); }
+.fl-facts div { flex-wrap: wrap; }
+.fl-bw { flex-basis: 100%; text-align: right; margin-top: -0.1rem; }
+.fl-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0 0; }
+.fl-badges:empty { display: none; }
+#fl-rankings[hidden], #fl-route-view[hidden], #fl-route-controls[hidden] { display: none; }
+.fl-rk-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin: 0.6rem 0; }
+.fl-rk-row .fl-seg:empty { display: none; }
+.fl-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0; }
+.fl .pill { cursor: pointer; }
+.fl-rk-ap { flex: 0 1 220px; }
+.fl-rk-table td.rk { color: var(--muted); width: 3.5rem; text-align: left; padding-left: 0; }
+.fl-rk-table td.nm, .fl-rk-table th.nm { text-align: left; }
+.fl-rk-table td.nm small { display: inline; margin-left: 0.4rem; }
+.fl-rk-table td.nm a, .fl-rk-table td.val { white-space: nowrap; }
+@media (max-width: 560px) { .fl-rk-table td.nm small { display: block; margin-left: 0; } }
+.fl-rk-table td.nm a { font-weight: 600; }
+.fl-rk-table tr.hl td { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.fl-rk-table tr.gap td { text-align: center; color: var(--muted); border-bottom: 0; }
+.fl-more { margin-top: 0.7rem; }
+.fl-more[hidden] { display: none; }
+.fl-how { margin-top: 2.5rem; padding-top: 0.5rem; border-top: 1px solid var(--line); }
+.fl-how li { margin: 0.4rem 0; text-wrap: pretty; }
+.fl-how a { color: var(--accent); }
+</style>
+
+<div class="fl">
+  <h1>Flight Stats</h1>
+
+  <div class="fl-seg fl-tabs" id="fl-view" role="group" aria-label="View"><button class="active" data-v="route" type="button">Route</button><button data-v="rank" type="button">Rankings</button></div>
+
+  <div class="fl-controls" id="fl-route-controls">
+    <div class="fl-field">
+      <label for="fl-from">From</label>
+      <input id="fl-from" type="text" autocomplete="off" placeholder="Airport code or city">
+      <ul class="fl-list" id="fl-from-list" hidden></ul>
+    </div>
+    <button class="fl-swap" id="fl-swap" type="button" aria-label="Swap airports">&#8644;</button>
+    <div class="fl-field">
+      <label for="fl-to">To</label>
+      <input id="fl-to" type="text" autocomplete="off" placeholder="Airport code or city">
+      <ul class="fl-list" id="fl-to-list" hidden></ul>
+    </div>
+  </div>
+  <div class="fl-row2">
+    <div class="fl-seg" id="fl-dir" role="group" aria-label="Direction"><button class="active" data-d="one" type="button">One way</button><button data-d="both" type="button">Both directions</button></div>
+    <div class="fl-period">
+      <select id="fl-y0" aria-label="Period start"></select>
+      <label id="fl-y1-label" for="fl-y1" hidden>to</label>
+      <select id="fl-y1" aria-label="Period end" hidden></select>
+    </div>
+  </div>
+
+  <section id="fl-rankings" hidden>
+    <div class="fl-rk-row">
+      <div class="fl-seg" id="fl-rk-kind" role="group" aria-label="Rank"><button class="active" data-k="routes" type="button">Routes</button><button data-k="airports" type="button">Airports</button></div>
+    </div>
+    <div class="fl-pills" id="fl-rk-metrics"></div>
+    <div class="fl-rk-row">
+      <div class="fl-seg" id="fl-rk-order" role="group" aria-label="Order"></div>
+      <div class="fl-field fl-rk-ap" id="fl-rk-ap-wrap">
+        <input id="fl-rk-ap" type="text" autocomplete="off" placeholder="Any airport" aria-label="Only routes touching this airport">
+        <ul class="fl-list" id="fl-rk-ap-list" hidden></ul>
+      </div>
+      <select id="fl-rk-al" aria-label="Airline"></select>
+    </div>
+    <div class="fl-scroll"><table class="fl-rk-table" id="fl-rk-table"></table></div>
+    <button class="pill fl-more" id="fl-rk-more" type="button" hidden>Show more</button>
+    <p class="fl-note" id="fl-rk-note"></p>
+  </section>
+
+  <div id="fl-route-view">
+  <p class="fl-route" id="fl-route"></p>
+  <p class="fl-route-sub" id="fl-route-sub"></p>
+
+  <div id="fl-body">
+    <dl class="fl-facts" id="fl-facts"></dl>
+
+    <h2>On time</h2>
+    <div class="fl-stack" id="fl-stack"></div>
+    <div class="fl-legend" id="fl-stack-legend"></div>
+    <div class="fl-badges" id="fl-stack-badges"></div>
+    <ul class="fl-rank" id="fl-rank"></ul>
+    <p class="fl-note">Ranked among routes with at least one flight a day</p>
+
+    <h2>Airlines on this route</h2>
+    <div class="fl-scroll"><table id="fl-airlines"></table></div>
+
+    <h2>Trends</h2>
+    <div class="fl-charts">
+      <div><h3>Flights a day</h3><div class="fl-bars" id="fl-tr-flights"></div><div class="fl-ticks" id="fl-tr-flights-t"></div><p class="fl-note" id="fl-tr-flights-n"></p></div>
+      <div><h3>On time</h3><div class="fl-bars" id="fl-tr-ontime"></div><div class="fl-ticks" id="fl-tr-ontime-t"></div><p class="fl-note" id="fl-tr-ontime-n"></p></div>
+    </div>
+    <h3>Airline share of flights</h3>
+    <div class="fl-scroll"><table id="fl-tr-mix"></table></div>
+
+    <h2>When to fly</h2>
+    <div class="fl-charts">
+      <div><h3>On time by departure hour</h3><div class="fl-bars" id="fl-hour"></div><div class="fl-ticks" id="fl-hour-t"></div><p class="fl-note" id="fl-hour-n"></p></div>
+      <div><h3>On time by day of week</h3><div class="fl-bars" id="fl-dow"></div><div class="fl-ticks" id="fl-dow-t"></div><p class="fl-note" id="fl-dow-n"></p></div>
+      <div><h3>On time by month</h3><div class="fl-bars" id="fl-month"></div><div class="fl-ticks" id="fl-month-t"></div><p class="fl-note" id="fl-month-n"></p></div>
+    </div>
+
+    <h2>Why flights were late</h2>
+    <p class="fl-note" style="margin:0 0 0.4rem">Share of all delay minutes, by cause</p>
+    <div class="fl-causes" id="fl-causes"></div>
+    <p class="fl-note" id="fl-cancels"></p>
+
+    <h2>Fun facts</h2>
+    <div class="fl-fun" id="fl-fun"></div>
+  </div>
+  </div>
+
+  <section class="fl-how">
+    <h2>How this page works</h2>
+    <ul>
+      <li><strong>The data.</strong> Every domestic flight reported to the US Department of Transportation by the larger US airlines and their regional partners, January 2018 on, from the Bureau of Transportation Statistics. It doesn't include international flights or the smallest airlines.</li>
+      <li><strong>On time.</strong> Each scheduled flight counts as exactly one of on time (arrived within 15 minutes of schedule), delayed, canceled, or diverted, so the four add up to 100%. That's the government's definition.</li>
+      <li><strong>Airlines.</strong> Flights are listed under the airline you'd buy the ticket from, with the regional airline that flew it when they differ.</li>
+      <li><strong>Updates.</strong> The data is refreshed monthly. The government publishes each month about two months later.</li>
+    </ul>
+    <h3>Sources</h3>
+    <ul>
+      <li>Bureau of Transportation Statistics, <a href="https://www.transtats.bts.gov/DatabaseInfo.asp?QO_VQ=EFD&amp;DB_URL=" target="_blank" rel="noopener">Airline On-Time Performance Data</a> (Marketing Carrier On-Time Performance table)</li>
+      <li><a href="https://registry.faa.gov/aircraftinquiry/" target="_blank" rel="noopener">FAA Aircraft Registry</a>, for plane lookups</li>
+      <li>Airline logos from <a href="https://www.travelpayouts.com/" target="_blank" rel="noopener">Travelpayouts</a></li>
+    </ul>
+  </section>
+</div>
+<div class="fl-tip" id="fl-tip" hidden></div>
+
+<script type="module" src="/js/flights-page.js"></script>
