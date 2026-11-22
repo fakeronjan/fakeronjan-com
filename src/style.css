@@ -320,11 +320,25 @@ nav a.active { color: var(--accent); font-weight: 700; }
   border-color: var(--accent);
 }
 
+/* The homepage's 4 site sections share one row and the 3 external sites the next,
+   so no card sits alone on a row: a 12-column grid with sections spanning 3 and
+   external sites (target=_blank) spanning 4. Mid widths go 2 + 2 then 3; phones
+   stack. */
 .site-map {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(12, 1fr);
   gap: 1rem;
   margin: 1.5rem 0 2.5rem;
+}
+.site-map > a { grid-column: span 3; }
+.site-map > a[target="_blank"] { grid-column: span 4; }
+@media (max-width: 879px) {
+  .site-map > a { grid-column: span 6; }
+  .site-map > a[target="_blank"] { grid-column: span 4; }
+}
+@media (max-width: 639px) {
+  .site-map { grid-template-columns: 1fr; }
+  .site-map > a, .site-map > a[target="_blank"] { grid-column: auto; }
 }
 .site-map-card {
   display: flex;

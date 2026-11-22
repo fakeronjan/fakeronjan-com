@@ -1,0 +1,162 @@
+---
+layout: base.njk
+title: Sun Stats | FAKE RONJAN!!
+permalink: /other/sun-stats/
+---
+
+<style>
+/* Sunrise / sunset / daylight colors: marks (validated for color-blind separation)
+   and darker text shades of the same hues for the colored "until" lines. */
+.sun {
+  --sun-day: #f2b632; --sun-twi: #f7dc96; --sun-edge: #b9820f; --sun-night: #e3e8ec; --sun-sky: #f9d77a;
+  --k-rise: #b98900; --k-set: #c2410c; --k-day: #0284c7; --k-clock: #8a8f96;
+  --t-rise: #8a6400; --t-set: #b03a0a; --t-day: #0369a1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sun {
+    --sun-day: #d9a21f; --sun-twi: #5e4c1f; --sun-edge: #f2c45a; --sun-night: #24272f; --sun-sky: #8a6a1c;
+    --k-rise: #b08a12; --k-set: #e2506a; --k-day: #3d8fe0; --k-clock: #8d929a;
+    --t-rise: #e3b43c; --t-set: #f2788c; --t-day: #6cb2f0;
+  }
+}
+:root[data-theme="dark"] .sun {
+  --sun-day: #d9a21f; --sun-twi: #5e4c1f; --sun-edge: #f2c45a; --sun-night: #24272f; --sun-sky: #8a6a1c;
+  --k-rise: #b08a12; --k-set: #e2506a; --k-day: #3d8fe0; --k-clock: #8d929a;
+  --t-rise: #e3b43c; --t-set: #f2788c; --t-day: #6cb2f0;
+}
+
+.sun-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin: 0.5rem 0 1.5rem; }
+.sun-search-wrap { flex: 1 1 100%; max-width: 640px; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.sun-field { position: relative; flex: 1 1 240px; min-width: 0; display: flex; }
+.sun-field input {
+  flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; padding: 0.45rem 0.7rem;
+  color: var(--fg); background: var(--bg); border: 1px solid var(--muted); border-radius: 6px;
+}
+.sun-field input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.sun-results {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 10; margin: 0; padding: 0.25rem 0;
+  list-style: none; background: var(--bg); border: 1px solid var(--muted); border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+.sun-results[hidden] { display: none; }
+.sun-results button {
+  display: block; width: 100%; text-align: left; font: inherit; font-size: 0.9rem; padding: 0.4rem 0.7rem;
+  color: var(--fg); background: none; border: 0; cursor: pointer;
+}
+.sun-results button:hover, .sun-results button:focus { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.sun-none { padding: 0.4rem 0.7rem; font-size: 0.9rem; color: var(--muted); }
+.sun .pill { cursor: pointer; }
+/* Clock / Standard: one split pill, the chosen half filled */
+.sun-seg { display: inline-flex; border: 1px solid var(--accent); border-radius: 999px; padding: 3px; }
+.sun-seg[hidden] { display: none; }
+.sun-seg button {
+  font: inherit; font-size: 0.8rem; font-weight: 600; color: var(--accent); background: none;
+  border: 0; border-radius: 999px; padding: 0.3rem 0.8rem; cursor: pointer; white-space: nowrap;
+}
+.sun-seg button.active { background: var(--accent); color: var(--bg); }
+.sun-seg button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+
+.sun h2 { margin: 1.75rem 0 0.6rem; font-size: 1.2rem; text-wrap: balance; }
+/* Today: sky picture, then three centered stat columns */
+.sun-sky svg { display: block; }
+.sky-night { fill: var(--sun-night); }
+.sky-twi { fill: var(--sun-twi); }
+.sky-day { fill: var(--sun-sky); }
+.sky-arc { fill: none; stroke: var(--sun-edge); stroke-width: 3; }
+.sky-sun { fill: var(--sun-day); stroke: var(--sun-edge); stroke-width: 1.5; }
+.sky-horizon { stroke: var(--fg); stroke-width: 2; }
+.sky-dot { stroke: var(--bg); stroke-width: 2; }
+.sky-axis { font-size: 12px; }
+.sun-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 0.5rem 0 0; }
+.sun-stat { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.1rem; min-width: 0; }
+.sun-kicker { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.sun-big { font-family: "Space Grotesk", sans-serif; font-size: 2rem; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.sun-ctx { font-weight: 600; font-size: 0.92rem; text-wrap: balance; }
+.sun-sub { font-size: 0.85rem; color: var(--muted); text-wrap: balance; }
+.sun-ctx.k-rise { color: var(--t-rise); } .sun-ctx.k-set { color: var(--t-set); } .sun-ctx.k-day { color: var(--t-day); }
+@media (max-width: 560px) {
+  .sun-stats { grid-template-columns: 1fr; gap: 1.1rem; }
+  .sun-big { font-size: 1.7rem; }
+}
+.sky-dot.k-rise, .tl-dot.k-rise { fill: var(--k-rise); } .sky-dot.k-set, .tl-dot.k-set { fill: var(--k-set); }
+.tl-dot.k-day { fill: var(--k-day); } .tl-dot.k-clock { fill: var(--k-clock); }
+.tl-stem.k-rise { stroke: var(--k-rise); } .tl-stem.k-set { stroke: var(--k-set); }
+.tl-stem.k-day { stroke: var(--k-day); } .tl-stem.k-clock { stroke: var(--k-clock); }
+
+/* Coming up: 12-month timeline (scrolls sideways on phones), then the table */
+.sun-timeline { overflow-x: auto; margin: 0 0 0.75rem; }
+.sun-timeline svg { display: block; }
+.tl-axis { stroke: var(--muted); stroke-width: 1.5; }
+.tl-today { fill: var(--fg); }
+.tl-stem { stroke-width: 1.5; }
+.tl-dot { stroke: var(--bg); stroke-width: 2; }
+.tl-label, .tl-date { font-size: 11px; font-family: inherit; paint-order: stroke; stroke: var(--bg); stroke-width: 5px; stroke-linejoin: round; }
+.tl-label { font-weight: 600; fill: var(--fg); }
+.tl-date { fill: var(--muted); }
+.sun-dot { display: inline-block; width: 0.55rem; height: 0.55rem; border-radius: 50%; margin-right: 0.5rem; vertical-align: 0.05rem; }
+.sun-dot.k-rise { background: var(--k-rise); } .sun-dot.k-set { background: var(--k-set); }
+.sun-dot.k-day { background: var(--k-day); } .sun-dot.k-clock { background: var(--k-clock); }
+.sun-table { border-collapse: collapse; font-size: 0.95rem; }
+.sun-table th, .sun-table td { text-align: left; padding: 0.35rem 1rem 0.35rem 0; border-bottom: 1px solid color-mix(in srgb, var(--fg) 12%, transparent); vertical-align: top; }
+.sun-table th { font-weight: 500; color: var(--muted); }
+.sun-table td { font-variant-numeric: tabular-nums; }
+.sun-coming { width: 100%; }
+.sun-coming .sun-date { white-space: nowrap; }
+.sun-coming .sun-in { white-space: nowrap; color: var(--muted); }
+@media (max-width: 520px) {
+  .sun-coming .sun-in { display: none; }
+}
+
+.sun-legend { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--muted); margin: 0 0 0.4rem; }
+.sun-legend span::before { content: ""; display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 2px; margin-right: 0.35rem; vertical-align: -0.1rem; }
+.sun-legend .l-day::before { background: var(--sun-day); }
+.sun-legend .l-twi::before { background: var(--sun-twi); }
+.sun-legend .l-today::before { width: 2px; background: var(--fg); }
+.sun-chart { position: relative; width: 100%; }
+.sun-chart svg { display: block; touch-action: pan-y; }
+.sun-day { fill: var(--sun-day); }
+.sun-twi { fill: var(--sun-twi); }
+.sun-edge { fill: none; stroke: var(--sun-edge); stroke-width: 1.5; }
+.sun-grid { stroke: color-mix(in srgb, var(--fg) 10%, transparent); stroke-width: 1; }
+.sun-tick { stroke: color-mix(in srgb, var(--fg) 30%, transparent); }
+.sun-axis { fill: var(--muted); font-size: 11px; font-family: inherit; }
+.sun-today { stroke: var(--fg); stroke-width: 2; }
+.sun-cross { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 3 3; }
+.sun-tip {
+  position: absolute; pointer-events: none; z-index: 5; font-size: 0.8rem; line-height: 1.45;
+  background: var(--fg); color: var(--bg); padding: 0.45rem 0.6rem; border-radius: 6px; white-space: nowrap;
+}
+.sun-tip[hidden] { display: none; }
+</style>
+
+<div class="sun">
+  <h1>Sun Stats</h1>
+
+  <div class="sun-controls">
+    <div class="sun-search-wrap">
+      <div class="sun-field">
+        <input id="sun-search" type="search" placeholder="Search for a city" autocomplete="off" aria-label="Search for a city">
+        <ul id="sun-results" class="sun-results" hidden></ul>
+      </div>
+      <button id="sun-locate" class="pill" type="button">Use my location</button>
+      <button id="sun-random" class="pill" type="button">Pick random location</button>
+    </div>
+    <div class="sun-seg" id="sun-mode" role="group" aria-label="Times shown in" hidden>
+      <button class="active" data-mode="clock" type="button" aria-pressed="true">Clock time</button><button data-mode="standard" type="button" aria-pressed="false">Standard time</button>
+    </div>
+  </div>
+
+  <h2 id="sun-today-title">Today</h2>
+  <div class="sun-sky" id="sun-sky"></div>
+  <div class="sun-stats" id="sun-stats"></div>
+
+  <h2>Milestones over the next year</h2>
+  <div class="sun-timeline" id="sun-timeline"></div>
+  <table class="sun-table sun-coming"><tbody id="sun-coming"></tbody></table>
+
+  <h2 id="sun-chart-title">This year</h2>
+  <div class="sun-legend"><span class="l-day">Daylight</span><span class="l-twi">Twilight</span><span class="l-today">Today</span></div>
+  <div class="sun-chart" id="sun-chart"><div class="sun-tip" id="sun-tip" hidden></div></div>
+</div>
+
+<script type="module" src="/js/sun-page.js"></script>
