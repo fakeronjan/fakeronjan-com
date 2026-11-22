@@ -185,6 +185,17 @@ export function nextHourCrossing(vals, unit) {
   return null;
 }
 
+// Every day in the window where the clock offset changes (daylight saving starts or ends).
+export function clockChanges(days) {
+  const out = [];
+  for (let i = 1; i < days.length; i++) {
+    if (days[i].clockOffset !== days[i - 1].clockOffset) {
+      out.push({ idx: i, ahead: days[i].clockOffset > days[i - 1].clockOffset });
+    }
+  }
+  return out;
+}
+
 // Next day the clock offset changes (daylight saving starts or ends).
 export function nextClockChange(days) {
   for (let i = 1; i < days.length; i++) {

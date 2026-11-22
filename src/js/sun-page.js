@@ -178,10 +178,9 @@ function comingUp() {
     else add(i, 'day', 'First day under 12 hours of daylight', 'Under 12 hours of daylight');
   }
 
-  // Daylight saving (clock time only; standard time ignores it)
+  // Daylight saving, both directions (clock time only; standard time ignores it)
   if (mode === 'clock') {
-    const ch = S.nextClockChange(days.slice(0, win));
-    if (ch) {
+    for (const ch of S.clockChanges(days.slice(0, win))) {
       const a = days[ch.idx - 1].clock, b = days[ch.idx].clock;
       const moves = [];
       if (a.sunrise != null && b.sunrise != null) moves.push(`sunrise ${fmtTime(a.sunrise)} to ${fmtTime(b.sunrise)}`);
