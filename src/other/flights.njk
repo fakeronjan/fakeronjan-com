@@ -73,6 +73,7 @@ permalink: /flights/
 .fl-bars div.best { background: var(--ok); } .fl-bars div.worst { background: var(--cancel); }
 .fl-bars div.empty { background: none; }
 .fl-bars div.out { opacity: 0.28; }
+#fl-tr-note[hidden] { display: none; }
 .fl-ticks { display: flex; gap: 2px; font-size: 0.7rem; color: var(--muted); }
 .fl-ticks span { flex: 1; text-align: center; white-space: nowrap; min-width: 0; }
 
@@ -187,7 +188,7 @@ permalink: /flights/
     <div class="fl-scroll"><table id="fl-airlines"></table></div>
 
     <h2>Trends</h2>
-    <p class="fl-note" style="margin:0 0 0.4rem">Every year from 2018 on. Your picked years are highlighted.</p>
+    <p class="fl-note" id="fl-tr-note" style="margin:0 0 0.4rem" hidden></p>
     <div class="fl-charts">
       <div><h3>Flights a day</h3><div class="fl-bars" id="fl-tr-flights"></div><div class="fl-ticks" id="fl-tr-flights-t"></div><p class="fl-note" id="fl-tr-flights-n"></p></div>
       <div><h3>On time</h3><div class="fl-bars" id="fl-tr-ontime"></div><div class="fl-ticks" id="fl-tr-ontime-t"></div><p class="fl-note" id="fl-tr-ontime-n"></p></div>

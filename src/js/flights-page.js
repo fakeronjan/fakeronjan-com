@@ -297,8 +297,11 @@ async function renderTrends(A, B, both) {
   });
   const maxDay = Math.max(...per.map((p) => p.perDay), 1);
   const yl = (y, short) => (short ? `'${y.slice(2)}` : `${y}${meta.months_in_year[y] < 12 ? ` (through ${MON[meta.months_in_year[y] - 1]})` : ''}`);
-  const picked = yearsInPeriod();
-  const out = (y) => (picked.has(y) ? '' : 'out');   // years outside the picked period fade
+  // Fade years outside a picked range; the default (last 12 months) highlights nothing
+  const selected = state.y0 !== 'last12', picked = yearsInPeriod();
+  const out = (y) => (!selected || picked.has(y) ? '' : 'out');
+  $('#fl-tr-note').hidden = !selected;
+  $('#fl-tr-note').textContent = picked.size > 1 ? 'Selected years are highlighted' : 'Selected year is highlighted';
   $('#fl-tr-flights').innerHTML = per.map((p) => `<div class="${out(p.y)}" style="height:${Math.max(p.perDay ? 2 : 0, (100 * p.perDay) / maxDay)}%" data-t="${yl(p.y)}: ${p.perDay.toFixed(1)} flights a day"></div>`).join('');
   $('#fl-tr-flights-t').innerHTML = per.map((p) => `<span>${yl(p.y, true)}</span>`).join('');
   const withFlights = per.filter((p) => p.c[0] >= 20);
