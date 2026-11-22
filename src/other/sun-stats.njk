@@ -181,6 +181,34 @@ permalink: /sun/
   .sun-ext tbody th { white-space: normal; }
   .sun-ext th, .sun-ext td { padding-right: 0.5rem; }
 }
+/* How this page works */
+.sun-how { margin-top: 2.5rem; padding-top: 0.5rem; border-top: 1px solid color-mix(in srgb, var(--fg) 15%, transparent); max-width: 44rem; }
+.sun-how p, .sun-how li { text-wrap: pretty; }
+.sun-how ul { padding-left: 1.2rem; }
+.sun-how li { margin: 0.45rem 0; }
+.sun-how h3 { margin: 1.6rem 0 0.4rem; font-size: 1.02rem; }
+.sun-eq-box { margin: 1.2rem 0 0; }
+.sun-eq-box summary {
+  display: inline-block; cursor: pointer; list-style: none; font-size: 0.85rem; font-weight: 600; color: var(--accent);
+  border: 1px solid var(--muted); border-radius: 999px; padding: 0.3rem 0.85rem;
+}
+.sun-eq-box summary::-webkit-details-marker { display: none; }
+.sun-eq-box summary:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.sun-eq-box summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sun-eq-box .sun-eq-hide, .sun-eq-box[open] .sun-eq-show { display: none; }
+.sun-eq-box[open] .sun-eq-hide { display: inline; }
+.sun-eq-box[open] summary { margin-bottom: 0.9rem; }
+.sun-eq-note { color: var(--muted); font-size: 0.9rem; margin: 0 0 0.6rem; }
+.sun-eqs { margin: 0; }
+.sun-eqs dt { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.03em; color: var(--muted); margin-top: 0.8rem; }
+.sun-eqs dd {
+  margin: 0.2rem 0 0; padding: 0.45rem 0.7rem; border-radius: 6px; line-height: 1.7;
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  font-family: "Cambria Math", Cambria, Georgia, "Times New Roman", serif; font-size: 1rem;
+  font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+}
+.sun-eqs i { font-style: italic; }
+.sun-sources a { color: var(--accent); }
 .sun-edge { fill: none; stroke: var(--sun-edge); stroke-width: 1.5; }
 .sun-grid { stroke: color-mix(in srgb, var(--fg) 10%, transparent); stroke-width: 1; }
 .sun-tick { stroke: color-mix(in srgb, var(--fg) 30%, transparent); }
@@ -253,6 +281,57 @@ permalink: /sun/
     <h2>Side by side</h2>
     <table class="sun-table sun-ext" id="sun-ext"></table>
   </div>
+
+  <section class="sun-how">
+    <h2>How this page works</h2>
+    <p>Everything on this page is calculated in your browser from four things: the location's latitude and longitude, the date, and the location's time zone.</p>
+    <ul>
+      <li><strong>The sun's position.</strong> The page uses NOAA's solar equations, which model Earth's orbit. For each date they give how far north or south of the equator the sun is overhead (from 23.4&deg; north in June to 23.4&deg; south in December) and how far solar noon drifts from clock noon (up to about 16 minutes over the year).</li>
+      <li><strong>Sunrise and sunset.</strong> From the latitude and the sun's position, the page works out when the center of the sun is 0.833&deg; below the horizon. That accounts for the top edge of the sun appearing first and for the atmosphere bending sunlight over the horizon. First and last light use 6&deg; below the horizon. When the sun never gets that low or that high, there's no sunset or no sunrise that day.</li>
+      <li><strong>Clock time.</strong> Solar noon comes 4 minutes later for every degree of longitude west. Your browser's time zone rules then turn each moment into local clock time, including daylight saving. Standard time shows the same moment without daylight saving.</li>
+      <li><strong>Accuracy.</strong> NOAA rates these equations accurate to within a minute between 72&deg; north and 72&deg; south, and within 10 minutes beyond that.</li>
+    </ul>
+    <p>City search uses Open-Meteo to look up a city's location and time zone. "Use my location" stays on your device.</p>
+
+    <details class="sun-eq-box">
+      <summary><span class="sun-eq-show">Show me the equations</span><span class="sun-eq-hide">Hide the equations</span></summary>
+      <p class="sun-eq-note">Angles in degrees. <i>T</i> is time in Julian centuries since noon on January 1, 2000, <i>&phi;</i> is latitude, and longitude is positive east.</p>
+      <dl class="sun-eqs">
+        <dt>Time</dt>
+        <dd><i>T</i> = (Julian day - 2451545) / 36525</dd>
+        <dt>Sun's mean longitude</dt>
+        <dd><i>L</i><sub>0</sub> = 280.46646 + 36000.76983<i>T</i> + 0.0003032<i>T</i><sup>2</sup></dd>
+        <dt>Sun's mean anomaly</dt>
+        <dd><i>M</i> = 357.52911 + 35999.05029<i>T</i> - 0.0001537<i>T</i><sup>2</sup></dd>
+        <dt>Eccentricity of Earth's orbit</dt>
+        <dd><i>e</i> = 0.016708634 - 0.000042037<i>T</i> - 0.0000001267<i>T</i><sup>2</sup></dd>
+        <dt>Equation of center</dt>
+        <dd><i>C</i> = (1.914602 - 0.004817<i>T</i> - 0.000014<i>T</i><sup>2</sup>) sin <i>M</i> + (0.019993 - 0.000101<i>T</i>) sin 2<i>M</i> + 0.000289 sin 3<i>M</i></dd>
+        <dt>Sun's apparent longitude</dt>
+        <dd><i>&Omega;</i> = 125.04 - 1934.136<i>T</i><br><i>&lambda;</i> = <i>L</i><sub>0</sub> + <i>C</i> - 0.00569 - 0.00478 sin <i>&Omega;</i></dd>
+        <dt>Tilt of Earth's axis</dt>
+        <dd><i>&epsilon;</i> = 23&deg; 26&prime; 21.448&Prime; - 46.815&Prime;<i>T</i> - 0.00059&Prime;<i>T</i><sup>2</sup> + 0.001813&Prime;<i>T</i><sup>3</sup> + 0.00256&deg; cos <i>&Omega;</i></dd>
+        <dt>Sun's declination</dt>
+        <dd><i>&delta;</i> = arcsin(sin <i>&epsilon;</i> &middot; sin <i>&lambda;</i>)</dd>
+        <dt>Equation of time (minutes)</dt>
+        <dd><i>y</i> = tan<sup>2</sup>(<i>&epsilon;</i> / 2)<br><i>E</i> = 4 &middot; (<i>y</i> sin 2<i>L</i><sub>0</sub> - 2<i>e</i> sin <i>M</i> + 4<i>ey</i> sin <i>M</i> cos 2<i>L</i><sub>0</sub> - &frac12;<i>y</i><sup>2</sup> sin 4<i>L</i><sub>0</sub> - 1.25<i>e</i><sup>2</sup> sin 2<i>M</i>), with the parenthesis in degrees</dd>
+        <dt>Solar noon (minutes after midnight UTC)</dt>
+        <dd>noon = 720 - 4 &middot; longitude - <i>E</i></dd>
+        <dt>Hour angle</dt>
+        <dd>cos <i>H</i> = (sin <i>h</i><sub>0</sub> - sin <i>&phi;</i> &middot; sin <i>&delta;</i>) / (cos <i>&phi;</i> &middot; cos <i>&delta;</i>)<br><i>h</i><sub>0</sub> = -0.833&deg; for sunrise and sunset, -6&deg; for first and last light</dd>
+        <dt>Sunrise and sunset</dt>
+        <dd>sunrise = noon - 4<i>H</i>, sunset = noon + 4<i>H</i> (in minutes, with <i>H</i> in degrees), recalculated at each event's own time for accuracy</dd>
+      </dl>
+    </details>
+
+    <h3>Sources</h3>
+    <ul class="sun-sources">
+      <li>NOAA Global Monitoring Laboratory, <a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html" target="_blank" rel="noopener">Solar Calculation Details</a>, the equations and their accuracy</li>
+      <li>Jean Meeus, <i>Astronomical Algorithms</i> (Willmann-Bell, 1991), the source of NOAA's equations</li>
+      <li><a href="https://www.iana.org/time-zones" target="_blank" rel="noopener">IANA Time Zone Database</a>, the time zone and daylight saving rules your browser uses</li>
+      <li><a href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener">Open-Meteo Geocoding API</a>, for city search</li>
+    </ul>
+  </section>
 </div>
 
 <script type="module" src="/js/sun-page.js"></script>
