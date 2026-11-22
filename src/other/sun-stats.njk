@@ -29,8 +29,10 @@ permalink: /sun/
 }
 
 .sun-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin: 0.5rem 0 1.5rem; }
-.sun-search-wrap { flex: none; width: 100%; max-width: 640px; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.sun-field { position: relative; flex: 1 1 240px; min-width: 0; display: flex; }
+.sun-search-wrap { flex: none; width: 100%; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+/* The buttons move as one group: beside the box when they fit, on their own line below it when not */
+.sun-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; flex: none; max-width: 100%; }
+.sun-field { position: relative; flex: 1 1 240px; min-width: 0; max-width: 460px; display: flex; }
 .sun-field input {
   flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; padding: 0.45rem 0.7rem;
   color: var(--fg); background: var(--bg); border: 1px solid var(--muted); border-radius: 6px;
@@ -48,7 +50,7 @@ permalink: /sun/
 }
 .sun-results button:hover, .sun-results button:focus { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .sun-controls { flex-direction: column; align-items: stretch; }
-.sun-controls > * { max-width: 640px; }
+
 .sun-ctl-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
 .sun-search-wrap[hidden] { display: none; }
 .sun-compare[hidden] { display: none; }
@@ -187,8 +189,11 @@ permalink: /sun/
         <input id="sun-search" type="search" placeholder="Search for a city" autocomplete="off" aria-label="Search for a city">
         <ul id="sun-results" class="sun-results" hidden></ul>
       </div>
-      <button id="sun-locate" class="pill" type="button">Use my location</button>
-      <button id="sun-random" class="pill" type="button">Pick random location</button>
+      <div class="sun-btns">
+        <button id="sun-locate" class="pill" type="button">Use my location</button>
+        <button id="sun-random" class="pill" type="button">Pick random location</button>
+        <button id="sun-compare" class="pill sun-compare" type="button">Compare 2 locations</button>
+      </div>
     </div>
     <div class="sun-search-wrap" id="sun-row-b" hidden>
       <div class="sun-field">
@@ -197,10 +202,11 @@ permalink: /sun/
         <button id="sun-clear-b" class="sun-clear" type="button" aria-label="Stop comparing">&times;</button>
         <ul id="sun-results-b" class="sun-results" hidden></ul>
       </div>
-      <button id="sun-random-b" class="pill" type="button">Pick random location</button>
+      <div class="sun-btns">
+        <button id="sun-random-b" class="pill" type="button">Pick random location</button>
+      </div>
     </div>
     <div class="sun-ctl-row">
-    <button id="sun-compare" class="pill sun-compare" type="button">Compare with another location</button>
     <div class="sun-seg" id="sun-mode" role="group" aria-label="Times shown in" hidden>
       <button class="active" data-mode="clock" type="button" aria-pressed="true">Clock time</button><button data-mode="standard" type="button" aria-pressed="false">Standard time</button>
     </div>

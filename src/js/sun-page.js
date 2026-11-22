@@ -32,13 +32,13 @@ function fmtTime(min, { note = true } = {}) {
 function fmtDuration(sec) {
   const s = Math.round(sec);
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
-  return `${h}h ${String(m).padStart(2, '0')}m`;
+  return `${h}h ${m}m`;
 }
 
 function fmtChange(sec) {
   const s = Math.round(Math.abs(sec));
   const m = Math.floor(s / 60), r = s % 60;
-  const amount = m ? `${m}m ${String(r).padStart(2, '0')}s` : `${r}s`;
+  const amount = m ? `${m}m ${r}s` : `${r}s`;
   if (s === 0) return 'Same as yesterday';
   return `${amount} ${sec > 0 ? 'more' : 'less'} than yesterday`;
 }
@@ -69,8 +69,8 @@ let yest = null;     // yesterday, for the "than yesterday" lines
 function fmtAmount(sec) {
   const s = Math.round(Math.abs(sec));
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
-  if (h) return `${h}h ${String(m).padStart(2, '0')}m`;
-  return m ? `${m}m ${String(r).padStart(2, '0')}s` : `${r}s`;
+  if (h) return `${h}h ${m}m`;
+  return m ? `${m}m ${r}s` : `${r}s`;
 }
 
 // "1m 12s later than yesterday" for a sunrise/sunset time (minutes).
@@ -155,7 +155,7 @@ function comingUp() {
   const c = S.nextHourCrossing(dl, 3600);
   if (c) {
     const amt = fmtDuration(dl[c.idx]);
-    const extra = amt === `${c.hour}h 00m` ? '' : ` (${amt})`;
+    const extra = amt === `${c.hour}h 0m` ? '' : ` (${amt})`;
     if (c.up) add(c.idx, 'day', `First day with ${c.hour}+ hours of daylight${extra}`, `${c.hour}+ hours of daylight`);
     else add(c.idx, 'day', `First day under ${c.hour} hours of daylight${extra}`, `Under ${c.hour} hours of daylight`);
   }
@@ -232,7 +232,7 @@ const swatch = (k) => `<span class="sun-sw ${k}" aria-hidden="true"></span>`;
 
 function fmtGap(sec) {
   const s = Math.round(Math.abs(sec)), h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
-  return h ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
+  return h ? `${h}h ${m}m` : `${m}m`;
 }
 
 // Today: both values per stat, then the gap as one sentence.
