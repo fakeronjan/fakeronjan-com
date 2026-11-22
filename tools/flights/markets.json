@@ -1,0 +1,18 @@
+{
+  "_note": "Airports BTS groups into the same city market (OriginCityMarketID), with a short name for each. Copied to flights-data/markets.json by build_site.py.",
+  "nyc": {"name": "New York", "airports": ["JFK", "LGA", "EWR", "ISP", "HPN", "SWF"]},
+  "lax": {"name": "Los Angeles", "airports": ["LAX", "SNA", "ONT", "BUR", "LGB"]},
+  "was": {"name": "Washington", "airports": ["DCA", "IAD", "BWI"]},
+  "bos": {"name": "Boston", "airports": ["BOS", "PVD", "MHT"]},
+  "sfo": {"name": "San Francisco Bay Area", "airports": ["SFO", "OAK", "SJC"]},
+  "hou": {"name": "Houston", "airports": ["IAH", "HOU"]},
+  "chi": {"name": "Chicago", "airports": ["ORD", "MDW"]},
+  "orf": {"name": "Norfolk", "airports": ["ORF", "PHF"]},
+  "cmh": {"name": "Columbus", "airports": ["CMH", "LCK"]},
+  "dfw": {"name": "Dallas", "airports": ["DFW", "DAL"]},
+  "cle": {"name": "Cleveland", "airports": ["CLE", "CAK"]},
+  "pbi": {"name": "West Palm Beach", "airports": ["PBI", "DJT"]},
+  "phx": {"name": "Phoenix", "airports": ["PHX", "AZA"]},
+  "tpa": {"name": "Tampa", "airports": ["TPA", "PIE"]},
+  "mia": {"name": "Miami", "airports": ["MIA", "FLL"]}
+}

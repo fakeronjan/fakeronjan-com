@@ -118,6 +118,24 @@ permalink: /flights/
 .fl-rk-table tr.gap td { text-align: center; color: var(--muted); border-bottom: 0; }
 .fl-more { margin-top: 0.7rem; }
 .fl-more[hidden] { display: none; }
+.fl-nav { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; margin: 0.2rem 0 1rem; }
+.fl-tabs button { font-size: 0.9rem; padding: 0.35rem 1rem; }
+.fl-controls[hidden], .fl-al-picks[hidden], .fl-seg[hidden] { display: none; }
+.fl-title { font-family: "Space Grotesk", sans-serif; font-size: 1.7rem; font-weight: 700; margin: 1.4rem 0 0; }
+.fl-title a { color: inherit; text-decoration: none; border-bottom: 2px solid color-mix(in srgb, var(--accent) 40%, transparent); }
+.fl-title a:hover { color: var(--accent); }
+.fl-title-logo { display: flex; align-items: center; gap: 0.7rem; }
+.fl-title-logo .fl-logo img { height: 30px; max-width: 170px; }
+.fl-sub { color: var(--muted); margin: 0; text-wrap: pretty; }
+.fl-lead { margin: 0 0 0.4rem; }
+.fl-al-picks { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 0.6rem; }
+.fl-al-pick { border: 1px solid var(--line); border-radius: 8px; background: none; padding: 0.35rem; cursor: pointer; }
+.fl-al-pick.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.fl-al-pick .fl-logo img { height: 22px; max-width: 120px; }
+.fl-al-link { text-decoration: none; }
+.fl td small { display: block; color: var(--muted); font-size: 0.78rem; }
+.fl-compare th button.fl-sort { font: inherit; font-weight: 700; color: var(--muted); background: none; border: 0; cursor: pointer; padding: 0; text-align: inherit; }
+.fl-compare th button.fl-sort.on { color: var(--accent); }
 .fl-how { margin-top: 2.5rem; padding-top: 0.5rem; border-top: 1px solid var(--line); }
 .fl-how li { margin: 0.4rem 0; text-wrap: pretty; }
 .fl-how a { color: var(--accent); }
@@ -126,9 +144,12 @@ permalink: /flights/
 <div class="fl">
   <h1>Flight Stats</h1>
 
-  <div class="fl-seg fl-tabs" id="fl-view" role="group" aria-label="View"><button class="active" data-v="route" type="button">Route</button><button data-v="rank" type="button">Rankings</button></div>
+  <div class="fl-nav">
+    <div class="fl-seg fl-tabs" id="fl-tabs" role="group" aria-label="Section"><button class="active" data-tab="routes" type="button">Routes</button><button data-tab="airports" type="button">Airports</button><button data-tab="airlines" type="button">Airlines</button></div>
+    <div class="fl-seg" id="fl-mode" role="group" aria-label="View"><button class="active" data-mode="lookup" type="button">Look up</button><button data-mode="rank" type="button">Rankings</button></div>
+  </div>
 
-  <div class="fl-controls" id="fl-route-controls">
+  <div class="fl-controls" id="fl-pick-route">
     <div class="fl-field">
       <label for="fl-from">From</label>
       <input id="fl-from" type="text" autocomplete="off" placeholder="Airport code or city">
@@ -141,7 +162,17 @@ permalink: /flights/
       <ul class="fl-list" id="fl-to-list" hidden></ul>
     </div>
   </div>
+  <div class="fl-controls" id="fl-pick-airport" hidden>
+    <div class="fl-field">
+      <label for="fl-ap">Airport</label>
+      <input id="fl-ap" type="text" autocomplete="off" placeholder="Airport code or city">
+      <ul class="fl-list" id="fl-ap-list" hidden></ul>
+    </div>
+  </div>
+  <div class="fl-al-picks" id="fl-pick-airline" hidden></div>
+
   <div class="fl-row2">
+    <div class="fl-seg" id="fl-cities" role="group" aria-label="Group" hidden><button class="active" data-c="airports" type="button">Airports</button><button data-c="cities" type="button">Cities</button></div>
     <div class="fl-seg" id="fl-dir" role="group" aria-label="Direction"><button class="active" data-d="one" type="button">One way</button><button data-d="both" type="button">Both directions</button></div>
     <div class="fl-period">
       <label for="fl-y0" class="fl-showing">Showing</label>
@@ -151,67 +182,7 @@ permalink: /flights/
     </div>
   </div>
 
-  <section id="fl-rankings" hidden>
-    <div class="fl-rk-row">
-      <div class="fl-seg" id="fl-rk-kind" role="group" aria-label="Rank"><button class="active" data-k="routes" type="button">Routes</button><button data-k="airports" type="button">Airports</button></div>
-    </div>
-    <div class="fl-pills" id="fl-rk-metrics"></div>
-    <div class="fl-rk-row">
-      <div class="fl-seg" id="fl-rk-order" role="group" aria-label="Order"></div>
-      <div class="fl-field fl-rk-ap" id="fl-rk-ap-wrap">
-        <input id="fl-rk-ap" type="text" autocomplete="off" placeholder="Any airport" aria-label="Only routes touching this airport">
-        <ul class="fl-list" id="fl-rk-ap-list" hidden></ul>
-      </div>
-      <select id="fl-rk-al" aria-label="Airline"></select>
-    </div>
-    <div class="fl-scroll"><table class="fl-rk-table" id="fl-rk-table"></table></div>
-    <button class="pill fl-more" id="fl-rk-more" type="button" hidden>Show more</button>
-    <p class="fl-note" id="fl-rk-note"></p>
-  </section>
-
-  <div id="fl-route-view">
-  <p class="fl-route" id="fl-route"></p>
-  <p class="fl-period-line" id="fl-period-line"></p>
-  <p class="fl-route-sub" id="fl-route-sub"></p>
-
-  <div id="fl-body">
-    <dl class="fl-facts" id="fl-facts"></dl>
-
-    <h2>On time</h2>
-    <div class="fl-stack" id="fl-stack"></div>
-    <div class="fl-legend" id="fl-stack-legend"></div>
-    <div class="fl-badges" id="fl-stack-badges"></div>
-    <ul class="fl-rank" id="fl-rank"></ul>
-    <p class="fl-note">Ranked among routes with at least one flight a day</p>
-
-    <h2>Airlines on this route</h2>
-    <div class="fl-scroll"><table id="fl-airlines"></table></div>
-
-    <h2>Trends</h2>
-    <p class="fl-note" id="fl-tr-note" style="margin:0 0 0.4rem" hidden></p>
-    <div class="fl-charts">
-      <div><h3>Flights a day</h3><div class="fl-bars" id="fl-tr-flights"></div><div class="fl-ticks" id="fl-tr-flights-t"></div><p class="fl-note" id="fl-tr-flights-n"></p></div>
-      <div><h3>On time</h3><div class="fl-bars" id="fl-tr-ontime"></div><div class="fl-ticks" id="fl-tr-ontime-t"></div><p class="fl-note" id="fl-tr-ontime-n"></p></div>
-    </div>
-    <h3>Airline share of flights</h3>
-    <div class="fl-scroll"><table id="fl-tr-mix"></table></div>
-
-    <h2>When to fly</h2>
-    <div class="fl-charts">
-      <div><h3>On time by departure hour</h3><div class="fl-bars" id="fl-hour"></div><div class="fl-ticks" id="fl-hour-t"></div><p class="fl-note" id="fl-hour-n"></p></div>
-      <div><h3>On time by day of week</h3><div class="fl-bars" id="fl-dow"></div><div class="fl-ticks" id="fl-dow-t"></div><p class="fl-note" id="fl-dow-n"></p></div>
-      <div><h3>On time by month</h3><div class="fl-bars" id="fl-month"></div><div class="fl-ticks" id="fl-month-t"></div><p class="fl-note" id="fl-month-n"></p></div>
-    </div>
-
-    <h2>Why flights were late</h2>
-    <p class="fl-note" style="margin:0 0 0.4rem">Share of all delay minutes, by cause</p>
-    <div class="fl-causes" id="fl-causes"></div>
-    <p class="fl-note" id="fl-cancels"></p>
-
-    <h2>Fun facts</h2>
-    <div class="fl-fun" id="fl-fun"></div>
-  </div>
-  </div>
+  <div id="fl-main"></div>
 
   <section class="fl-how">
     <h2>How this page works</h2>

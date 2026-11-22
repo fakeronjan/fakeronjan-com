@@ -23,7 +23,7 @@ def months_between(y0, m0, y1, m1):
 
 def combine(months):
     """months: [(y, m)] -> {'routes': {O-D: route}, 'airports': {code: city}, 'months': [...]}"""
-    routes, airports, used = {}, {}, []
+    routes, airports, used, brands = {}, {}, [], {}
     for y, m in months:
         path = os.path.join(CACHE, f'agg_{y}_{m:02d}.pkl')
         if not os.path.exists(path):
@@ -31,6 +31,23 @@ def combine(months):
         used.append(f'{y}-{m:02d}')
         a = pickle.load(open(path, 'rb'))
         airports.update(a['airports'])
+        for b, r in a.get('brands', {}).items():
+            w = brands.setdefault(b, {'core': None, 'causes': None, 'sched_sum': 0, 'actual_sum': 0, 'n_arr': 0, 'hour': {}, 'dow': {},
+                                      'month': {}, 'cancel_codes': Counter(), 'tails': Counter(), 'ops': {}})
+            w['core'] = add(w['core'], r['core'])
+            w['causes'] = add(w['causes'], r['causes'])
+            for k in ('sched_sum', 'actual_sum', 'n_arr'):
+                w[k] += r[k]
+            for part in ('hour', 'dow'):
+                for k, v in r[part].items():
+                    w[part][k] = add(w[part].get(k), v)
+            for k, v in r['ops'].items():
+                w['ops'][k] = add(w['ops'].get(k), v)
+            w['month'][f'{y}-{m:02d}'] = r['core']
+            w['cancel_codes'].update(r['cancel_codes'])
+            w['tails'].update(r['tails'])
+            if 'longest_delay' in r and ('longest_delay' not in w or r['longest_delay']['delay'] > w['longest_delay']['delay']):
+                w['longest_delay'] = r['longest_delay']
         for key, r in a['routes'].items():
             w = routes.setdefault(key, {'core': None, 'causes': None, 'dist': [], 'sched_sum': 0, 'actual_sum': 0, 'n_arr': 0,
                                         'airlines': {}, 'hour': {}, 'dow': {}, 'month': {}, 'cancel_codes': Counter(),
@@ -54,4 +71,4 @@ def combine(months):
                     w[k] = r[k]
     for w in routes.values():
         w['distance'] = sorted(w.pop('dist'))[0]
-    return {'routes': routes, 'airports': airports, 'months': used}
+    return {'routes': routes, 'airports': airports, 'months': used, 'brands': brands}

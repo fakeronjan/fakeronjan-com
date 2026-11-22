@@ -52,6 +52,31 @@ def core(g):
             int(g['Diverted'].sum()), float(g['delay_min'].sum())]
 
 
+def record(row):
+    """One flight, for fun facts: date, airline, operator, flight number, route, minutes in the air."""
+    return {'date': row['FlightDate'], 'airline': row['Marketing_Airline_Network'], 'op': row['IATA_Code_Operating_Airline'],
+            'flight': str(row['Flight_Number_Marketing_Airline']), 'o': row['Origin'], 'd': row['Dest'],
+            'min': float(row['ActualElapsedTime']) if pd.notna(row['ActualElapsedTime']) else 0.0}
+
+
+def breakdown(g):
+    """Hour / day-of-week splits and delay causes for any group of flights."""
+    arr = g[g['arrived'] == 1]
+    out = {'core': core(g), 'causes': [float(g[c].sum()) for c in CAUSES],
+           'sched_sum': float(arr['CRSElapsedTime'].sum()), 'actual_sum': float(arr['ActualElapsedTime'].sum()), 'n_arr': int(len(arr)),
+           'hour': {}, 'dow': {}, 'cancel_codes': dict(Counter(g['CancellationCode'].dropna())),
+           'tails': dict(Counter(g['Tail_Number'].dropna()).most_common(10))}
+    for h, gh in g.groupby('hour', sort=False):
+        out['hour'][int(h)] = core(gh)[:2] + [int(gh['Cancelled'].sum())]
+    for dw, gd in g.groupby('DayOfWeek', sort=False):
+        out['dow'][int(dw)] = core(gd)[:2] + [int(gd['Cancelled'].sum())]
+    ad = arr.dropna(subset=['ArrDelay'])
+    if len(ad):
+        row = ad.loc[ad['ArrDelay'].idxmax()]
+        out['longest_delay'] = {**record(row), 'delay': float(row['ArrDelay'])}
+    return out
+
+
 def main(y, m):
     df = load(y, m)
     out = {'month': f'{y}-{m:02d}', 'routes': {}, 'airports': {}}
@@ -77,8 +102,7 @@ def main(y, m):
             r['dow'][int(dw)] = core(gd)[:2] + [int(gd['Cancelled'].sum())]
         # Extremes for the fun facts: one record each, so windows can combine them
         if len(arr):
-            rec = lambda row: {'date': row['FlightDate'], 'airline': row['Marketing_Airline_Network'], 'op': row['IATA_Code_Operating_Airline'],
-                               'flight': str(row['Flight_Number_Marketing_Airline']), 'min': float(row['ActualElapsedTime'] if 'ActualElapsedTime' in row else 0)}
+            rec = record
             ae = arr.dropna(subset=['ActualElapsedTime'])
             if len(ae):
                 r['fastest'] = rec(ae.loc[ae['ActualElapsedTime'].idxmin()])
@@ -89,6 +113,12 @@ def main(y, m):
                 r['longest_delay'] = {**rec(row), 'delay': float(row['ArrDelay'])}
         r['tails'] = dict(Counter(g['Tail_Number'].dropna()).most_common(10))
         out['routes'][f'{o}-{d}'] = r
+    # Per ticket brand, for airline pages (regional operators fold into their brand)
+    out['brands'] = {}
+    for b, g in df.groupby('Marketing_Airline_Network', sort=False):
+        bd = breakdown(g)
+        bd['ops'] = {op: core(go) for op, go in g.groupby('IATA_Code_Operating_Airline', sort=False)}
+        out['brands'][b] = bd
     with open(os.path.join(CACHE, f'agg_{y}_{m:02d}.pkl'), 'wb') as f:
         pickle.dump(out, f)
     print(f'{y}-{m:02d}: {len(df):,} flights, {len(out["routes"]):,} routes')
