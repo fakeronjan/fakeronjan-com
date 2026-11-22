@@ -1,0 +1,21 @@
+{
+ "built": "2026-11-22",
+ "day_people": 81322,
+ "grouped_people": 76529,
+ "groups": {
+  "actors": 11498,
+  "mlb": 16710,
+  "musicians": 10937,
+  "nba": 4921,
+  "nfl": 19675,
+  "nhl": 8463,
+  "soccer": 5742,
+  "tennis": 939,
+  "uspol": 1968,
+  "wnba": 765
+ },
+ "years": [
+  "1850",
+  "2014"
+ ]
+}

@@ -1,0 +1,86 @@
+---
+layout: base.njk
+title: Birthday Stats | FAKE RONJAN!!
+permalink: /birthday/
+---
+
+<style>
+.bd h2 { margin: 2rem 0 0.6rem; font-size: 1.2rem; text-wrap: balance; }
+.bd-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin: 0.5rem 0 0.5rem; }
+.bd-controls label { font-weight: 600; }
+.bd-controls input {
+  font: inherit; font-size: 1rem; padding: 0.4rem 0.6rem; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--muted); border-radius: 6px;
+}
+.bd-controls input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.bd-note { color: var(--muted); font-size: 0.88rem; margin: 0 0 0.5rem; }
+.bd-note[hidden] { display: none; }
+
+.bd-list { list-style: none; padding: 0; margin: 0; }
+.bd-list li {
+  display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) auto; gap: 0.2rem 1rem; align-items: baseline;
+  padding: 0.5rem 0; border-bottom: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+}
+.bd-list .bd-who { min-width: 0; }
+.bd-list .bd-who a { font-weight: 600; }
+.bd-desc { display: block; color: var(--muted); font-size: 0.88rem; text-wrap: pretty; }
+.bd-year, .bd-gap, .bd-edate { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.9rem; }
+.bd-gap.same { color: var(--accent-2); font-weight: 700; }
+.bd-born { color: var(--muted); font-size: 0.85rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bd-tag { white-space: nowrap; }
+.bd-tag::before { content: "\00b7\00a0"; }
+.bd-none { display: block !important; color: var(--muted); border-bottom: 0 !important; }
+.bd-same-list li { grid-template-columns: 7.5rem minmax(0, 1fr); }
+.bd-events li { grid-template-columns: 10.5rem minmax(0, 1fr); }
+.bd-edate { white-space: nowrap; }
+.bd-same-list li { grid-template-columns: 3.5rem minmax(0, 1fr); }
+.bd-twins { background: color-mix(in srgb, var(--accent-2) 8%, transparent); border-radius: 8px; padding: 0.6rem 0.8rem; margin: 0 0 0.8rem; }
+.bd-more { margin-top: 0.7rem; cursor: pointer; }
+.bd-more[hidden] { display: none; }
+
+.bd-groups { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 0.8rem; }
+.bd .pill { cursor: pointer; }
+.bd .pill:disabled { opacity: 0.45; cursor: default; }
+.bd-count { opacity: 0.75; font-variant-numeric: tabular-nums; margin-left: 0.15rem; }
+
+.bd-kicker { margin: 0; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.bd-headline { margin: 0.2rem 0 0.9rem; font-family: "Space Grotesk", sans-serif; font-size: 1.6rem; font-weight: 700; line-height: 1.2; text-wrap: balance; }
+.bd-headline a { color: var(--fg); text-decoration: none; }
+.bd-headline a:hover { color: var(--accent); }
+.bd-hdate { display: block; font-family: inherit; font-size: 1rem; font-weight: 500; color: var(--muted); margin-top: 0.2rem; }
+.bd-half p { text-wrap: pretty; }
+
+@media (max-width: 560px) {
+  .bd-list li, .bd-events li { grid-template-columns: 1fr; gap: 0.1rem; }
+  .bd-same-list li { grid-template-columns: 3rem minmax(0, 1fr); }
+  .bd-born { white-space: normal; }
+  .bd-headline { font-size: 1.35rem; }
+}
+</style>
+
+<div class="bd">
+  <h1>Birthday Stats</h1>
+
+  <div class="bd-controls">
+    <label for="bd-date">Your birthday</label>
+    <input id="bd-date" type="date" min="1900-01-01">
+  </div>
+  <p class="bd-note" id="bd-example" hidden>Showing an example birthday until you enter yours. It stays in your browser.</p>
+
+  <h2 id="bd-same-title">Same birthday</h2>
+  <div id="bd-twins"></div>
+  <ul class="bd-list bd-same-list" id="bd-same"></ul>
+  <button class="pill bd-more" id="bd-same-more" type="button" hidden></button>
+
+  <h2>Closest in age</h2>
+  <div class="bd-groups" id="bd-groups"></div>
+  <ul class="bd-list" id="bd-age"></ul>
+  <button class="pill bd-more" id="bd-age-more" type="button" hidden></button>
+
+  <h2>Halfway back</h2>
+  <div class="bd-half" id="bd-half-head"></div>
+  <ul class="bd-list bd-events" id="bd-events"></ul>
+  <button class="pill bd-more" id="bd-events-more" type="button" hidden></button>
+</div>
+
+<script type="module" src="/js/birthday-page.js"></script>

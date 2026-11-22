@@ -4,6 +4,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/blog/img");
   eleventyConfig.addPassthroughCopy("src/CNAME");
   eleventyConfig.addPassthroughCopy("src/js");
+  eleventyConfig.addPassthroughCopy("src/data");   // static JSON for tools like /birthday
 
   eleventyConfig.addCollection("blog", (collectionApi) =>
     collectionApi.getFilteredByGlob("src/blog/*.md").sort(
