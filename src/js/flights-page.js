@@ -21,7 +21,6 @@ const state = {
   from: 'JFK', to: 'LAX', both: false, ap: 'JFK', al: 'DL', cities: false,
   y0: 'last12', y1: null,
   rk: { m: 'busiest', lo: false, fap: '', fal: '', n: 25, hl: '' },
-  alSort: { col: 'f', desc: true },
 };
 const cache = new Map();
 
@@ -36,6 +35,7 @@ const add = (a, b) => (a ? a.map((x, i) => x + (b[i] || 0)) : [...b]);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const city = (c) => (airports[c] ? airports[c][0] : c);
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const ordinal = (n) => { const t = n % 100, u = n % 10; return `${num(n)}${t >= 11 && t <= 13 ? 'th' : u === 1 ? 'st' : u === 2 ? 'nd' : u === 3 ? 'rd' : 'th'}`; };
 // Cities mode: airports BTS puts in one city market count as one unit, keyed by market id
 const unitOf = (code) => (state.cities && marketOf[code]) || code;
 const unitName = (u) => (MARKETS[u] ? MARKETS[u].name : city(u));
@@ -209,7 +209,7 @@ function badge(list, key, m, tab) {
     if (score < 9 && (!best || score < best.score || (score === best.score && r.rank < best.rank))) best = { score, label, fromTop, rank: r.rank };
   }
   if (!best) return '';
-  const text = best.score === 0 ? `#${best.rank} ${best.label}` : `Top ${best.score === 1 ? 10 : 20}% ${best.label}`;
+  const text = best.score === 0 ? (best.rank === 1 ? cap(best.label) : `${ordinal(best.rank)} ${best.label}`) : `Top ${best.score === 1 ? 10 : 20}% ${best.label}`;
   return `<a class="fl-badge${best.score === 0 ? ' b-top' : ''}" href="#" data-badge="${tab}" data-m="${m.id}" data-lo="${best.fromTop ? 0 : 1}" data-key="${key}">${esc(text)}</a>`;
 }
 
@@ -264,7 +264,7 @@ function funHTML(facts) {
   return facts.length ? `<h2>Fun facts</h2><div class="fl-fun">${facts.map(([k, v, s]) => `<div><small>${k}</small><b>${v}</b><span>${s}</span></div>`).join('')}</div>` : '';
 }
 function tableHTML(head, rows, cls = '') {
-  return `<div class="fl-scroll"><table class="${cls}"><thead><tr>${head.map(([h, c]) => `<th class="${c || ''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+  return `<div class="fl-scroll"><table class="sport-table ${cls}"><thead><tr>${head.map(([h, c]) => `<th class="${c || ''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 }
 const flightLabel = (x) => `${airlineName(x.airline)} ${x.flight}`;
 const tailFact = (tl, what) => {
@@ -322,10 +322,10 @@ async function renderRoute() {
   const better = (L) => L.filter(([, v]) => v.on / v.f > rate).length + 1;
   const lines = [];
   if (list.some(([k]) => k === key)) {
-    lines.push(`#${num(better(list))} of ${num(list.length)} ${both ? 'round trips' : 'routes'} for on-time rate`);
+    lines.push(`${ordinal(better(list))} of ${num(list.length)} ${both ? 'round trips' : 'routes'} for on-time rate`);
     if (!both) {
       const fromA = list.filter(([k]) => k.startsWith(`${A}-`)), intoB = list.filter(([k]) => k.endsWith(`-${B}`));
-      lines.push(`#${better(fromA)} of ${fromA.length} routes out of ${A}`, `#${better(intoB)} of ${intoB.length} routes into ${B}`);
+      lines.push(`${ordinal(better(fromA))} of ${num(fromA.length)} routes out of ${A}`, `${ordinal(better(intoB))} of ${num(intoB.length)} routes into ${B}`);
     }
   }
   const nat = list.reduce((s, [, v]) => [s[0] + v.f, s[1] + v.on], [0, 0]);
@@ -390,7 +390,7 @@ async function renderAirport() {
   const onList = eligibleAirports(totals, airportMetric('ontime'));
   const lines = [];
   const me = rankOf(onList, C, airportMetric('ontime'), true);
-  if (me) lines.push(`#${me.rank} of ${me.of} ${state.cities ? 'cities and airports' : 'airports'} for on-time departures`);
+  if (me) lines.push(`${ordinal(me.rank)} of ${num(me.of)} ${state.cities ? 'cities and airports' : 'airports'} for on-time departures`);
 
   const daily = dests.filter(([, v]) => v[0] >= periodDays());
   const destRow = ([d, v]) => `<tr><td>${isCity ? linkAirport(d, `To ${d}`) : linkRoute(C, d, `${C} → ${d}`)}<small>${esc(city(d))}</small></td><td>${num(v[0])}</td><td>${p1(pct(v[1], v[0]))}</td><td class="hide-sm">${p1(pct(v[2], v[0]))}</td></tr>`;
@@ -428,7 +428,7 @@ async function renderAirline() {
   const amongAirlines = (val, label) => {
     const vals = Object.values(index).map(val).filter((v) => v !== null);
     const mine = val(index[B]);
-    return mine === null ? '' : `#${vals.filter((v) => v > mine).length + 1} of ${vals.length} airlines ${label}`;
+    return mine === null ? '' : `${ordinal(vals.filter((v) => v > mine).length + 1)} of ${vals.length} airlines ${label}`;
   };
   const routes = Object.entries(r.routes).sort((x, y) => y[1][0] - x[1][0]);
   const aps = Object.entries(r.airports).sort((x, y) => y[1] - x[1]);
@@ -500,7 +500,7 @@ async function renderRankings() {
     return `${linkRoute(a, b, `${a} ${state.both ? '⇄' : '→'} ${b}`)}<small>${esc(city(a))} ${state.both ? 'and' : 'to'} ${esc(city(b))}</small>`;
   };
   const traffic = m.id !== 'busiest';
-  const row = (x, cls = '') => `<tr class="${cls}"><td class="rk">#${num(x.rank)}</td><td class="nm">${nameCell(x.k)}</td><td class="val">${m.sh(x.v)}</td>${traffic ? `<td class="hide-sm">${num(tab === 'airports' ? x.r.f + x.r.inF : x.r.f)}</td>` : ''}</tr>`;
+  const row = (x, cls = '') => `<tr class="${cls}"><td class="col-rank col-num">${num(x.rank)}</td><td class="nm">${nameCell(x.k)}</td><td class="col-num val">${m.sh(x.v)}</td>${traffic ? `<td class="hide-sm">${num(tab === 'airports' ? x.r.f + x.r.inF : x.r.f)}</td>` : ''}</tr>`;
   const shown = ranked.slice(0, rk.n);
   let body = shown.map((x) => row(x, x.k === rk.hl ? 'hl' : '')).join('');
   const hlRow = rk.hl && !shown.some((x) => x.k === rk.hl) ? ranked.find((x) => x.k === rk.hl) : null;
@@ -509,34 +509,46 @@ async function renderRankings() {
   const scope = tab === 'airports' ? (state.cities ? 'cities and airports' : 'airports') : state.both ? 'round trips' : 'routes';
   const minNote = m.all ? '' : tab === 'airports' ? ' with a departure a day' : ` with a flight a day${state.both ? ' each way' : ''}`;
 
-  return `<div class="fl-pills">${metrics.map((x) => `<button type="button" class="pill${x.id === m.id ? ' active' : ''}" data-m="${x.id}">${x.name}</button>`).join('')}</div>
+  return `<div class="pill-group" role="group" aria-label="Stat">${metrics.map((x) => `<button type="button" class="pill${x.id === m.id ? ' active' : ''}" data-m="${x.id}">${x.name}</button>`).join('')}</div>
     <div class="fl-rk-row">
-      ${m.lo ? `<div class="fl-seg" role="group" aria-label="Order"><button type="button" data-lo="0" class="${rk.lo ? '' : 'active'}">${cap(m.hi)}</button><button type="button" data-lo="1" class="${rk.lo ? 'active' : ''}">${cap(m.lo)}</button></div>` : ''}
+      ${orderPills(m, rk.lo)}
       ${tab === 'routes' ? `<div class="fl-field fl-rk-ap"><input id="fl-rk-ap" type="text" autocomplete="off" placeholder="Any airport" aria-label="Airport" value="${rk.fap ? esc(`${rk.fap} (${city(rk.fap)})`) : ''}"><ul class="fl-list" id="fl-rk-ap-list" hidden></ul></div>` : ''}
       <select id="fl-rk-al" aria-label="Airline"><option value="">All airlines</option>${brandList.map((b) => `<option value="${b}"${b === rk.fal ? ' selected' : ''}>${esc(airlineName(b))}</option>`).join('')}</select>
     </div>
-    ${ranked.length ? tableHTML([['#'], [tab === 'airports' ? (state.cities ? 'City or airport' : 'Airport') : 'Route', 'nm'], [m.name], ...(traffic ? [['Flights', 'hide-sm']] : [])], [body], 'fl-rk-table') : '<p class="fl-sub">Nothing matches these filters</p>'}
+    ${ranked.length ? tableHTML([['Rank', 'col-rank col-num'], [tab === 'airports' ? (state.cities ? 'City or airport' : 'Airport') : 'Route', 'nm'], [m.name, 'col-num'], ...(traffic ? [['Flights', 'hide-sm']] : [])], [body], 'fl-rk-table') : '<p class="fl-sub">Nothing matches these filters</p>'}
     ${ranked.length > rk.n ? `<button class="pill fl-more" type="button" data-more="rank">Show more</button>` : ''}
     <p class="fl-note">${num(ranked.length)} ${scope}${minNote}</p>`;
 }
 
-// Airlines are few enough to compare side by side, sorted by any column
+function orderPills(m, lo) {
+  return m.lo ? `<div class="pill-group" role="group" aria-label="Order"><button type="button" data-lo="0" class="pill${lo ? '' : ' active'}">${cap(m.hi)}</button><button type="button" data-lo="1" class="pill${lo ? ' active' : ''}">${cap(m.lo)}</button></div>` : '';
+}
+
+// Airlines are few enough to rank on every stat at once
 async function renderAirlineCompare() {
   const index = airlineIndex(await Promise.all(windows().map((w) => getJSON(`y/${w}/al/index.json`))));
   const cols = [
-    ['f', 'Flights', (v) => v.c[0], (x) => num(x)],
-    ['on', 'On time', (v) => v.c[1] / v.c[0], (x) => p1(100 * x)],
-    ['late', 'Delayed', (v) => v.c[2] / v.c[0], (x) => p1(100 * x), 'hide-sm'],
-    ['canc', 'Canceled', (v) => v.c[3] / v.c[0], (x) => p1(100 * x)],
-    ['dl', 'Avg delay when late', (v) => (v.c[2] ? v.c[5] / v.c[2] : 0), (x) => `${Math.round(x)} min`, 'hide-sm'],
-    ['nr', 'Routes', (v) => v.nr, (x) => num(x), 'hide-sm'],
-    ['na', 'Airports', (v) => v.na, (x) => num(x), 'hide-sm'],
+    { id: 'busiest', name: 'Flights', hi: 'most flights', lo: 'fewest flights', val: (v) => v.c[0], sh: (x) => num(x) },
+    { id: 'ontime', name: 'On time', hi: 'most on time', lo: 'least on time', val: (v) => v.c[1] / v.c[0], sh: (x) => p1(100 * x) },
+    { id: 'delayed', name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (v) => v.c[2] / v.c[0], sh: (x) => p1(100 * x), cls: 'hide-sm' },
+    { id: 'canceled', name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (v) => v.c[3] / v.c[0], sh: (x) => p1(100 * x) },
+    { id: 'delay', name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (v) => (v.c[2] ? v.c[5] / v.c[2] : 0), sh: (x) => `${Math.round(x)} min`, cls: 'hide-sm' },
+    { id: 'routes', name: 'Routes', hi: 'most routes', lo: 'fewest routes', val: (v) => v.nr, sh: (x) => num(x), cls: 'hide-sm' },
+    { id: 'airports', name: 'Airports', hi: 'most airports', lo: 'fewest airports', val: (v) => v.na, sh: (x) => num(x), cls: 'hide-sm' },
   ];
-  const s = state.alSort, col = cols.find((c) => c[0] === s.col) || cols[0];
-  const rows = Object.entries(index).sort((a, b) => (s.desc ? col[2](b[1]) - col[2](a[1]) : col[2](a[1]) - col[2](b[1])));
-  const head = `<tr><th>Airline</th>${cols.map(([id, name, , , cls]) => `<th class="${cls || ''}"><button type="button" class="fl-sort${id === col[0] ? ' on' : ''}" data-sort="${id}">${name}${id === col[0] ? (s.desc ? ' ↓' : ' ↑') : ''}</button></th>`).join('')}</tr>`;
-  const body = rows.map(([b, v]) => `<tr><td>${linkAirline(b)}</td>${cols.map(([, , val, fmt, cls]) => `<td class="${cls || ''}">${fmt(val(v))}</td>`).join('')}</tr>`).join('');
-  return `<div class="fl-scroll"><table class="fl-compare"><thead>${head}</thead><tbody>${body}</tbody></table></div>
+  const rk = state.rk;
+  const m = cols.find((c) => c.id === rk.m) || cols[0];
+  rk.m = m.id;
+  const rows = Object.entries(index).sort((a, b) => (rk.lo ? m.val(a[1]) - m.val(b[1]) : m.val(b[1]) - m.val(a[1])));
+  let lastV = null, lastRank = 0;
+  const ranks = rows.map(([, v], i) => { const x = m.val(v); if (x !== lastV) { lastRank = i + 1; lastV = x; } return lastRank; });
+  // The ranked column always shows, even where phones drop the others
+  const cellCls = (c) => [c === m ? 'sort-active' : c.cls, 'col-num'].filter(Boolean).join(' ');
+  const head = `<tr><th class="col-rank col-num">Rank</th><th>Airline</th>${cols.map((c) => `<th class="${cellCls(c)}">${c.name}${c === m ? ` <span class="sort-arrow">${rk.lo ? '&uarr;' : '&darr;'}</span>` : ''}</th>`).join('')}</tr>`;
+  const body = rows.map(([b, v], i) => `<tr><td class="col-rank col-num">${ranks[i]}</td><td>${linkAirline(b)}</td>${cols.map((c) => `<td class="${cellCls(c)}">${c.sh(c.val(v))}</td>`).join('')}</tr>`).join('');
+  return `<div class="pill-group" role="group" aria-label="Stat">${cols.map((c) => `<button type="button" class="pill${c === m ? ' active' : ''}" data-m="${c.id}">${c.name}</button>`).join('')}</div>
+    <div class="fl-rk-row">${orderPills(m, rk.lo)}</div>
+    <div class="fl-scroll"><table class="sport-table fl-compare"><thead>${head}</thead><tbody>${body}</tbody></table></div>
     <p class="fl-note">Regional partners count toward the airline you'd buy the ticket from</p>`;
 }
 
@@ -592,7 +604,8 @@ function setURL() {
   if (state.tab !== 'routes') q.set('tab', state.tab);
   if (state.mode === 'rank') {
     q.set('mode', 'rankings');
-    if (state.tab !== 'airlines') { q.set('m', state.rk.m); if (state.rk.lo) q.set('lo', '1'); if (state.rk.fal) q.set('fal', state.rk.fal); }
+    q.set('m', state.rk.m); if (state.rk.lo) q.set('lo', '1');
+    if (state.tab !== 'airlines' && state.rk.fal) q.set('fal', state.rk.fal);
     if (state.tab === 'routes' && state.rk.fap) q.set('fap', state.rk.fap);
   } else if (state.tab === 'routes') { q.set('from', state.from); q.set('to', state.to); }
   else if (state.tab === 'airports') q.set('ap', state.ap);
@@ -659,7 +672,7 @@ async function init() {
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.fl-field')) document.querySelectorAll('.fl-list').forEach((l) => { l.hidden = true; });
-    const t = e.target.closest('[data-tab], [data-mode], [data-d], #fl-cities [data-c], [data-go], [data-badge], [data-m], [data-lo], [data-more], [data-sort], .fl-al-pick');
+    const t = e.target.closest('[data-tab], [data-mode], [data-d], #fl-cities [data-c], [data-go], [data-badge], [data-m], [data-lo], [data-more], .fl-al-pick');
     if (!t || !t.closest('.fl')) return;
     e.preventDefault();
     const rk = state.rk;
@@ -687,7 +700,6 @@ async function init() {
     } else if (t.classList.contains('fl-al-pick')) state.al = t.dataset.al;
     else if (t.dataset.m) { rk.m = t.dataset.m; rk.lo = false; rk.n = 25; rk.hl = ''; }
     else if (t.dataset.lo !== undefined) { rk.lo = t.dataset.lo === '1'; rk.n = 25; }
-    else if (t.dataset.sort) { const s = state.alSort; s.desc = s.col === t.dataset.sort ? !s.desc : true; s.col = t.dataset.sort; }
     else if (t.dataset.more === 'rank') rk.n += 50;
     else if (t.dataset.more === 'dests') {   // expands in place, no re-render
       document.querySelector('.fl-dest tbody').innerHTML = allDestRows;

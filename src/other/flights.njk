@@ -16,10 +16,10 @@ permalink: /flights/
 .fl-field { position: relative; flex: 1 1 200px; max-width: 300px; }
 .fl-field label, .fl-period label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.15rem; }
 .fl-field input, .fl select {
-  width: 100%; box-sizing: border-box; font: inherit; font-size: 0.95rem; padding: 0.45rem 0.6rem; color: var(--fg); background: var(--bg);
+  width: 100%; box-sizing: border-box; font: inherit; font-size: 0.85rem; padding: 0.35rem 0.55rem; color: var(--fg); background: var(--bg);
   border: 1px solid var(--muted); border-radius: 6px;
 }
-.fl select { width: auto; }
+.fl select { width: auto; max-width: 100%; }
 .fl-field input:focus, .fl select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
 .fl-list { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 10; margin: 0; padding: 0.25rem 0; list-style: none; background: var(--bg); border: 1px solid var(--muted); border-radius: 6px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 .fl-list[hidden] { display: none; }
@@ -29,9 +29,6 @@ permalink: /flights/
 .fl-swap { width: 2.3rem; height: 2.3rem; border-radius: 50%; border: 1px solid var(--muted); background: none; color: var(--accent); font-size: 1.15rem; cursor: pointer; flex: none; }
 .fl-swap:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
 .fl-row2 { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; }
-.fl-seg { display: inline-flex; border: 1px solid var(--accent); border-radius: 999px; padding: 3px; }
-.fl-seg button { font: inherit; font-size: 0.8rem; font-weight: 600; color: var(--accent); background: none; border: 0; border-radius: 999px; padding: 0.3rem 0.8rem; cursor: pointer; white-space: nowrap; }
-.fl-seg button.active { background: var(--accent); color: var(--bg); }
 .fl-period { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
 .fl-period label { margin: 0; }
 .fl-period [hidden] { display: none; }
@@ -52,13 +49,14 @@ permalink: /flights/
 .fl-legend span::before { content: ""; display: inline-block; width: 0.65rem; height: 0.65rem; border-radius: 2px; margin-right: 0.4rem; background: var(--c); vertical-align: -0.05rem; }
 .fl-legend b { font-variant-numeric: tabular-nums; }
 .fl-rank { margin: 0.8rem 0 0; padding-left: 1.2rem; } .fl-rank li { margin: 0.2rem 0; }
-.fl-note { color: var(--muted); font-size: 0.85rem; margin: 0.3rem 0 0; text-wrap: pretty; }
+.fl-note { color: var(--muted); font-size: 0.78rem; font-style: italic; margin: 0.5rem 0 0; text-wrap: pretty; }
 
-.fl table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-.fl th, .fl td { text-align: right; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; vertical-align: middle; }
-.fl th:first-child, .fl td:first-child { text-align: left; padding-left: 0; }
-.fl thead th { color: var(--muted); font-size: 0.8rem; font-weight: 700; }
-.fl td small { display: block; color: var(--muted); font-size: 0.78rem; }
+.fl .sport-table { margin: 0; }
+.fl .sport-table .col-num { text-align: center; }
+.fl .sport-table td.nm { white-space: normal; }
+.fl .sport-table a { text-decoration: none; font-weight: 600; }
+.fl .sport-table a:hover { text-decoration: underline; }
+.fl td small { display: block; color: var(--muted); font-size: 0.78rem; font-weight: 400; }
 .fl-logo { display: inline-flex; align-items: center; background: #fff; border-radius: 4px; padding: 2px 5px; }
 .fl-logo img { height: 20px; width: auto; max-width: 110px; object-fit: contain; display: block; }
 .fl-logo.sm img { height: 14px; max-width: 70px; }
@@ -91,7 +89,6 @@ permalink: /flights/
 .fl-tip { position: fixed; pointer-events: none; z-index: 20; background: var(--fg); color: var(--bg); font-size: 0.8rem; padding: 0.3rem 0.5rem; border-radius: 6px; white-space: nowrap; }
 .fl-tip[hidden], #fl-body[hidden] { display: none; }
 
-.fl-tabs { margin: 0.2rem 0 1rem; }
 .fl-badge {
   display: inline-block; font-size: 0.72rem; font-weight: 700; line-height: 1.2; padding: 0.15rem 0.5rem; border-radius: 999px;
   color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); text-decoration: none; white-space: nowrap; vertical-align: 0.1rem;
@@ -103,13 +100,10 @@ permalink: /flights/
 .fl-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0 0; }
 .fl-badges:empty { display: none; }
 #fl-rankings[hidden], #fl-route-view[hidden], #fl-route-controls[hidden] { display: none; }
+.fl-rk-row .pill-group { margin: 0; }
 .fl-rk-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin: 0.6rem 0; }
-.fl-rk-row .fl-seg:empty { display: none; }
-.fl-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0; }
 .fl .pill { cursor: pointer; }
 .fl-rk-ap { flex: 0 1 220px; }
-.fl-rk-table td.rk { color: var(--muted); width: 3.5rem; text-align: left; padding-left: 0; }
-.fl-rk-table td.nm, .fl-rk-table th.nm { text-align: left; }
 .fl-rk-table td.nm small { display: inline; margin-left: 0.4rem; }
 .fl-rk-table td.nm a, .fl-rk-table td.val { white-space: nowrap; }
 @media (max-width: 560px) { .fl-rk-table td.nm small { display: block; margin-left: 0; } }
@@ -118,9 +112,7 @@ permalink: /flights/
 .fl-rk-table tr.gap td { text-align: center; color: var(--muted); border-bottom: 0; }
 .fl-more { margin-top: 0.7rem; }
 .fl-more[hidden] { display: none; }
-.fl-nav { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; margin: 0.2rem 0 1rem; }
-.fl-tabs button { font-size: 0.9rem; padding: 0.35rem 1rem; }
-.fl-controls[hidden], .fl-al-picks[hidden], .fl-seg[hidden] { display: none; }
+.fl-controls[hidden], .fl-al-picks[hidden] { display: none; }
 .fl-title { font-family: "Space Grotesk", sans-serif; font-size: 1.7rem; font-weight: 700; margin: 1.4rem 0 0; }
 .fl-title a { color: inherit; text-decoration: none; border-bottom: 2px solid color-mix(in srgb, var(--accent) 40%, transparent); }
 .fl-title a:hover { color: var(--accent); }
@@ -133,9 +125,6 @@ permalink: /flights/
 .fl-al-pick.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
 .fl-al-pick .fl-logo img { height: 22px; max-width: 120px; }
 .fl-al-link { text-decoration: none; }
-.fl td small { display: block; color: var(--muted); font-size: 0.78rem; }
-.fl-compare th button.fl-sort { font: inherit; font-weight: 700; color: var(--muted); background: none; border: 0; cursor: pointer; padding: 0; text-align: inherit; }
-.fl-compare th button.fl-sort.on { color: var(--accent); }
 .fl-how { margin-top: 2.5rem; padding-top: 0.5rem; border-top: 1px solid var(--line); }
 .fl-how li { margin: 0.4rem 0; text-wrap: pretty; }
 .fl-how a { color: var(--accent); }
@@ -144,10 +133,12 @@ permalink: /flights/
 <div class="fl">
   <h1>Flight Stats</h1>
 
-  <div class="fl-nav">
-    <div class="fl-seg fl-tabs" id="fl-tabs" role="group" aria-label="Section"><button class="active" data-tab="routes" type="button">Routes</button><button data-tab="airports" type="button">Airports</button><button data-tab="airlines" type="button">Airlines</button></div>
-    <div class="fl-seg" id="fl-mode" role="group" aria-label="View"><button class="active" data-mode="lookup" type="button">Look up</button><button data-mode="rank" type="button">Rankings</button></div>
-  </div>
+  <nav class="sport-tabs" id="fl-tabs" aria-label="Section">
+    <button class="sport-tab active" data-tab="routes" type="button">Routes</button>
+    <button class="sport-tab" data-tab="airports" type="button">Airports</button>
+    <button class="sport-tab" data-tab="airlines" type="button">Airlines</button>
+  </nav>
+  <div class="pill-group" id="fl-mode" role="group" aria-label="View"><button class="pill active" data-mode="lookup" type="button">Look up</button><button class="pill" data-mode="rank" type="button">Rankings</button></div>
 
   <div class="fl-controls" id="fl-pick-route">
     <div class="fl-field">
@@ -171,14 +162,14 @@ permalink: /flights/
   </div>
   <div class="fl-al-picks" id="fl-pick-airline" hidden></div>
 
-  <div class="fl-row2">
-    <div class="fl-seg" id="fl-cities" role="group" aria-label="Group" hidden><button class="active" data-c="airports" type="button">Airports</button><button data-c="cities" type="button">Cities</button></div>
-    <div class="fl-seg" id="fl-dir" role="group" aria-label="Direction"><button class="active" data-d="one" type="button">One way</button><button data-d="both" type="button">Both directions</button></div>
+  <div class="sport-controls fl-row2">
+    <div class="pill-group" id="fl-cities" role="group" aria-label="Group" hidden><button class="pill active" data-c="airports" type="button">Airports</button><button class="pill" data-c="cities" type="button">Cities</button></div>
+    <div class="pill-group" id="fl-dir" role="group" aria-label="Direction"><button class="pill active" data-d="one" type="button">One way</button><button class="pill" data-d="both" type="button">Both directions</button></div>
     <div class="fl-period">
       <label for="fl-y0" class="fl-showing">Showing</label>
-      <select id="fl-y0"></select>
+      <select id="fl-y0" class="sport-select"></select>
       <label id="fl-y1-label" for="fl-y1" class="fl-showing" hidden>to</label>
-      <select id="fl-y1" aria-label="Period end" hidden></select>
+      <select id="fl-y1" class="sport-select" aria-label="Period end" hidden></select>
     </div>
   </div>
 
