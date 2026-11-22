@@ -34,7 +34,7 @@
       <a href="/blog/"{% if page.url.startsWith("/blog/") %} class="active"{% endif %}>Blog</a>
       <a href="/video-games/"{% if page.url.startsWith("/video-games/") %} class="active"{% endif %}>Games</a>
       <a href="/sports/"{% if page.url == "/sports/" or (page.url | isSportsSection) %} class="active"{% endif %}>Sports</a>
-      <a href="/other/"{% if page.url.startsWith("/other/") %} class="active"{% endif %}>Other Stuff</a>
+      <a href="/other/"{% if page.url.startsWith("/other/") or page.url == "/sun/" %} class="active"{% endif %}>Other Stuff</a>
       <a class="nav-preview" href="https://mariopaintmusicguy.com/" target="_blank" rel="noopener" data-logo="/img/mpmg-avatar.png">Mario Paint Music Guy<span class="nav-arrow">&#8599;</span></a>
       <a class="nav-preview" href="https://fakebasketball.com/" target="_blank" rel="noopener" data-logo="/img/fakebasketball-logo.png">Fake Basketball<span class="nav-arrow">&#8599;</span></a>
       <a class="nav-preview" href="https://manjie.org/" target="_blank" rel="noopener" data-logo="/img/manjie-avatar.jpg">Manjie Scholarship<span class="nav-arrow">&#8599;</span></a>
