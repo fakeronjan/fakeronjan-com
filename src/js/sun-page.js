@@ -220,6 +220,7 @@ function render() {
       ${c.subs.filter(Boolean).map(x => `<span class="sun-sub">${x}</span>`).join('')}
     </div>`).join('');
 
+  $('#sun-ms-title').textContent = placeB ? `Milestones over the next year in ${shortName}` : 'Milestones over the next year';
   const rows = comingUp();
   drawTimeline(rows);
   $('#sun-coming').innerHTML = rows.map(r =>
