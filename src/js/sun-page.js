@@ -156,6 +156,14 @@ function comingUp() {
     if (c.up) add(c.idx, 'day', `First day with ${c.hour}+ hours of daylight${extra}`, `${c.hour}+ hours of daylight`);
     else add(c.idx, 'day', `First day under ${c.hour} hours of daylight${extra}`, `Under ${c.hour} hours of daylight`);
   }
+  // 12 hours of daylight, both ways (near the equinoxes, but a few days off them).
+  // Skipped where the next-hour crossing above already is that 12-hour line.
+  for (let i = 1; i < dl.length; i++) {
+    const was = dl[i - 1] >= 43200, now = dl[i] >= 43200;
+    if (was === now || (c && c.idx === i && c.hour === 12)) continue;
+    if (now) add(i, 'day', 'First day with 12+ hours of daylight', '12+ hours of daylight');
+    else add(i, 'day', 'First day under 12 hours of daylight', 'Under 12 hours of daylight');
+  }
 
   // Daylight saving (clock time only; standard time ignores it)
   if (mode === 'clock') {
@@ -353,7 +361,8 @@ function drawChart() {
   const iw = W - m.l - m.r, ih = H - m.t - m.b;
   const n = yearDays.length;
   const x = (i) => m.l + (i / n) * iw;
-  const y = (min) => m.t + ih - (Math.max(0, Math.min(1440, min)) / 1440) * ih;
+  // 12am at the top, the day reading downward: sunrise above sunset
+  const y = (min) => m.t + (Math.max(0, Math.min(1440, min)) / 1440) * ih;
   const svg = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img',
     'aria-label': `Sunrise, sunset, and twilight through the year in ${place.name}` });
 
@@ -373,7 +382,7 @@ function drawChart() {
     if (y2 <= y1) return;
     const x0 = Math.round(x(i)), x1 = Math.round(x(i + 1));
     if (x1 <= x0) return;
-    el('rect', { x: x0, y: y(y2), width: x1 - x0, height: y(y1) - y(y2), class: cls, 'shape-rendering': 'crispEdges' }, svg);
+    el('rect', { x: x0, y: y(y1), width: x1 - x0, height: y(y2) - y(y1), class: cls, 'shape-rendering': 'crispEdges' }, svg);
   };
   yearDays.forEach((d, i) => {
     const t = d[mode];
