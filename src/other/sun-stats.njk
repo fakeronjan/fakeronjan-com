@@ -34,7 +34,7 @@ permalink: /sun/
 .sun-btns { display: flex; flex-wrap: wrap; gap: 0.5rem; flex: none; max-width: 100%; }
 .sun-field { position: relative; flex: 1 1 240px; min-width: 0; max-width: 460px; display: flex; }
 .sun-field input {
-  flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; padding: 0.45rem 0.7rem;
+  flex: 1; min-width: 0; font: inherit; font-size: 0.85rem; padding: 0.35rem 0.55rem;
   color: var(--fg); background: var(--bg); border: 1px solid var(--muted); border-radius: 6px;
 }
 .sun-field input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
@@ -69,15 +69,7 @@ permalink: /sun/
 .sun-sw.b { border: 2px solid var(--b-line); background: transparent; }
 .sun-none { padding: 0.4rem 0.7rem; font-size: 0.9rem; color: var(--muted); }
 .sun .pill { cursor: pointer; }
-/* Clock / Standard: one split pill, the chosen half filled */
-.sun-seg { display: inline-flex; border: 1px solid var(--accent); border-radius: 999px; padding: 3px; }
-.sun-seg[hidden] { display: none; }
-.sun-seg button {
-  font: inherit; font-size: 0.8rem; font-weight: 600; color: var(--accent); background: none;
-  border: 0; border-radius: 999px; padding: 0.3rem 0.8rem; cursor: pointer; white-space: nowrap;
-}
-.sun-seg button.active { background: var(--accent); color: var(--bg); }
-.sun-seg button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+#sun-mode { margin: 0; }
 
 .sun h2 { margin: 1.75rem 0 0.6rem; font-size: 1.2rem; text-wrap: balance; }
 /* Today heading with the day picker beside it (below it when narrow) */
@@ -85,7 +77,7 @@ permalink: /sun/
 .sun-day-head h2 { margin: 0; flex: 1 1 auto; min-width: 0; }
 .sun-day-ctl { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
 .sun-day-ctl input {
-  font: inherit; font-size: 0.9rem; padding: 0.3rem 0.5rem; color: var(--fg); background: var(--bg);
+  font: inherit; font-size: 0.85rem; padding: 0.35rem 0.55rem; color: var(--fg); background: var(--bg);
   border: 1px solid var(--muted); border-radius: 6px;
 }
 .sun-day-ctl input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
@@ -142,10 +134,8 @@ permalink: /sun/
 .sun-dot { display: inline-block; width: 0.55rem; height: 0.55rem; border-radius: 50%; margin-right: 0.5rem; vertical-align: 0.05rem; }
 .sun-dot.k-rise { background: var(--k-rise); } .sun-dot.k-set { background: var(--k-set); }
 .sun-dot.k-day { background: var(--k-day); } .sun-dot.k-clock { background: var(--k-clock); }
-.sun-table { border-collapse: collapse; font-size: 0.95rem; }
-.sun-table th, .sun-table td { text-align: left; padding: 0.35rem 1rem 0.35rem 0; border-bottom: 1px solid color-mix(in srgb, var(--fg) 12%, transparent); vertical-align: top; }
-.sun-table th { font-weight: 500; color: var(--muted); }
-.sun-table td { font-variant-numeric: tabular-nums; }
+.sun .sport-table td { white-space: normal; }
+.sun .sport-table td.sun-label { color: var(--muted); }
 .sun-coming { width: 100%; }
 .sun-coming .sun-date { white-space: nowrap; }
 .sun-coming .sun-in { white-space: nowrap; color: var(--muted); }
@@ -170,16 +160,12 @@ permalink: /sun/
 .sun-cross-list[hidden], .sun-side[hidden] { display: none; }
 .sun-cross-list li { margin: 0.2rem 0; }
 .sun-ext { width: 100%; }
-.sun-ext thead th { font-size: 0.82rem; color: var(--fg); font-weight: 700; }
 .sun-ext thead .sun-sw { margin-right: 0.4rem; vertical-align: -0.05rem; }
-.sun-ext tbody th { white-space: nowrap; }
 .sun-ext td b { font-weight: 600; font-variant-numeric: tabular-nums; }
 .sun-d { display: block; color: var(--muted); font-size: 0.82rem; }
-.sun-ext .sun-total th, .sun-ext .sun-total td { border-bottom: 0; padding-top: 0.7rem; }
+.sun-ext .sun-total td { border-bottom: 0; padding-top: 0.7rem; }
 @media (max-width: 430px) {
-  .sun-ext { font-size: 0.85rem; }
-  .sun-ext tbody th { white-space: normal; }
-  .sun-ext th, .sun-ext td { padding-right: 0.5rem; }
+  .sun-ext th, .sun-ext td { padding-left: 0.4rem; padding-right: 0.4rem; }
 }
 /* How this page works */
 .sun-how { margin-top: 2.5rem; padding-top: 0.5rem; border-top: 1px solid color-mix(in srgb, var(--fg) 15%, transparent); }
@@ -250,8 +236,8 @@ permalink: /sun/
       </div>
     </div>
     <div class="sun-ctl-row">
-    <div class="sun-seg" id="sun-mode" role="group" aria-label="Times shown in" hidden>
-      <button class="active" data-mode="clock" type="button" aria-pressed="true">Clock time</button><button data-mode="standard" type="button" aria-pressed="false">Standard time</button>
+    <div class="pill-group" id="sun-mode" role="group" aria-label="Times shown in" hidden>
+      <button class="pill active" data-mode="clock" type="button" aria-pressed="true">Clock time</button><button class="pill" data-mode="standard" type="button" aria-pressed="false">Standard time</button>
     </div>
     </div>
   </div>
@@ -275,12 +261,12 @@ permalink: /sun/
 
   <div class="sun-side" id="sun-side" hidden>
     <h2>Side by side</h2>
-    <table class="sun-table sun-ext" id="sun-ext"></table>
+    <div class="sport-table-wrap"><table class="sport-table sun-ext" id="sun-ext"></table></div>
   </div>
 
   <h2 id="sun-ms-title">Milestones over the next year</h2>
   <div class="sun-timeline" id="sun-timeline"></div>
-  <table class="sun-table sun-coming"><tbody id="sun-coming"></tbody></table>
+  <div class="sport-table-wrap"><table class="sport-table sun-coming"><tbody id="sun-coming"></tbody></table></div>
 
   <section class="sun-how">
     <h2>How this page works</h2>

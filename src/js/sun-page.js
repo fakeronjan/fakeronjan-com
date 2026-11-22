@@ -331,8 +331,8 @@ function renderSide(nA, nB) {
   const total = (arr) => Math.round(arr.reduce((t, d) => t + d.daylight, 0) / 3600).toLocaleString('en-US');
   $('#sun-ext').innerHTML =
     `<thead><tr><th></th><th>${swatch('a')}${nA}</th><th>${swatch('b')}${nB}</th></tr></thead><tbody>` +
-    rows.map(([k, a, b]) => `<tr><th scope="row">${k}</th><td>${a}</td><td>${b}</td></tr>`).join('') +
-    `<tr class="sun-total"><th scope="row">Daylight in ${year}</th><td><b>${total(yearDays)} hours</b></td><td><b>${total(bYear)} hours</b></td></tr></tbody>`;
+    rows.map(([k, a, b]) => `<tr><td class="sun-label">${k}</td><td>${a}</td><td>${b}</td></tr>`).join('') +
+    `<tr class="sun-total"><td class="sun-label">Daylight in ${year}</td><td><b>${total(yearDays)} hours</b></td><td><b>${total(bYear)} hours</b></td></tr></tbody>`;
 }
 
 function setModeVisibility() {
