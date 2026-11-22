@@ -80,6 +80,21 @@ permalink: /sun/
 .sun-seg button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
 
 .sun h2 { margin: 1.75rem 0 0.6rem; font-size: 1.2rem; text-wrap: balance; }
+/* Today heading with the day picker beside it (below it when narrow) */
+.sun-day-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; margin: 1.75rem 0 0.6rem; }
+.sun-day-head h2 { margin: 0; flex: 1 1 auto; min-width: 0; }
+.sun-day-ctl { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+.sun-day-ctl input {
+  font: inherit; font-size: 0.9rem; padding: 0.3rem 0.5rem; color: var(--fg); background: var(--bg);
+  border: 1px solid var(--muted); border-radius: 6px;
+}
+.sun-day-ctl input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.sun-step {
+  width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid var(--muted); background: none;
+  color: var(--accent); font-size: 1.2rem; line-height: 1; cursor: pointer; padding: 0 0 0.15rem;
+}
+.sun-step:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.sun-day-ctl .pill[hidden] { display: none; }
 /* Today: sky picture, then three centered stat columns */
 .sun-sky svg { display: block; }
 .sky-night { fill: var(--sun-night); }
@@ -213,7 +228,15 @@ permalink: /sun/
     </div>
   </div>
 
-  <h2 id="sun-today-title">Today</h2>
+  <div class="sun-day-head">
+    <h2 id="sun-today-title">Today</h2>
+    <div class="sun-day-ctl">
+      <button id="sun-prev" class="sun-step" type="button" aria-label="Previous day">&lsaquo;</button>
+      <input id="sun-date" type="date" aria-label="Pick a day" min="1900-01-01" max="2100-12-31">
+      <button id="sun-next" class="sun-step" type="button" aria-label="Next day">&rsaquo;</button>
+      <button id="sun-back" class="pill" type="button" hidden>Back to today</button>
+    </div>
+  </div>
   <div class="sun-sky" id="sun-sky"></div>
   <div class="sun-stats" id="sun-stats"></div>
 

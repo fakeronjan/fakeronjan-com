@@ -13,6 +13,7 @@ let place = null;
 let mode = 'clock';
 let days = [];      // from today, 800 days (an "until" can land a year out)
 let yearDays = [];  // the calendar year, for the chart
+let pickedDay = null;  // a chosen date (UTC-midnight ms), or null for the real today
 let placeB = null;  // second place, when comparing
 let bDay = null;    // the second place on the first place's date
 let bYear = [];     // the second place over the same calendar year
@@ -35,12 +36,17 @@ function fmtDuration(sec) {
   return `${h}h ${m}m`;
 }
 
+// Words that change once a date other than today is picked
+const picked = () => pickedDay !== null;
+const W_YEST = () => (picked() ? 'the previous day' : 'yesterday');
+const W_TOM = () => (picked() ? 'the next day' : 'tomorrow');
+
 function fmtChange(sec) {
   const s = Math.round(Math.abs(sec));
   const m = Math.floor(s / 60), r = s % 60;
   const amount = m ? `${m}m ${r}s` : `${r}s`;
-  if (s === 0) return 'Same as yesterday';
-  return `${amount} ${sec > 0 ? 'more' : 'less'} than yesterday`;
+  if (s === 0) return `Same as ${W_YEST()}`;
+  return `${amount} ${sec > 0 ? 'more' : 'less'} than ${W_YEST()}`;
 }
 
 function dateObj(dayMs) { return new Date(dayMs); }
@@ -55,8 +61,9 @@ function fmtShort(dayMs) {
   return `${d.getUTCMonth() + 1}/${d.getUTCDate()}/${d.getUTCFullYear()}`;
 }
 function fmtIn(idx) {
-  if (idx === 0) return 'Today';
-  if (idx === 1) return 'Tomorrow';
+  if (idx === 0) return picked() ? 'Same day' : 'Today';
+  if (idx === 1) return picked() ? 'Next day' : 'Tomorrow';
+  if (picked()) return `${idx} days later`;
   return `In ${idx} days`;
 }
 
@@ -77,19 +84,22 @@ function fmtAmount(sec) {
 function vsYesterday(today, before) {
   if (today == null || before == null) return '';
   const sec = (today - before) * 60;
-  if (Math.round(Math.abs(sec)) === 0) return 'Same as yesterday';
-  return `${fmtAmount(sec)} ${sec > 0 ? 'later' : 'earlier'} than yesterday`;
+  if (Math.round(Math.abs(sec)) === 0) return `Same as ${W_YEST()}`;
+  return `${fmtAmount(sec)} ${sec > 0 ? 'later' : 'earlier'} than ${W_YEST()}`;
 }
 
 // Both directions, even when one of them ends tomorrow ("Latest until tomorrow").
 function untilLines(v, minWord, maxWord) {
   if (v[0] == null) return [];
   const next = (test) => v.findIndex((x, i) => i > 0 && x != null && test(x));
-  const when = (i) => (i === 1 ? 'tomorrow' : fmtUntil(i));
+  const when = (i) => (i === 1 ? W_TOM() : fmtUntil(i));
   const lo = next(x => x <= v[0]), hi = next(x => x >= v[0]);
   const out = [];
+  // Nothing matches it in the 800 days ahead: it's the year's extreme (solstice days)
   if (lo > 0) out.push(`${minWord} until ${when(lo)}`);
+  else if (hi === 1) out.push(`${minWord} of the year`);
   if (hi > 0) out.push(`${maxWord} until ${when(hi)}`);
+  else if (lo === 1) out.push(`${maxWord} of the year`);
   return out;
 }
 
@@ -194,10 +204,12 @@ function shortNames() {
 function render() {
   const t = dateObj(days[0].dayMs);
   const [shortName, shortB] = shortNames();
-  const dateLine = `${WEEKDAYS[t.getUTCDay()]}, ${MONTHS[t.getUTCMonth()]} ${t.getUTCDate()}`;
+  const dateLine = `${WEEKDAYS[t.getUTCDay()]}, ${MONTHS[t.getUTCMonth()]} ${t.getUTCDate()}${picked() ? `, ${t.getUTCFullYear()}` : ''}`;
   $('#sun-today-title').textContent = placeB
     ? `${dateLine}: ${shortName} vs. ${shortB}`
-    : `Today in ${shortName}: ${dateLine}`;
+    : picked() ? `${shortName}: ${dateLine}` : `Today in ${shortName}: ${dateLine}`;
+  $('#sun-date').value = isoDate(days[0].dayMs);
+  $('#sun-back').hidden = !picked();
 
   drawSky();
   if (placeB) renderCompare(shortName, shortB);
@@ -218,8 +230,8 @@ function render() {
     ? `${t.getUTCFullYear()}: ${shortName} vs. ${shortB}`
     : `${t.getUTCFullYear()} in ${shortName}`;
   $('#sun-legend').innerHTML = placeB
-    ? `<span class="l-a">${shortName} daylight</span><span class="l-b">${shortB} daylight</span><span class="l-twi">Twilight</span><span class="l-today">Today</span>`
-    : '<span class="l-day">Daylight</span><span class="l-twi">Twilight</span><span class="l-today">Today</span>';
+    ? `<span class="l-a">${shortName} daylight</span><span class="l-b">${shortB} daylight</span><span class="l-twi">Twilight</span><span class="l-today">${picked() ? 'Selected day' : 'Today'}</span>`
+    : `<span class="l-day">Daylight</span><span class="l-twi">Twilight</span><span class="l-today">${picked() ? 'Selected day' : 'Today'}</span>`;
   $('#sun-cross').hidden = !placeB;
   $('#sun-side').hidden = !placeB;
   if (placeB) renderSide(shortName, shortB);
@@ -336,7 +348,7 @@ function setModeVisibility() {
 }
 
 function compute() {
-  const today = S.localToday(place.tz);
+  const today = pickedDay ?? S.localToday(place.tz);
   days = S.sunDays(today, 800, place.lat, place.lon, place.tz);
   yest = S.sunDays(today - DAY, 1, place.lat, place.lon, place.tz)[0];
   const y = dateObj(today).getUTCFullYear();
@@ -487,7 +499,7 @@ function drawTimeline(rows) {
   }
   el('circle', { cx: L, cy: MID, r: 6, class: 'tl-today' }, svg);
   const tl = el('text', { x: L, y: MID + 33, class: 'sun-axis', 'text-anchor': 'middle' }, svg);
-  tl.textContent = 'Today';
+  tl.textContent = picked() ? fmtShort(start).replace(/\/\d{4}$/, '') : 'Today';
 
   const lanes = [{ y: 83, up: true }, { y: 157, up: false }, { y: 53, up: true }, { y: 187, up: false },
     { y: 23, up: true }, { y: 217, up: false }];
@@ -644,6 +656,22 @@ function drawChart() {
   wrap.prepend(svg);
 }
 
+// ------------------------------------------------------------------ picking a day
+
+function isoDate(ms) { return new Date(ms).toISOString().slice(0, 10); }
+
+// null = back to the real today. The date rides in the URL as ?date=YYYY-MM-DD.
+function setDay(ms) {
+  if (ms !== null && ms === S.localToday(place.tz)) ms = null;
+  pickedDay = ms;
+  const q = new URLSearchParams(location.search);
+  if (ms === null) q.delete('date'); else q.set('date', isoDate(ms));
+  history.replaceState(null, '', `${location.pathname}${q.toString() ? '?' + q : ''}`);
+  compute();
+  setModeVisibility();
+  render();
+}
+
 // ------------------------------------------------------------------ search
 
 const searchTimer = { a: null, b: null }, searchSeq = { a: 0, b: 0 };
@@ -753,6 +781,14 @@ function init() {
     if (w !== lastW) { lastW = w; drawChart(); drawSky(); drawTimeline(comingUp()); }
   });
 
+  const qd = q.get('date');
+  if (qd && /^\d{4}-\d{2}-\d{2}$/.test(qd) && !isNaN(Date.parse(qd + 'T00:00:00Z'))) pickedDay = Date.parse(qd + 'T00:00:00Z');
+  $('#sun-date').addEventListener('change', (e) => {
+    if (e.target.value) setDay(Date.parse(e.target.value + 'T00:00:00Z'));
+  });
+  $('#sun-prev').addEventListener('click', () => setDay(days[0].dayMs - DAY));
+  $('#sun-next').addEventListener('click', () => setDay(days[0].dayMs + DAY));
+  $('#sun-back').addEventListener('click', () => setDay(null));
   if (q.get('lat2') && q.get('lon2') && q.get('tz2')) {
     const b = { name: q.get('place2') || 'Second place', lat: +q.get('lat2'), lon: +q.get('lon2'), tz: q.get('tz2') };
     try { S.tzOffset(b.tz, Date.now()); if (isFinite(b.lat) && isFinite(b.lon)) { $('#sun-row-b').dataset.open = '1'; setPlaceB(b); } } catch (e) { /* bad zone: ignore */ }
