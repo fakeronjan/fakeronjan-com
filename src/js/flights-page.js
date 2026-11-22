@@ -63,6 +63,21 @@ function periodLabel() {
   return w.length === 1 ? `${w[0]}${partial(w[0])}` : `${w[0]} to ${w[w.length - 1]}${partial(w[w.length - 1])}`;
 }
 
+// The period as a standalone line under the route name
+function periodTitle() {
+  if (state.y0 === 'last12') {
+    const [a, b] = meta.last12.map((s) => `${MON[+s.slice(5) - 1]} ${s.slice(0, 4)}`);
+    return `Last 12 months: ${a} to ${b}`;
+  }
+  const l = periodLabel();
+  return l.charAt(0).toUpperCase() + l.slice(1);
+}
+// Years the picked period touches, for highlighting in Trends
+function yearsInPeriod() {
+  if (state.y0 === 'last12') return new Set(meta.last12.map((s) => s.slice(0, 4)));
+  return new Set(windows());
+}
+
 // ------------------------------------------------------------------ combining
 
 function merge(a, b) {
@@ -184,6 +199,7 @@ async function render() {
   const dirOf = (rec) => (!both || !rec ? '' : ab && [ab.fa, ab.sl, ab.ld].includes(rec) ? ` (${A} to ${B})` : ` (${B} to ${A})`);
 
   $('#fl-route').textContent = both ? `${A} ⇄ ${B}` : `${A} → ${B}`;
+  $('#fl-period-line').textContent = periodTitle();
   if (!r) {
     $('#fl-route-sub').textContent = `No flights ${both ? 'between' : 'from'} ${city(A)} ${both ? 'and' : 'to'} ${city(B)} in ${periodLabel()} on the airlines this data covers`;
     $('#fl-body').hidden = true;
@@ -195,7 +211,7 @@ async function render() {
   const bmap = both ? rank.pairs : rank.dir;
   const bkey = both ? [A, B].sort().join('-') : `${A}-${B}`;
   const B_ = (id) => badge(bmap, bkey, metric(id), both);
-  $('#fl-route-sub').innerHTML = `${esc(`${city(A)} ${both ? 'and' : 'to'} ${city(B)}, ${num(r.d)} miles, ${periodLabel()}`)} ${B_('distance')}`;
+  $('#fl-route-sub').innerHTML = `${esc(`${city(A)} ${both ? 'and' : 'to'} ${city(B)}, ${num(r.d)} miles`)} ${B_('distance')}`;
   const brands = new Set(Object.keys(r.a).map((k) => k.split('|')[0]));
   $('#fl-facts').innerHTML = [
     ['Flights', num(f), 'busiest'], ['Per day', (f / periodDays()).toFixed(1)], ['Airlines', brands.size, 'airlines'],
@@ -281,11 +297,13 @@ async function renderTrends(A, B, both) {
   });
   const maxDay = Math.max(...per.map((p) => p.perDay), 1);
   const yl = (y, short) => (short ? `'${y.slice(2)}` : `${y}${meta.months_in_year[y] < 12 ? ` (through ${MON[meta.months_in_year[y] - 1]})` : ''}`);
-  $('#fl-tr-flights').innerHTML = per.map((p) => `<div style="height:${Math.max(p.perDay ? 2 : 0, (100 * p.perDay) / maxDay)}%" data-t="${yl(p.y)}: ${p.perDay.toFixed(1)} flights a day"></div>`).join('');
+  const picked = yearsInPeriod();
+  const out = (y) => (picked.has(y) ? '' : 'out');   // years outside the picked period fade
+  $('#fl-tr-flights').innerHTML = per.map((p) => `<div class="${out(p.y)}" style="height:${Math.max(p.perDay ? 2 : 0, (100 * p.perDay) / maxDay)}%" data-t="${yl(p.y)}: ${p.perDay.toFixed(1)} flights a day"></div>`).join('');
   $('#fl-tr-flights-t').innerHTML = per.map((p) => `<span>${yl(p.y, true)}</span>`).join('');
   const withFlights = per.filter((p) => p.c[0] >= 20);
   $('#fl-tr-ontime').innerHTML = per.map((p) => p.c[0] >= 20
-    ? `<div style="height:${Math.max(2, pct(p.c[1], p.c[0]))}%" data-t="${yl(p.y)}: ${p1(pct(p.c[1], p.c[0]))} on time"></div>`
+    ? `<div class="${out(p.y)}" style="height:${Math.max(2, pct(p.c[1], p.c[0]))}%" data-t="${yl(p.y)}: ${p1(pct(p.c[1], p.c[0]))} on time"></div>`
     : '<div class="empty"></div>').join('');
   $('#fl-tr-ontime-t').innerHTML = per.map((p) => `<span>${yl(p.y, true)}</span>`).join('');
   if (withFlights.length >= 2) {

@@ -38,6 +38,8 @@ permalink: /flights/
 
 .fl-route { font-family: "Space Grotesk", sans-serif; font-size: 1.7rem; font-weight: 700; margin: 1.4rem 0 0; }
 .fl-route-sub { color: var(--muted); margin: 0; text-wrap: pretty; }
+.fl-period-line { margin: 0.1rem 0; font-weight: 700; color: var(--accent); }
+.fl .fl-showing { font-size: 0.85rem; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--fg); }
 .fl-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0 1.4rem; margin: 0.7rem 0 0; }
 .fl-facts div { display: flex; justify-content: space-between; gap: 0.6rem; padding: 0.4rem 0; border-bottom: 1px solid var(--line); }
 .fl-facts dt { color: var(--muted); } .fl-facts dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
@@ -70,6 +72,7 @@ permalink: /flights/
 .fl-bars div:hover { opacity: 1; outline: 2px solid var(--fg); }
 .fl-bars div.best { background: var(--ok); } .fl-bars div.worst { background: var(--cancel); }
 .fl-bars div.empty { background: none; }
+.fl-bars div.out { opacity: 0.28; }
 .fl-ticks { display: flex; gap: 2px; font-size: 0.7rem; color: var(--muted); }
 .fl-ticks span { flex: 1; text-align: center; white-space: nowrap; min-width: 0; }
 
@@ -140,8 +143,9 @@ permalink: /flights/
   <div class="fl-row2">
     <div class="fl-seg" id="fl-dir" role="group" aria-label="Direction"><button class="active" data-d="one" type="button">One way</button><button data-d="both" type="button">Both directions</button></div>
     <div class="fl-period">
-      <select id="fl-y0" aria-label="Period start"></select>
-      <label id="fl-y1-label" for="fl-y1" hidden>to</label>
+      <label for="fl-y0" class="fl-showing">Showing</label>
+      <select id="fl-y0"></select>
+      <label id="fl-y1-label" for="fl-y1" class="fl-showing" hidden>to</label>
       <select id="fl-y1" aria-label="Period end" hidden></select>
     </div>
   </div>
@@ -166,6 +170,7 @@ permalink: /flights/
 
   <div id="fl-route-view">
   <p class="fl-route" id="fl-route"></p>
+  <p class="fl-period-line" id="fl-period-line"></p>
   <p class="fl-route-sub" id="fl-route-sub"></p>
 
   <div id="fl-body">
@@ -182,6 +187,7 @@ permalink: /flights/
     <div class="fl-scroll"><table id="fl-airlines"></table></div>
 
     <h2>Trends</h2>
+    <p class="fl-note" style="margin:0 0 0.4rem">Every year from 2018 on. Your picked years are highlighted.</p>
     <div class="fl-charts">
       <div><h3>Flights a day</h3><div class="fl-bars" id="fl-tr-flights"></div><div class="fl-ticks" id="fl-tr-flights-t"></div><p class="fl-note" id="fl-tr-flights-n"></p></div>
       <div><h3>On time</h3><div class="fl-bars" id="fl-tr-ontime"></div><div class="fl-ticks" id="fl-tr-ontime-t"></div><p class="fl-note" id="fl-tr-ontime-n"></p></div>
