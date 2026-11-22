@@ -11,22 +11,25 @@ permalink: /sun/
   --sun-day: #f2b632; --sun-twi: #f7dc96; --sun-edge: #b9820f; --sun-night: #e3e8ec; --sun-sky: #f9d77a;
   --k-rise: #b98900; --k-set: #c2410c; --k-day: #0284c7; --k-clock: #8a8f96;
   --t-rise: #8a6400; --t-set: #b03a0a; --t-day: #0369a1;
+  --b-line: #0e7490;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .sun {
     --sun-day: #d9a21f; --sun-twi: #5e4c1f; --sun-edge: #f2c45a; --sun-night: #24272f; --sun-sky: #8a6a1c;
     --k-rise: #b08a12; --k-set: #e2506a; --k-day: #3d8fe0; --k-clock: #8d929a;
     --t-rise: #e3b43c; --t-set: #f2788c; --t-day: #6cb2f0;
+    --b-line: #5fd6ee;
   }
 }
 :root[data-theme="dark"] .sun {
   --sun-day: #d9a21f; --sun-twi: #5e4c1f; --sun-edge: #f2c45a; --sun-night: #24272f; --sun-sky: #8a6a1c;
   --k-rise: #b08a12; --k-set: #e2506a; --k-day: #3d8fe0; --k-clock: #8d929a;
   --t-rise: #e3b43c; --t-set: #f2788c; --t-day: #6cb2f0;
+  --b-line: #5fd6ee;
 }
 
 .sun-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin: 0.5rem 0 1.5rem; }
-.sun-search-wrap { flex: 1 1 100%; max-width: 640px; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.sun-search-wrap { flex: none; width: 100%; max-width: 640px; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .sun-field { position: relative; flex: 1 1 240px; min-width: 0; display: flex; }
 .sun-field input {
   flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; padding: 0.45rem 0.7rem;
@@ -44,6 +47,24 @@ permalink: /sun/
   color: var(--fg); background: none; border: 0; cursor: pointer;
 }
 .sun-results button:hover, .sun-results button:focus { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.sun-controls { flex-direction: column; align-items: stretch; }
+.sun-controls > * { max-width: 640px; }
+.sun-ctl-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.sun-search-wrap[hidden] { display: none; }
+.sun-compare[hidden] { display: none; }
+/* Comparing: a swatch inside each search box says which color is which place */
+.sun-field > .sun-sw { display: none; position: absolute; left: 0.65rem; top: 50%; transform: translateY(-50%); }
+.comparing .sun-field > .sun-sw { display: block; }
+.comparing .sun-field input { padding-left: 1.9rem; }
+#sun-search-b { padding-right: 2rem; }
+.sun-clear {
+  position: absolute; right: 0.3rem; top: 50%; transform: translateY(-50%); width: 1.6rem; height: 1.6rem;
+  border: 0; background: none; color: var(--muted); font-size: 1.1rem; line-height: 1; cursor: pointer; border-radius: 50%;
+}
+.sun-clear:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 8%, transparent); }
+.sun-sw { display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 3px; flex: none; box-sizing: border-box; }
+.sun-sw.a { background: var(--sun-day); }
+.sun-sw.b { border: 2px solid var(--b-line); background: transparent; }
 .sun-none { padding: 0.4rem 0.7rem; font-size: 0.9rem; color: var(--muted); }
 .sun .pill { cursor: pointer; }
 /* Clock / Standard: one split pill, the chosen half filled */
@@ -73,6 +94,14 @@ permalink: /sun/
 .sun-big { font-family: "Space Grotesk", sans-serif; font-size: 2rem; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
 .sun-ctx { font-weight: 600; font-size: 0.92rem; text-wrap: balance; }
 .sun-sub { font-size: 0.85rem; color: var(--muted); text-wrap: balance; }
+.sky-sw.a { fill: var(--sun-day); }
+.sky-sw.b { fill: none; stroke: var(--b-line); stroke-width: 2; }
+.sky-name { font-size: 12px; font-weight: 600; fill: var(--fg); font-family: inherit; }
+/* Compare columns: both values, then the gap */
+.sun-pv { display: grid; grid-template-columns: auto auto; gap: 0.1rem 0.6rem; align-items: baseline; justify-content: center; }
+.sun-pn { display: inline-flex; gap: 0.35rem; align-items: center; justify-content: flex-end; font-size: 0.82rem; color: var(--muted); }
+.sun-pval { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.45rem; text-align: left; font-variant-numeric: tabular-nums; }
+.sun-diff { font-weight: 600; font-size: 0.9rem; text-wrap: balance; margin-top: 0.2rem; }
 .sun-ctx.k-rise { color: var(--t-rise); } .sun-ctx.k-set { color: var(--t-set); } .sun-ctx.k-day { color: var(--t-day); }
 @media (max-width: 560px) {
   .sun-stats { grid-template-columns: 1fr; gap: 1.1rem; }
@@ -111,11 +140,30 @@ permalink: /sun/
 .sun-legend span::before { content: ""; display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 2px; margin-right: 0.35rem; vertical-align: -0.1rem; }
 .sun-legend .l-day::before { background: var(--sun-day); }
 .sun-legend .l-twi::before { background: var(--sun-twi); }
+.sun-legend .l-a::before { background: var(--sun-day); }
+.sun-legend .l-b::before { background: transparent; border: 2px solid var(--b-line); box-sizing: border-box; }
+.sun-legend { flex-wrap: wrap; }
 .sun-legend .l-today::before { width: 2px; background: var(--fg); }
 .sun-chart { position: relative; width: 100%; }
 .sun-chart svg { display: block; touch-action: pan-y; }
 .sun-day { fill: var(--sun-day); }
 .sun-twi { fill: var(--sun-twi); }
+.sun-b-edge { fill: none; stroke: var(--b-line); stroke-width: 2.5; }
+.sun-cross-list { margin: 0.75rem 0 0; padding-left: 1.2rem; }
+.sun-cross-list[hidden], .sun-side[hidden] { display: none; }
+.sun-cross-list li { margin: 0.2rem 0; }
+.sun-ext { width: 100%; }
+.sun-ext thead th { font-size: 0.82rem; color: var(--fg); font-weight: 700; }
+.sun-ext thead .sun-sw { margin-right: 0.4rem; vertical-align: -0.05rem; }
+.sun-ext tbody th { white-space: nowrap; }
+.sun-ext td b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.sun-d { display: block; color: var(--muted); font-size: 0.82rem; }
+.sun-ext .sun-total th, .sun-ext .sun-total td { border-bottom: 0; padding-top: 0.7rem; }
+@media (max-width: 430px) {
+  .sun-ext { font-size: 0.85rem; }
+  .sun-ext tbody th { white-space: normal; }
+  .sun-ext th, .sun-ext td { padding-right: 0.5rem; }
+}
 .sun-edge { fill: none; stroke: var(--sun-edge); stroke-width: 1.5; }
 .sun-grid { stroke: color-mix(in srgb, var(--fg) 10%, transparent); stroke-width: 1; }
 .sun-tick { stroke: color-mix(in srgb, var(--fg) 30%, transparent); }
@@ -135,14 +183,27 @@ permalink: /sun/
   <div class="sun-controls">
     <div class="sun-search-wrap">
       <div class="sun-field">
+        <span class="sun-sw a" aria-hidden="true"></span>
         <input id="sun-search" type="search" placeholder="Search for a city" autocomplete="off" aria-label="Search for a city">
         <ul id="sun-results" class="sun-results" hidden></ul>
       </div>
       <button id="sun-locate" class="pill" type="button">Use my location</button>
       <button id="sun-random" class="pill" type="button">Pick random location</button>
     </div>
+    <div class="sun-search-wrap" id="sun-row-b" hidden>
+      <div class="sun-field">
+        <span class="sun-sw b" aria-hidden="true"></span>
+        <input id="sun-search-b" type="search" placeholder="Compare with a city" autocomplete="off" aria-label="Compare with a city">
+        <button id="sun-clear-b" class="sun-clear" type="button" aria-label="Stop comparing">&times;</button>
+        <ul id="sun-results-b" class="sun-results" hidden></ul>
+      </div>
+      <button id="sun-random-b" class="pill" type="button">Pick random location</button>
+    </div>
+    <div class="sun-ctl-row">
+    <button id="sun-compare" class="pill sun-compare" type="button">Compare with another location</button>
     <div class="sun-seg" id="sun-mode" role="group" aria-label="Times shown in" hidden>
       <button class="active" data-mode="clock" type="button" aria-pressed="true">Clock time</button><button data-mode="standard" type="button" aria-pressed="false">Standard time</button>
+    </div>
     </div>
   </div>
 
@@ -155,8 +216,14 @@ permalink: /sun/
   <table class="sun-table sun-coming"><tbody id="sun-coming"></tbody></table>
 
   <h2 id="sun-chart-title">This year</h2>
-  <div class="sun-legend"><span class="l-day">Daylight</span><span class="l-twi">Twilight</span><span class="l-today">Today</span></div>
+  <div class="sun-legend" id="sun-legend"><span class="l-day">Daylight</span><span class="l-twi">Twilight</span><span class="l-today">Today</span></div>
   <div class="sun-chart" id="sun-chart"><div class="sun-tip" id="sun-tip" hidden></div></div>
+  <ul class="sun-cross-list" id="sun-cross" hidden></ul>
+
+  <div class="sun-side" id="sun-side" hidden>
+    <h2>Side by side</h2>
+    <table class="sun-table sun-ext" id="sun-ext"></table>
+  </div>
 </div>
 
 <script type="module" src="/js/sun-page.js"></script>

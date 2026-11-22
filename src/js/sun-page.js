@@ -13,6 +13,9 @@ let place = null;
 let mode = 'clock';
 let days = [];      // from today, 800 days (an "until" can land a year out)
 let yearDays = [];  // the calendar year, for the chart
+let placeB = null;  // second place, when comparing
+let bDay = null;    // the second place on the first place's date
+let bYear = [];     // the second place over the same calendar year
 
 // ------------------------------------------------------------------ formatting
 
@@ -183,14 +186,22 @@ function comingUp() {
 
 // ------------------------------------------------------------------ rendering
 
+function shortNames() {
+  const a = place.name.split(',')[0], b = placeB ? placeB.name.split(',')[0] : '';
+  return a === b ? [place.name, placeB.name] : [a, b];   // two Portlands keep their full names
+}
+
 function render() {
   const t = dateObj(days[0].dayMs);
-  const shortName = place.name.split(',')[0];
-  $('#sun-today-title').textContent =
-    `Today in ${shortName}: ${WEEKDAYS[t.getUTCDay()]}, ${MONTHS[t.getUTCMonth()]} ${t.getUTCDate()}`;
+  const [shortName, shortB] = shortNames();
+  const dateLine = `${WEEKDAYS[t.getUTCDay()]}, ${MONTHS[t.getUTCMonth()]} ${t.getUTCDate()}`;
+  $('#sun-today-title').textContent = placeB
+    ? `${dateLine}: ${shortName} vs. ${shortB}`
+    : `Today in ${shortName}: ${dateLine}`;
 
   drawSky();
-  $('#sun-stats').innerHTML = todayColumns().map(c => `
+  if (placeB) renderCompare(shortName, shortB);
+  else $('#sun-stats').innerHTML = todayColumns().map(c => `
     <div class="sun-stat">
       <span class="sun-kicker">${c.label}</span>
       <span class="sun-big">${c.big}</span>
@@ -203,13 +214,119 @@ function render() {
   $('#sun-coming').innerHTML = rows.map(r =>
     `<tr><td class="sun-date">${fmtShort(days[r.idx].dayMs)}</td><td class="sun-in">${fmtIn(r.idx)}</td><td><span class="sun-dot k-${r.kind}" aria-hidden="true"></span>${r.text}</td></tr>`
   ).join('');
-  $('#sun-chart-title').textContent = `${t.getUTCFullYear()} in ${shortName}`;
+  $('#sun-chart-title').textContent = placeB
+    ? `${t.getUTCFullYear()}: ${shortName} vs. ${shortB}`
+    : `${t.getUTCFullYear()} in ${shortName}`;
+  $('#sun-legend').innerHTML = placeB
+    ? `<span class="l-a">${shortName} daylight</span><span class="l-b">${shortB} daylight</span><span class="l-twi">Twilight</span><span class="l-today">Today</span>`
+    : '<span class="l-day">Daylight</span><span class="l-twi">Twilight</span><span class="l-today">Today</span>';
+  $('#sun-cross').hidden = !placeB;
+  $('#sun-side').hidden = !placeB;
+  if (placeB) renderSide(shortName, shortB);
   drawChart();
+}
+
+// ------------------------------------------------------------------ comparing
+
+const swatch = (k) => `<span class="sun-sw ${k}" aria-hidden="true"></span>`;
+
+function fmtGap(sec) {
+  const s = Math.round(Math.abs(sec)), h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
+  return h ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
+}
+
+// Today: both values per stat, then the gap as one sentence.
+function renderCompare(nA, nB) {
+  const a = days[0], b = bDay, am = a[mode], bm = b[mode];
+  const where = mode === 'clock' ? 'on the clock' : 'in standard time';
+  const timeGap = (ta, tb, word) => {
+    if (ta == null || tb == null) return '';
+    const g = (tb - ta) * 60;
+    if (Math.abs(g) < 60) return '<span class="sun-sub">About the same time</span>';
+    return `<span class="sun-diff">${nB}'s ${word} is ${fmtGap(g)} ${g > 0 ? 'later' : 'earlier'} ${where}</span>`;
+  };
+  const dg = b.daylight - a.daylight;
+  const cols = [
+    ['Sunrise', fmtTime(am.sunrise), fmtTime(bm.sunrise), timeGap(am.sunrise, bm.sunrise, 'sunrise')],
+    ['Daylight', fmtDuration(a.daylight), fmtDuration(b.daylight), Math.abs(dg) < 60
+      ? '<span class="sun-sub">About the same daylight</span>'
+      : `<span class="sun-diff">${nB} gets ${fmtGap(dg)} ${dg > 0 ? 'more' : 'less'} daylight</span>`],
+    ['Sunset', fmtTime(am.sunset), fmtTime(bm.sunset), timeGap(am.sunset, bm.sunset, 'sunset')],
+  ];
+  const none = (v, k) => v === '-' ? (k === 'Sunrise' ? 'No sunrise' : 'No sunset') : v;
+  $('#sun-stats').innerHTML = cols.map(([k, va, vb, d]) => `
+    <div class="sun-stat">
+      <span class="sun-kicker">${k}</span>
+      <div class="sun-pv">
+        <span class="sun-pn">${swatch('a')}${nA}</span><span class="sun-pval">${none(va, k)}</span>
+        <span class="sun-pn">${swatch('b')}${nB}</span><span class="sun-pval">${none(vb, k)}</span>
+      </div>
+      ${d}
+    </div>`).join('');
+}
+
+// Crossover dates under the chart, and the side-by-side extremes table.
+function renderSide(nA, nB) {
+  const n = yearDays.length, jan1 = yearDays[0].dayMs, year = dateObj(jan1).getUTCFullYear();
+  const runs = []; let start = null;
+  for (let i = 0; i < n; i++) {
+    const more = bYear[i].daylight > yearDays[i].daylight;
+    if (more && start === null) start = i;
+    if (!more && start !== null) { runs.push([start, i - 1]); start = null; }
+  }
+  if (start !== null) runs.push([start, n - 1]);
+  const lines = [];
+  if (!runs.length) lines.push(`${nA} has more daylight every day of ${year}`);
+  else if (runs.length === 1 && runs[0][0] === 0 && runs[0][1] === n - 1) lines.push(`${nB} has more daylight every day of ${year}`);
+  else {
+    // A stretch that runs through New Year reads as one stretch
+    let rs = runs;
+    if (runs.length >= 2 && runs[0][0] === 0 && runs[runs.length - 1][1] === n - 1) {
+      rs = [[runs[runs.length - 1][0], runs[0][1]], ...runs.slice(1, -1)];
+    }
+    rs.forEach(([a, b]) => lines.push(`${nB} has more daylight from ${fmtDate(jan1 + a * DAY)} to ${fmtDate(jan1 + b * DAY)}`));
+    lines.push(`${nA} has more the rest of the year`);
+  }
+  $('#sun-cross').innerHTML = lines.map(l => `<li>${l}</li>`).join('');
+
+  const pick = (arr, f, dir) => {
+    let bi = -1;
+    arr.forEach((d, i) => { const v = f(d); if (v == null) return; if (bi < 0 || (dir < 0 ? v < f(arr[bi]) : v > f(arr[bi]))) bi = i; });
+    return bi;
+  };
+  const timeCell = (arr, k, dir) => {
+    const i = pick(arr, d => d[mode][k], dir);
+    return i < 0 ? '<b>None</b>' : `<b>${fmtTime(arr[i][mode][k])}</b><span class="sun-d">${fmtShort(arr[i].dayMs)}</span>`;
+  };
+  const dayCell = (arr, dir) => {
+    const i = pick(arr, d => d.daylight, dir), v = arr[i].daylight;
+    if (v === 0 || v === 86400) {
+      const idx = arr.map((d, j) => (d.daylight === v ? j : -1)).filter(j => j >= 0);
+      const one = idx[idx.length - 1] - idx[0] === idx.length - 1;
+      const when = one ? `${fmtShort(arr[idx[0]].dayMs)} to ${fmtShort(arr[idx[idx.length - 1]].dayMs)}` : `in ${year}`;
+      return `<b>${v === 0 ? 'No sunrise' : 'No sunset'}</b><span class="sun-d">${idx.length} days, ${when}</span>`;
+    }
+    return `<b>${fmtDuration(v)}</b><span class="sun-d">${fmtShort(arr[i].dayMs)}</span>`;
+  };
+  const rows = [
+    ['Longest day', dayCell(yearDays, 1), dayCell(bYear, 1)],
+    ['Shortest day', dayCell(yearDays, -1), dayCell(bYear, -1)],
+    ['Earliest sunrise', timeCell(yearDays, 'sunrise', -1), timeCell(bYear, 'sunrise', -1)],
+    ['Latest sunrise', timeCell(yearDays, 'sunrise', 1), timeCell(bYear, 'sunrise', 1)],
+    ['Earliest sunset', timeCell(yearDays, 'sunset', -1), timeCell(bYear, 'sunset', -1)],
+    ['Latest sunset', timeCell(yearDays, 'sunset', 1), timeCell(bYear, 'sunset', 1)],
+  ];
+  const total = (arr) => Math.round(arr.reduce((t, d) => t + d.daylight, 0) / 3600).toLocaleString('en-US');
+  $('#sun-ext').innerHTML =
+    `<thead><tr><th></th><th>${swatch('a')}${nA}</th><th>${swatch('b')}${nB}</th></tr></thead><tbody>` +
+    rows.map(([k, a, b]) => `<tr><th scope="row">${k}</th><td>${a}</td><td>${b}</td></tr>`).join('') +
+    `<tr class="sun-total"><th scope="row">Daylight in ${year}</th><td><b>${total(yearDays)} hours</b></td><td><b>${total(bYear)} hours</b></td></tr></tbody>`;
 }
 
 function setModeVisibility() {
   const year = dateObj(days[0].dayMs).getUTCFullYear();
-  const dst = S.hasDST(place.tz, year) || S.hasDST(place.tz, year + 1);
+  const dstIn = (p) => S.hasDST(p.tz, year) || S.hasDST(p.tz, year + 1);
+  const dst = dstIn(place) || (placeB && dstIn(placeB));
   $('#sun-mode').hidden = !dst;
   if (!dst) mode = 'clock';
   document.querySelectorAll('#sun-mode button').forEach(b => {
@@ -226,6 +343,11 @@ function compute() {
   const jan1 = Date.UTC(y, 0, 1);
   const len = (Date.UTC(y + 1, 0, 1) - jan1) / DAY;
   yearDays = S.sunDays(jan1, len, place.lat, place.lon, place.tz);
+  if (placeB) {
+    // Same calendar date as the first place, so the numbers line up
+    bDay = S.sunDay(today, placeB.lat, placeB.lon, placeB.tz, S.standardOffset(placeB.tz, y));
+    bYear = S.sunDays(jan1, len, placeB.lat, placeB.lon, placeB.tz);
+  }
 }
 
 function setPlace(p, { remember = true, url = true } = {}) {
@@ -249,6 +371,7 @@ function setPlace(p, { remember = true, url = true } = {}) {
 // Today's sun path on a 24-hour line: night, twilight, and daylight bands, with the
 // arc from sunrise to sunset. Fixed viewBox; it scales with the page.
 function drawSky() {
+  if (placeB) { drawSkyPair(); return; }
   const host = $('#sun-sky');
   host.innerHTML = '';
   // Drawn at the real pixel width so labels stay full size on phones
@@ -287,6 +410,53 @@ function drawSky() {
   el('line', { x1: L, x2: R, y1: BASE, y2: BASE, class: 'sky-horizon' }, svg);
   [[0, 'start'], [360, 'middle'], [720, 'middle'], [1080, 'middle'], [1440, 'end']].forEach(([m, anchor]) => {
     const lab = el('text', { x: x(m), y: H - 10, class: 'sun-axis sky-axis', 'text-anchor': anchor }, svg);
+    lab.textContent = fmtTime(m % 1440).replace(':00', '');
+  });
+  host.appendChild(svg);
+}
+
+// Compare mode: both places' days stacked on one 24-hour line, each named above its bar.
+function drawSkyPair() {
+  const host = $('#sun-sky');
+  host.innerHTML = '';
+  const W = host.clientWidth || 720, L = 14, R = W - 14;
+  const ROW = W < 500 ? 52 : 64, LABEL = 20, GAP = 10;
+  const H = (LABEL + ROW) * 2 + GAP + 26;
+  const x = (min) => L + (min / 1440) * (R - L);
+  const [nA, nB] = shortNames();
+  const svg = el('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img',
+    'aria-label': `Today's sun in ${place.name} and ${placeB.name}` });
+  const defs = el('defs', {}, svg);
+  [[days[0], nA, 'a'], [bDay, nB, 'b']].forEach(([d, name, k], r) => {
+    const top = r * (LABEL + ROW + GAP) + LABEL, base = top + ROW;
+    const sw = el('rect', { x: L, y: top - 15, width: 11, height: 11, rx: 2.5, class: `sky-sw ${k}` }, svg);
+    const lab = el('text', { x: L + 17, y: top - 6, class: 'sky-name' }, svg);
+    lab.textContent = name;
+    const clipId = `sun-sky-clip-${k}`;
+    el('rect', { x: L, y: top, width: R - L, height: ROW + 2 }, el('clipPath', { id: clipId }, defs));
+    const g = el('g', { 'clip-path': `url(#${clipId})` }, svg);
+    el('rect', { x: L, y: top, width: R - L, height: ROW, rx: 5, class: 'sky-night' }, g);
+    const band = (a, b, cls) => {
+      if (a < 0) { band(a + 1440, 1440, cls); band(0, b, cls); return; }
+      if (b > 1440) { band(a, 1440, cls); band(0, b - 1440, cls); return; }
+      if (b > a) el('rect', { x: x(a), y: top, width: x(b) - x(a), height: ROW, class: cls }, g);
+    };
+    const t = d[mode];
+    if (d.civilPolar === 'day') band(0, 1440, 'sky-twi');
+    else if (t.dawn != null) band(t.dawn, t.dusk, 'sky-twi');
+    if (d.polar === 'day') band(0, 1440, 'sky-day');
+    else if (t.sunrise != null) band(t.sunrise, t.sunset, 'sky-day');
+    if (t.sunrise != null) {
+      const x1 = x(t.sunrise), x2 = x(t.sunset), mx = (x1 + x2) / 2, ctrl = top - ROW * 0.5;
+      el('path', { d: `M${x1} ${base} Q${mx} ${ctrl} ${x2} ${base}`, class: 'sky-arc' }, g);
+      el('circle', { cx: mx, cy: (base + ctrl) / 2, r: 7, class: 'sky-sun' }, g);
+    } else if (d.polar === 'day') {
+      el('circle', { cx: x(720), cy: top + ROW * 0.35, r: 7, class: 'sky-sun' }, g);
+    }
+    el('line', { x1: L, x2: R, y1: base, y2: base, class: 'sky-horizon' }, svg);
+  });
+  [[0, 'start'], [360, 'middle'], [720, 'middle'], [1080, 'middle'], [1440, 'end']].forEach(([m, anchor]) => {
+    const lab = el('text', { x: x(m), y: H - 8, class: 'sun-axis sky-axis', 'text-anchor': anchor }, svg);
     lab.textContent = fmtTime(m % 1440).replace(':00', '');
   });
   host.appendChild(svg);
@@ -409,6 +579,22 @@ function drawChart() {
     el('path', { d: dstr, class: 'sun-edge' }, svg);
   }
 
+  // Second place: its sunrise and sunset as outlined lines over the first place's bands
+  if (placeB) {
+    for (const k of ['sunrise', 'sunset']) {
+      let dstr = '', pen = false;
+      bYear.forEach((d, i) => {
+        const v = d[mode][k];
+        if (v == null || v > 1440 || v < 0) { pen = false; return; }
+        const prev = i > 0 ? bYear[i - 1][mode][k] : null;
+        if (pen && prev != null && Math.abs(v - prev) > 30) pen = false;
+        dstr += `${pen ? 'L' : 'M'}${x(i + 0.5).toFixed(1)},${y(v).toFixed(1)}`;
+        pen = true;
+      });
+      el('path', { d: dstr, class: 'sun-b-edge' }, svg);
+    }
+  }
+
   // Month labels
   const y0 = dateObj(yearDays[0].dayMs).getUTCFullYear();
   for (let mo = 0; mo < 12; mo++) {
@@ -433,7 +619,13 @@ function drawChart() {
     const d = yearDays[i];
     const cx = x(i + 0.5);
     cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); cross.setAttribute('visibility', 'visible');
-    tip.innerHTML = `<strong>${fmtDate(d.dayMs)}</strong><br>Sunrise ${fmtTime(d[mode].sunrise)}<br>Sunset ${fmtTime(d[mode].sunset)}<br>Daylight ${fmtDuration(d.daylight)}`;
+    if (placeB) {
+      const [nA, nB] = shortNames(), b = bYear[i];
+      const line = (n, x) => `${n}: ${fmtTime(x[mode].sunrise)} to ${fmtTime(x[mode].sunset)} (${fmtDuration(x.daylight)})`;
+      tip.innerHTML = `<strong>${fmtDate(d.dayMs)}</strong><br>${line(nA, d)}<br>${line(nB, b)}`;
+    } else {
+      tip.innerHTML = `<strong>${fmtDate(d.dayMs)}</strong><br>Sunrise ${fmtTime(d[mode].sunrise)}<br>Sunset ${fmtTime(d[mode].sunset)}<br>Daylight ${fmtDuration(d.daylight)}`;
+    }
     tip.hidden = false;
     const wr = wrap.getBoundingClientRect();
     const tw = tip.offsetWidth;
@@ -454,19 +646,19 @@ function drawChart() {
 
 // ------------------------------------------------------------------ search
 
-let searchTimer = null, searchSeq = 0;
+const searchTimer = { a: null, b: null }, searchSeq = { a: 0, b: 0 };
 function placeName(r) { return [r.name, r.admin1, r.country].filter((v, i, a) => v && a.indexOf(v) === i).join(', '); }
 
-async function search(q) {
-  const seq = ++searchSeq;
-  const list = $('#sun-results');
+async function search(q, which = 'a') {
+  const seq = ++searchSeq[which];
+  const list = $(which === 'b' ? '#sun-results-b' : '#sun-results');
   if (q.trim().length < 2) { list.hidden = true; return; }
   let results = [];
   try {
     const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q.trim())}&count=8&language=en&format=json`);
     results = (await r.json()).results || [];
   } catch (e) { results = []; }
-  if (seq !== searchSeq) return;
+  if (seq !== searchSeq[which]) return;
   results = results.filter(r => r.timezone);
   list.innerHTML = results.length
     ? results.map((r, i) => `<li><button type="button" data-i="${i}">${placeName(r)}</button></li>`).join('')
@@ -475,8 +667,32 @@ async function search(q) {
   list.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
     const r = results[+b.dataset.i];
     list.hidden = true;
-    setPlace({ name: placeName(r), lat: r.latitude, lon: r.longitude, tz: r.timezone });
+    const p = { name: placeName(r), lat: r.latitude, lon: r.longitude, tz: r.timezone };
+    if (which === 'b') setPlaceB(p); else setPlace(p);
   }));
+}
+
+function randomCity(avoid) {
+  let c;
+  do { c = CITIES[Math.floor(Math.random() * CITIES.length)]; } while (CITIES.length > 2 && avoid.includes(c[0]));
+  return { name: c[0], lat: c[1], lon: c[2], tz: c[3] };
+}
+
+// Second place on or off. It lives in the URL (place2/lat2/lon2/tz2) so a comparison can be shared.
+function setPlaceB(p, { url = true } = {}) {
+  placeB = p;
+  $('#sun-row-b').hidden = !p && !$('#sun-row-b').dataset.open;
+  $('#sun-compare').hidden = !!p || !!$('#sun-row-b').dataset.open;
+  $('#sun-search-b').value = p ? p.name : '';
+  document.querySelector('.sun-controls').classList.toggle('comparing', !!p || !!$('#sun-row-b').dataset.open);
+  const q = new URLSearchParams(location.search);
+  if (p && url) { q.set('place2', p.name); q.set('lat2', p.lat); q.set('lon2', p.lon); q.set('tz2', p.tz); }
+  else ['place2', 'lat2', 'lon2', 'tz2'].forEach(k => q.delete(k));
+  history.replaceState(null, '', `${location.pathname}${q.toString() ? '?' + q : ''}`);
+  if (!place) return;
+  compute();
+  setModeVisibility();
+  render();
 }
 
 function init() {
@@ -490,18 +706,32 @@ function init() {
   if (!start || !isFinite(start.lat) || !isFinite(start.lon)) start = DEFAULT_PLACE;
   try { S.tzOffset(start.tz, Date.now()); } catch (e) { start = DEFAULT_PLACE; }
 
-  $('#sun-search').addEventListener('input', (e) => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => search(e.target.value), 250);
-  });
-  $('#sun-search').addEventListener('focus', (e) => e.target.select());
+  for (const [which, id] of [['a', '#sun-search'], ['b', '#sun-search-b']]) {
+    $(id).addEventListener('input', (e) => {
+      clearTimeout(searchTimer[which]);
+      searchTimer[which] = setTimeout(() => search(e.target.value, which), 250);
+    });
+    $(id).addEventListener('focus', (e) => e.target.select());
+  }
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.sun-search-wrap')) $('#sun-results').hidden = true;
+    if (!e.target.closest('.sun-field')) { $('#sun-results').hidden = true; $('#sun-results-b').hidden = true; }
   });
-  $('#sun-random').addEventListener('click', () => {
-    let c;
-    do { c = CITIES[Math.floor(Math.random() * CITIES.length)]; } while (CITIES.length > 1 && c[0] === place.name);
-    setPlace({ name: c[0], lat: c[1], lon: c[2], tz: c[3] });
+  $('#sun-random').addEventListener('click', () => setPlace(randomCity([place.name, placeB?.name])));
+  $('#sun-random-b').addEventListener('click', () => {
+    $('#sun-row-b').dataset.open = '1';
+    setPlaceB(randomCity([place.name, placeB?.name]));
+  });
+  $('#sun-compare').addEventListener('click', () => {
+    $('#sun-row-b').dataset.open = '1';
+    $('#sun-row-b').hidden = false;
+    $('#sun-compare').hidden = true;
+    document.querySelector('.sun-controls').classList.add('comparing');
+    $('#sun-search-b').focus();
+  });
+  $('#sun-clear-b').addEventListener('click', () => {
+    delete $('#sun-row-b').dataset.open;
+    $('#sun-results-b').hidden = true;
+    setPlaceB(null);
   });
   $('#sun-locate').addEventListener('click', () => {
     if (!navigator.geolocation) return;
@@ -523,6 +753,10 @@ function init() {
     if (w !== lastW) { lastW = w; drawChart(); drawSky(); drawTimeline(comingUp()); }
   });
 
+  if (q.get('lat2') && q.get('lon2') && q.get('tz2')) {
+    const b = { name: q.get('place2') || 'Second place', lat: +q.get('lat2'), lon: +q.get('lon2'), tz: q.get('tz2') };
+    try { S.tzOffset(b.tz, Date.now()); if (isFinite(b.lat) && isFinite(b.lon)) { $('#sun-row-b').dataset.open = '1'; setPlaceB(b); } } catch (e) { /* bad zone: ignore */ }
+  }
   setPlace(start, { remember: false, url: !!q.get('lat') });
 }
 

@@ -11,19 +11,19 @@ Welcome to my website! This is home base for a lot of my hobbies: writing, ranki
 
 <div class="site-map">
   <a class="site-map-card" href="/blog/">
-    <span class="site-map-title">Blog</span>
+    <span class="site-map-title">Blog <span aria-hidden="true">&#9997;&#65039;</span></span>
     <span class="site-map-desc">Whatever's on my mind, from introspective birthday posts to Mario Kart music rankings. Goes back to 2013, including posts from old websites.</span>
   </a>
   <a class="site-map-card" href="/video-games/">
-    <span class="site-map-title">Games</span>
+    <span class="site-map-title">Games <span aria-hidden="true">&#127918;</span></span>
     <span class="site-map-desc">My favorite game from every year going back to 1990, and an analysis of my gameplay across Nintendo, PlayStation, Steam, and Xbox going back to 2006.</span>
   </a>
   <a class="site-map-card" href="/sports/">
-    <span class="site-map-title">Sports</span>
-    <span class="site-map-desc">My proprietary algorithm to rate basketball, football, soccer, baseball, and hockey teams. Ratings update daily and have archives going back decades.</span>
+    <span class="site-map-title">Sports <span aria-hidden="true">&#128202;</span></span>
+    <span class="site-map-desc">My algorithm to rate basketball, football, soccer, baseball, and hockey teams. Ratings update daily and have archives going back decades.</span>
   </a>
   <a class="site-map-card" href="/other/">
-    <span class="site-map-title">Other Stuff</span>
+    <span class="site-map-title">Other Stuff <span aria-hidden="true">&#129514;</span></span>
     <span class="site-map-desc">Other random projects and ideas that don't fit cleanly in another category. A mix of mundane and insane.</span>
   </a>
   <a class="site-map-card" href="https://mariopaintmusicguy.com/" target="_blank" rel="noopener">
