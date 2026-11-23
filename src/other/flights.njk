@@ -53,7 +53,16 @@ permalink: /flights/
 
 .fl .sport-table { margin: 0; }
 .fl .sport-table .col-num { text-align: center; }
-.fl .sport-table td.nm { white-space: normal; }
+.fl .sport-table th, .fl .sport-table td { white-space: normal; }
+.fl .sport-table td.val, .fl .sport-table td.col-num { white-space: nowrap; }
+.fl-phone-only { display: none; }
+@media (max-width: 700px) { .fl .sport-table .fl-wide-only { display: none; } .fl .sport-table .fl-phone-only { display: table-cell; } }
+@media (max-width: 560px) { .fl .sport-table th, .fl .sport-table td { padding-left: 0.35rem; padding-right: 0.35rem; } }
+@media (max-width: 700px) { .fl .sport-table .fl-logo.sm img { height: 12px; max-width: 52px; } }
+@media (max-width: 400px) {
+  .fl .sport-table th, .fl .sport-table td { padding-left: 0.22rem; padding-right: 0.22rem; }
+  .fl .sport-table .fl-logo img { height: 13px; max-width: 60px; } .fl .sport-table .fl-logo.sm img { height: 11px; max-width: 46px; } .fl .sport-table .fl-logo { padding: 2px 3px; }
+}
 .fl .sport-table a { text-decoration: none; font-weight: 600; }
 .fl .sport-table a:hover { text-decoration: underline; }
 .fl td small { display: block; color: var(--muted); font-size: 0.78rem; font-weight: 400; }
@@ -100,14 +109,27 @@ permalink: /flights/
 .fl-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.6rem 0 0; }
 .fl-badges:empty { display: none; }
 #fl-rankings[hidden], #fl-route-view[hidden], #fl-route-controls[hidden] { display: none; }
-.fl-rk-row .pill-group { margin: 0; }
 .fl-rk-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin: 0.6rem 0; }
 .fl .pill { cursor: pointer; }
 .fl-rk-ap { flex: 0 1 220px; }
-.fl-rk-table td.nm small { display: inline; margin-left: 0.4rem; }
 .fl-rk-table td.nm a, .fl-rk-table td.val { white-space: nowrap; }
-@media (max-width: 560px) { .fl-rk-table td.nm small { display: block; margin-left: 0; } }
 .fl-rk-table td.nm a { font-weight: 600; }
+/* Rankings: one table with every stat, wider than the text column like the sports tables */
+.fl-wide { display: grid; grid-template-columns: minmax(0, max-content); justify-content: center; justify-items: start;
+  width: 100vw; position: relative; left: 50%; margin-left: -50vw; padding: 0 1.5rem; box-sizing: border-box; }
+.fl-wide > table { max-width: 1320px; }
+.fl-rk-table th { white-space: normal; vertical-align: bottom; }
+.fl-rk-table td.nm { min-width: 9rem; }
+.fl-sort { font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
+.fl-sort:hover { text-decoration: underline; }
+@media (max-width: 1100px) { .fl-p2 { display: none; } }
+@media (max-width: 700px) {
+  .fl-p1 { display: none; }
+  .fl-wide { padding: 0 1rem; }
+  .fl-rk-table th, .fl-rk-table td { padding-left: 0.35rem; padding-right: 0.35rem; }
+  .fl-rk-table td.nm { min-width: 0; }
+}
+@media (max-width: 480px) { .fl-p0 { display: none; } .fl-rk-table td { white-space: normal; } }
 .fl-rk-table tr.hl td { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .fl-rk-table tr.gap td { text-align: center; color: var(--muted); border-bottom: 0; }
 .fl-more { margin-top: 0.7rem; }

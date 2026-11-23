@@ -161,24 +161,34 @@ function airportTotals(dir) {
 // What can be ranked. val() is null when there isn't enough data for that stat.
 // hi/lo name each end; lo: null means only the top end is worth ranking.
 const METRICS = [
-  { id: 'busiest', name: 'Busiest', hi: 'busiest', lo: null, all: true, val: (r) => r.f, sh: (v) => num(v) },
-  { id: 'ontime', name: 'On time', hi: 'most on time', lo: 'least on time', val: (r) => r.on / r.f, sh: (v) => p1(100 * v) },
-  { id: 'delayed', name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (r) => r.late / r.f, sh: (v) => p1(100 * v) },
-  { id: 'canceled', name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
-  { id: 'diverted', name: 'Diverted', hi: 'most diverted', lo: null, val: (r) => r.div / r.f, sh: (v) => p1(100 * v) },
-  { id: 'delay', name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
-  { id: 'padding', name: 'Schedule padding', hi: 'most padded schedule', lo: 'least padded schedule', val: (r) => (r.arr >= 20 ? (r.sched - r.act) / r.arr : null), sh: (v) => `${Math.abs(Math.round(v))} min ${v >= 0 ? 'early' : 'late'}` },
-  { id: 'distance', name: 'Distance', hi: 'longest', lo: 'shortest', val: (r) => r.dist, sh: (v) => `${num(v)} mi` },
-  { id: 'airlines', name: 'Airlines', hi: 'most airlines', lo: null, val: (r) => r.brands.size, sh: (v) => String(v) },
+  { id: 'busiest', name: 'Busiest', col: 'Flights', hi: 'busiest', lo: null, all: true, val: (r) => r.f, sh: (v) => num(v) },
+  { id: 'ontime', pri: 1, name: 'On time', hi: 'most on time', lo: 'least on time', val: (r) => r.on / r.f, sh: (v) => p1(100 * v) },
+  { id: 'delayed', pri: 2, name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (r) => r.late / r.f, sh: (v) => p1(100 * v) },
+  { id: 'canceled', pri: 2, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
+  { id: 'diverted', pri: 2, name: 'Diverted', hi: 'most diverted', lo: null, val: (r) => r.div / r.f, sh: (v) => p1(100 * v) },
+  { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
+  { id: 'padding', pri: 2, name: 'Schedule padding', hi: 'most padded schedule', lo: 'least padded schedule', val: (r) => (r.arr >= 20 ? (r.sched - r.act) / r.arr : null), sh: (v) => `${Math.abs(Math.round(v))} min ${v >= 0 ? 'early' : 'late'}` },
+  { id: 'distance', p0: true, name: 'Distance', hi: 'longest', lo: 'shortest', val: (r) => r.dist, sh: (v) => `${num(v)} mi` },
+  { id: 'airlines', pri: 2, name: 'Airlines', hi: 'most airlines', lo: null, val: (r) => r.brands.size, sh: (v) => String(v) },
 ];
 // Airports: on time, cancellations, and delays are for departures
 const AMETRICS = [
-  { id: 'busiest', name: 'Busiest', hi: 'busiest', lo: null, all: true, val: (r) => r.f + r.inF, sh: (v) => num(v) },
-  { id: 'ontime', name: 'On time', hi: 'most on time', lo: 'least on time', val: (r) => r.on / r.f, sh: (v) => p1(100 * v) },
-  { id: 'canceled', name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
-  { id: 'delay', name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
-  { id: 'routes', name: 'Destinations', hi: 'most destinations', lo: null, all: true, val: (r) => r.dests.size, sh: (v) => String(v) },
-  { id: 'airlines', name: 'Airlines', hi: 'most airlines', lo: null, all: true, val: (r) => r.brands.size, sh: (v) => String(v) },
+  { id: 'busiest', name: 'Busiest', col: 'Flights', hi: 'busiest', lo: null, all: true, val: (r) => r.f + r.inF, sh: (v) => num(v) },
+  { id: 'ontime', p0: true, name: 'On time', hi: 'most on time', lo: 'least on time', val: (r) => r.on / r.f, sh: (v) => p1(100 * v) },
+  { id: 'canceled', pri: 1, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
+  { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
+  { id: 'routes', pri: 1, name: 'Destinations', hi: 'most destinations', lo: null, all: true, val: (r) => r.dests.size, sh: (v) => String(v) },
+  { id: 'airlines', pri: 1, name: 'Airlines', hi: 'most airlines', lo: null, all: true, val: (r) => r.brands.size, sh: (v) => String(v) },
+];
+// Airlines: v is an entry in the airline index
+const ALMETRICS = [
+  { id: 'busiest', name: 'Flights', hi: 'most flights', lo: 'fewest flights', val: (v) => v.c[0], sh: (x) => num(x) },
+  { id: 'ontime', p0: true, name: 'On time', hi: 'most on time', lo: 'least on time', val: (v) => v.c[1] / v.c[0], sh: (x) => p1(100 * x) },
+  { id: 'delayed', pri: 1, name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (v) => v.c[2] / v.c[0], sh: (x) => p1(100 * x) },
+  { id: 'canceled', pri: 1, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (v) => v.c[3] / v.c[0], sh: (x) => p1(100 * x) },
+  { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (v) => (v.c[2] ? v.c[5] / v.c[2] : null), sh: (x) => `${Math.round(x)} min` },
+  { id: 'routes', pri: 1, name: 'Routes', hi: 'most routes', lo: 'fewest routes', val: (v) => v.nr, sh: (x) => num(x) },
+  { id: 'airports', pri: 1, name: 'Airports', hi: 'most airports', lo: 'fewest airports', val: (v) => v.na, sh: (x) => num(x) },
 ];
 const routeMetric = (id) => METRICS.find((m) => m.id === id);
 const airportMetric = (id) => AMETRICS.find((m) => m.id === id);
@@ -290,16 +300,20 @@ function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day') {
   }
   const brands = [...new Set(Object.values(mixByYear || {}).flatMap((m) => Object.keys(m)))]
     .sort((x, y) => Object.values(mixByYear).reduce((s, m) => s + (m[y] || 0), 0) - Object.values(mixByYear).reduce((s, m) => s + (m[x] || 0), 0));
+  // Top five airlines plus Other; phones keep the top three plus their own Other
+  const top = brands.slice(0, 5), many = brands.length > 5, phoneCut = brands.length > 3;
+  const share = (m, tot, bs) => { const x = bs.reduce((s, b) => s + (m[b] || 0), 0); return x ? `${Math.round(pct(x, tot))}%` : '-'; };
   const mixRows = per.filter((p) => mixByYear?.[p.k]).map((p) => {
     const m = mixByYear[p.k], tot = Object.values(m).reduce((s, x) => s + x, 0);
-    return `<tr><td>${p.k}</td>${brands.map((b) => `<td>${m[b] ? `${Math.round(pct(m[b], tot))}%` : '-'}</td>`).join('')}</tr>`;
+    return `<tr><td>${p.k}</td>${top.map((b, i) => `<td class="${i >= 3 ? 'fl-wide-only' : ''}">${m[b] ? `${Math.round(pct(m[b], tot))}%` : '-'}</td>`).join('')}${many ? `<td class="fl-wide-only">${share(m, tot, brands.slice(5))}</td>` : ''}${phoneCut ? `<td class="fl-phone-only">${share(m, tot, brands.slice(3))}</td>` : ''}</tr>`;
   });
+  const mixHead = [['Year'], ...top.map((b, i) => [LOGOS.has(b) ? logo(b, 'sm') : esc(airlineName(b)), i >= 3 ? 'fl-wide-only' : '']), ...(many ? [['Other', 'fl-wide-only']] : []), ...(phoneCut ? [['Other', 'fl-phone-only']] : [])];
   return `<h2>Trends</h2>${selected ? `<p class="fl-note fl-lead">Selected year${picked.size > 1 ? 's are' : ' is'} highlighted</p>` : ''}
     <div class="fl-charts">
       ${barChart(title, per, yl, { min: 0, scale: true, plain: true, value: (x) => x.perDay, cls: (x) => out(x.k), note: nF, tip: (x, v) => `${yl(x.k)}: ${v.toFixed(1)} a day` })}
       ${barChart('On time', per, yl, { plain: true, cls: (x) => out(x.k), note: nO, tip: (x, v) => `${yl(x.k)}: ${p1(v)} on time` })}
     </div>
-    ${brands.length > 1 ? `<h3>${mixLabel}</h3>${tableHTML([['Year'], ...brands.map((b) => [LOGOS.has(b) ? logo(b, 'sm') : esc(airlineName(b))])], mixRows)}` : ''}`;
+    ${brands.length > 1 ? `<h3>${mixLabel}</h3>${tableHTML(mixHead, mixRows)}` : ''}`;
 }
 
 // ------------------------------------------------------------------ route page
@@ -492,63 +506,62 @@ async function renderRankings() {
       .filter(([k, r]) => (!rk.fal || r.brands.has(rk.fal)) && (!rk.fap || k.split('-').includes(rk.fap)));
   }
   list.sort((a, b) => (rk.lo ? m.val(a[1]) - m.val(b[1]) : m.val(b[1]) - m.val(a[1])) || b[1].f - a[1].f);
-  let lastV = null, lastRank = 0;
-  const ranked = list.map(([k, r], i) => { const v = m.val(r); if (v !== lastV) { lastRank = i + 1; lastV = v; } return { k, r, v, rank: lastRank }; });
+  const ranked = withRanks(list, m);
   const nameCell = (k) => {
     if (tab === 'airports') return MARKETS[k] ? `<a href="#" data-go="airports" data-ap="${k}" data-cities="1">${esc(unitName(k))}</a><small>${unitCodes(k).join(', ')}</small>` : `${linkAirport(k)}<small>${esc(city(k))}</small>`;
     const [a, b] = k.split('-');
     return `${linkRoute(a, b, `${a} ${state.both ? '⇄' : '→'} ${b}`)}<small>${esc(city(a))} ${state.both ? 'and' : 'to'} ${esc(city(b))}</small>`;
   };
-  const traffic = m.id !== 'busiest';
-  const row = (x, cls = '') => `<tr class="${cls}"><td class="col-rank col-num">${num(x.rank)}</td><td class="nm">${nameCell(x.k)}</td><td class="col-num val">${m.sh(x.v)}</td>${traffic ? `<td class="hide-sm">${num(tab === 'airports' ? x.r.f + x.r.inF : x.r.f)}</td>` : ''}</tr>`;
   const shown = ranked.slice(0, rk.n);
-  let body = shown.map((x) => row(x, x.k === rk.hl ? 'hl' : '')).join('');
   const hlRow = rk.hl && !shown.some((x) => x.k === rk.hl) ? ranked.find((x) => x.k === rk.hl) : null;
-  if (hlRow) body += `<tr class="gap"><td colspan="${traffic ? 4 : 3}">&hellip;</td></tr>${row(hlRow, 'hl')}`;
   const brandList = [...allBrands].sort((a, b) => airlineName(a).localeCompare(airlineName(b)));
   const scope = tab === 'airports' ? (state.cities ? 'cities and airports' : 'airports') : state.both ? 'round trips' : 'routes';
   const minNote = m.all ? '' : tab === 'airports' ? ' with a departure a day' : ` with a flight a day${state.both ? ' each way' : ''}`;
+  const nameHead = tab === 'airports' ? (state.cities ? 'City or airport' : 'Airport') : 'Route';
 
-  return `<div class="pill-group" role="group" aria-label="Stat">${metrics.map((x) => `<button type="button" class="pill${x.id === m.id ? ' active' : ''}" data-m="${x.id}">${x.name}</button>`).join('')}</div>
-    <div class="fl-rk-row">
-      ${orderPills(m, rk.lo)}
+  return `<div class="fl-rk-row">
       ${tab === 'routes' ? `<div class="fl-field fl-rk-ap"><input id="fl-rk-ap" type="text" autocomplete="off" placeholder="Any airport" aria-label="Airport" value="${rk.fap ? esc(`${rk.fap} (${city(rk.fap)})`) : ''}"><ul class="fl-list" id="fl-rk-ap-list" hidden></ul></div>` : ''}
       <select id="fl-rk-al" aria-label="Airline"><option value="">All airlines</option>${brandList.map((b) => `<option value="${b}"${b === rk.fal ? ' selected' : ''}>${esc(airlineName(b))}</option>`).join('')}</select>
     </div>
-    ${ranked.length ? tableHTML([['Rank', 'col-rank col-num'], [tab === 'airports' ? (state.cities ? 'City or airport' : 'Airport') : 'Route', 'nm'], [m.name, 'col-num'], ...(traffic ? [['Flights', 'hide-sm']] : [])], [body], 'fl-rk-table') : '<p class="fl-sub">Nothing matches these filters</p>'}
+    ${ranked.length ? rankTable(metrics, m, rk.lo, nameHead, shown, hlRow, nameCell) : '<p class="fl-sub">Nothing matches these filters</p>'}
     ${ranked.length > rk.n ? `<button class="pill fl-more" type="button" data-more="rank">Show more</button>` : ''}
     <p class="fl-note">${num(ranked.length)} ${scope}${minNote}</p>`;
 }
 
-function orderPills(m, lo) {
-  return m.lo ? `<div class="pill-group" role="group" aria-label="Order"><button type="button" data-lo="0" class="pill${lo ? '' : ' active'}">${cap(m.hi)}</button><button type="button" data-lo="1" class="pill${lo ? ' active' : ''}">${cap(m.lo)}</button></div>` : '';
+// Equal values share a rank
+function withRanks(list, m) {
+  let lastV = null, lastRank = 0;
+  return list.map(([k, r], i) => { const v = m.val(r); if (v !== lastV) { lastRank = i + 1; lastV = v; } return { k, r, rank: lastRank }; });
 }
 
-// Airlines are few enough to rank on every stat at once
+// One table with every stat; click a header to rank by it, again to flip it.
+// Phones drop the lower-priority columns, never the ranked one.
+function rankTable(cols, m, lo, nameHead, rows, hlRow, nameCell) {
+  // On the narrowest phones, ranking by a lower-priority stat bumps the p0 column
+  const cls = (c) => ['col-num', c === m ? 'sort-active' : c.pri ? `fl-p${c.pri}` : c.p0 && m.pri ? 'fl-p0' : ''].filter(Boolean).join(' ');
+  const head = `<tr><th class="col-rank col-num">Rank</th><th class="nm">${nameHead}</th>${cols.map((c) => {
+    const nextLo = c === m && c.lo ? !lo : false;
+    const arrow = c === m ? ` <span class="sort-arrow">${lo ? '&uarr;' : '&darr;'}</span>` : '';
+    return `<th class="${cls(c)}"><button type="button" class="fl-sort" data-m="${c.id}" data-l="${nextLo ? 1 : 0}" title="${esc(cap(c === m && c.lo ? (lo ? c.hi : c.lo) : c.hi))}">${c.col || c.name}${arrow}</button></th>`;
+  }).join('')}</tr>`;
+  const row = (x, hl) => `<tr class="${hl ? 'hl' : ''}"><td class="col-rank col-num">${num(x.rank)}</td><td class="nm">${nameCell(x.k)}</td>${cols.map((c) => {
+    const v = c.val(x.r);
+    return `<td class="${cls(c)}">${v === null || !Number.isFinite(v) ? '-' : c.sh(v)}</td>`;
+  }).join('')}</tr>`;
+  let body = rows.map((x) => row(x, x.k === state.rk.hl)).join('');
+  if (hlRow) body += `<tr class="gap"><td colspan="${cols.length + 2}">&hellip;</td></tr>${row(hlRow, true)}`;
+  return `<div class="fl-wide"><table class="sport-table fl-rk-table"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+
+// Airlines are few enough to show them all
 async function renderAirlineCompare() {
   const index = airlineIndex(await Promise.all(windows().map((w) => getJSON(`y/${w}/al/index.json`))));
-  const cols = [
-    { id: 'busiest', name: 'Flights', hi: 'most flights', lo: 'fewest flights', val: (v) => v.c[0], sh: (x) => num(x) },
-    { id: 'ontime', name: 'On time', hi: 'most on time', lo: 'least on time', val: (v) => v.c[1] / v.c[0], sh: (x) => p1(100 * x) },
-    { id: 'delayed', name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (v) => v.c[2] / v.c[0], sh: (x) => p1(100 * x), cls: 'hide-sm' },
-    { id: 'canceled', name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (v) => v.c[3] / v.c[0], sh: (x) => p1(100 * x) },
-    { id: 'delay', name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (v) => (v.c[2] ? v.c[5] / v.c[2] : 0), sh: (x) => `${Math.round(x)} min`, cls: 'hide-sm' },
-    { id: 'routes', name: 'Routes', hi: 'most routes', lo: 'fewest routes', val: (v) => v.nr, sh: (x) => num(x), cls: 'hide-sm' },
-    { id: 'airports', name: 'Airports', hi: 'most airports', lo: 'fewest airports', val: (v) => v.na, sh: (x) => num(x), cls: 'hide-sm' },
-  ];
   const rk = state.rk;
-  const m = cols.find((c) => c.id === rk.m) || cols[0];
+  const m = ALMETRICS.find((c) => c.id === rk.m) || ALMETRICS[0];
   rk.m = m.id;
-  const rows = Object.entries(index).sort((a, b) => (rk.lo ? m.val(a[1]) - m.val(b[1]) : m.val(b[1]) - m.val(a[1])));
-  let lastV = null, lastRank = 0;
-  const ranks = rows.map(([, v], i) => { const x = m.val(v); if (x !== lastV) { lastRank = i + 1; lastV = x; } return lastRank; });
-  // The ranked column always shows, even where phones drop the others
-  const cellCls = (c) => [c === m ? 'sort-active' : c.cls, 'col-num'].filter(Boolean).join(' ');
-  const head = `<tr><th class="col-rank col-num">Rank</th><th>Airline</th>${cols.map((c) => `<th class="${cellCls(c)}">${c.name}${c === m ? ` <span class="sort-arrow">${rk.lo ? '&uarr;' : '&darr;'}</span>` : ''}</th>`).join('')}</tr>`;
-  const body = rows.map(([b, v], i) => `<tr><td class="col-rank col-num">${ranks[i]}</td><td>${linkAirline(b)}</td>${cols.map((c) => `<td class="${cellCls(c)}">${c.sh(c.val(v))}</td>`).join('')}</tr>`).join('');
-  return `<div class="pill-group" role="group" aria-label="Stat">${cols.map((c) => `<button type="button" class="pill${c === m ? ' active' : ''}" data-m="${c.id}">${c.name}</button>`).join('')}</div>
-    <div class="fl-rk-row">${orderPills(m, rk.lo)}</div>
-    <div class="fl-scroll"><table class="sport-table fl-compare"><thead>${head}</thead><tbody>${body}</tbody></table></div>
+  if (!m.lo) rk.lo = false;
+  const list = Object.entries(index).sort((a, b) => (rk.lo ? m.val(a[1]) - m.val(b[1]) : m.val(b[1]) - m.val(a[1])));
+  return `${rankTable(ALMETRICS, m, rk.lo, 'Airline', withRanks(list, m), null, linkAirline)}
     <p class="fl-note">Regional partners count toward the airline you'd buy the ticket from</p>`;
 }
 
@@ -698,8 +711,7 @@ async function init() {
       if (t.dataset.al) state.al = t.dataset.al;
       window.scrollTo(0, 0);
     } else if (t.classList.contains('fl-al-pick')) state.al = t.dataset.al;
-    else if (t.dataset.m) { rk.m = t.dataset.m; rk.lo = false; rk.n = 25; rk.hl = ''; }
-    else if (t.dataset.lo !== undefined) { rk.lo = t.dataset.lo === '1'; rk.n = 25; }
+    else if (t.dataset.m) { if (rk.m !== t.dataset.m) { rk.n = 25; rk.hl = ''; } rk.m = t.dataset.m; rk.lo = t.dataset.l === '1'; }
     else if (t.dataset.more === 'rank') rk.n += 50;
     else if (t.dataset.more === 'dests') {   // expands in place, no re-render
       document.querySelector('.fl-dest tbody').innerHTML = allDestRows;
