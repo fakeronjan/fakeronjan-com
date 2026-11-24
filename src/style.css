@@ -1978,6 +1978,8 @@ button.gh-year:hover { text-decoration: underline; }
 .gh-table th { vertical-align: bottom; }
 .gh-unlock { display: flex; gap: 0.6rem; align-items: flex-start; }
 .gh-unlock img, .gh-unlock-blank { width: 32px; height: 32px; border-radius: 4px; flex: none; object-fit: contain; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.gh-unlock-apple { display: grid; place-items: center; }
+.gh-unlock-apple svg { width: 60%; height: 60%; fill: var(--gh-apple); }
 .gh-desc { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 0.1rem; max-width: 42ch; }
 .gh-after { margin-top: 0.75rem; }
 .gh-moment { display: block; padding: 0; border: none; background: none; cursor: zoom-in; width: 8rem; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; }
