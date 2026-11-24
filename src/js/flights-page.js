@@ -273,8 +273,35 @@ function bestWorstHTML(sorted, link) {
 function funHTML(facts) {
   return facts.length ? `<h2>Fun facts</h2><div class="fl-fun">${facts.map(([k, v, s]) => `<div><small>${k}</small><b>${v}</b><span>${s}</span></div>`).join('')}</div>` : '';
 }
-function tableHTML(head, rows, cls = '') {
-  return `<div class="fl-scroll"><table class="sport-table ${cls}"><thead><tr>${head.map(([h, c]) => `<th class="${c || ''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+// Every table sorts by clicking a header, like the rankings: numbers start highest first, names
+// A to Z, and a second click flips it. `by` is the column the rows arrive sorted by (Flights,
+// unless said otherwise), so it starts highlighted.
+function tableHTML(head, rows, cls = '', by = 1, asc = false) {
+  return `<div class="fl-scroll"><table class="sport-table fl-sortable ${cls}" data-by="${by}" data-asc="${asc ? 1 : 0}"><thead><tr>${head.map(([h, c], i) => `<th class="${c || ''}"><button type="button" class="fl-sort fl-tsort" data-ti="${i}">${h}</button></th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+const cellNum = (td) => { const t = td.textContent.replace(/[,%]/g, '').trim(); const v = parseFloat(t); return /^-?\d/.test(t) && Number.isFinite(v) ? v : null; };
+// Puts the arrow and highlight on table's sorted column; with `resort`, also reorders the rows
+function markSort(table, resort) {
+  const i = +table.dataset.by, asc = table.dataset.asc === '1';
+  const tbody = table.tBodies[0], trs = [...tbody.rows];
+  if (resort) {
+    const cells = trs.map((tr) => tr.cells[i]);
+    const numeric = cells.filter((td) => cellNum(td) !== null).length >= cells.length / 2;
+    const key = (tr) => (numeric ? cellNum(tr.cells[i]) : tr.cells[i].textContent.trim().toLowerCase());
+    trs.sort((a, b) => {
+      const x = key(a), y = key(b);
+      if (x === null || y === null) return x === null ? (y === null ? 0 : 1) : -1;   // "-" sorts last either way
+      const d = numeric ? x - y : x.localeCompare(y);
+      return asc ? d : -d;
+    });
+    tbody.append(...trs);
+  }
+  table.querySelectorAll('th').forEach((th, j) => {
+    th.classList.toggle('sort-active', j === i);
+    th.querySelector('.sort-arrow')?.remove();
+    if (j === i) th.querySelector('button').insertAdjacentHTML('beforeend', ` <span class="sort-arrow">${asc ? '&uarr;' : '&darr;'}</span>`);
+  });
+  trs.forEach((tr) => [...tr.cells].forEach((td, j) => td.classList.toggle('sort-active', j === i)));
 }
 const flightLabel = (x) => `${airlineName(x.airline)} ${x.flight}`;
 const tailFact = (tl, what) => {
@@ -313,7 +340,7 @@ function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day') {
       ${barChart(title, per, yl, { min: 0, scale: true, plain: true, value: (x) => x.perDay, cls: (x) => out(x.k), note: nF, tip: (x, v) => `${yl(x.k)}: ${v.toFixed(1)} a day` })}
       ${barChart('On time', per, yl, { plain: true, cls: (x) => out(x.k), note: nO, tip: (x, v) => `${yl(x.k)}: ${p1(v)} on time` })}
     </div>
-    ${brands.length > 1 ? `<h3>${mixLabel}</h3>${tableHTML(mixHead, mixRows)}` : ''}`;
+    ${brands.length > 1 ? `<h3>${mixLabel}</h3>${tableHTML(mixHead, mixRows, '', 0, true)}` : ''}`;
 }
 
 // ------------------------------------------------------------------ route page
@@ -608,6 +635,7 @@ async function update() {
     : state.tab === 'airports' ? await renderAirport() : state.tab === 'airlines' ? await renderAirline() : await renderRoute();
   if (seq !== renderSeq) return;   // a newer click already took over
   $('#fl-main').innerHTML = html;
+  document.querySelectorAll('#fl-main .fl-sortable').forEach((t) => markSort(t, false));
   if (state.mode === 'rank' && state.tab === 'routes') setupSearch('#fl-rk-ap', '#fl-rk-ap-list', (c) => { state.rk.fap = c; state.rk.n = 25; state.rk.hl = ''; update(); });
   if (state.rk.hl) document.querySelector('.fl-rk-table tr.hl')?.scrollIntoView({ block: 'center' });
 }
@@ -685,6 +713,15 @@ async function init() {
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.fl-field')) document.querySelectorAll('.fl-list').forEach((l) => { l.hidden = true; });
+    const ts = e.target.closest('.fl-tsort');
+    if (ts) {   // sorts in place, no re-render
+      const table = ts.closest('table'), i = +ts.dataset.ti;
+      const numeric = [...table.tBodies[0].rows].filter((tr) => cellNum(tr.cells[i]) !== null).length >= table.tBodies[0].rows.length / 2;
+      table.dataset.asc = +table.dataset.by === i ? (table.dataset.asc === '1' ? 0 : 1) : (numeric ? 0 : 1);
+      table.dataset.by = i;
+      markSort(table, true);
+      return;
+    }
     const t = e.target.closest('[data-tab], [data-mode], [data-d], #fl-cities [data-c], [data-go], [data-badge], [data-m], [data-lo], [data-more], .fl-al-pick');
     if (!t || !t.closest('.fl')) return;
     e.preventDefault();
@@ -715,6 +752,7 @@ async function init() {
     else if (t.dataset.more === 'rank') rk.n += 50;
     else if (t.dataset.more === 'dests') {   // expands in place, no re-render
       document.querySelector('.fl-dest tbody').innerHTML = allDestRows;
+      markSort(document.querySelector('.fl-dest'), true);   // keep whatever sort was picked
       t.hidden = true;
       return;
     }
