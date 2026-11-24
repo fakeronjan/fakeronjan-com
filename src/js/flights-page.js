@@ -277,6 +277,14 @@ function funHTML(facts) {
 // Every table sorts by clicking a header, like the rankings: numbers start highest first, names
 // A to Z, and a second click flips it. `by` is the column the rows arrive sorted by (Flights,
 // unless said otherwise), so it starts highlighted.
+// FlightAware's flight finder for the route, to find an upcoming or live flight (Ronjan 11/24).
+// It takes airport codes, so city-to-city routes get no link.
+const faURL = (o, d) => `https://www.flightaware.com/live/findflight?origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}`;
+function faLinks(A, B, both) {
+  if (MARKETS[A] || MARKETS[B]) return '';
+  const a = (o, d, t) => `<a href="${faURL(o, d)}" target="_blank" rel="noopener">${t} &#8599;</a>`;
+  return ` <span class="fl-fa">&middot; ${both ? `${a(A, B, `${A} to ${B}`)} &middot; ${a(B, A, `${B} to ${A}`)}` : a(A, B, 'Live flights on FlightAware')}</span>`;
+}
 function tableHTML(head, rows, cls = '', by = 1, asc = false) {
   return `<div class="fl-scroll"><table class="sport-table fl-sortable ${cls}" data-by="${by}" data-asc="${asc ? 1 : 0}"><thead><tr>${head.map(([h, c], i) => `<th class="${c || ''}"><button type="button" class="fl-sort fl-tsort" data-ti="${i}">${h}</button></th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 }
@@ -392,7 +400,7 @@ async function renderRoute() {
   if (r.ld?.delay > 0) facts.push(['Longest delay', dur(r.ld.delay), `${flightLabel(r.ld)}, ${fmtDate(r.ld.date)}${dirOf(r.ld)}`]);
   const tf = tailFact(r.tl, 'on this route'); if (tf) facts.push(tf);
 
-  return `${head}<p class="fl-sub">${esc(`${city(A)} ${both ? 'and' : 'to'} ${city(B)}, ${num(r.d)} miles`)} ${B_('distance')}</p>
+  return `${head}<p class="fl-sub">${esc(`${city(A)} ${both ? 'and' : 'to'} ${city(B)}, ${num(r.d)} miles`)} ${B_('distance')}${faLinks(A, B, both)}</p>
     ${factsHTML([['Flights', num(f), B_('busiest')], ['Per day', perDay(f / periodDays())], ['Airlines', brands.size, B_('airlines')],
       ['Scheduled time', dur(r.t[0] / r.t[2])], ['Actual time', dur(r.t[1] / r.t[2]), B_('padding')], ['Avg delay when late', late ? `${Math.round(dmin / late)} min` : '-', B_('delay')]])}
     <h2>On time</h2>${onTimeHTML(r.c, ['ontime', 'delayed', 'canceled', 'diverted'].map(B_).join(''), lines)}
