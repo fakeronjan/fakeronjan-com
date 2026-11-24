@@ -161,24 +161,24 @@ function airportTotals(dir) {
 // What can be ranked. val() is null when there isn't enough data for that stat.
 // hi/lo name each end; lo: null means only the top end is worth ranking.
 const METRICS = [
-  { id: 'busiest', name: 'Busiest', col: 'Flights', hi: 'busiest', lo: null, all: true, val: (r) => r.f, sh: (v) => num(v) },
+  { id: 'busiest', name: 'Busiest', col: 'Flights', hi: 'busiest', noLoBadge: true, lo: 'least busy', all: true, val: (r) => r.f, sh: (v) => num(v) },
   { id: 'ontime', pri: 1, name: 'On time', hi: 'most on time', lo: 'least on time', val: (r) => r.on / r.f, sh: (v) => p1(100 * v) },
   { id: 'delayed', pri: 2, name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (r) => r.late / r.f, sh: (v) => p1(100 * v) },
   { id: 'canceled', pri: 2, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
-  { id: 'diverted', pri: 2, name: 'Diverted', hi: 'most diverted', lo: null, val: (r) => r.div / r.f, sh: (v) => p1(100 * v) },
+  { id: 'diverted', pri: 2, name: 'Diverted', hi: 'most diverted', noLoBadge: true, lo: 'least diverted', val: (r) => r.div / r.f, sh: (v) => p1(100 * v) },
   { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
   { id: 'padding', pri: 2, name: 'Schedule padding', hi: 'most padded schedule', lo: 'least padded schedule', val: (r) => (r.arr >= 20 ? (r.sched - r.act) / r.arr : null), sh: (v) => `${Math.abs(Math.round(v))} min ${v >= 0 ? 'early' : 'late'}` },
   { id: 'distance', p0: true, name: 'Distance', hi: 'longest', lo: 'shortest', val: (r) => r.dist, sh: (v) => `${num(v)} mi` },
-  { id: 'airlines', pri: 2, name: 'Airlines', hi: 'most airlines', lo: null, val: (r) => r.brands.size, sh: (v) => String(v) },
+  { id: 'airlines', pri: 2, name: 'Airlines', hi: 'most airlines', noLoBadge: true, lo: 'fewest airlines', val: (r) => r.brands.size, sh: (v) => String(v) },
 ];
 // Airports: on time, cancellations, and delays are for departures
 const AMETRICS = [
-  { id: 'busiest', name: 'Busiest', col: 'Flights', hi: 'busiest', lo: null, all: true, val: (r) => r.f + r.inF, sh: (v) => num(v) },
+  { id: 'busiest', name: 'Busiest', col: 'Flights', hi: 'busiest', noLoBadge: true, lo: 'least busy', all: true, val: (r) => r.f + r.inF, sh: (v) => num(v) },
   { id: 'ontime', p0: true, name: 'On time', hi: 'most on time', lo: 'least on time', val: (r) => r.on / r.f, sh: (v) => p1(100 * v) },
   { id: 'canceled', pri: 1, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
   { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
-  { id: 'routes', pri: 1, name: 'Destinations', hi: 'most destinations', lo: null, all: true, val: (r) => r.dests.size, sh: (v) => String(v) },
-  { id: 'airlines', pri: 1, name: 'Airlines', hi: 'most airlines', lo: null, all: true, val: (r) => r.brands.size, sh: (v) => String(v) },
+  { id: 'routes', pri: 1, name: 'Destinations', hi: 'most destinations', noLoBadge: true, lo: 'fewest destinations', all: true, val: (r) => r.dests.size, sh: (v) => String(v) },
+  { id: 'airlines', pri: 1, name: 'Airlines', hi: 'most airlines', noLoBadge: true, lo: 'fewest airlines', all: true, val: (r) => r.brands.size, sh: (v) => String(v) },
 ];
 // Airlines: v is an entry in the airline index
 const ALMETRICS = [
@@ -211,7 +211,8 @@ function rankOf(list, key, m, fromTop) {
 // A badge when notable: #1-10, then top 10%, then top 20%, from either end
 function badge(list, key, m, tab) {
   let best = null;
-  for (const [label, fromTop] of [[m.hi, true], ...(m.lo ? [[m.lo, false]] : [])]) {
+  // The low end of these is a huge tie (one flight, 0% diverted, one airline), so it sorts but never badges
+  for (const [label, fromTop] of [[m.hi, true], ...(m.lo && !m.noLoBadge ? [[m.lo, false]] : [])]) {
     const r = rankOf(list, key, m, fromTop);
     if (!r) return '';
     const p = r.rank / r.of;

@@ -118,6 +118,13 @@ permalink: /flights/
 .fl-wide { display: grid; grid-template-columns: minmax(0, max-content); justify-content: center; justify-items: start;
   width: 100vw; position: relative; left: 50%; margin-left: -50vw; padding: 0 1.5rem; box-sizing: border-box; }
 .fl-wide > table { max-width: 1320px; }
+/* Fixed column widths, so flipping or changing the sort (different names on screen) never resizes
+   the table (Ronjan 11/24): full width up to 1320px, rank and name set, stats share the rest */
+.fl-wide:has(> .fl-rk-table) { grid-template-columns: minmax(0, 1320px); justify-items: stretch; }
+.fl-rk-table { table-layout: fixed; width: 100%; }
+.fl-rk-table th.col-rank { width: 3.6rem; }
+.fl-rk-table th.nm { width: 24%; }
+.fl-rk-table td.nm { overflow-wrap: anywhere; }
 .fl-rk-table th { white-space: normal; vertical-align: bottom; }
 .fl-rk-table td.nm { min-width: 9rem; }
 .fl-sort { font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
@@ -128,8 +135,10 @@ permalink: /flights/
   .fl-wide { padding: 0 1rem; }
   .fl-rk-table th, .fl-rk-table td { padding-left: 0.35rem; padding-right: 0.35rem; }
   .fl-rk-table td.nm { min-width: 0; }
+  .fl-rk-table th.col-rank { width: 2.9rem; }
+  .fl-rk-table th.nm { width: 34%; }
 }
-@media (max-width: 480px) { .fl-p0 { display: none; } .fl-rk-table td { white-space: normal; } }
+@media (max-width: 480px) { .fl-p0 { display: none; } .fl-rk-table td { white-space: normal; } .fl-rk-table th.nm { width: 37%; } .fl-rk-table td.nm a { white-space: normal; } .fl-rk-table th, .fl-rk-table td { padding-left: 0.25rem; padding-right: 0.25rem; } }
 .fl-rk-table tr.hl td { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .fl-rk-table tr.gap td { text-align: center; color: var(--muted); border-bottom: 0; }
 .fl-more { margin-top: 0.7rem; }
