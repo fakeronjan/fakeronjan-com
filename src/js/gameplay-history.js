@@ -9,8 +9,9 @@
   // Alphabetical everywhere platforms are listed: legends, pills, lanes, and table cells
   var FAMILIES = ["Apple", "Meta", "Nintendo", "PlayStation", "Steam", "Xbox"];
   var LANE = { Apple: 0, Meta: 1, Nintendo: 2, PlayStation: 3, Steam: 4, Xbox: 5 };
-  // Apple has screenshots only and Meta has no achievement names: no Trophy Room pill for either
-  var UNLOCK_FAMILIES = FAMILIES.filter(function (f) { return f !== "Apple" && f !== "Meta"; });
+  // Meta has no achievement names: no Trophy Room pill. Apple has Game Center achievements
+  // from the 2026-11-24 data export (no rarity, descriptions, or icons)
+  var UNLOCK_FAMILIES = FAMILIES.filter(function (f) { return f !== "Meta"; });
   var MONTHS = "JFMAMJJASOND";
   var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var KIND_ORDER = { platinum: 4, master: 3.5, gold: 3, silver: 2, bronze: 1 };  // master: Zelda Notes medals
@@ -166,7 +167,7 @@
     { test: function (g) { return g.family === "PlayStation" && /PS4|PS5/.test(g.label); }, text: "PS4, PS5: Counts days with a trophy, plus first and last played" },
     { test: function (g) { return g.family === "Steam" || (g.family === "Xbox" && !/360/.test(g.label)); }, text: "Steam, Xbox One, Series X|S: Counts days with an achievement, plus last played" },
     { test: function (g) { return g.family === "Xbox" && /360/.test(g.label); }, text: "360: Counts days with an achievement" },
-    { test: function (g) { return g.family === "Apple"; }, text: "iOS: Counts days with a screenshot" },
+    { test: function (g) { return g.family === "Apple"; }, text: "iOS: Counts days with a screenshot, achievement, or Game Center launch, plus last played" },
     { test: function (g) { return g.family === "Meta"; }, text: "Quest: Counts days with a first save or a new Beat Saber song" },
   ];
   function dayNotes(groups) {
@@ -200,7 +201,7 @@
   }
 
   function familyOfEntry(entryId) {
-    return { psn: "PlayStation", xbox: "Xbox", steam: "Steam", nintendo: "Nintendo", ios: "Apple", meta: "Meta" }[entryId.split(":")[0]];  // nintendo: Zelda Notes medals
+    return { psn: "PlayStation", xbox: "Xbox", steam: "Steam", nintendo: "Nintendo", ios: "Apple", gc: "Apple", meta: "Meta" }[entryId.split(":")[0]];  // nintendo: Zelda Notes medals
   }
 
   var cache = {};
