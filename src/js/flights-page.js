@@ -283,7 +283,8 @@ const faURL = (o, d) => `https://www.flightaware.com/live/findflight?origin=${en
 function faLinks(A, B, both) {
   if (MARKETS[A] || MARKETS[B]) return '';
   const a = (o, d, t) => `<a href="${faURL(o, d)}" target="_blank" rel="noopener">${t} &#8599;</a>`;
-  return ` <span class="fl-fa">&middot; ${both ? `${a(A, B, `${A} to ${B}`)} &middot; ${a(B, A, `${B} to ${A}`)}` : a(A, B, 'Live flights on FlightAware')}</span>`;
+  const g = `https://www.google.com/travel/flights?q=${encodeURIComponent(`Flights from ${A} to ${B}`)}`;   // Google Flights search (Ronjan 11/24)
+  return ` <span class="fl-fa">&middot; ${both ? `${a(A, B, `${A} to ${B}`)} &middot; ${a(B, A, `${B} to ${A}`)}` : a(A, B, 'Live flights on FlightAware')} &middot; <a href="${g}" target="_blank" rel="noopener">Search fares on Google Flights &#8599;</a></span>`;
 }
 function tableHTML(head, rows, cls = '', by = 1, asc = false) {
   return `<div class="fl-scroll"><table class="sport-table fl-sortable ${cls}" data-by="${by}" data-asc="${asc ? 1 : 0}"><thead><tr>${head.map(([h, c], i) => `<th class="${c || ''}"><button type="button" class="fl-sort fl-tsort" data-ti="${i}">${h}</button></th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
