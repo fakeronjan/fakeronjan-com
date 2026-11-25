@@ -13,6 +13,14 @@ permalink: /birthday/
   border: 1px solid var(--muted); border-radius: 6px;
 }
 .bd-controls input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+/* One day back or forward, like Sun Stats' day picker */
+.bd-date-step { display: inline-flex; align-items: center; gap: 0.35rem; }
+.bd-step {
+  width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid var(--muted); background: none; flex: none;
+  color: var(--accent); font-size: 1.2rem; line-height: 1; cursor: pointer; padding: 0 0 0.15rem;
+}
+.bd-step:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.bd-step:disabled { opacity: 0.35; cursor: default; }
 .bd-note { color: var(--muted); font-size: 0.88rem; margin: 0 0 0.5rem; }
 .bd-note[hidden] { display: none; }
 
@@ -145,7 +153,11 @@ permalink: /birthday/
 
   <div class="bd-controls">
     <label for="bd-date">Your birthday</label>
-    <input id="bd-date" type="date" min="1900-01-01">
+    <span class="bd-date-step">
+      <button id="bd-prev" class="bd-step" type="button" aria-label="Previous day">&lsaquo;</button>
+      <input id="bd-date" type="date" min="1900-01-01">
+      <button id="bd-next" class="bd-step" type="button" aria-label="Next day">&rsaquo;</button>
+    </span>
     <label for="bd-time">Time you were born <span class="bd-opt">(optional)</span></label>
     <input id="bd-time" type="time">
   </div>

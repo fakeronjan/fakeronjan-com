@@ -172,37 +172,57 @@ function ageTimeline(people) {
 }
 
 // From the same number of days before your birth to today: the events closer to your birth than to
-// today as dots. Highlighted without hovering (Ronjan 11/24): the oldest few, the 3 right before your
-// birth, and the 3 right after. They get numbered badges on the line (stacked where events bunch up)
-// and a key below in those three groups. Full-text labels on the line ran into each other.
+// today as dots, with names written on the graph (Ronjan 11/24) for the oldest few and the 3 right
+// before and after your birth. The oldest hang right of their pointers, oldest on top. The 3 before
+// your birth hang left (away from the birth marker), the latest on top; the 3 after hang right, the
+// earliest on top. Stacked that way, no pointer runs through another label. When the oldest labels
+// reach over to the near-birth ones (a short stretch), the near-birth groups move up above them.
 function halfTimeline(mirror, half, today, inside, after) {
   const box = $('#bd-half-tl');
   if (!inside) { box.innerHTML = ''; return; }
-  const W = Math.max(280, box.clientWidth || 900), small = W < 560, PAD = 12;
+  const W = Math.max(280, box.clientWidth || 900), small = W < 560, PAD = 8;
   const x = (t) => PAD + ((t - mirror) / (today - mirror)) * (W - 2 * PAD);
-  const axisY = 0, oldN = small ? 3 : 5;
+  const axisY = 0, oldN = small ? 3 : 5, charW = small ? 6.2 : 7;
   const oldest = inside.slice(0, oldN);
   const before = inside.slice(Math.max(oldN, inside.length - 3));
-  const groups = [['The oldest', oldest], ['Right before you were born', before], ['Right after you were born', after]].filter(([, l]) => l.length);
-  let n = 0;
-  const numbered = groups.flatMap(([, l]) => l.map(e => ({ e, n: ++n, px: x(parseIso(e.date)) })));
-  // Badges sit above their dots; one that would touch an earlier badge moves up a level
-  const R = 10, levels = [];
-  numbered.forEach((b) => {
-    let lv = 0;
-    while ((levels[lv] || []).some(px => Math.abs(px - b.px) < 2 * R + 3)) lv++;
-    (levels[lv] = levels[lv] || []).push(b.px);
-    b.lv = lv;
-  });
-  const by = (lv) => axisY - 26 - lv * (2 * R + 4);
-  const topY = numbered.length ? by(Math.max(...numbered.map(b => b.lv))) - R : axisY - 20;
-  const zoneLabelY = topY - 12;
-  const isNum = new Set(numbered.map(b => b.e));
-  const dot = (e) => `<circle cx="${x(parseIso(e.date)).toFixed(1)}" cy="${axisY}" r="${isNum.has(e) ? 5 : 4}" class="ev${isNum.has(e) ? ' top' : ''}"><title>${esc(e.label)}, ${esc(fmtDate(parseIso(e.date)))}</title></circle>`;
-  const stems = numbered.map(({ px, lv }) => `<line x1="${px}" y1="${axisY - 5}" x2="${px}" y2="${by(lv) + R}" class="lead"/>`).join('');
-  const badges = stems + numbered.map(({ e, n: k, px, lv }) => `
-    <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(e.wiki.replace(/ /g, '_'))}" target="_blank" rel="noopener"><title>${esc(e.label)}, ${esc(fmtDate(parseIso(e.date)))}</title>
-    <circle cx="${px}" cy="${by(lv)}" r="${R}" class="num-c"/><text x="${px}" y="${by(lv)}" class="num-t">${k}</text></a>`).join('');
+  const lab = (e, dir, row) => {
+    const t = parseIso(e.date), px = x(t);
+    // A name too long for the screen with its year drops the year (the dates are in the list below)
+    const year = `${e.label} ${new Date(t).getUTCFullYear()}`.length * charW <= W - 2 * PAD ? new Date(t).getUTCFullYear() : '';
+    const w = `${e.label} ${year}`.trim().length * charW;
+    let a = dir === 'r' ? px + 6 : px - 6 - w;
+    a = Math.min(Math.max(a, PAD), W - PAD - w);
+    return { e, px, a, b: a + w, row, year };
+  };
+  // The oldest events are the point of this picture (Ronjan 11/24), so they're labeled first and
+  // dropped last. Phones label only the oldest; the events around your birth stay as larger dots there.
+  const near0 = small ? [] : [...before.map((e, k) => lab(e, 'l', k)), ...after.map((e, k) => lab(e, 'r', after.length - 1 - k))];
+  const old0 = oldest.map((e, i) => lab(e, 'r', oldest.length - 1 - i));
+  // Trouble = text over text, or a pointer through a lower label
+  const trouble = (L) => L.reduce((n, q) => n + L.filter(o => o !== q && (
+    (o.row === q.row && q.a < o.b + 8 && q.b > o.a - 8) || (o.row > q.row && o.px > q.a - 3 && o.px < q.b + 3))).length, 0);
+  // Near-birth groups beside the oldest, above them, or the oldest on top: whichever has least trouble
+  const k0 = old0.length;
+  let labels = [[...old0, ...near0], [...old0, ...near0.map(q => ({ ...q, row: q.row + k0 }))], [...old0.map(q => ({ ...q, row: q.row + 3 })), ...near0]]
+    .sort((u, v) => trouble(u) - trouble(v))[0];
+  // Still crowded: drop near-birth labels first (the most troublesome each time), then the newest of the oldest
+  while (trouble(labels) > 0) {
+    const nearLeft = labels.filter(q => !oldest.includes(q.e));
+    const pool = nearLeft.length ? nearLeft : [labels.filter(q => oldest.includes(q.e)).sort((u, v) => v.e.date.localeCompare(u.e.date))[0]];
+    const worst = pool.map(q => [q, trouble(labels) - trouble(labels.filter(o => o !== q))]).sort((u, v) => v[1] - u[1])[0][0];
+    labels = labels.filter(o => o !== worst);
+  }
+  // Rows packed down after any drops, keeping their order
+  const used = [...new Set(labels.map(q => q.row))].sort((u, v) => u - v);
+  labels = labels.map(q => ({ ...q, row: used.indexOf(q.row) }));
+  const rows = labels.length ? Math.max(...labels.map(q => q.row)) + 1 : 1;
+  const rowH = 20, ly = (row) => axisY - 30 - row * rowH;
+  const zoneLabelY = ly(rows - 1) - 24;
+  const labeled = new Set([...labels.map(q => q.e), ...before, ...after]);
+  const dot = (e) => `<circle cx="${x(parseIso(e.date)).toFixed(1)}" cy="${axisY}" r="${labeled.has(e) ? 5 : 4}" class="ev${labeled.has(e) ? ' top' : ''}"><title>${esc(e.label)}, ${esc(fmtDate(parseIso(e.date)))}</title></circle>`;
+  const dots = inside.map(dot).join('') + after.map(dot).join('');
+  const stems = labels.map(({ px, row }) => `<line x1="${px}" y1="${axisY - 6}" x2="${px}" y2="${ly(row) - 4}" class="lead"/>`).join('');
+  const texts = labels.map(({ e, a, row, year }) => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(e.wiki.replace(/ /g, '_'))}" target="_blank" rel="noopener"><text x="${a}" y="${ly(row)}" class="ev-l">${esc(e.label)} <tspan class="ev-y">${year}</tspan></text></a>`).join('');
   const marks = [[mirror, 'Same distance back', ''], [birth, 'You were born', 'born'], [half, 'Half your age', 'half'], [today, 'Today', '']];
   const mk = marks.map(([t, l, c], i) => {
     const px = x(t), anchor = i === 0 ? 'start' : i === marks.length - 1 ? 'end' : 'middle';
@@ -212,84 +232,10 @@ function halfTimeline(mirror, half, today, inside, after) {
       <text x="${px}" y="${axisY + 46 + dy}" class="mk-d" text-anchor="${anchor}">${esc(small ? new Date(t).getUTCFullYear() : fmtDate(t))}</text>`;
   }).join('');
   const bottom = axisY + 52 + (small ? 34 : 0);
-  k = 0;
-  const key = groups.map(([title, l]) => `<div><h3>${title}</h3><ol>${l.map(e => `<li value="${++k}">${wikiLink(e.wiki, e.label)} <span>${esc(fmtDate(parseIso(e.date)))}</span></li>`).join('')}</ol></div>`).join('');
   box.innerHTML = `<svg viewBox="0 ${zoneLabelY - 16} ${W} ${bottom - zoneLabelY + 16}" role="img" aria-label="Timeline from ${esc(fmtDate(mirror))} to today, with ${inside.length} events before your birth">
     <rect x="${x(mirror)}" y="${axisY - 12}" width="${x(birth) - x(mirror)}" height="24" rx="4" class="zone"/>
     <text x="${x(mirror)}" y="${zoneLabelY}" class="zone-l" style="text-anchor:start">Closer to your birth than to today</text>
-    <line x1="${PAD}" y1="${axisY}" x2="${W - PAD}" y2="${axisY}" class="axis"/>${dots(inside, after, dot)}${badges}${mk}</svg>
-    <div class="bd-key">${key}</div>`;
-}
-let k = 0;
-const dots = (inside, after, dot) => inside.map(dot).join('') + after.map(dot).join('');
-
-// ------------------------------------------------------------------ by the numbers
-
-// Round numbers in each unit (Ronjan 11/24): days, hours, minutes, seconds, plus repeating-digit days
-const UNITS = [
-  ['days', 'Days', 86400e3, [1000, 5000, 10000, 11111, 15000, 20000, 22222, 25000, 30000, 33333, 35000]],
-  ['hours', 'Hours', 3600e3, [100e3, 250e3, 500e3, 750e3, 1e6]],
-  ['minutes', 'Minutes', 60e3, [1e6, 10e6, 20e6, 30e6, 40e6, 50e6]],
-  ['seconds', 'Seconds', 1e3, [1e9, 1.5e9, 2e9, 2.5e9, 3e9]],
-];
-const bigNum = (n) => (n >= 1e9 ? `${+(n / 1e9).toFixed(1)} billion` : n >= 1e6 ? `${+(n / 1e6).toFixed(1)} million` : n.toLocaleString('en-US'));
-const shortNum = (n) => (n >= 1e9 ? `${+(n / 1e9).toFixed(1)}B` : n >= 1e6 ? `${+(n / 1e6).toFixed(1)}M` : n % 1000 ? n.toLocaleString('en-US') : `${n / 1e3}k`);
-function birthMoment() {
-  const d = new Date(birth), [h, m] = birthTime ? birthTime.split(':').map(Number) : [0, 0];
-  return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), h, m).getTime();   // your local clock
-}
-function localDate(ms) { const d = new Date(ms); return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; }
-function fromNow(ms, now) {
-  const days = Math.round((ms - now) / DAY), n = Math.abs(days);
-  if (n === 0) return 'Today';
-  const span = n < 365 ? plural(n, 'day') : plural(Math.floor(n / 365.25), 'year');
-  return days > 0 ? `In ${span}` : `${span} ago`;
-}
-let numTimer = null;
-function renderNumbers() {
-  clearInterval(numTimer);
-  const b0 = birthMoment();
-  $('#bd-num-note').textContent = birthTime ? `Counted from ${localDate(b0)} at ${new Date(b0).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}` : 'Counted from midnight on your birthday. Add the time you were born for exact numbers.';
-  const all = UNITS.flatMap(([id, name, ms, list]) => list.map(n => ({ id, name, n, at: b0 + n * ms })));
-  const now0 = Date.now();
-  // The live count: each unit so far, and its next round number
-  const nowTable = () => {
-    const now = Date.now();
-    return `<thead><tr><th>Unit</th><th class="col-num">So far</th><th class="bd-wide">Next round number</th><th class="bd-wide">Date</th><th class="bd-wide">When</th></tr></thead><tbody>${UNITS.map(([id, name, ms]) => {
-      const nxt = all.filter(m => m.id === id && m.at > now).sort((a, c) => a.at - c.at)[0];
-      return `<tr><td>${name}</td><td class="col-num big">${Math.floor((now - b0) / ms).toLocaleString('en-US')}${nxt ? `<span class="bd-sub">Next: ${bigNum(nxt.n)}, ${fromNow(nxt.at, now).toLowerCase()}</span>` : ''}</td><td class="bd-wide">${nxt ? `${bigNum(nxt.n)} ${id}` : '-'}</td><td class="bd-wide">${nxt ? localDate(nxt.at) : '-'}</td><td class="bd-wide">${nxt ? fromNow(nxt.at, now) : '-'}</td></tr>`;
-    }).join('')}</tbody>`;
-  };
-  $('#bd-num-now').innerHTML = nowTable();
-  numTimer = setInterval(() => { if (tab === 'numbers') $('#bd-num-now').innerHTML = nowTable(); }, 1000);
-
-  // Every round number in date order; the next one in each unit in bold
-  const nextOf = new Set(UNITS.map(([id]) => all.filter(m => m.id === id && m.at > now0).sort((a, c) => a.at - c.at)[0]).filter(Boolean));
-  $('#bd-num-list').innerHTML = `<thead><tr><th>Round number</th><th>Date</th><th class="bd-wide">When</th></tr></thead><tbody>${[...all].sort((a, c) => a.at - c.at).map(m =>
-    `<tr class="${m.at <= now0 ? 'past' : nextOf.has(m) ? 'next' : ''}"><td>${bigNum(m.n)} ${m.id}</td><td>${localDate(m.at)}<span class="bd-sub">${fromNow(m.at, now0)}</span></td><td class="bd-wide">${fromNow(m.at, now0)}</td></tr>`).join('')}</tbody>`;
-
-  // Four lanes from your birth to age 95, a dot per round number (filled once passed), and now
-  const box = $('#bd-num-tl');
-  const W = Math.max(280, box.clientWidth || 900), small = W < 560, L = small ? 62 : 80, PAD = 14;
-  const end = b0 + 95 * 365.25 * DAY;
-  const x = (t) => L + ((t - b0) / (end - b0)) * (W - L - PAD);
-  const laneY = (i) => 26 + i * 44;
-  const lanes = UNITS.map(([id, name], i) => {
-    const pts = all.filter(m => m.id === id && m.at <= end);
-    let lastX = -99;
-    return `<text x="0" y="${laneY(i) + 4}" class="lane-l">${name}</text><line x1="${L}" y1="${laneY(i)}" x2="${W - PAD}" y2="${laneY(i)}" class="lane"/>` +
-      pts.map(m => {
-        const px = x(m.at), st = m.at <= now0 ? 'past' : 'future', showL = px - lastX > (small ? 26 : 30);
-        if (showL) lastX = px;
-        return `<circle cx="${px.toFixed(1)}" cy="${laneY(i)}" r="5" class="ms ${st}"><title>${bigNum(m.n)} ${m.id}: ${localDate(m.at)}</title></circle>${showL ? `<text x="${px.toFixed(1)}" y="${laneY(i) - 10}" class="ms-l ${st}">${shortNum(m.n)}</text>` : ''}`;
-      }).join('');
-  }).join('');
-  const h = laneY(UNITS.length - 1) + 22;
-  const ticks = Array.from({ length: 10 }, (_, k) => k * 10).filter(a => !small || a % 20 === 0)
-    .map(a => `<text x="${x(b0 + a * 365.25 * DAY).toFixed(1)}" y="${h + 14}" class="tick">${a === 0 ? 'Born' : `Age ${a}`}</text>`).join('');
-  const nx = x(now0);
-  box.innerHTML = `<svg viewBox="0 0 ${W} ${h + 40}" role="img" aria-label="Round-number milestones from your birth to age 95">
-    ${lanes}<line x1="${nx}" y1="6" x2="${nx}" y2="${h}" class="now"/><text x="${nx}" y="${h + 30}" class="now-l">Now</text>${ticks}</svg>`;
+    <line x1="${PAD}" y1="${axisY}" x2="${W - PAD}" y2="${axisY}" class="axis"/>${stems}${dots}${texts}${mk}</svg>`;
 }
 
 // ------------------------------------------------------------------ halfway back
@@ -338,6 +284,8 @@ async function render() {
   showTab();
   $('#bd-example').hidden = !isExample;
   $('#bd-date').value = iso(birth);
+  $('#bd-next').disabled = birth >= todayMs();
+  $('#bd-prev').disabled = birth <= parseIso('1900-01-01');
   await Promise.all([renderSameDay(), renderAge()]);
   renderHalfway();
   if (tab === 'numbers') renderNumbers();
@@ -368,6 +316,16 @@ async function init() {
     render();
   });
   $('#bd-date').max = iso(todayMs());
+  // Arrows: one day back or forward, never past today
+  const step = (dir) => {
+    const next = birth + dir * DAY;
+    if (next > todayMs() || next < parseIso('1900-01-01')) return;
+    birth = next; isExample = false;
+    try { localStorage.setItem(STORE_KEY, iso(birth)); } catch (err) { /* storage off */ }
+    render();
+  };
+  $('#bd-prev').addEventListener('click', () => step(-1));
+  $('#bd-next').addEventListener('click', () => step(1));
   $('#bd-date').addEventListener('change', (e) => {
     if (!e.target.value) return;
     birth = parseIso(e.target.value); isExample = false;
