@@ -344,9 +344,12 @@ function renderHalfway() {
 function showTab() {
   document.querySelectorAll('#bd-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   TABS.forEach(t => { $(`#bd-sec-${t}`).hidden = t !== tab; });
-  const u = new URL(location.href);
-  if (tab === 'same') u.searchParams.delete('tab'); else u.searchParams.set('tab', tab);
-  history.replaceState(null, '', u);
+  // Written by hand so the time reads t=14:35 (URLSearchParams would encode the colon)
+  const parts = [];
+  if (!isExample) parts.push(`d=${iso(birth)}`);
+  if (!isExample && birthTime) parts.push(`t=${birthTime}`);
+  if (tab !== 'same') parts.push(`tab=${tab}`);
+  history.replaceState(null, '', location.pathname + (parts.length ? `?${parts.join('&')}` : '') + location.hash);
 }
 
 async function render() {
@@ -362,9 +365,15 @@ async function render() {
 
 async function init() {
   events = (await getJSON('/data/birthdays/events.json')) || [];
+  // A shared link's birthday (and birth time) shows without replacing the one saved in this browser;
+  // changing the date or time here saves it as yours
+  const q = new URL(location.href).searchParams;
+  const qd = q.get('d'), qtime = q.get('t');
+  const linkDate = qd && /^\d{4}-\d{2}-\d{2}$/.test(qd) && !isNaN(parseIso(qd)) && parseIso(qd) <= todayMs() && qd >= '1900-01-01' ? qd : null;
   let saved = null;
   try { saved = localStorage.getItem(STORE_KEY); } catch (e) { /* storage off */ }
-  if (saved && /^\d{4}-\d{2}-\d{2}$/.test(saved)) { birth = parseIso(saved); isExample = false; }
+  if (linkDate) { birth = parseIso(linkDate); isExample = false; }
+  else if (saved && /^\d{4}-\d{2}-\d{2}$/.test(saved)) { birth = parseIso(saved); isExample = false; }
   else {
     // Example until you enter yours: today's date, 40 years ago
     const t = new Date(todayMs());
@@ -377,11 +386,16 @@ async function init() {
   document.querySelectorAll('#bd-tabs button').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; render(); }));
   let resizeTimer;
   window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(render, 150); });
-  try { birthTime = localStorage.getItem(TIME_KEY) || ''; } catch (e) { /* storage off */ }
+  if (linkDate) birthTime = qtime && /^\d{2}:\d{2}$/.test(qtime) ? qtime : '';
+  else { try { birthTime = localStorage.getItem(TIME_KEY) || ''; } catch (e) { /* storage off */ } }
   if (!isExample) $('#bd-time').value = birthTime;
   $('#bd-time').addEventListener('change', (e) => {
     birthTime = e.target.value || '';
-    try { if (birthTime) localStorage.setItem(TIME_KEY, birthTime); else localStorage.removeItem(TIME_KEY); } catch (err) { /* storage off */ }
+    if (isExample) isExample = false;
+    try {
+      localStorage.setItem(STORE_KEY, iso(birth));
+      if (birthTime) localStorage.setItem(TIME_KEY, birthTime); else localStorage.removeItem(TIME_KEY);
+    } catch (err) { /* storage off */ }
     render();
   });
   $('#bd-date').max = iso(todayMs());
