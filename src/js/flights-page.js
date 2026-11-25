@@ -333,7 +333,7 @@ function ranksHTML({ metrics, rec, nat, list, key, tab, title, cols = [], extra 
   if (!rows.length) return '';
   const neg = metrics.some((m) => m.neg && rows[metrics.indexOf(m)]);
   return `<h2>Ranks</h2>${tableHTML([['Stat'], [title], ['National'], ['Rank'], ...cols.map(([h]) => [h, 'hide-sm'])], [...rows, ...plain], 'fl-ranks', -1)}
-    ${neg ? '<p class="fl-foot">* Lower is better, so rank 1 is the lowest</p>' : ''}`;
+    ${neg ? '<p class="fl-foot">* Lower is better (1 = lowest)</p>' : ''}`;
 }
 // Most and least on time among rows sorted best first: [key, [flights, on time, ...]]
 function bestWorstHTML(sorted, link) {
