@@ -275,18 +275,18 @@ def main():
             if g not in rec['g']:
                 rec['g'].append(g)
     for p in people:
-        i = info.get(p['title'])
-        if not i:
+        # Everyone on the birthday pages counts under Everyone in "Closest in age", group or not, on the
+        # birthday page's own date, so the two sections always agree (Ronjan 11/24: anyone in Same
+        # birthday should be eligible). Wikidata only adds groups and fame here.
+        if p['year'] < 1:
             continue
-        exact = i['birth'] if i['birth'] and i['birth'][5:] == p['md'] and int(i['birth'][:4]) == p['year'] else None
-        if not exact:
-            continue
+        i = info.get(p['title']) or {'qid': None, 'sitelinks': 0, 'occ': set(), 'us': False}
+        exact = f"{p['year']:04d}-{p['md']}"
         gs = [g for g, occ in OCCUPATIONS.items() if i['occ'] & occ]
         if US_POLITICIAN[0] in i['occ'] and i['us']:
             gs.append('uspol')
-        if not gs and i['qid'] not in grouped:
-            continue
-        rec = grouped.setdefault(i['qid'], {'n': p['name'], 'b': exact, 'd': p['desc'], 't': p['title'], 's': i['sitelinks'], 'g': []})
+        rec = grouped.setdefault(i['qid'] or f"title:{p['title']}", {'n': p['name'], 'b': exact, 'd': p['desc'], 't': p['title'], 's': i['sitelinks'], 'g': []})
+        rec['b'] = exact                           # the birthday page's date, same as Same birthday
         rec['d'] = p['desc'] or rec['d']           # Wikipedia's line reads better than Wikidata's
         for g in gs:
             if g not in rec['g']:
@@ -294,7 +294,7 @@ def main():
 
     by_year = defaultdict(list)
     for rec in grouped.values():
-        if rec['g'] and rec['b'] and 1850 <= int(rec['b'][:4]) <= date.today().year:
+        if rec['b'] and 1850 <= int(rec['b'][:4]) <= date.today().year:
             by_year[rec['b'][:4]].append(rec)
 
     print('Photos...', file=sys.stderr)
