@@ -50,6 +50,31 @@ permalink: /birthday/
 .bd-hdate { display: block; font-family: inherit; font-size: 1rem; font-weight: 500; color: var(--muted); margin-top: 0.2rem; }
 .bd-half p { text-wrap: pretty; }
 
+/* By the numbers: the live count, the round-number milestones on four lanes, and the full list */
+.bd-opt { font-weight: 400; color: var(--muted); }
+.bd-h3 { margin: 1.6rem 0 0.4rem; font-size: 1rem; }
+.bd-num-wrap { overflow-x: auto; }
+.bd-num-table { width: 100%; font-variant-numeric: tabular-nums; }
+.bd-num-table td.big { font-family: "Space Grotesk", sans-serif; font-size: 1.15rem; font-weight: 700; white-space: nowrap; }
+.bd-num-table tr.past td { color: var(--muted); }
+.bd-num-table tr.next td { font-weight: 700; }
+.bd-num-table .bd-sub { display: none; }
+@media (max-width: 560px) {
+  .bd-num-table .bd-wide { display: none; }
+  .bd-num-table .bd-sub { display: block; font-family: inherit; font-size: 0.78rem; font-weight: 500; color: var(--muted); white-space: normal; }
+  .bd-num-table td.big { font-size: 1.05rem; }
+  .bd-num-table td:not(.big) { white-space: normal; }
+}
+.bd-tl .lane-l { fill: var(--muted); font-size: 12px; font-weight: 700; }
+.bd-tl .lane { stroke: color-mix(in srgb, var(--fg) 14%, transparent); stroke-width: 1.5; }
+.bd-tl .ms { stroke: var(--accent); stroke-width: 2; }
+.bd-tl .ms.past { fill: var(--accent); } .bd-tl .ms.future { fill: var(--bg); }
+.bd-tl .ms-l { fill: var(--fg); font-size: 11px; font-weight: 600; text-anchor: middle; }
+.bd-tl .ms-l.future { fill: var(--muted); font-weight: 500; }
+.bd-tl .now { stroke: var(--accent-2); stroke-width: 2.5; }
+.bd-tl .now-l { fill: var(--accent-2); font-size: 12px; font-weight: 700; text-anchor: middle; }
+.bd-tl .tick { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+
 /* Photos: Wikipedia lead images (Wikimedia Commons). No photo: a circle with initials */
 .bd-face { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; flex: none; background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .bd-face.ini { display: grid; place-items: center; color: var(--muted); font-size: 0.95rem; font-weight: 700; }
@@ -121,6 +146,8 @@ permalink: /birthday/
   <div class="bd-controls">
     <label for="bd-date">Your birthday</label>
     <input id="bd-date" type="date" min="1900-01-01">
+    <label for="bd-time">Time you were born <span class="bd-opt">(optional)</span></label>
+    <input id="bd-time" type="time">
   </div>
   <p class="bd-note" id="bd-example" hidden>Showing an example birthday until you enter yours. It stays in your browser.</p>
 
@@ -128,6 +155,7 @@ permalink: /birthday/
     <button class="sport-tab active" data-tab="same" type="button">Same birthday</button>
     <button class="sport-tab" data-tab="age" type="button">Closest in age</button>
     <button class="sport-tab" data-tab="half" type="button">Halfway back</button>
+    <button class="sport-tab" data-tab="numbers" type="button">By the numbers</button>
   </nav>
 
   <section class="bd-sec" id="bd-sec-same">
@@ -152,6 +180,15 @@ permalink: /birthday/
     <div class="bd-half" id="bd-half-head"></div>
     <ul class="bd-list bd-events" id="bd-events"></ul>
     <button class="pill bd-more" id="bd-events-more" type="button" hidden></button>
+  </section>
+
+  <section class="bd-sec" id="bd-sec-numbers" hidden>
+    <h2>By the numbers</h2>
+    <p class="bd-note" id="bd-num-note"></p>
+    <div class="bd-num-wrap"><table class="sport-table bd-num-table" id="bd-num-now"></table></div>
+    <div class="bd-tl" id="bd-num-tl"></div>
+    <h3 class="bd-h3">Round numbers</h3>
+    <div class="bd-num-wrap"><table class="sport-table bd-num-table" id="bd-num-list"></table></div>
   </section>
 </div>
 

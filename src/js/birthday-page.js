@@ -14,7 +14,9 @@ const GROUPS = [
   ['uspol', 'US politicians'],
 ];
 const SAME_DAY_SHOWN = 20, AGE_SHOWN = 25, EVENTS_SHOWN = 15, WINDOW_DAYS = 31;
-const TABS = ['same', 'age', 'half'];
+const TABS = ['same', 'age', 'half', 'numbers'];
+const TIME_KEY = 'birthday-time';
+let birthTime = '';   // 'HH:MM' if given; the By the numbers tab counts from it, else from midnight
 let tab = 'same';
 
 let birth = null;        // UTC-midnight ms
@@ -221,6 +223,75 @@ function halfTimeline(mirror, half, today, inside, after) {
 let k = 0;
 const dots = (inside, after, dot) => inside.map(dot).join('') + after.map(dot).join('');
 
+// ------------------------------------------------------------------ by the numbers
+
+// Round numbers in each unit (Ronjan 11/24): days, hours, minutes, seconds, plus repeating-digit days
+const UNITS = [
+  ['days', 'Days', 86400e3, [1000, 5000, 10000, 11111, 15000, 20000, 22222, 25000, 30000, 33333, 35000]],
+  ['hours', 'Hours', 3600e3, [100e3, 250e3, 500e3, 750e3, 1e6]],
+  ['minutes', 'Minutes', 60e3, [1e6, 10e6, 20e6, 30e6, 40e6, 50e6]],
+  ['seconds', 'Seconds', 1e3, [1e9, 1.5e9, 2e9, 2.5e9, 3e9]],
+];
+const bigNum = (n) => (n >= 1e9 ? `${+(n / 1e9).toFixed(1)} billion` : n >= 1e6 ? `${+(n / 1e6).toFixed(1)} million` : n.toLocaleString('en-US'));
+const shortNum = (n) => (n >= 1e9 ? `${+(n / 1e9).toFixed(1)}B` : n >= 1e6 ? `${+(n / 1e6).toFixed(1)}M` : n % 1000 ? n.toLocaleString('en-US') : `${n / 1e3}k`);
+function birthMoment() {
+  const d = new Date(birth), [h, m] = birthTime ? birthTime.split(':').map(Number) : [0, 0];
+  return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), h, m).getTime();   // your local clock
+}
+function localDate(ms) { const d = new Date(ms); return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; }
+function fromNow(ms, now) {
+  const days = Math.round((ms - now) / DAY), n = Math.abs(days);
+  if (n === 0) return 'Today';
+  const span = n < 365 ? plural(n, 'day') : plural(Math.floor(n / 365.25), 'year');
+  return days > 0 ? `In ${span}` : `${span} ago`;
+}
+let numTimer = null;
+function renderNumbers() {
+  clearInterval(numTimer);
+  const b0 = birthMoment();
+  $('#bd-num-note').textContent = birthTime ? `Counted from ${localDate(b0)} at ${new Date(b0).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}` : 'Counted from midnight on your birthday. Add the time you were born for exact numbers.';
+  const all = UNITS.flatMap(([id, name, ms, list]) => list.map(n => ({ id, name, n, at: b0 + n * ms })));
+  const now0 = Date.now();
+  // The live count: each unit so far, and its next round number
+  const nowTable = () => {
+    const now = Date.now();
+    return `<thead><tr><th>Unit</th><th class="col-num">So far</th><th class="bd-wide">Next round number</th><th class="bd-wide">Date</th><th class="bd-wide">When</th></tr></thead><tbody>${UNITS.map(([id, name, ms]) => {
+      const nxt = all.filter(m => m.id === id && m.at > now).sort((a, c) => a.at - c.at)[0];
+      return `<tr><td>${name}</td><td class="col-num big">${Math.floor((now - b0) / ms).toLocaleString('en-US')}${nxt ? `<span class="bd-sub">Next: ${bigNum(nxt.n)}, ${fromNow(nxt.at, now).toLowerCase()}</span>` : ''}</td><td class="bd-wide">${nxt ? `${bigNum(nxt.n)} ${id}` : '-'}</td><td class="bd-wide">${nxt ? localDate(nxt.at) : '-'}</td><td class="bd-wide">${nxt ? fromNow(nxt.at, now) : '-'}</td></tr>`;
+    }).join('')}</tbody>`;
+  };
+  $('#bd-num-now').innerHTML = nowTable();
+  numTimer = setInterval(() => { if (tab === 'numbers') $('#bd-num-now').innerHTML = nowTable(); }, 1000);
+
+  // Every round number in date order; the next one in each unit in bold
+  const nextOf = new Set(UNITS.map(([id]) => all.filter(m => m.id === id && m.at > now0).sort((a, c) => a.at - c.at)[0]).filter(Boolean));
+  $('#bd-num-list').innerHTML = `<thead><tr><th>Round number</th><th>Date</th><th class="bd-wide">When</th></tr></thead><tbody>${[...all].sort((a, c) => a.at - c.at).map(m =>
+    `<tr class="${m.at <= now0 ? 'past' : nextOf.has(m) ? 'next' : ''}"><td>${bigNum(m.n)} ${m.id}</td><td>${localDate(m.at)}<span class="bd-sub">${fromNow(m.at, now0)}</span></td><td class="bd-wide">${fromNow(m.at, now0)}</td></tr>`).join('')}</tbody>`;
+
+  // Four lanes from your birth to age 95, a dot per round number (filled once passed), and now
+  const box = $('#bd-num-tl');
+  const W = Math.max(280, box.clientWidth || 900), small = W < 560, L = small ? 62 : 80, PAD = 14;
+  const end = b0 + 95 * 365.25 * DAY;
+  const x = (t) => L + ((t - b0) / (end - b0)) * (W - L - PAD);
+  const laneY = (i) => 26 + i * 44;
+  const lanes = UNITS.map(([id, name], i) => {
+    const pts = all.filter(m => m.id === id && m.at <= end);
+    let lastX = -99;
+    return `<text x="0" y="${laneY(i) + 4}" class="lane-l">${name}</text><line x1="${L}" y1="${laneY(i)}" x2="${W - PAD}" y2="${laneY(i)}" class="lane"/>` +
+      pts.map(m => {
+        const px = x(m.at), st = m.at <= now0 ? 'past' : 'future', showL = px - lastX > (small ? 26 : 30);
+        if (showL) lastX = px;
+        return `<circle cx="${px.toFixed(1)}" cy="${laneY(i)}" r="5" class="ms ${st}"><title>${bigNum(m.n)} ${m.id}: ${localDate(m.at)}</title></circle>${showL ? `<text x="${px.toFixed(1)}" y="${laneY(i) - 10}" class="ms-l ${st}">${shortNum(m.n)}</text>` : ''}`;
+      }).join('');
+  }).join('');
+  const h = laneY(UNITS.length - 1) + 22;
+  const ticks = Array.from({ length: 10 }, (_, k) => k * 10).filter(a => !small || a % 20 === 0)
+    .map(a => `<text x="${x(b0 + a * 365.25 * DAY).toFixed(1)}" y="${h + 14}" class="tick">${a === 0 ? 'Born' : `Age ${a}`}</text>`).join('');
+  const nx = x(now0);
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${h + 40}" role="img" aria-label="Round-number milestones from your birth to age 95">
+    ${lanes}<line x1="${nx}" y1="6" x2="${nx}" y2="${h}" class="now"/><text x="${nx}" y="${h + 30}" class="now-l">Now</text>${ticks}</svg>`;
+}
+
 // ------------------------------------------------------------------ halfway back
 
 function renderHalfway() {
@@ -269,6 +340,7 @@ async function render() {
   $('#bd-date').value = iso(birth);
   await Promise.all([renderSameDay(), renderAge()]);
   renderHalfway();
+  if (tab === 'numbers') renderNumbers();
 }
 
 async function init() {
@@ -288,6 +360,13 @@ async function init() {
   document.querySelectorAll('#bd-tabs button').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; render(); }));
   let resizeTimer;
   window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(render, 150); });
+  try { birthTime = localStorage.getItem(TIME_KEY) || ''; } catch (e) { /* storage off */ }
+  if (!isExample) $('#bd-time').value = birthTime;
+  $('#bd-time').addEventListener('change', (e) => {
+    birthTime = e.target.value || '';
+    try { if (birthTime) localStorage.setItem(TIME_KEY, birthTime); else localStorage.removeItem(TIME_KEY); } catch (err) { /* storage off */ }
+    render();
+  });
   $('#bd-date').max = iso(todayMs());
   $('#bd-date').addEventListener('change', (e) => {
     if (!e.target.value) return;
