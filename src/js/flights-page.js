@@ -402,7 +402,12 @@ async function renderRoute() {
     ranking(), getJSON(`trends/${A}.json`), both ? getJSON(`trends/${B}.json`) : null, getJSON(`fares/ap/${A}.json`)]);
   const r = both ? merge(ab, ba) : ab;   // merge keeps the original records, so dirOf can tell which way each fun fact happened
   const dirOf = (rec) => (!both || !rec ? '' : ab && [ab.fa, ab.sl, ab.ld].includes(rec) ? ` (${A} to ${B})` : ` (${B} to ${A})`);
-  const head = `<p class="fl-title">${linkAirport(A)} ${both ? '⇄' : '→'} ${linkAirport(B)}</p><p class="fl-period-line">${esc(periodTitle())}</p>`;
+  const headOf = (mid = '') => `<div class="fl-route-head">
+      <div class="fl-rh-ap"><span class="fl-title">${linkAirport(A)}</span><small>${esc(city(A))}</small></div>
+      <div class="fl-rh-mid"><span class="fl-title">${both ? '⇄' : '→'}</span>${mid}</div>
+      <div class="fl-rh-ap"><span class="fl-title">${linkAirport(B)}</span><small>${esc(city(B))}</small></div>
+    </div><p class="fl-period-line">${esc(periodTitle())}</p>`;
+  const head = headOf();
   if (!r) return `${head}<p class="fl-sub">No flights ${both ? 'between' : 'from'} ${esc(city(A))} ${both ? 'and' : 'to'} ${esc(city(B))} on these airlines in ${esc(periodLabel())}</p>`;
   const [f, on, late, , , dmin] = r.c;
   const map = both ? rank.pairs : rank.dir, key = both ? [A, B].sort().join('-') : `${A}-${B}`;
@@ -451,7 +456,7 @@ async function renderRoute() {
   if (r.ld?.delay > 0) facts.push(['Longest delay', dur(r.ld.delay), `${flightLabel(r.ld)}, ${fmtDate(r.ld.date)}${dirOf(r.ld)}`]);
   const tf = tailFact(r.tl, 'on this route'); if (tf) facts.push(tf);
 
-  return `${head}<p class="fl-sub">${esc(`${city(A)} ${both ? 'and' : 'to'} ${city(B)}, ${num(r.d)} miles`)} ${B_('distance')}</p>${faLinks(A, B, both)}
+  return `${headOf(`<small>${num(r.d)} miles</small>${B_('distance')}`)}${faLinks(A, B, both)}
     ${factsHTML([['Flights', num(f), B_('busiest')], ['Per day', perDay(f / periodDays())], ['Airlines', brands.size, B_('airlines')],
       ['Scheduled time', dur(r.t[0] / r.t[2])], ['Actual time', dur(r.t[1] / r.t[2]), B_('padding')], ['Avg delay when late', late ? `${Math.round(dmin / late)} min` : '-', B_('delay')],
       ...(fare ? [['Fare each way', money(fare), B_('fare')]] : [])])}

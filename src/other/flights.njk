@@ -148,6 +148,14 @@ permalink: /flights/
 .fl-title a { color: inherit; text-decoration: none; border-bottom: 2px solid color-mix(in srgb, var(--accent) 40%, transparent); }
 .fl-title a:hover { color: var(--accent); }
 .fl-title-logo { display: flex; align-items: center; gap: 0.7rem; }
+/* Route header: airport codes with their cities under them, the distance under the arrow */
+.fl-route-head { display: grid; grid-template-columns: minmax(0, max-content) max-content minmax(0, max-content); width: max-content; max-width: 100%; column-gap: 1.4rem; align-items: start; margin-top: 1.4rem; }
+.fl-route-head .fl-title { display: block; margin: 0; line-height: 1.2; }
+.fl-route-head small { display: block; color: var(--muted); font-size: 0.85rem; line-height: 1.3; margin-top: 0.2rem; text-wrap: balance; }
+.fl-rh-mid { text-align: center; }
+.fl-route-head + .fl-period-line { margin-top: 0.55rem; }
+.fl-rh-mid .fl-badge { margin-top: 0.3rem; }
+@media (max-width: 480px) { .fl-route-head { column-gap: 0.6rem; } .fl-route-head small { font-size: 0.78rem; } }
 .fl-title-logo .fl-logo img { height: 30px; max-width: 170px; }
 .fl-sub { color: var(--muted); margin: 0; text-wrap: pretty; }
 .fl-links { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0 0.2rem; }
