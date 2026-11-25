@@ -169,27 +169,39 @@ function ageTimeline(people) {
     <text x="${W - PAD}" y="${base + 26}" class="end" text-anchor="end">${small ? '1 mo younger' : '1 month younger'}</text></svg>`;
 }
 
-// From the same distance before your birth to today: the events closer to your birth than to today as
-// dots, the oldest few labeled outright, and markers for your birth, half your age, and today.
-function halfTimeline(mirror, half, today, inside) {
+// From the same number of days before your birth to today: the events closer to your birth than to
+// today as dots. Highlighted without hovering (Ronjan 11/24): the oldest few, the 3 right before your
+// birth, and the 3 right after. They get numbered badges on the line (stacked where events bunch up)
+// and a key below in those three groups. Full-text labels on the line ran into each other.
+function halfTimeline(mirror, half, today, inside, after) {
   const box = $('#bd-half-tl');
   if (!inside) { box.innerHTML = ''; return; }
-  const W = Math.max(280, box.clientWidth || 900), small = W < 560, PAD = 8;
+  const W = Math.max(280, box.clientWidth || 900), small = W < 560, PAD = 12;
   const x = (t) => PAD + ((t - mirror) / (today - mirror)) * (W - 2 * PAD);
-  const axisY = 0, labelN = small ? 3 : 5, charW = small ? 6.4 : 7;
-  // Oldest events labeled above the line, each on the first row where it fits
-  const picked = inside.slice(0, labelN);
-  const labels = picked.map((e, k) => {
-    const t = parseIso(e.date), px = x(t), year = new Date(t).getUTCFullYear();
-    const w = `${e.label} ${year}`.length * charW, x0 = Math.min(px + 6, W - PAD - w);
-    return { e, px, x0, row: picked.length - 1 - k, year };
+  const axisY = 0, oldN = small ? 3 : 5;
+  const oldest = inside.slice(0, oldN);
+  const before = inside.slice(Math.max(oldN, inside.length - 3));
+  const groups = [['The oldest', oldest], ['Right before you were born', before], ['Right after you were born', after]].filter(([, l]) => l.length);
+  let n = 0;
+  const numbered = groups.flatMap(([, l]) => l.map(e => ({ e, n: ++n, px: x(parseIso(e.date)) })));
+  // Badges sit above their dots; one that would touch an earlier badge moves up a level
+  const R = 10, levels = [];
+  numbered.forEach((b) => {
+    let lv = 0;
+    while ((levels[lv] || []).some(px => Math.abs(px - b.px) < 2 * R + 3)) lv++;
+    (levels[lv] = levels[lv] || []).push(b.px);
+    b.lv = lv;
   });
-  const rowH = 20, ly = (row) => axisY - 30 - row * rowH;
-  const zoneLabelY = ly(labels.length - 1) - 24;
-  const dots = inside.map((e, i) => `<circle cx="${x(parseIso(e.date)).toFixed(1)}" cy="${axisY}" r="${i < labelN ? 5 : 4}" class="ev${i < labelN ? ' top' : ''}"><title>${esc(e.label)}, ${esc(fmtDate(parseIso(e.date)))}</title></circle>`).join('');
-  const lab = labels.map(({ e, px, x0, row, year }) => `<line x1="${px}" y1="${axisY - 6}" x2="${px}" y2="${ly(row) - 4}" class="lead"/>
-    <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(e.wiki.replace(/ /g, '_'))}" target="_blank" rel="noopener"><text x="${x0}" y="${ly(row)}" class="ev-l">${esc(e.label)} <tspan class="ev-y">${year}</tspan></text></a>`).join('');
-  const marks = [[mirror, small ? 'Same distance back' : 'Same distance back', ''], [birth, 'You were born', 'born'], [half, 'Half your age', 'half'], [today, 'Today', '']];
+  const by = (lv) => axisY - 26 - lv * (2 * R + 4);
+  const topY = numbered.length ? by(Math.max(...numbered.map(b => b.lv))) - R : axisY - 20;
+  const zoneLabelY = topY - 12;
+  const isNum = new Set(numbered.map(b => b.e));
+  const dot = (e) => `<circle cx="${x(parseIso(e.date)).toFixed(1)}" cy="${axisY}" r="${isNum.has(e) ? 5 : 4}" class="ev${isNum.has(e) ? ' top' : ''}"><title>${esc(e.label)}, ${esc(fmtDate(parseIso(e.date)))}</title></circle>`;
+  const stems = numbered.map(({ px, lv }) => `<line x1="${px}" y1="${axisY - 5}" x2="${px}" y2="${by(lv) + R}" class="lead"/>`).join('');
+  const badges = stems + numbered.map(({ e, n: k, px, lv }) => `
+    <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(e.wiki.replace(/ /g, '_'))}" target="_blank" rel="noopener"><title>${esc(e.label)}, ${esc(fmtDate(parseIso(e.date)))}</title>
+    <circle cx="${px}" cy="${by(lv)}" r="${R}" class="num-c"/><text x="${px}" y="${by(lv)}" class="num-t">${k}</text></a>`).join('');
+  const marks = [[mirror, 'Same distance back', ''], [birth, 'You were born', 'born'], [half, 'Half your age', 'half'], [today, 'Today', '']];
   const mk = marks.map(([t, l, c], i) => {
     const px = x(t), anchor = i === 0 ? 'start' : i === marks.length - 1 ? 'end' : 'middle';
     const dy = small && i % 2 === 1 ? 34 : 0;
@@ -198,11 +210,16 @@ function halfTimeline(mirror, half, today, inside) {
       <text x="${px}" y="${axisY + 46 + dy}" class="mk-d" text-anchor="${anchor}">${esc(small ? new Date(t).getUTCFullYear() : fmtDate(t))}</text>`;
   }).join('');
   const bottom = axisY + 52 + (small ? 34 : 0);
+  k = 0;
+  const key = groups.map(([title, l]) => `<div><h3>${title}</h3><ol>${l.map(e => `<li value="${++k}">${wikiLink(e.wiki, e.label)} <span>${esc(fmtDate(parseIso(e.date)))}</span></li>`).join('')}</ol></div>`).join('');
   box.innerHTML = `<svg viewBox="0 ${zoneLabelY - 16} ${W} ${bottom - zoneLabelY + 16}" role="img" aria-label="Timeline from ${esc(fmtDate(mirror))} to today, with ${inside.length} events before your birth">
     <rect x="${x(mirror)}" y="${axisY - 12}" width="${x(birth) - x(mirror)}" height="24" rx="4" class="zone"/>
     <text x="${x(mirror)}" y="${zoneLabelY}" class="zone-l" style="text-anchor:start">Closer to your birth than to today</text>
-    <line x1="${PAD}" y1="${axisY}" x2="${W - PAD}" y2="${axisY}" class="axis"/>${lab}${dots}${mk}</svg>`;
+    <line x1="${PAD}" y1="${axisY}" x2="${W - PAD}" y2="${axisY}" class="axis"/>${dots(inside, after, dot)}${badges}${mk}</svg>
+    <div class="bd-key">${key}</div>`;
 }
+let k = 0;
+const dots = (inside, after, dot) => inside.map(dot).join('') + after.map(dot).join('');
 
 // ------------------------------------------------------------------ halfway back
 
@@ -215,7 +232,9 @@ function renderHalfway() {
     .sort((a, b) => a.date.localeCompare(b.date));
   const head = $('#bd-half-head');
   if (birth >= today) { head.innerHTML = '<p>Pick a birthday in the past to see this</p>'; $('#bd-events').innerHTML = ''; halfTimeline(0, 0, 0, null); return; }
-  halfTimeline(mirror, half, today, inside);
+  const after = events.filter(e => { const t = parseIso(e.date); return t >= birth && t <= today; })
+    .sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3);   // the first 3 after your birth
+  halfTimeline(mirror, half, today, inside, after);
   const first = inside[0];
   head.innerHTML = `
     ${first ? `<p class="bd-kicker">You were born closer to this than to today</p><p class="bd-headline">${wikiLink(first.wiki, first.label)}<span class="bd-hdate">${fmtDate(parseIso(first.date))}</span></p>` : ''}

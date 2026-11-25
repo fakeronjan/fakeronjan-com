@@ -85,6 +85,15 @@ permalink: /birthday/
 .bd-tl .ev { fill: var(--accent); opacity: 0.7; }
 .bd-tl .ev.top { opacity: 1; stroke: var(--bg); stroke-width: 1.5; }
 .bd-tl .lead { stroke: var(--accent); stroke-width: 1.2; }
+.bd-tl .num-c { fill: var(--accent); stroke: var(--bg); stroke-width: 2; }
+.bd-tl .num-t { fill: var(--bg); font-size: 11px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+/* Key under the halfway timeline: the numbered events in three groups */
+.bd-key { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 0.4rem 1.6rem; margin-top: 0.8rem; }
+.bd-key h3 { margin: 0 0 0.3rem; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.bd-key ol { margin: 0; padding-left: 1.6rem; }
+.bd-key li { margin: 0.2rem 0; font-size: 0.92rem; line-height: 1.35; }
+.bd-key li::marker { color: var(--accent); font-weight: 700; }
+.bd-key li span { display: block; color: var(--muted); font-size: 0.8rem; }
 .bd-tl .ev-l { fill: var(--fg); font-size: 12.5px; font-weight: 600; }
 .bd-tl .ev-y { fill: var(--muted); font-weight: 400; }
 .bd-tl .mk { stroke: var(--muted); stroke-width: 2.5; }
