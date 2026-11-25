@@ -5,19 +5,39 @@ permalink: /other/
 ---
 
 <style>
-/* Card art: a crop of Sun Stats' sky picture, drawn inline so it follows the theme */
+/* Card art: drawn inline so it follows the theme. Sun Stats: a crop of its sky picture.
+   Flight Stats: a route arc between two airports over the page's on-time split */
 .other-art { display: block; width: 100%; height: auto; border-radius: 6px; margin-bottom: 0.3rem;
   --art-night: #e3e8ec; --art-twi: #f7dc96; --art-day: #f9d77a; --art-edge: #b9820f; --art-sun: #f2b632; --art-line: var(--fg); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .other-art { --art-night: #24272f; --art-twi: #5e4c1f; --art-day: #8a6a1c; --art-edge: #f2c45a; --art-sun: #d9a21f; }
 }
 :root[data-theme="dark"] .other-art { --art-night: #24272f; --art-twi: #5e4c1f; --art-day: #8a6a1c; --art-edge: #f2c45a; --art-sun: #d9a21f; }
+.fl-art { --art-sky: #e6f0f5; --art-ok: #15803d; --art-late: #d97706; --art-cancel: #b91c1c; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .fl-art { --art-sky: #1e2830; --art-ok: #34d399; --art-late: #fbbf24; --art-cancel: #f87171; }
+}
+:root[data-theme="dark"] .fl-art { --art-sky: #1e2830; --art-ok: #34d399; --art-late: #fbbf24; --art-cancel: #f87171; }
 .site-map-desc { text-wrap: balance; }   /* no lone last word */
 </style>
 
 <h1>Other Stuff</h1>
 
 <div class="site-map">
+  <a class="site-map-card" href="/flights/">
+    <svg class="other-art fl-art" viewBox="0 0 240 96" aria-hidden="true">
+      <rect x="0" y="0" width="240" height="80" fill="var(--art-sky)"/>
+      <path d="M44 76 Q120 -8 196 76" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="5 5" stroke-linecap="round"/>
+      <g transform="translate(120 34) rotate(90) translate(-12 -12) scale(1)"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="var(--fg)"/></g>
+      <rect x="0" y="80" width="173" height="8" fill="var(--art-ok)"/>
+      <rect x="173" y="80" width="59" height="8" fill="var(--art-late)"/>
+      <rect x="232" y="80" width="8" height="8" fill="var(--art-cancel)"/>
+      <circle cx="44" cy="76" r="4.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/>
+      <circle cx="196" cy="76" r="4.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/>
+    </svg>
+    <span class="site-map-title">Flight Stats</span>
+    <span class="site-map-desc">Various stats and links for flight routes, airports, and airlines</span>
+  </a>
   <a class="site-map-card" href="/sun/">
     <svg class="other-art" viewBox="0 0 240 96" aria-hidden="true">
       <rect x="0" y="0" width="240" height="80" fill="var(--art-night)"/>
