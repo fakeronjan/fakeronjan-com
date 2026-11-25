@@ -333,6 +333,22 @@ function faLinks(A, B, both) {
   const g = `https://www.google.com/travel/flights?q=${encodeURIComponent(`Flights from ${A} to ${B}`)}`;   // Google Flights search (Ronjan 11/24)
   return `<div class="fl-links">${both ? `${a(faURL(A, B), `Live flights on FlightAware: ${A} to ${B}`)}${a(faURL(B, A), `Live flights on FlightAware: ${B} to ${A}`)}` : a(faURL(A, B), 'Live flights on FlightAware')}${a(g, 'Search fares on Google Flights')}</div>`;
 }
+// Bar labels sit centered over their bars. Only one that would run past the chart's edge (a wide
+// number over a narrow end bar) gets nudged back inside (Ronjan 11/24: pinning the ends looked off)
+function fitBarLabels() {
+  document.querySelectorAll('#fl-main .fl-bars.lab').forEach((c) => {
+    const cb = c.getBoundingClientRect();
+    c.querySelectorAll('.fl-bar-lab').forEach((l) => {
+      l.style.marginLeft = '';
+      const a = l.getBoundingClientRect();
+      if (a.left < cb.left) l.style.marginLeft = `${cb.left - a.left}px`;
+      else if (a.right > cb.right) l.style.marginLeft = `${cb.right - a.right}px`;
+    });
+  });
+}
+let fitTimer;
+window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitBarLabels, 100); });
+
 function tableHTML(head, rows, cls = '', by = 1, asc = false) {
   return `<div class="fl-scroll"><table class="sport-table fl-sortable ${cls}" data-by="${by}" data-asc="${asc ? 1 : 0}"><thead><tr>${head.map(([h, c], i) => `<th class="${c || ''}"><button type="button" class="fl-sort fl-tsort" data-ti="${i}">${h}</button></th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 }
@@ -712,6 +728,7 @@ async function update() {
   if (seq !== renderSeq) return;   // a newer click already took over
   $('#fl-main').innerHTML = html;
   document.querySelectorAll('#fl-main .fl-sortable').forEach((t) => markSort(t, false));
+  fitBarLabels();
   if (state.mode === 'rank' && state.tab === 'routes') setupSearch('#fl-rk-ap', '#fl-rk-ap-list', (c) => { state.rk.fap = c; state.rk.n = 25; state.rk.hl = ''; update(); });
   if (state.rk.hl) document.querySelector('.fl-rk-table tr.hl')?.scrollIntoView({ block: 'center' });
 }
