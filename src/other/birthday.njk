@@ -51,22 +51,22 @@ permalink: /birthday/
 .bd-half p { text-wrap: pretty; }
 
 /* Photos: Wikipedia lead images (Wikimedia Commons). No photo: a circle with initials */
-.bd-face { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; flex: none; background: color-mix(in srgb, var(--fg) 6%, transparent); }
-.bd-face.ini { display: grid; place-items: center; color: var(--muted); font-size: 0.78rem; font-weight: 700; }
-.bd-list li.with-face { grid-template-columns: 7.5rem 40px minmax(0, 1fr) auto; align-items: center; }
-.bd-same-list li.with-face { grid-template-columns: 3.5rem 40px minmax(0, 1fr); }
+.bd-face { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; display: block; flex: none; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.bd-face.ini { display: grid; place-items: center; color: var(--muted); font-size: 0.95rem; font-weight: 700; }
+.bd-list li.with-face { grid-template-columns: 7.5rem 56px minmax(0, 1fr) auto; align-items: center; }
+.bd-same-list li.with-face { grid-template-columns: 3.5rem 56px minmax(0, 1fr); }
 .bd-sec[hidden] { display: none; }
 .bd .sport-tabs { margin-top: 1rem; }
 
 /* Same birthday: a tear-off calendar page and the day's five most famous faces */
 .bd-cal-row { display: flex; flex-wrap: wrap; gap: 1rem 1.4rem; align-items: center; margin: 0.4rem 0 1.2rem; }
-.bd-cal { width: 96px; flex: none; text-align: center; border-radius: 10px; overflow: hidden; background: var(--bg);
+.bd-cal { width: 112px; flex: none; text-align: center; border-radius: 10px; overflow: hidden; background: var(--bg);
   border: 1px solid color-mix(in srgb, var(--fg) 14%, transparent); box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08); }
 .bd-cal-mon { background: var(--accent-2); color: #fff; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.25rem 0; }
-.bd-cal-day { font-family: "Space Grotesk", sans-serif; font-size: 2.9rem; font-weight: 700; line-height: 1.15; padding: 0.2rem 0 0.35rem; }
+.bd-cal-day { font-family: "Space Grotesk", sans-serif; font-size: 3.4rem; font-weight: 700; line-height: 1.15; padding: 0.2rem 0 0.35rem; }
 .bd-five { display: flex; flex-wrap: wrap; gap: 0.8rem; min-width: 0; }
-.bd-five a { width: 88px; text-align: center; text-decoration: none; color: var(--fg); font-size: 0.78rem; font-weight: 600; line-height: 1.25; }
-.bd-five .bd-face { width: 64px; height: 64px; margin: 0 auto 0.3rem; font-size: 1rem; }
+.bd-five a { width: 118px; text-align: center; text-decoration: none; color: var(--fg); font-size: 0.78rem; font-weight: 600; line-height: 1.25; }
+.bd-five .bd-face { width: 104px; height: 104px; margin: 0 auto 0.35rem; font-size: 1.3rem; }
 .bd-five span { display: block; color: var(--muted); font-weight: 400; }
 
 /* Timelines (Closest in age, Halfway back): SVG drawn at the box's own width */
@@ -95,10 +95,11 @@ permalink: /birthday/
 
 @media (max-width: 560px) {
   .bd-list li, .bd-events li { grid-template-columns: 1fr; gap: 0.1rem; }
-  .bd-list li.with-face { grid-template-columns: 40px minmax(0, 1fr); column-gap: 0.7rem; }
+  .bd-list li.with-face { grid-template-columns: 52px minmax(0, 1fr); column-gap: 0.7rem; }
+  .bd-list .bd-face { width: 52px; height: 52px; }
   .bd-list li.with-face > .bd-gap, .bd-list li.with-face > .bd-year { grid-column: 1 / -1; }
   .bd-list li.with-face > .bd-born { grid-column: 2; }
-  .bd-five a { width: 64px; } .bd-five .bd-face { width: 52px; height: 52px; }
+  .bd-five { gap: 0.6rem; } .bd-five a { width: calc((100% - 1.2rem) / 3); max-width: 96px; } .bd-five .bd-face { width: 84px; height: 84px; }
   .bd-same-list li { grid-template-columns: 3rem minmax(0, 1fr); }
   .bd-born { white-space: normal; }
   .bd-headline { font-size: 1.35rem; }

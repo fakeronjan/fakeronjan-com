@@ -55,14 +55,14 @@ function dayGap(days) {
 // Photos: a Wikipedia lead image on Wikimedia Commons, stored as its file path ('3/34/Name.jpg') or,
 // for SVG/TIFF/PDF files, the whole thumbnail path. No photo: a circle with initials.
 const SVG_NS = 'http://www.w3.org/2000/svg';
-function photoURL(i) {
+function photoURL(i, px = 120) {   // Wikimedia serves set widths only: 120 or 250 here
   if (!i) return null;
   const base = 'https://upload.wikimedia.org/wikipedia/commons/thumb/';
-  return /\/\d+px-[^/]+$/.test(i) ? base + i : `${base}${i}/120px-${i.split('/').pop()}`;
+  return /\/\d+px-[^/]+$/.test(i) ? base + i : `${base}${i}/${px}px-${i.split('/').pop()}`;
 }
 const initials = (n) => n.replace(/\(.*?\)/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
-function face(p) {
-  const u = photoURL(p.i);
+function face(p, px) {
+  const u = photoURL(p.i, px);
   return u ? `<img class="bd-face" src="${u}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="bd-face ini" aria-hidden="true">${esc(initials(p.n))}</span>`;
 }
 
@@ -91,7 +91,7 @@ async function renderSameDay() {
   const yr = (p) => (p.y < 0 ? `${-p.y} BC` : p.y);
   const wikiURL = (t) => `https://en.wikipedia.org/wiki/${encodeURIComponent(t.replace(/ /g, '_'))}`;
   $('#bd-cal').innerHTML = `<div class="bd-cal" aria-hidden="true"><div class="bd-cal-mon">${MONTHS[d.getUTCMonth()]}</div><div class="bd-cal-day">${d.getUTCDate()}</div></div>
-    <div class="bd-five">${people.slice(0, 5).map(p => `<a ${p.t ? `href="${wikiURL(p.t)}" target="_blank" rel="noopener"` : ''}>${face(p)}${esc(p.n)}<span>${yr(p)}</span></a>`).join('')}</div>`;
+    <div class="bd-five">${people.slice(0, 5).map(p => `<a ${p.t ? `href="${wikiURL(p.t)}" target="_blank" rel="noopener"` : ''}>${face(p, 250)}${esc(p.n)}<span>${yr(p)}</span></a>`).join('')}</div>`;
   const row = (p) => `<li class="with-face"><span class="bd-year">${yr(p)}</span>${face(p)}<span class="bd-who">${wikiLink(p.t, p.n)}<span class="bd-desc">${esc(p.d)}${p.x ? ` (died ${p.x})` : ''}</span></span></li>`;
   const list = $('#bd-same');
   list.innerHTML = people.slice(0, SAME_DAY_SHOWN).map(row).join('');
@@ -141,7 +141,7 @@ function ageTimeline(people) {
   const box = $('#bd-age-tl');
   if (!people.length) { box.innerHTML = ''; return; }
   const W = Math.max(280, box.clientWidth || 900), small = W < 560;
-  const R = small ? 17 : 23, PAD = R + 4, base = 0;
+  const R = small ? 23 : 32, PAD = R + 4, base = 0;
   const x = (gap) => PAD + ((gap + WINDOW_DAYS) / (2 * WINDOW_DAYS)) * (W - 2 * PAD);
   const rows = [];   // per row, the x positions used
   const placed = [...people].sort((a, b) => a.gap - b.gap).map((p) => {
@@ -154,7 +154,7 @@ function ageTimeline(people) {
   const top = -(rows.length - 1) * (2 * R + 6) - 2 * R - 18;
   const cy = (row) => base - R - 12 - row * (2 * R + 6);
   const parts = placed.map(({ p, px, row }, i) => {
-    const y = cy(row), u = photoURL(p.i), tip = `${p.n}: ${dayGap(p.gap).toLowerCase()}`;
+    const y = cy(row), u = photoURL(p.i, 250), tip = `${p.n}: ${dayGap(p.gap).toLowerCase()}`;
     const pic = u
       ? `<clipPath id="bdc${i}"><circle cx="${px}" cy="${y}" r="${R}"/></clipPath><image href="${u}" x="${px - R}" y="${y - R}" width="${2 * R}" height="${2 * R}" clip-path="url(#bdc${i})" preserveAspectRatio="xMidYMid slice"/>`
       : `<circle cx="${px}" cy="${y}" r="${R}" class="ini-c"/><text x="${px}" y="${y}" class="ini-t">${esc(initials(p.n))}</text>`;
@@ -219,7 +219,7 @@ function renderHalfway() {
   const first = inside[0];
   head.innerHTML = `
     ${first ? `<p class="bd-kicker">You were born closer to this than to today</p><p class="bd-headline">${wikiLink(first.wiki, first.label)}<span class="bd-hdate">${fmtDate(parseIso(first.date))}</span></p>` : ''}
-    <p>Today is ${Math.round(age / DAY).toLocaleString('en-US')} days (${plural(yearsBetween(birth, today), 'year')}) after your birth. The same distance before your birth lands on <strong>${fmtDate(mirror)}</strong>, so anything after that date happened closer to your birth than to today.</p>
+    <p>Today is ${Math.round(age / DAY).toLocaleString('en-US')} days (${plural(yearsBetween(birth, today), 'year')}) after your birth. The same number of days before your birth is <strong>${fmtDate(mirror)}</strong>, so anything after that date happened closer to your birth than to today.</p>
     <p>You were half your current age on <strong>${fmtDate(half)}</strong>.</p>`;
   const eventRow = (e) => {
     const t = parseIso(e.date), yrs = yearsBetween(t, birth);
