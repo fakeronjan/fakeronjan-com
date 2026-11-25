@@ -13,7 +13,7 @@ const LOGOS = new Set(['AA', 'DL', 'UA', 'WN', 'AS', 'B6', 'F9', 'G4', 'NK', 'HA
 const DOW = ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const CAUSES = [['The airline', 0], ['Late-arriving plane', 4], ['Air traffic and airports', 2], ['Weather', 1], ['Security', 3]];
-const CANCEL = { A: 'the airline', B: 'weather', C: 'air traffic and airports', D: 'security' };
+const CANCEL = [['The airline', 'A'], ['Air traffic and airports', 'C'], ['Weather', 'B'], ['Security', 'D']];
 
 let meta = null, airports = {}, MARKETS = {}, marketOf = {};
 const state = {
@@ -29,7 +29,6 @@ const cache = new Map();
 const pct = (a, b) => (b ? (100 * a) / b : 0);
 const p1 = (x) => (x > 0 && x < 0.05 ? '<0.1%' : `${x.toFixed(1)}%`);
 const num = (x) => Math.round(x).toLocaleString('en-US');
-const perDay = (x) => (x >= 100 ? num(x) : x.toFixed(1));
 const dur = (m) => `${Math.floor(m / 60)}h ${Math.round(m % 60)}m`;
 const add = (a, b) => (a ? a.map((x, i) => x + (b[i] || 0)) : [...b]);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -64,6 +63,9 @@ function windows() {
   const ys = meta.years.filter((y) => y >= state.y0 && y <= state.y1);
   return ys.length ? ys : [state.y0];
 }
+// Mar-May 2020 airlines reported most cancellations as security, so the cancellation causes
+// leave 2020 out whenever other years are in the period (Ronjan 11/25)
+const skip2020 = (w) => w === '2020' && windows().length > 1;
 function periodDays() {
   if (state.y0 === 'last12') return 365;
   return windows().reduce((s, y) => s + meta.months_in_year[y] * 30.44, 0);
@@ -95,7 +97,7 @@ function merge(a, b) {
   for (const k of ['c', 'x', 't']) if (b[k]) out[k] = add(a[k], b[k]);
   if (b.d !== undefined) out.d = Math.min(a.d ?? Infinity, b.d);
   for (const k of ['a', 'h', 'w', 'mo']) if (b[k]) { out[k] = { ...a[k] }; for (const [kk, v] of Object.entries(b[k])) out[k][kk] = add(out[k][kk], v); }
-  for (const k of ['k', 'ab', 'airports']) if (b[k]) { out[k] = { ...a[k] }; for (const [kk, v] of Object.entries(b[k])) out[k][kk] = (out[k][kk] || 0) + v; }
+  for (const k of ['k', 'k20', 'ab', 'airports']) if (b[k]) { out[k] = { ...a[k] }; for (const [kk, v] of Object.entries(b[k])) out[k][kk] = (out[k][kk] || 0) + v; }
   if (b.in !== undefined) out.in = (a.in || 0) + b.in;
   for (const k of ['dests', 'routes']) if (b[k]) {          // the last field is distance, which doesn't add
     out[k] = { ...a[k] };
@@ -113,7 +115,8 @@ function merge(a, b) {
 async function summed(pathFor, key) {
   const parts = await Promise.all(windows().map((w) => getJSON(pathFor(w))));
   let r = null;
-  for (const p of parts) { const v = key ? p?.[key] : p; if (v) r = merge(r, v); }
+  const ws = windows();
+  parts.forEach((p, i) => { const v = key ? p?.[key] : p; if (v) r = merge(r, skip2020(ws[i]) && v.k ? { ...v, k20: v.k } : v); });
   return r;
 }
 
@@ -152,7 +155,6 @@ async function fares() {
 const fareAvg = (v) => (v && v[0] ? [v[1] / v[0], v[2] / v[0]] : null);   // [as paid, 2026 dollars]
 const fareOf = (x) => (x ? x[state.real ? 1 : 0] : null);
 const money = (v) => `$${Math.round(v).toLocaleString('en-US')}`;
-const qLabel = (q) => `${MON[(+q.slice(-1) - 1) * 3 + 2]} ${q.slice(0, 4)}`;   // a quarter's last month
 
 async function ranking() {
   const key = windows().join(',');
@@ -198,37 +200,37 @@ function airportTotals(dir) {
 // What can be ranked. val() is null when there isn't enough data for that stat.
 // hi/lo name each end; lo: null means only the top end is worth ranking.
 const METRICS = [
-  { id: 'busiest', name: 'Busiest', col: 'Flights', hi: 'busiest', noLoBadge: true, lo: 'least busy', all: true, val: (r) => r.f, sh: (v) => num(v) },
+  { id: 'busiest', nat: false, name: 'Busiest', col: 'Flights', hi: 'busiest', noLoBadge: true, lo: 'least busy', all: true, val: (r) => r.f, sh: (v) => num(v) },
   { id: 'ontime', pri: 1, name: 'On time', hi: 'most on time', lo: 'least on time', val: (r) => r.on / r.f, sh: (v) => p1(100 * v) },
-  { id: 'delayed', pri: 2, name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (r) => r.late / r.f, sh: (v) => p1(100 * v) },
-  { id: 'canceled', pri: 2, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
-  { id: 'diverted', pri: 2, name: 'Diverted', hi: 'most diverted', noLoBadge: true, lo: 'least diverted', val: (r) => r.div / r.f, sh: (v) => p1(100 * v) },
-  { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
+  { id: 'delayed', neg: true, pri: 2, name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (r) => r.late / r.f, sh: (v) => p1(100 * v) },
+  { id: 'canceled', neg: true, pri: 2, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
+  { id: 'diverted', neg: true, pri: 2, name: 'Diverted', hi: 'most diverted', noLoBadge: true, lo: 'least diverted', val: (r) => r.div / r.f, sh: (v) => p1(100 * v) },
+  { id: 'delay', neg: true, pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
   { id: 'padding', pri: 2, name: 'Schedule padding', hi: 'most padded schedule', lo: 'least padded schedule', val: (r) => (r.arr >= 20 ? (r.sched - r.act) / r.arr : null), sh: (v) => `${Math.abs(Math.round(v))} min ${v >= 0 ? 'early' : 'late'}` },
-  { id: 'distance', p0: true, name: 'Distance', hi: 'longest', lo: 'shortest', val: (r) => r.dist, sh: (v) => `${num(v)} mi` },
-  { id: 'airlines', pri: 2, name: 'Airlines', hi: 'most airlines', noLoBadge: true, lo: 'fewest airlines', val: (r) => r.brands.size, sh: (v) => String(v) },
+  { id: 'distance', nat: false, p0: true, name: 'Distance', hi: 'longest', lo: 'shortest', val: (r) => r.dist, sh: (v) => `${num(v)} mi` },
+  { id: 'airlines', nat: false, pri: 2, name: 'Airlines', hi: 'most airlines', noLoBadge: true, lo: 'fewest airlines', val: (r) => r.brands.size, sh: (v) => String(v) },
   { id: 'fare', pri: 1, name: 'Fare', hi: 'priciest', lo: 'cheapest', val: (r) => (state.rk.fal ? null : fareOf(r.fare)), sh: (v) => money(v) },
-  { id: 'farepm', pri: 2, name: 'Fare per mile', hi: 'priciest per mile', lo: 'cheapest per mile', val: (r) => (state.rk.fal || !r.fare ? null : fareOf(r.fare) / r.dist), sh: (v) => `$${v.toFixed(2)}` },
+  { id: 'farepm', nat: false, pri: 2, name: 'Fare per mile', hi: 'priciest per mile', lo: 'cheapest per mile', val: (r) => (state.rk.fal || !r.fare ? null : fareOf(r.fare) / r.dist), sh: (v) => `$${v.toFixed(2)}` },
 ];
 // Airports: on time, cancellations, and delays are for departures
 const AMETRICS = [
-  { id: 'busiest', name: 'Busiest', col: 'Flights', hi: 'busiest', noLoBadge: true, lo: 'least busy', all: true, val: (r) => r.f + r.inF, sh: (v) => num(v) },
+  { id: 'busiest', nat: false, name: 'Busiest', col: 'Flights', hi: 'busiest', noLoBadge: true, lo: 'least busy', all: true, val: (r) => r.f + r.inF, sh: (v) => num(v) },
   { id: 'ontime', p0: true, name: 'On time', hi: 'most on time', lo: 'least on time', val: (r) => r.on / r.f, sh: (v) => p1(100 * v) },
-  { id: 'canceled', pri: 1, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
-  { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
-  { id: 'routes', pri: 1, name: 'Destinations', hi: 'most destinations', noLoBadge: true, lo: 'fewest destinations', all: true, val: (r) => r.dests.size, sh: (v) => String(v) },
-  { id: 'airlines', pri: 1, name: 'Airlines', hi: 'most airlines', noLoBadge: true, lo: 'fewest airlines', all: true, val: (r) => r.brands.size, sh: (v) => String(v) },
+  { id: 'canceled', neg: true, pri: 1, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (r) => r.canc / r.f, sh: (v) => p1(100 * v) },
+  { id: 'delay', neg: true, pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
+  { id: 'routes', nat: false, pri: 1, name: 'Destinations', hi: 'most destinations', noLoBadge: true, lo: 'fewest destinations', all: true, val: (r) => r.dests.size, sh: (v) => String(v) },
+  { id: 'airlines', nat: false, pri: 1, name: 'Airlines', hi: 'most airlines', noLoBadge: true, lo: 'fewest airlines', all: true, val: (r) => r.brands.size, sh: (v) => String(v) },
   { id: 'fare', pri: 1, name: 'Fare', hi: 'priciest', lo: 'cheapest', val: (r) => (state.rk.fal ? null : fareOf(r.fare)), sh: (v) => money(v) },
 ];
 // Airlines: v is an entry in the airline index
 const ALMETRICS = [
-  { id: 'busiest', name: 'Flights', hi: 'most flights', lo: 'fewest flights', val: (v) => v.c[0], sh: (x) => num(x) },
+  { id: 'busiest', nat: false, name: 'Flights', hi: 'most flights', lo: 'fewest flights', val: (v) => v.c[0], sh: (x) => num(x) },
   { id: 'ontime', p0: true, name: 'On time', hi: 'most on time', lo: 'least on time', val: (v) => v.c[1] / v.c[0], sh: (x) => p1(100 * x) },
-  { id: 'delayed', pri: 1, name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (v) => v.c[2] / v.c[0], sh: (x) => p1(100 * x) },
-  { id: 'canceled', pri: 1, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (v) => v.c[3] / v.c[0], sh: (x) => p1(100 * x) },
-  { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (v) => (v.c[2] ? v.c[5] / v.c[2] : null), sh: (x) => `${Math.round(x)} min` },
-  { id: 'routes', pri: 1, name: 'Routes', hi: 'most routes', lo: 'fewest routes', val: (v) => v.nr, sh: (x) => num(x) },
-  { id: 'airports', pri: 1, name: 'Airports', hi: 'most airports', lo: 'fewest airports', val: (v) => v.na, sh: (x) => num(x) },
+  { id: 'delayed', neg: true, pri: 1, name: 'Delayed', hi: 'most delayed', lo: 'least delayed', val: (v) => v.c[2] / v.c[0], sh: (x) => p1(100 * x) },
+  { id: 'canceled', neg: true, pri: 1, name: 'Canceled', hi: 'most canceled', lo: 'least canceled', val: (v) => v.c[3] / v.c[0], sh: (x) => p1(100 * x) },
+  { id: 'delay', neg: true, pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (v) => (v.c[2] ? v.c[5] / v.c[2] : null), sh: (x) => `${Math.round(x)} min` },
+  { id: 'routes', nat: false, pri: 1, name: 'Routes', hi: 'most routes', lo: 'fewest routes', val: (v) => v.nr, sh: (x) => num(x) },
+  { id: 'airports', nat: false, pri: 1, name: 'Airports', hi: 'most airports', lo: 'fewest airports', val: (v) => v.na, sh: (x) => num(x) },
 ];
 const routeMetric = (id) => METRICS.find((m) => m.id === id);
 const airportMetric = (id) => AMETRICS.find((m) => m.id === id);
@@ -266,16 +268,13 @@ function badge(list, key, m, tab) {
 
 // ------------------------------------------------------------------ section builders (HTML)
 
-function factsHTML(rows) {
-  return `<dl class="fl-facts">${rows.map(([k, v, b]) => `<div><dt>${k}</dt><dd>${v}</dd>${b ? `<span class="fl-bw">${b}</span>` : ''}</div>`).join('')}</dl>`;
-}
-function onTimeHTML(c, badges, lines) {
+const badgeRow = (badges) => (badges ? `<div class="fl-badges">${badges}</div>` : '');
+function onTimeHTML(c, badges) {
   const [f, on, late, canc, div] = c;
   const parts = [['On time', on, 'ok'], ['Delayed 15+ min', late, 'late'], ['Canceled', canc, 'cancel'], ['Diverted', div, 'divert']];
   return `<div class="fl-stack">${parts.map(([k, v, cl]) => `<span class="s-${cl}" style="flex:${v}" data-t="${k}: ${p1(pct(v, f))} (${num(v)} flights)"></span>`).join('')}</div>
     <div class="fl-legend">${parts.map(([k, v, cl]) => `<span class="s-${cl}">${k} <b>${p1(pct(v, f))}</b></span>`).join('')}</div>
-    ${badges ? `<div class="fl-badges">${badges}</div>` : ''}
-    ${lines.length ? `<ul class="fl-rank">${lines.map((x) => `<li>${x}</li>`).join('')}</ul>` : ''}`;
+    ${badgeRow(badges)}`;
 }
 function barChart(title, items, label, opts = {}) {
   const shown = items.filter((x) => x.f >= (opts.min ?? 20));
@@ -283,10 +282,8 @@ function barChart(title, items, label, opts = {}) {
   const rates = shown.map((x) => (opts.value ? opts.value(x) : pct(x.on, x.f)));
   const max = Math.max(...rates), min = Math.min(...rates), top = opts.scale ? Math.max(...rates, 1) : 100;
   const cls = (x, v) => [opts.cls ? opts.cls(x) : '', !opts.plain && v === max ? 'best' : !opts.plain && v === min ? 'worst' : ''].filter(Boolean).join(' ');
-  const bi = rates.indexOf(max), wi = rates.indexOf(min);
-  const note = opts.note !== undefined ? opts.note : opts.lab ? '' : shown.length > 1 ? `Best ${label(shown[bi].k)} (${p1(max)}), worst ${label(shown[wi].k)} (${p1(min)})` : '';
   return `<div><h3>${title}</h3><div class="fl-bars${opts.lab ? ' lab' : ''}">${shown.map((x, i) => `<div class="${cls(x, rates[i])}" style="height:${Math.max(2, (100 * rates[i]) / top)}%" data-t="${esc(opts.tip ? opts.tip(x, rates[i]) : `${label(x.k)}: ${p1(rates[i])} on time (${num(x.f)} flights)`)}">${opts.lab ? `<span class="fl-bar-lab">${esc(opts.lab(rates[i]))}</span>` : ''}</div>`).join('')}</div>
-    <div class="fl-ticks">${shown.map((x) => `<span>${label(x.k, true)}</span>`).join('')}</div>${note ? `<p class="fl-note">${esc(note)}</p>` : ''}</div>`;
+    <div class="fl-ticks">${shown.map((x) => `<span>${label(x.k, true)}</span>`).join('')}</div></div>`;
 }
 function whenHTML(r) {
   return `<h2>When to fly</h2><div class="fl-charts">
@@ -296,27 +293,53 @@ function whenHTML(r) {
     ${barChart('On time by month', Object.entries(r.mo).map(([k, v]) => ({ k: +k, f: v[0], on: v[1] })).sort((x, y) => x.k - y.k), (m, short) => (short ? MON[m - 1][0] : MON[m - 1]), { lab: (v) => `${Math.round(v)}%` })}
   </div>`;
 }
-// Delay causes for every airline together, over the same years: the national benchmark
+// Delay and cancellation causes for every airline together, over the same years: the national benchmark
 async function nationalCauses() {
   const idx = await Promise.all(windows().map((w) => getJSON(`y/${w}/al/index.json`)));
-  const x = [0, 0, 0, 0, 0];
-  for (const file of idx) for (const v of Object.values(file || {})) v.x.forEach((n, i) => { x[i] += n; });
-  return x;
+  const x = [0, 0, 0, 0, 0], k = {};
+  idx.forEach((file, w) => { for (const v of Object.values(file || {})) {
+    v.x.forEach((n, i) => { x[i] += n; });
+    if (!skip2020(windows()[w])) for (const [c, n] of Object.entries(v.k || {})) k[c] = (k[c] || 0) + n;
+  } });
+  return { x, k };
+}
+// One horizontal bar per cause, with a tick for the national share
+function causeBars(rows, nat, cls = '') {
+  const tot = rows.reduce((s, [, v]) => s + v, 0), natTot = nat ? nat.reduce((s, v) => s + v, 0) : 0;
+  return `<div class="fl-causes${cls}">${rows.map(([k, v], i) => `<div><span>${k}</span><span class="track"><span class="fill" style="width:${pct(v, tot)}%"></span>${natTot ? `<span class="nat" style="left:${pct(nat[i], natTot)}%" title="All US flights: ${Math.round(pct(nat[i], natTot))}%"></span>` : ''}</span><b>${Math.round(pct(v, tot))}%</b>${natTot ? `<small>${Math.round(pct(nat[i], natTot))}% nationally</small>` : ''}</div>`).join('')}</div>`;
 }
 function causesHTML(r, nat) {
-  const tot = r.x.reduce((s, x) => s + x, 0), natTot = nat ? nat.reduce((s, x) => s + x, 0) : 0;
-  const ct = Object.values(r.k).reduce((s, x) => s + x, 0);
-  const cancels = ct
-    ? `${num(ct)} cancellation${ct === 1 ? '' : 's'}: ${Object.entries(r.k).sort((x, y) => y[1] - x[1]).map(([k, v]) => `${Math.round(pct(v, ct))}% ${CANCEL[k] || 'other'}`).join(', ')}`
-    : 'No cancellations';
-  return `<h2>Why flights were late</h2><p class="fl-note fl-lead">Share of delay minutes</p>
-    <div class="fl-causes">${CAUSES.map(([k, i]) => `<div><span>${k}</span><span class="track"><span class="fill" style="width:${pct(r.x[i], tot)}%"></span>${natTot ? `<span class="nat" style="left:${pct(nat[i], natTot)}%" title="All US flights: ${Math.round(pct(nat[i], natTot))}%"></span>` : ''}</span><b>${Math.round(pct(r.x[i], tot))}%</b>${natTot ? `<small>${Math.round(pct(nat[i], natTot))}% nationally</small>` : ''}</div>`).join('')}</div>
-    <p class="fl-note">${cancels}</p>`;
+  const kk = {};
+  for (const [c, n] of Object.entries(r.k || {})) kk[c] = n - (r.k20?.[c] || 0);
+  const late = r.x.reduce((s, v) => s + v, 0), ct = Object.values(kk).reduce((s, v) => s + v, 0);
+  return `<div class="fl-why">
+    <div><h2>Why flights were late</h2>${late ? causeBars(CAUSES.map(([k, i]) => [k, r.x[i]]), CAUSES.map(([, i]) => nat.x[i])) : '<p class="fl-sub">No delays</p>'}</div>
+    <div><h2>Why flights were canceled</h2>${ct ? causeBars(CANCEL.map(([k, c]) => [k, kk[c] || 0]), CANCEL.map(([, c]) => nat.k[c] || 0), ' fl-cx') : '<p class="fl-sub">No cancellations</p>'}</div>
+  </div>`;
+}
+// Ranks: each stat's value, the national figure, and where it ranks (linked to that ranking).
+// cols: extra rank columns [heading, list] (a route's rank among routes out of its origin, into its destination)
+function ranksHTML({ metrics, rec, nat, list, key, tab, title, cols = [], extra = [] }) {
+  const rows = metrics.map((m) => {
+    const v = m.val(rec);
+    if (v === null || !Number.isFinite(v)) return '';
+    const L = list(m), me = rankOf(L, key, m, !m.neg);   // lower is better: rank 1 is the lowest
+    const nv = nat && m.nat !== false ? m.val(nat) : null;
+    const rk = me ? `<a href="#" data-badge="${tab}" data-m="${m.id}" data-lo="${m.neg ? 1 : 0}" data-key="${key}">${num(me.rank)}</a><span class="fl-of"> of ${num(me.of)}</span>` : '-';
+    const ex = cols.map(([, f]) => { const x = rankOf(f(L), key, m, !m.neg); return `<td class="hide-sm">${x ? `${num(x.rank)}<span class="fl-of"> of ${num(x.of)}</span>` : '-'}</td>`; }).join('');
+    return `<tr><td>${m.col || m.name}${m.neg ? '*' : ''}</td><td>${m.sh(v)}</td><td>${nv === null || !Number.isFinite(nv) ? '-' : m.sh(nv)}</td><td>${rk}</td>${ex}</tr>`;
+  }).filter(Boolean);
+  const plain = extra.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td><td>-</td><td>-</td>${cols.map(() => '<td class="hide-sm">-</td>').join('')}</tr>`);
+  if (!rows.length) return '';
+  const neg = metrics.some((m) => m.neg && rows[metrics.indexOf(m)]);
+  return `<h2>Ranks</h2>${tableHTML([['Stat'], [title], ['National'], ['Rank'], ...cols.map(([h]) => [h, 'hide-sm'])], [...rows, ...plain], 'fl-ranks', -1)}
+    ${neg ? '<p class="fl-foot">* Lower is better, so rank 1 is the lowest</p>' : ''}`;
 }
 // Most and least on time among rows sorted best first: [key, [flights, on time, ...]]
 function bestWorstHTML(sorted, link) {
   const [b, w] = [sorted[0], sorted[sorted.length - 1]];
-  return `<ul class="fl-rank"><li>Most on time: ${link(b[0])} (${p1(pct(b[1][1], b[1][0]))})</li><li>Least on time: ${link(w[0])} (${p1(pct(w[1][1], w[1][0]))})</li></ul>`;
+  const row = (label, x) => `<tr><td>${label}</td><td>${link(x[0])}</td><td>${p1(pct(x[1][1], x[1][0]))}</td></tr>`;
+  return `<h3>Most and least on time</h3>${tableHTML([[''], ['Route'], ['On time']], [row('Most on time', b), row('Least on time', w)], 'fl-bw-table', -1)}`;
 }
 function funHTML(facts) {
   return facts.length ? `<h2>Superlatives</h2><div class="fl-fun">${facts.map(([k, v, s]) => `<div><small>${k}</small><b>${v}</b><span>${s}</span></div>`).join('')}</div>` : '';
@@ -389,15 +412,6 @@ function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day', fareY
   const out = (y) => (selected && !picked.has(y) ? 'out' : '');
   const per = years.map((y) => { const c = perYear[y] || [0, 0, 0, 0, 0]; return { k: y, c, f: c[0], on: c[1], perDay: c[0] / (meta.months_in_year[y] * 30.44) }; });
   const yl = (y, short) => (short ? `'${y.slice(2)}` : `${y}${partial(y)}`);
-  const withF = per.filter((p) => p.f >= 20);
-  let nF = '', nO = '';
-  if (withF.length >= 2) {
-    const a = withF[0], b = withF[withF.length - 1];
-    const chg = (b.perDay - a.perDay) / a.perDay;
-    nF = Math.abs(chg) < 0.05 ? `About the same as ${a.k}` : `${Math.round(Math.abs(chg) * 100)}% ${chg > 0 ? 'more' : 'fewer'} than ${a.k}`;
-    const da = pct(a.on, a.f), db = pct(b.on, b.f);
-    nO = Math.abs(db - da) < 1 ? `About the same as ${a.k}` : `${(Math.abs(db - da)).toFixed(1)} points ${db > da ? 'better' : 'worse'} than ${a.k}`;
-  }
   const brands = [...new Set(Object.values(mixByYear || {}).flatMap((m) => Object.keys(m)))]
     .sort((x, y) => Object.values(mixByYear).reduce((s, m) => s + (m[y] || 0), 0) - Object.values(mixByYear).reduce((s, m) => s + (m[x] || 0), 0));
   // Top five airlines plus Other; phones keep the top three plus their own Other
@@ -408,13 +422,13 @@ function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day', fareY
     return `<tr><td>${p.k}</td>${top.map((b, i) => `<td class="${i >= 3 ? 'fl-wide-only' : ''}">${m[b] ? `${Math.round(pct(m[b], tot))}%` : '-'}</td>`).join('')}${many ? `<td class="fl-wide-only">${share(m, tot, brands.slice(5))}</td>` : ''}${phoneCut ? `<td class="fl-phone-only">${share(m, tot, brands.slice(3))}</td>` : ''}</tr>`;
   });
   const mixHead = [['Year'], ...top.map((b, i) => [LOGOS.has(b) ? logo(b, 'sm') : esc(airlineName(b)), i >= 3 ? 'fl-wide-only' : '']), ...(many ? [['Other', 'fl-wide-only']] : []), ...(phoneCut ? [['Other', 'fl-phone-only']] : [])];
-  return `<h2>Trends</h2>${selected ? `<p class="fl-note fl-lead">Selected year${picked.size > 1 ? 's are' : ' is'} highlighted</p>` : ''}
+  return `<h2>Trends</h2>
     <div class="fl-charts">
-      ${barChart(title, per, yl, { min: 0, scale: true, plain: true, value: (x) => x.perDay, lab: (v) => (v >= 10 ? Math.round(v).toLocaleString('en-US') : v.toFixed(1)), cls: (x) => out(x.k), note: nF, tip: (x, v) => `${yl(x.k)}: ${v.toFixed(1)} a day` })}
-      ${barChart('On time', per, yl, { plain: true, lab: (v) => `${Math.round(v)}%`, cls: (x) => out(x.k), note: nO, tip: (x, v) => `${yl(x.k)}: ${p1(v)} on time` })}
-      ${fareYears.length ? barChart('Fare each way', fareYears, yl, { min: 0, scale: true, plain: true, value: (x) => x.v, lab: (v) => money(v), cls: (x) => out(x.k), note: '', tip: (x, v) => `${yl(x.k)}: ${money(v)}` }) : ''}
+      ${barChart(title, per, yl, { min: 0, scale: true, plain: true, value: (x) => x.perDay, lab: (v) => (v >= 10 ? Math.round(v).toLocaleString('en-US') : v.toFixed(1)), cls: (x) => out(x.k), tip: (x, v) => `${yl(x.k)}: ${v.toFixed(1)} a day` })}
+      ${barChart('On time', per, yl, { plain: true, lab: (v) => `${Math.round(v)}%`, cls: (x) => out(x.k), tip: (x, v) => `${yl(x.k)}: ${p1(v)} on time` })}
+      ${fareYears.length ? barChart('Fare each way', fareYears, yl, { min: 0, scale: true, plain: true, value: (x) => x.v, lab: (v) => money(v), cls: (x) => out(x.k), tip: (x, v) => `${yl(x.k)}: ${money(v)}` }) : ''}
     </div>
-    ${brands.length > 1 ? `<h3>${mixLabel}</h3>${tableHTML(mixHead, mixRows, '', 0, true)}` : ''}`;
+    ${brands.length > 1 ? `<h3>${mixLabel}</h3>${tableHTML(mixHead, mixRows, 'fl-mix', 0, true)}` : ''}`;
 }
 
 // ------------------------------------------------------------------ route page
@@ -432,29 +446,10 @@ async function renderRoute() {
     </div><p class="fl-period-line">${esc(periodTitle())}</p>`;
   const head = headOf();
   if (!r) return `${head}<p class="fl-sub">No flights ${both ? 'between' : 'from'} ${esc(city(A))} ${both ? 'and' : 'to'} ${esc(city(B))} on these airlines in ${esc(periodLabel())}</p>`;
-  const [f, on, late, , , dmin] = r.c;
+  const [f] = r.c;
   const map = both ? rank.pairs : rank.dir, key = both ? [A, B].sort().join('-') : `${A}-${B}`;
   const B_ = (id) => badge(eligibleRoutes(map, routeMetric(id), both), key, routeMetric(id), 'routes');
-  const brands = new Set(Object.keys(r.a).map((k) => k.split('|')[0]));
 
-  // Ranking lines
-  const list = eligibleRoutes(map, routeMetric('ontime'), both), rate = on / f;
-  const better = (L) => L.filter(([, v]) => v.on / v.f > rate).length + 1;
-  const lines = [];
-  if (list.some(([k]) => k === key)) {
-    lines.push(`${ordinal(better(list))} of ${num(list.length)} ${both ? 'round trips' : 'routes'} for on-time rate`);
-    if (!both) {
-      const fromA = list.filter(([k]) => k.startsWith(`${A}-`)), intoB = list.filter(([k]) => k.endsWith(`-${B}`));
-      lines.push(`${ordinal(better(fromA))} of ${num(fromA.length)} routes out of ${A}`, `${ordinal(better(intoB))} of ${num(intoB.length)} routes into ${B}`);
-    }
-  }
-  const nat = list.reduce((s, [, v]) => [s[0] + v.f, s[1] + v.on], [0, 0]);
-  lines.push(`National average: ${p1(pct(nat[1], nat[0]))}`);
-
-  const rows = Object.entries(r.a).sort((x, y) => y[1][0] - x[1][0]).map(([k, c]) => {
-    const [m, o] = k.split('|');
-    return `<tr><td>${linkAirline(m)}${m !== o ? `<small>operated by ${esc(airlineName(o))}</small>` : ''}</td><td>${num(c[0])}</td><td class="hide-sm">${p1(pct(c[0], f))}</td><td>${p1(pct(c[1], c[0]))}</td><td class="hide-sm">${p1(pct(c[3], c[0]))}</td><td>${c[2] ? `${Math.round(c[5] / c[2])} min` : '-'}</td></tr>`;
-  });
 
   // Trends: this route (and the reverse, both ways)
   const t1 = tA?.[B], t2 = both ? tB?.[A] : null, perYear = {}, mix = {};
@@ -465,13 +460,18 @@ async function renderRoute() {
   }
 
   // Fares: one per airport pair, so both directions share it
-  const fv = rank.fr.pairs.get([A, B].sort().join('-')), fare = fareOf(fareAvg(fv));
+  const fv = rank.fr.pairs.get([A, B].sort().join('-'));
   const adj = (v) => (state.real ? v * fv[7] : v);
-  const fareLine = fv && fv[3] ? `${esc(airlineName(fv[3]))} (biggest) ${money(adj(fv[4]))}${fv[5] && fv[5] !== fv[3] ? ` &middot; ${esc(airlineName(fv[5]))} (cheapest) ${money(adj(fv[6]))}` : ''}` : '';
-  const pEnd = state.y0 === 'last12' ? meta.last12[1] : `${state.y1 || state.y0}-${String(meta.months_in_year[state.y1 || state.y0]).padStart(2, '0')}`;
-  const lastQ = rank.fr.last, qEnd = lastQ ? `${lastQ.slice(0, 4)}-${String(+lastQ.slice(-1) * 3).padStart(2, '0')}` : null;
-  const fareNote = fare ? [fareLine, qEnd && qEnd < pEnd ? `Fares through ${qLabel(lastQ)}` : ''].filter(Boolean).join(' &middot; ') : '';
+  // The fare report names two airlines per pair: the biggest and the cheapest (latest quarter)
+  const alFare = {};
+  if (fv && fv[3]) { alFare[fv[3]] = adj(fv[4]); if (fv[5]) alFare[fv[5]] = adj(fv[6]); }
+  const hasAlFare = Object.keys(alFare).length > 0;
   const fareYears = meta.years.map((y) => { const v = fT?.[B]?.[y]; return v && v[0] ? { k: y, f: 1, v: fareOf(fareAvg(v)) } : null; }).filter(Boolean);
+
+  const rows = Object.entries(r.a).sort((x, y) => y[1][0] - x[1][0]).map(([k, c]) => {
+    const [m, o] = k.split('|');
+    return `<tr><td>${linkAirline(m)}${m !== o ? `<small>operated by ${esc(airlineName(o))}</small>` : ''}</td><td>${num(c[0])}</td><td class="hide-sm">${p1(pct(c[0], f))}</td><td>${p1(pct(c[1], c[0]))}</td><td class="hide-sm">${p1(pct(c[3], c[0]))}</td><td>${c[2] ? `${Math.round(c[5] / c[2])} min` : '-'}</td>${hasAlFare ? `<td class="hide-sm">${m in alFare ? money(alFare[m]) : '-'}</td>` : ''}</tr>`;
+  });
 
   const facts = [];
   if (r.fa) facts.push(['Fastest flight', dur(r.fa.min), `${flightLabel(r.fa)}, ${fmtDate(r.fa.date)}${dirOf(r.fa)}`]);
@@ -479,14 +479,21 @@ async function renderRoute() {
   if (r.ld?.delay > 0) facts.push(['Longest delay', dur(r.ld.delay), `${flightLabel(r.ld)}, ${fmtDate(r.ld.date)}${dirOf(r.ld)}`]);
   const tf = tailFact(r.tl, 'on this route'); if (tf) facts.push(tf);
 
+  const natRec = blankRec();
+  for (const v of rank.dir.values()) addRec(natRec, v);
+  natRec.fare = fareAvg([...rank.fr.pairs.values()].reduce((t, v) => [t[0] + v[0], t[1] + v[1], t[2] + v[2]], [0, 0, 0]));
+  const ranks = ranksHTML({
+    metrics: METRICS, rec: map.get(key), nat: natRec, key, tab: 'routes', title: both ? `${A} ⇄ ${B}` : `${A} → ${B}`,
+    list: (m) => eligibleRoutes(map, m, both),
+    cols: both ? [] : [[`Out of ${A}`, (L) => L.filter(([k]) => k.startsWith(`${A}-`))], [`Into ${B}`, (L) => L.filter(([k]) => k.endsWith(`-${B}`))]],
+    extra: r.t[2] ? [['Scheduled time', dur(r.t[0] / r.t[2])], ['Actual time', dur(r.t[1] / r.t[2])]] : [],
+  });
+
   return `${headOf(`<small>${num(r.d)} miles</small>${B_('distance')}`)}${faLinks(A, B, both)}
-    ${factsHTML([['Flights', num(f), B_('busiest')], ['Per day', perDay(f / periodDays())], ['Airlines', brands.size, B_('airlines')],
-      ['Scheduled time', dur(r.t[0] / r.t[2])], ['Actual time', dur(r.t[1] / r.t[2]), B_('padding')], ['Avg delay when late', late ? `${Math.round(dmin / late)} min` : '-', B_('delay')],
-      ...(fare ? [['Fare each way', money(fare), B_('fare')]] : [])])}
-    ${fareNote ? `<p class="fl-note">${fareNote}</p>` : ''}
-    <h2>On time</h2>${onTimeHTML(r.c, ['ontime', 'delayed', 'canceled', 'diverted'].map(B_).join(''), lines)}
-    <p class="fl-note">Ranked among ${both ? 'round trips' : 'routes'} with a flight a day${both ? ' each way' : ''}</p>
-    <h2>Airlines</h2>${tableHTML([['Airline'], ['Flights'], ['Share', 'hide-sm'], ['On time'], ['Canceled', 'hide-sm'], ['Avg delay when late']], rows)}
+    ${badgeRow(['busiest', 'airlines', 'padding', 'delay', 'fare'].map(B_).join(''))}
+    <h2>On time</h2>${onTimeHTML(r.c, ['ontime', 'delayed', 'canceled', 'diverted'].map(B_).join(''))}
+    ${ranks}
+    <h2>Airlines</h2>${tableHTML([['Airline'], ['Flights'], ['Share', 'hide-sm'], ['On time'], ['Canceled', 'hide-sm'], ['Avg delay when late'], ...(hasAlFare ? [['Fare each way', 'hide-sm']] : [])], rows)}
     ${trendsHTML(perYear, mix, 'Airline share of flights', undefined, fareYears)}
     ${whenHTML(r)}${causesHTML(r, await nationalCauses())}${funHTML(facts)}`;
 }
@@ -506,7 +513,7 @@ async function renderAirport() {
   }
   const head = `<p class="fl-title">${esc(isCity ? unitName(C) : C)}</p><p class="fl-period-line">${esc(periodTitle())}</p>`;
   if (!r) return `${head}<p class="fl-sub">No flights at ${esc(unitName(C))} on these airlines in ${esc(periodLabel())}</p>`;
-  const [f, , late, , , dmin] = r.c;
+  const [f] = r.c;
   const totals = airportTotals(rank.dir);
   const B_ = (id) => badge(eligibleAirports(totals, airportMetric(id)), C, airportMetric(id), 'airports');
   const dests = Object.entries(r.dests).sort((x, y) => y[1][0] - x[1][0]);
@@ -516,17 +523,12 @@ async function renderAirport() {
   // Departures on time by airline
   const depBy = {};
   for (const [k, c] of Object.entries(r.a)) depBy[k.split('|')[0]] = add(depBy[k.split('|')[0]], c);
-  const alRows = brandsHere.map(([b, n]) => { const d = depBy[b]; return `<tr><td>${linkAirline(b)}</td><td>${num(n)}</td><td>${p1(pct(n, total))}</td><td>${d ? p1(pct(d[1], d[0])) : '-'}</td><td class="hide-sm">${d ? p1(pct(d[3], d[0])) : '-'}</td></tr>`; });
-
-  const onList = eligibleAirports(totals, airportMetric('ontime'));
-  const lines = [];
-  const me = rankOf(onList, C, airportMetric('ontime'), true);
-  if (me) lines.push(`${ordinal(me.rank)} of ${num(me.of)} ${state.cities ? 'cities and airports' : 'airports'} for on-time departures`);
+  const alRows = brandsHere.map(([b, n]) => { const d = depBy[b]; return `<tr><td>${linkAirline(b)}</td><td>${num(n)}</td><td class="hide-sm">${p1(pct(n, total))}</td><td>${d ? p1(pct(d[1], d[0])) : '-'}</td><td class="hide-sm">${d ? p1(pct(d[3], d[0])) : '-'}</td></tr>`; });
 
   const daily = dests.filter(([, v]) => v[0] >= periodDays());
   const destRow = ([d, v]) => `<tr><td>${isCity ? linkAirport(d, `To ${d}`) : linkRoute(C, d, `${C} → ${d}`)}<small>${esc(city(d))}</small></td><td>${num(v[0])}</td><td>${p1(pct(v[1], v[0]))}</td><td class="hide-sm">${p1(pct(v[2], v[0]))}</td></tr>`;
   const byRate = [...daily].sort((x, y) => y[1][1] / y[1][0] - x[1][1] / x[1][0]);
-  const destLines = byRate.length >= 2 ? bestWorstHTML(byRate, (k) => (isCity ? linkAirport(k) : linkRoute(C, k, k))) : '';
+  const destLines = byRate.length >= 2 ? bestWorstHTML(byRate, (k) => (isCity ? linkAirport(k, `To ${k}`) : linkRoute(C, k, `${C} → ${k}`))) : '';
 
   const longest = dests.reduce((m, x) => (!m || x[1][3] > m[1][3] ? x : m), null);
   const shortest = dests.reduce((m, x) => (!m || x[1][3] < m[1][3] ? x : m), null);
@@ -536,11 +538,20 @@ async function renderAirport() {
   if (r.ld?.delay > 0) facts.push(['Longest delay', dur(r.ld.delay), `${flightLabel(r.ld)} to ${r.ld.d}, ${fmtDate(r.ld.date)}`]);
   const tf = tailFact(r.tl, `out of ${isCity ? unitName(C) : C}`); if (tf) facts.push(tf);
 
+  const natRec = blankRec();
+  for (const v of rank.dir.values()) addRec(natRec, v);
+  natRec.inF = natRec.f;
+  natRec.fare = fareAvg([...rank.fr.pairs.values()].reduce((t, v) => [t[0] + v[0], t[1] + v[1], t[2] + v[2]], [0, 0, 0]));
+  const ranks = ranksHTML({
+    metrics: AMETRICS, rec: totals.get(C), nat: natRec, key: C, tab: 'airports', title: isCity ? esc(unitName(C)) : C,
+    list: (m) => eligibleAirports(totals, m), extra: [['Departures', num(f)], ['Arrivals', num(r.in)]],
+  });
+
   return `${head}<p class="fl-sub">${isCity ? codes.map((c) => linkAirport(c)).join(', ') : esc(city(C))}</p>
-    ${factsHTML([['Flights', num(total), B_('busiest')], ['Departures', num(f)], ['Arrivals', num(r.in)], ['Per day', perDay(total / periodDays())],
-      ['Destinations', dests.length, B_('routes')], ['Airlines', brandsHere.length, B_('airlines')], ['Avg delay when late', late ? `${Math.round(dmin / late)} min` : '-', B_('delay')]])}
-    <h2>On-time departures</h2>${onTimeHTML(r.c, ['ontime', 'canceled'].map(B_).join(''), lines)}
-    <h2>Airlines</h2>${tableHTML([['Airline'], ['Flights'], ['Share'], ['On-time departures'], ['Canceled', 'hide-sm']], alRows)}
+    ${badgeRow(['busiest', 'routes', 'airlines', 'delay'].map(B_).join(''))}
+    <h2>On-time departures</h2>${onTimeHTML(r.c, ['ontime', 'canceled'].map(B_).join(''))}
+    ${ranks}
+    <h2>Airlines</h2>${tableHTML([['Airline'], ['Flights'], ['Share', 'hide-sm'], ['On-time departures'], ['Canceled', 'hide-sm']], alRows)}
     <h2>Destinations</h2>${tableHTML([['Route'], ['Flights'], ['On time'], ['Canceled', 'hide-sm']], (allDestRows = dests.map(destRow).join(''), dests.slice(0, 15).map(destRow)), 'fl-dest')}
     ${dests.length > 15 ? `<button class="pill fl-more" type="button" data-more="dests">Show all ${dests.length}</button>` : ''}${destLines}
     ${trendsHTML(tr?.y || {}, tr?.a, 'Airline share of flights', 'Departures a day')}
@@ -554,13 +565,8 @@ async function renderAirline() {
   const [r, idxs, tr] = await Promise.all([summed((w) => `y/${w}/al/${B}.json`), Promise.all(windows().map((w) => getJSON(`y/${w}/al/index.json`))), getJSON('trends/al.json')]);
   const head = `<p class="fl-title fl-title-logo">${LOGOS.has(B) ? logo(B) : `<span>${esc(airlineName(B))}</span>`}</p><p class="fl-period-line">${esc(periodTitle())}</p>`;
   if (!r) return `${head}<p class="fl-sub">No ${esc(airlineName(B))} flights in ${esc(periodLabel())}</p>`;
-  const [f, on, late, , , dmin] = r.c;
+  const [f] = r.c;
   const index = airlineIndex(idxs);
-  const amongAirlines = (val, label) => {
-    const vals = Object.values(index).map(val).filter((v) => v !== null);
-    const mine = val(index[B]);
-    return mine === null ? '' : `${ordinal(vals.filter((v) => v > mine).length + 1)} of ${vals.length} airlines ${label}`;
-  };
   const routes = Object.entries(r.routes).sort((x, y) => y[1][0] - x[1][0]);
   const aps = Object.entries(r.airports).sort((x, y) => y[1] - x[1]);
   const opRows = Object.entries(r.a).sort((x, y) => y[1][0] - x[1][0]).map(([k, c]) => {
@@ -579,12 +585,12 @@ async function renderAirline() {
   if (shortest) facts.push(['Shortest route', `${num(shortest[1][5])} mi`, shortest[0].replace('-', ' to ')]);
   if (r.ld?.delay > 0) facts.push(['Longest delay', dur(r.ld.delay), `Flight ${r.ld.flight}, ${r.ld.o} to ${r.ld.d}, ${fmtDate(r.ld.date)}`]);
   const tf = tailFact(r.tl, `for ${airlineName(B)}`); if (tf) facts.push(tf);
-  const lines = [amongAirlines((x) => (x ? x.c[1] / x.c[0] : null), 'for on-time rate'), amongAirlines((x) => (x ? x.c[0] : null), 'for flights')].filter(Boolean);
+  const natC = Object.values(index).reduce((t, v) => add(t, v.c), null);
+  const ranks = ranksHTML({ metrics: ALMETRICS, rec: index[B], nat: { c: natC }, key: B, tab: 'airlines', title: esc(airlineName(B)), list: () => Object.entries(index) });
 
   return `${head}<p class="fl-sub">${num(routes.length)} routes, ${num(aps.length)} airports</p>
-    ${factsHTML([['Flights', num(f)], ['Per day', perDay(f / periodDays())], ['Routes', num(routes.length)], ['Airports', num(aps.length)],
-      ['Scheduled time', dur(r.t[0] / r.t[2])], ['Actual time', dur(r.t[1] / r.t[2])], ['Avg delay when late', late ? `${Math.round(dmin / late)} min` : '-']])}
-    <h2>On time</h2>${onTimeHTML(r.c, '', lines)}
+    <h2>On time</h2>${onTimeHTML(r.c, '')}
+    ${ranks}
     ${opRows.length > 1 ? `<h2>Who flies it</h2>${tableHTML([['Operator'], ['Flights'], ['Share'], ['On time'], ['Canceled', 'hide-sm']], opRows)}` : ''}
     <h2>Biggest airports</h2>${tableHTML([['Airport'], ['Flights'], ['Share']], aps.slice(0, 10).map(apRow))}
     <h2>Busiest routes</h2>${tableHTML([['Route'], ['Flights'], ['On time'], ['Canceled', 'hide-sm']], routes.slice(0, 15).map(routeRow), 'fl-dest')}${bestWorst}
@@ -632,8 +638,6 @@ async function renderRankings() {
   const shown = ranked.slice(0, rk.n);
   const hlRow = rk.hl && !shown.some((x) => x.k === rk.hl) ? ranked.find((x) => x.k === rk.hl) : null;
   const brandList = [...allBrands].sort((a, b) => airlineName(a).localeCompare(airlineName(b)));
-  const scope = tab === 'airports' ? (state.cities ? 'cities and airports' : 'airports') : state.both ? 'round trips' : 'routes';
-  const minNote = m.all ? '' : tab === 'airports' ? ' with a departure a day' : ` with a flight a day${state.both ? ' each way' : ''}`;
   const nameHead = tab === 'airports' ? (state.cities ? 'City or airport' : 'Airport') : 'Route';
 
   return `<div class="fl-rk-row">
@@ -642,7 +646,7 @@ async function renderRankings() {
     </div>
     ${ranked.length ? rankTable(metrics, m, rk.lo, nameHead, shown, hlRow, nameCell) : '<p class="fl-sub">Nothing matches these filters</p>'}
     ${ranked.length > rk.n ? `<button class="pill fl-more" type="button" data-more="rank">Show more</button>` : ''}
-    <p class="fl-note">${num(ranked.length)} ${scope}${minNote}</p>`;
+`;
 }
 
 // Equal values share a rank
@@ -678,8 +682,7 @@ async function renderAirlineCompare() {
   rk.m = m.id;
   if (!m.lo) rk.lo = false;
   const list = Object.entries(index).sort((a, b) => (rk.lo ? m.val(a[1]) - m.val(b[1]) : m.val(b[1]) - m.val(a[1])));
-  return `${rankTable(ALMETRICS, m, rk.lo, 'Airline', withRanks(list, m), null, linkAirline)}
-    <p class="fl-note">Regional partners count toward the airline you'd buy the ticket from</p>`;
+  return rankTable(ALMETRICS, m, rk.lo, 'Airline', withRanks(list, m), null, linkAirline);
 }
 
 // ------------------------------------------------------------------ page shell

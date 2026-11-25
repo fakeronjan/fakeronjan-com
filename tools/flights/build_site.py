@@ -9,7 +9,7 @@ Layout (everything a page needs for a route sums across the chosen years in the 
   trends/<ORIGIN>.json      {DEST: {year: [flights, on time, delayed, canceled, diverted], airlines: {year: {brand: flights}}}}
   y/<window>/ap/<CODE>.json an airport: its departures summed like a route, plus arrivals, destinations, airline flights
   y/<window>/al/<BRAND>.json an airline (regional operators folded in): totals, operators, routes, airports
-  y/<window>/al/index.json  every airline's totals, to compare them
+  y/<window>/al/index.json  every airline's totals and cancellation causes, to compare them
   trends/ap/<CODE>.json     an airport's departures and airline mix by year
   trends/al.json            each airline's totals and operator mix by year
 
@@ -121,7 +121,7 @@ def write_airlines(name, W):
         o['routes'] = routes[b]
         o['airports'] = dict(airports[b])
         write(os.path.join(OUT, 'y', name, 'al', f'{b}.json'), o)
-        index[b] = {'c': o['c'], 'x': o['x'], 't': o['t'], 'nr': len(routes[b]), 'na': len(airports[b])}
+        index[b] = {'c': o['c'], 'x': o['x'], 'k': o['k'], 't': o['t'], 'nr': len(routes[b]), 'na': len(airports[b])}
     write(os.path.join(OUT, 'y', name, 'al', 'index.json'), index)
 
 
