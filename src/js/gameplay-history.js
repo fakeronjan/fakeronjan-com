@@ -1745,17 +1745,18 @@
   }
   function sysYears(s) {
     var a = s.first ? s.first.slice(0, 4) : "Unknown";
-    var b = s.last && s.last.kind === "have" ? "now" : s.last ? s.last.date.slice(0, 4) : "Unknown";
+    var b = s.have ? "now" : s.last ? s.last.date.slice(0, 4) : "Unknown";   // a unit on hand: the range runs to now
     return a === b ? a : a + " - " + b;
   }
+  // Last played = the latest play of the system's games anywhere (Ronjan 2026-11-25); a system with no
+  // recorded play falls back to when it went ("Sold 5/31/2026")
   function sysLast(s) {
     if (!s.last) return "-";
-    if (s.last.kind === "have") return "Still have one";
     return s.last.kind === "played" ? fmtDay(s.last.date) : s.last.kind + " " + fmtDay(s.last.date);
   }
   // The date never breaks; "Sold" can wrap above it in a narrow card
   function sysLastHtml(s) {
-    if (!s.last || s.last.kind === "have" || s.last.kind === "played") return '<span class="gh-nowrap">' + esc(sysLast(s)) + "</span>";
+    if (!s.last || s.last.kind === "played") return '<span class="gh-nowrap">' + esc(sysLast(s)) + "</span>";
     return esc(s.last.kind) + ' <span class="gh-nowrap">' + fmtDay(s.last.date) + "</span>";
   }
   function sysHours(o) {
