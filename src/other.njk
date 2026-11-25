@@ -18,7 +18,11 @@ permalink: /other/
   :root:not([data-theme="light"]) .fl-art { --art-sky: #1e2830; --art-ok: #34d399; --art-late: #fbbf24; --art-cancel: #f87171; }
 }
 :root[data-theme="dark"] .fl-art { --art-sky: #1e2830; --art-ok: #34d399; --art-late: #fbbf24; --art-cancel: #f87171; }
-.site-map-desc { text-wrap: balance; }   /* no lone last word */
+.site-map-desc { text-wrap: balance; text-align: center; }   /* no lone last word; centered (Ronjan 11/24) */
+/* Cards a third of the row (Ronjan 11/24): bigger than the homepage's quarters, and room for a third card */
+.site-map > a { grid-column: span 4; }
+@media (max-width: 879px) { .site-map > a { grid-column: span 6; } }
+@media (max-width: 639px) { .site-map > a { grid-column: auto; } }
 </style>
 
 <h1>Other Stuff</h1>
