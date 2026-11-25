@@ -96,13 +96,17 @@ async function renderAge() {
   document.querySelectorAll('#bd-groups button').forEach(b => b.addEventListener('click', () => { group = b.dataset.g; renderAge(); }));
 
   const label = Object.fromEntries(GROUPS);
+  // The most famous in the window (most Wikipedia languages), then listed by how close they are
+  // to you (Ronjan 11/24: closeness alone surfaced obscure athletes). "Show all" lists everyone by closeness.
+  const byGap = (a, b) => Math.abs(a.gap) - Math.abs(b.gap) || b.s - a.s;
   const shown = inWindow
     .filter(p => group === 'all' || p.g.includes(group))
     .map(p => ({ ...p, gap: Math.round((parseIso(p.b) - birth) / DAY) }))
-    .sort((a, b) => Math.abs(a.gap) - Math.abs(b.gap) || b.s - a.s);
+    .sort(byGap);
+  const top = [...shown].sort((a, b) => b.s - a.s).slice(0, AGE_SHOWN).sort(byGap);
   const row = (p) => `<li><span class="bd-gap${p.gap === 0 ? ' same' : ''}">${dayGap(p.gap)}</span><span class="bd-who">${wikiLink(p.t, p.n)}<span class="bd-desc">${esc(p.d)}${group === 'all' ? ` <span class="bd-tag">${p.g.map(g => label[g]).join(', ')}</span>` : ''}</span></span><span class="bd-born">${fmtDate(parseIso(p.b))}</span></li>`;
   const list = $('#bd-age');
-  list.innerHTML = shown.length ? shown.slice(0, AGE_SHOWN).map(row).join('') : '<li class="bd-none">Nobody in this group was born within a month of you</li>';
+  list.innerHTML = shown.length ? top.map(row).join('') : '<li class="bd-none">Nobody in this group was born within a month of you</li>';
   const more = $('#bd-age-more');
   more.hidden = shown.length <= AGE_SHOWN;
   more.textContent = `Show all ${shown.length}`;

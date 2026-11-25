@@ -35,6 +35,12 @@ OCCUPATIONS = {  # group id -> Wikidata occupation items
     'musicians': {'Q177220', 'Q639669', 'Q488205', 'Q2252262', 'Q753110', 'Q855091', 'Q386854', 'Q806349', 'Q36834'},
 }
 US_POLITICIAN = ('Q82955', 'Q30')  # politician, citizen of the United States
+# League rosters list everyone who ever played a game, so they'd swamp "Closest in age" with
+# journeymen. Keep players with an article in at least this many Wikipedia languages (Ronjan 11/24).
+# Per league, since American football and baseball get far fewer non-English articles than
+# basketball or hockey: each floor keeps roughly the best-known 2,000-2,500 players (NFL at 6 keeps
+# Hall of Famers like Tim Brown and Ted Hendricks, who have 9).
+MIN_ROSTER_LINKS = {'nfl': 6, 'mlb': 7, 'nba': 10, 'nhl': 10, 'wnba': 8}
 MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
           'September', 'October', 'November', 'December']
 
@@ -237,6 +243,8 @@ def main():
     grouped = {}   # qid or title -> record
     for g, roster in rosters.items():
         for qid, r in roster.items():
+            if r['sitelinks'] < MIN_ROSTER_LINKS[g]:   # everyone who ever played; keep the ones known beyond one wiki
+                continue
             rec = grouped.setdefault(qid, {'n': r['name'], 'b': r['birth'], 'd': r['desc'], 't': r['title'], 's': r['sitelinks'], 'g': []})
             if g not in rec['g']:
                 rec['g'].append(g)

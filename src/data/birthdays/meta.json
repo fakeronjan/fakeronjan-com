@@ -1,18 +1,18 @@
 {
- "built": "2026-11-22",
+ "built": "2026-11-24",
  "day_people": 81322,
- "grouped_people": 76529,
+ "grouped_people": 36090,
  "groups": {
   "actors": 11498,
-  "mlb": 16710,
+  "mlb": 2305,
   "musicians": 10937,
-  "nba": 4921,
-  "nfl": 19675,
-  "nhl": 8463,
+  "nba": 2519,
+  "nfl": 2378,
+  "nhl": 2416,
   "soccer": 5742,
   "tennis": 939,
   "uspol": 1968,
-  "wnba": 765
+  "wnba": 406
  },
  "years": [
   "1850",
