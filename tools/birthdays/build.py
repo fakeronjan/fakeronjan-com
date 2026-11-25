@@ -15,6 +15,7 @@ Output (src/data/birthdays/):
 
 Usage: python3 tools/birthdays/build.py            (caches raw downloads in tools/birthdays/cache/)
 """
+import hashlib
 import json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
 from collections import defaultdict
 from datetime import date
@@ -41,6 +42,7 @@ US_POLITICIAN = ('Q82955', 'Q30')  # politician, citizen of the United States
 # basketball or hockey: each floor keeps roughly the best-known 2,000-2,500 players (NFL at 6 keeps
 # Hall of Famers like Tim Brown and Ted Hendricks, who have 9).
 MIN_ROSTER_LINKS = {'nfl': 6, 'mlb': 7, 'nba': 10, 'nhl': 10, 'wnba': 8}
+PHOTO_PX = 120   # thumbnail width: Wikimedia only serves set sizes (120, 250, ...); 160 returns HTTP 400
 MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
           'September', 'October', 'November', 'December']
 
@@ -219,6 +221,30 @@ def league_roster(group, qid):
     return out
 
 
+def photos(qids):
+    """Wikidata QID -> Commons thumbnail path (after .../commons/thumb/) for the person's main image
+    (P18), 300 people a query, cached. Wikidata only links Commons, so every photo is freely licensed.
+    Wikipedia's own photo service rate-limits a lookup this size, so this goes through Wikidata.
+    Stored as the file path ('3/34/Name.jpg') when the thumbnail is the usual '160px-Name.jpg';
+    SVGs keep the whole thumbnail path ('.../160px-Name.svg.png'). Other formats are skipped."""
+    out, qids = {}, sorted(q for q in qids if q)
+    for i in range(0, len(qids), 300):
+        batch = ' '.join(f'wd:{q}' for q in qids[i:i + 300])
+        rows = sparql(f'''SELECT ?p (SAMPLE(?img) AS ?i) WHERE {{ VALUES ?p {{ {batch} }} ?p wdt:P18 ?img. }} GROUP BY ?p''',
+                      f'p18-{i // 300:04d}.json')
+        for r in rows:
+            name = urllib.parse.unquote(r['i']['value'].rsplit('/', 1)[1]).replace(' ', '_')
+            h = hashlib.md5(name.encode('utf-8')).hexdigest()
+            folder, ext = f'{h[0]}/{h[:2]}/{name}', name.rsplit('.', 1)[-1].lower()
+            if ext in ('jpg', 'jpeg', 'png', 'gif'):
+                out[r['p']['value'].rsplit('/', 1)[1]] = folder
+            elif ext == 'svg':
+                out[r['p']['value'].rsplit('/', 1)[1]] = f'{folder}/{PHOTO_PX}px-{name}.png'
+        if i // 300 % 50 == 0:
+            print(f'  photos {min(i + 300, len(qids))}/{len(qids)}', file=sys.stderr)
+    return out
+
+
 # ------------------------------------------------------------------ build
 
 def main():
@@ -270,6 +296,23 @@ def main():
     for rec in grouped.values():
         if rec['g'] and rec['b'] and 1850 <= int(rec['b'][:4]) <= date.today().year:
             by_year[rec['b'][:4]].append(rec)
+
+    print('Photos...', file=sys.stderr)
+    qid_of = {t: v['qid'] for t, v in info.items()}
+    for roster in rosters.values():
+        for q, r in roster.items():
+            if r.get('title'):
+                qid_of.setdefault(r['title'], q)
+    needed = {qid_of[r['t']] for lst in list(by_day.values()) + list(by_year.values()) for r in lst if r.get('t') in qid_of}
+    pics = photos(needed)
+    n = 0
+    for lst in list(by_day.values()) + list(by_year.values()):
+        for r in lst:
+            q = qid_of.get(r.get('t'))
+            if q in pics:
+                r['i'] = pics[q]
+                n += 1
+    print(f'{len(pics)} photos for {len(needed)} people ({n} records)', file=sys.stderr)
 
     os.makedirs(os.path.join(OUT, 'days'), exist_ok=True)
     os.makedirs(os.path.join(OUT, 'years'), exist_ok=True)

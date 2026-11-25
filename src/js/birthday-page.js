@@ -14,6 +14,8 @@ const GROUPS = [
   ['uspol', 'US politicians'],
 ];
 const SAME_DAY_SHOWN = 20, AGE_SHOWN = 25, EVENTS_SHOWN = 15, WINDOW_DAYS = 31;
+const TABS = ['same', 'age', 'half'];
+let tab = 'same';
 
 let birth = null;        // UTC-midnight ms
 let isExample = false;
@@ -50,6 +52,20 @@ function dayGap(days) {
   return `${plural(n, 'day')} ${days < 0 ? 'older' : 'younger'}`;
 }
 
+// Photos: a Wikipedia lead image on Wikimedia Commons, stored as its file path ('3/34/Name.jpg') or,
+// for SVG/TIFF/PDF files, the whole thumbnail path. No photo: a circle with initials.
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function photoURL(i) {
+  if (!i) return null;
+  const base = 'https://upload.wikimedia.org/wikipedia/commons/thumb/';
+  return /\/\d+px-[^/]+$/.test(i) ? base + i : `${base}${i}/120px-${i.split('/').pop()}`;
+}
+const initials = (n) => n.replace(/\(.*?\)/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+function face(p) {
+  const u = photoURL(p.i);
+  return u ? `<img class="bd-face" src="${u}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="bd-face ini" aria-hidden="true">${esc(initials(p.n))}</span>`;
+}
+
 async function getJSON(url) {
   const r = await fetch(url);
   if (!r.ok) return null;
@@ -72,7 +88,11 @@ async function renderSameDay() {
   $('#bd-twins').innerHTML = twins.length
     ? `<p class="bd-twins">Born the exact same day as you: ${twins.map(p => `<strong>${wikiLink(p.t, p.n)}</strong> (${esc(p.d)})`).join(', ')}</p>`
     : '';
-  const row = (p) => `<li><span class="bd-year">${p.y < 0 ? `${-p.y} BC` : p.y}</span><span class="bd-who">${wikiLink(p.t, p.n)}<span class="bd-desc">${esc(p.d)}${p.x ? ` (died ${p.x})` : ''}</span></span></li>`;
+  const yr = (p) => (p.y < 0 ? `${-p.y} BC` : p.y);
+  const wikiURL = (t) => `https://en.wikipedia.org/wiki/${encodeURIComponent(t.replace(/ /g, '_'))}`;
+  $('#bd-cal').innerHTML = `<div class="bd-cal" aria-hidden="true"><div class="bd-cal-mon">${MONTHS[d.getUTCMonth()]}</div><div class="bd-cal-day">${d.getUTCDate()}</div></div>
+    <div class="bd-five">${people.slice(0, 5).map(p => `<a ${p.t ? `href="${wikiURL(p.t)}" target="_blank" rel="noopener"` : ''}>${face(p)}${esc(p.n)}<span>${yr(p)}</span></a>`).join('')}</div>`;
+  const row = (p) => `<li class="with-face"><span class="bd-year">${yr(p)}</span>${face(p)}<span class="bd-who">${wikiLink(p.t, p.n)}<span class="bd-desc">${esc(p.d)}${p.x ? ` (died ${p.x})` : ''}</span></span></li>`;
   const list = $('#bd-same');
   list.innerHTML = people.slice(0, SAME_DAY_SHOWN).map(row).join('');
   const more = $('#bd-same-more');
@@ -104,13 +124,84 @@ async function renderAge() {
     .map(p => ({ ...p, gap: Math.round((parseIso(p.b) - birth) / DAY) }))
     .sort(byGap);
   const top = [...shown].sort((a, b) => b.s - a.s).slice(0, AGE_SHOWN).sort(byGap);
-  const row = (p) => `<li><span class="bd-gap${p.gap === 0 ? ' same' : ''}">${dayGap(p.gap)}</span><span class="bd-who">${wikiLink(p.t, p.n)}<span class="bd-desc">${esc(p.d)}${group === 'all' ? ` <span class="bd-tag">${p.g.map(g => label[g]).join(', ')}</span>` : ''}</span></span><span class="bd-born">${fmtDate(parseIso(p.b))}</span></li>`;
+  ageTimeline(top);
+  const row = (p) => `<li class="with-face"><span class="bd-gap${p.gap === 0 ? ' same' : ''}">${dayGap(p.gap)}</span>${face(p)}<span class="bd-who">${wikiLink(p.t, p.n)}<span class="bd-desc">${esc(p.d)}${group === 'all' ? ` <span class="bd-tag">${p.g.map(g => label[g]).join(', ')}</span>` : ''}</span></span><span class="bd-born">${fmtDate(parseIso(p.b))}</span></li>`;
   const list = $('#bd-age');
   list.innerHTML = shown.length ? top.map(row).join('') : '<li class="bd-none">Nobody in this group was born within a month of you</li>';
   const more = $('#bd-age-more');
   more.hidden = shown.length <= AGE_SHOWN;
   more.textContent = `Show all ${shown.length}`;
   more.onclick = () => { list.innerHTML = shown.map(row).join(''); more.hidden = true; };
+}
+
+// The shown people on a line from a month older to a month younger, as photos at their birth dates.
+// Drawn at the box's own pixel width, so photos stay full size on phones; birthdays that bunch
+// together stack upward.
+function ageTimeline(people) {
+  const box = $('#bd-age-tl');
+  if (!people.length) { box.innerHTML = ''; return; }
+  const W = Math.max(280, box.clientWidth || 900), small = W < 560;
+  const R = small ? 17 : 23, PAD = R + 4, base = 0;
+  const x = (gap) => PAD + ((gap + WINDOW_DAYS) / (2 * WINDOW_DAYS)) * (W - 2 * PAD);
+  const rows = [];   // per row, the x positions used
+  const placed = [...people].sort((a, b) => a.gap - b.gap).map((p) => {
+    const px = x(p.gap);
+    let r = 0;
+    while ((rows[r] || []).some((q) => Math.abs(q - px) < 2 * R + 4)) r++;
+    (rows[r] = rows[r] || []).push(px);
+    return { p, px, row: r };
+  });
+  const top = -(rows.length - 1) * (2 * R + 6) - 2 * R - 18;
+  const cy = (row) => base - R - 12 - row * (2 * R + 6);
+  const parts = placed.map(({ p, px, row }, i) => {
+    const y = cy(row), u = photoURL(p.i), tip = `${p.n}: ${dayGap(p.gap).toLowerCase()}`;
+    const pic = u
+      ? `<clipPath id="bdc${i}"><circle cx="${px}" cy="${y}" r="${R}"/></clipPath><image href="${u}" x="${px - R}" y="${y - R}" width="${2 * R}" height="${2 * R}" clip-path="url(#bdc${i})" preserveAspectRatio="xMidYMid slice"/>`
+      : `<circle cx="${px}" cy="${y}" r="${R}" class="ini-c"/><text x="${px}" y="${y}" class="ini-t">${esc(initials(p.n))}</text>`;
+    return `<line x1="${px}" y1="${y + R}" x2="${px}" y2="${base}" class="stem"/><a href="https://en.wikipedia.org/wiki/${encodeURIComponent((p.t || p.n).replace(/ /g, '_'))}" target="_blank" rel="noopener"><title>${esc(tip)}</title>${pic}<circle cx="${px}" cy="${y}" r="${R}" class="ring"/></a>`;
+  }).join('');
+  const mid = x(0);
+  box.innerHTML = `<svg viewBox="0 ${top} ${W} ${-top + 40}" role="img" aria-label="People closest in age on a line from a month older to a month younger">
+    <line x1="${mid}" y1="${top + 6}" x2="${mid}" y2="${base + 8}" class="you"/>${parts}
+    <line x1="${PAD}" y1="${base}" x2="${W - PAD}" y2="${base}" class="axis"/>
+    <text x="${mid}" y="${base + 26}" class="you-l">You, ${esc(fmtDate(birth, !small))}</text>
+    <text x="${PAD}" y="${base + 26}" class="end">${small ? '1 mo older' : '1 month older'}</text>
+    <text x="${W - PAD}" y="${base + 26}" class="end" text-anchor="end">${small ? '1 mo younger' : '1 month younger'}</text></svg>`;
+}
+
+// From the same distance before your birth to today: the events closer to your birth than to today as
+// dots, the oldest few labeled outright, and markers for your birth, half your age, and today.
+function halfTimeline(mirror, half, today, inside) {
+  const box = $('#bd-half-tl');
+  if (!inside) { box.innerHTML = ''; return; }
+  const W = Math.max(280, box.clientWidth || 900), small = W < 560, PAD = 8;
+  const x = (t) => PAD + ((t - mirror) / (today - mirror)) * (W - 2 * PAD);
+  const axisY = 0, labelN = small ? 3 : 5, charW = small ? 6.4 : 7;
+  // Oldest events labeled above the line, each on the first row where it fits
+  const picked = inside.slice(0, labelN);
+  const labels = picked.map((e, k) => {
+    const t = parseIso(e.date), px = x(t), year = new Date(t).getUTCFullYear();
+    const w = `${e.label} ${year}`.length * charW, x0 = Math.min(px + 6, W - PAD - w);
+    return { e, px, x0, row: picked.length - 1 - k, year };
+  });
+  const rowH = 20, ly = (row) => axisY - 30 - row * rowH;
+  const zoneLabelY = ly(labels.length - 1) - 24;
+  const dots = inside.map((e, i) => `<circle cx="${x(parseIso(e.date)).toFixed(1)}" cy="${axisY}" r="${i < labelN ? 5 : 4}" class="ev${i < labelN ? ' top' : ''}"><title>${esc(e.label)}, ${esc(fmtDate(parseIso(e.date)))}</title></circle>`).join('');
+  const lab = labels.map(({ e, px, x0, row, year }) => `<line x1="${px}" y1="${axisY - 6}" x2="${px}" y2="${ly(row) - 4}" class="lead"/>
+    <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(e.wiki.replace(/ /g, '_'))}" target="_blank" rel="noopener"><text x="${x0}" y="${ly(row)}" class="ev-l">${esc(e.label)} <tspan class="ev-y">${year}</tspan></text></a>`).join('');
+  const marks = [[mirror, small ? 'Same distance back' : 'Same distance back', ''], [birth, 'You were born', 'born'], [half, 'Half your age', 'half'], [today, 'Today', '']];
+  const mk = marks.map(([t, l, c], i) => {
+    const px = x(t), anchor = i === 0 ? 'start' : i === marks.length - 1 ? 'end' : 'middle';
+    const dy = small && i % 2 === 1 ? 34 : 0;
+    return `<line x1="${px}" y1="${axisY - 12}" x2="${px}" y2="${axisY + 12 + dy}" class="mk ${c}"/>
+      <text x="${px}" y="${axisY + 30 + dy}" class="mk-l ${c}" text-anchor="${anchor}">${l}</text>
+      <text x="${px}" y="${axisY + 46 + dy}" class="mk-d" text-anchor="${anchor}">${esc(small ? new Date(t).getUTCFullYear() : fmtDate(t))}</text>`;
+  }).join('');
+  const bottom = axisY + 52 + (small ? 34 : 0);
+  box.innerHTML = `<svg viewBox="0 ${zoneLabelY - 16} ${W} ${bottom - zoneLabelY + 16}" role="img" aria-label="Timeline from ${esc(fmtDate(mirror))} to today, with ${inside.length} events before your birth">
+    <rect x="${x(mirror)}" y="${axisY - 12}" width="${x(birth) - x(mirror)}" height="24" rx="4" class="zone"/>
+    <text x="${x(mirror)}" y="${zoneLabelY}" class="zone-l" style="text-anchor:start">Closer to your birth than to today</text>
+    <line x1="${PAD}" y1="${axisY}" x2="${W - PAD}" y2="${axisY}" class="axis"/>${lab}${dots}${mk}</svg>`;
 }
 
 // ------------------------------------------------------------------ halfway back
@@ -123,7 +214,8 @@ function renderHalfway() {
   const inside = events.filter(e => { const t = parseIso(e.date); return t >= mirror && t < birth; })
     .sort((a, b) => a.date.localeCompare(b.date));
   const head = $('#bd-half-head');
-  if (birth >= today) { head.innerHTML = '<p>Pick a birthday in the past to see this</p>'; $('#bd-events').innerHTML = ''; return; }
+  if (birth >= today) { head.innerHTML = '<p>Pick a birthday in the past to see this</p>'; $('#bd-events').innerHTML = ''; halfTimeline(0, 0, 0, null); return; }
+  halfTimeline(mirror, half, today, inside);
   const first = inside[0];
   head.innerHTML = `
     ${first ? `<p class="bd-kicker">You were born closer to this than to today</p><p class="bd-headline">${wikiLink(first.wiki, first.label)}<span class="bd-hdate">${fmtDate(parseIso(first.date))}</span></p>` : ''}
@@ -144,7 +236,16 @@ function renderHalfway() {
 
 // ------------------------------------------------------------------ setup
 
+function showTab() {
+  document.querySelectorAll('#bd-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  TABS.forEach(t => { $(`#bd-sec-${t}`).hidden = t !== tab; });
+  const u = new URL(location.href);
+  if (tab === 'same') u.searchParams.delete('tab'); else u.searchParams.set('tab', tab);
+  history.replaceState(null, '', u);
+}
+
 async function render() {
+  showTab();
   $('#bd-example').hidden = !isExample;
   $('#bd-date').value = iso(birth);
   await Promise.all([renderSameDay(), renderAge()]);
@@ -162,6 +263,12 @@ async function init() {
     birth = Date.UTC(t.getUTCFullYear() - 40, t.getUTCMonth(), t.getUTCDate());
     isExample = true;
   }
+  const qt = new URL(location.href).searchParams.get('tab');
+  if (TABS.includes(qt)) tab = qt;
+  // A hidden section has no width to draw at, so switching tabs draws its picture fresh
+  document.querySelectorAll('#bd-tabs button').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; render(); }));
+  let resizeTimer;
+  window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(render, 150); });
   $('#bd-date').max = iso(todayMs());
   $('#bd-date').addEventListener('change', (e) => {
     if (!e.target.value) return;

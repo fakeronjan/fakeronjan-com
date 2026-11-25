@@ -50,8 +50,55 @@ permalink: /birthday/
 .bd-hdate { display: block; font-family: inherit; font-size: 1rem; font-weight: 500; color: var(--muted); margin-top: 0.2rem; }
 .bd-half p { text-wrap: pretty; }
 
+/* Photos: Wikipedia lead images (Wikimedia Commons). No photo: a circle with initials */
+.bd-face { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; flex: none; background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.bd-face.ini { display: grid; place-items: center; color: var(--muted); font-size: 0.78rem; font-weight: 700; }
+.bd-list li.with-face { grid-template-columns: 7.5rem 40px minmax(0, 1fr) auto; align-items: center; }
+.bd-same-list li.with-face { grid-template-columns: 3.5rem 40px minmax(0, 1fr); }
+.bd-sec[hidden] { display: none; }
+.bd .sport-tabs { margin-top: 1rem; }
+
+/* Same birthday: a tear-off calendar page and the day's five most famous faces */
+.bd-cal-row { display: flex; flex-wrap: wrap; gap: 1rem 1.4rem; align-items: center; margin: 0.4rem 0 1.2rem; }
+.bd-cal { width: 96px; flex: none; text-align: center; border-radius: 10px; overflow: hidden; background: var(--bg);
+  border: 1px solid color-mix(in srgb, var(--fg) 14%, transparent); box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08); }
+.bd-cal-mon { background: var(--accent-2); color: #fff; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.25rem 0; }
+.bd-cal-day { font-family: "Space Grotesk", sans-serif; font-size: 2.9rem; font-weight: 700; line-height: 1.15; padding: 0.2rem 0 0.35rem; }
+.bd-five { display: flex; flex-wrap: wrap; gap: 0.8rem; min-width: 0; }
+.bd-five a { width: 88px; text-align: center; text-decoration: none; color: var(--fg); font-size: 0.78rem; font-weight: 600; line-height: 1.25; }
+.bd-five .bd-face { width: 64px; height: 64px; margin: 0 auto 0.3rem; font-size: 1rem; }
+.bd-five span { display: block; color: var(--muted); font-weight: 400; }
+
+/* Timelines (Closest in age, Halfway back): SVG drawn at the box's own width */
+.bd-tl { margin: 0.4rem 0 1.2rem; }
+.bd-tl svg { display: block; width: 100%; height: auto; overflow: visible; }
+.bd-tl .axis { stroke: var(--fg); stroke-width: 2; }
+.bd-tl .stem { stroke: color-mix(in srgb, var(--fg) 22%, transparent); stroke-width: 1.5; }
+.bd-tl .ring { fill: none; stroke: var(--bg); stroke-width: 2.5; }
+.bd-tl .ini-c { fill: color-mix(in srgb, var(--fg) 10%, var(--bg)); }
+.bd-tl .ini-t { fill: var(--muted); font-size: 12px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+.bd-tl .you { stroke: var(--accent-2); stroke-width: 2.5; stroke-dasharray: 4 4; }
+.bd-tl .you-l { fill: var(--accent-2); font-size: 13px; font-weight: 700; text-anchor: middle; }
+.bd-tl .end { fill: var(--muted); font-size: 12px; }
+.bd-tl .zone { fill: color-mix(in srgb, var(--accent) 16%, transparent); }
+.bd-tl .zone-l { fill: var(--accent); font-size: 13px; font-weight: 700; text-anchor: middle; }
+.bd-tl .ev { fill: var(--accent); opacity: 0.7; }
+.bd-tl .ev.top { opacity: 1; stroke: var(--bg); stroke-width: 1.5; }
+.bd-tl .lead { stroke: var(--accent); stroke-width: 1.2; }
+.bd-tl .ev-l { fill: var(--fg); font-size: 12.5px; font-weight: 600; }
+.bd-tl .ev-y { fill: var(--muted); font-weight: 400; }
+.bd-tl .mk { stroke: var(--muted); stroke-width: 2.5; }
+.bd-tl .mk.born { stroke: var(--accent-2); } .bd-tl .mk.half { stroke: var(--fg); }
+.bd-tl .mk-l { fill: var(--fg); font-size: 12.5px; font-weight: 700; } .bd-tl .mk-l.born { fill: var(--accent-2); }
+.bd-tl .mk-d { fill: var(--muted); font-size: 11.5px; }
+.bd-tl a:focus-visible circle.ring { stroke: var(--accent); }
+
 @media (max-width: 560px) {
   .bd-list li, .bd-events li { grid-template-columns: 1fr; gap: 0.1rem; }
+  .bd-list li.with-face { grid-template-columns: 40px minmax(0, 1fr); column-gap: 0.7rem; }
+  .bd-list li.with-face > .bd-gap, .bd-list li.with-face > .bd-year { grid-column: 1 / -1; }
+  .bd-list li.with-face > .bd-born { grid-column: 2; }
+  .bd-five a { width: 64px; } .bd-five .bd-face { width: 52px; height: 52px; }
   .bd-same-list li { grid-template-columns: 3rem minmax(0, 1fr); }
   .bd-born { white-space: normal; }
   .bd-headline { font-size: 1.35rem; }
@@ -67,20 +114,35 @@ permalink: /birthday/
   </div>
   <p class="bd-note" id="bd-example" hidden>Showing an example birthday until you enter yours. It stays in your browser.</p>
 
-  <h2 id="bd-same-title">Same birthday</h2>
-  <div id="bd-twins"></div>
-  <ul class="bd-list bd-same-list" id="bd-same"></ul>
-  <button class="pill bd-more" id="bd-same-more" type="button" hidden></button>
+  <nav class="sport-tabs" id="bd-tabs" aria-label="Section">
+    <button class="sport-tab active" data-tab="same" type="button">Same birthday</button>
+    <button class="sport-tab" data-tab="age" type="button">Closest in age</button>
+    <button class="sport-tab" data-tab="half" type="button">Halfway back</button>
+  </nav>
 
-  <h2>Closest in age</h2>
-  <div class="bd-groups" id="bd-groups"></div>
-  <ul class="bd-list" id="bd-age"></ul>
-  <button class="pill bd-more" id="bd-age-more" type="button" hidden></button>
+  <section class="bd-sec" id="bd-sec-same">
+    <h2 id="bd-same-title">Same birthday</h2>
+    <div class="bd-cal-row" id="bd-cal"></div>
+    <div id="bd-twins"></div>
+    <ul class="bd-list bd-same-list" id="bd-same"></ul>
+    <button class="pill bd-more" id="bd-same-more" type="button" hidden></button>
+  </section>
 
-  <h2>Halfway back</h2>
-  <div class="bd-half" id="bd-half-head"></div>
-  <ul class="bd-list bd-events" id="bd-events"></ul>
-  <button class="pill bd-more" id="bd-events-more" type="button" hidden></button>
+  <section class="bd-sec" id="bd-sec-age" hidden>
+    <h2>Closest in age</h2>
+    <div class="bd-groups" id="bd-groups"></div>
+    <div class="bd-tl" id="bd-age-tl"></div>
+    <ul class="bd-list" id="bd-age"></ul>
+    <button class="pill bd-more" id="bd-age-more" type="button" hidden></button>
+  </section>
+
+  <section class="bd-sec" id="bd-sec-half" hidden>
+    <h2>Halfway back</h2>
+    <div class="bd-tl" id="bd-half-tl"></div>
+    <div class="bd-half" id="bd-half-head"></div>
+    <ul class="bd-list bd-events" id="bd-events"></ul>
+    <button class="pill bd-more" id="bd-events-more" type="button" hidden></button>
+  </section>
 </div>
 
 <script type="module" src="/js/birthday-page.js"></script>
