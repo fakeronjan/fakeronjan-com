@@ -19,7 +19,7 @@ let meta = null, airports = {}, MARKETS = {}, marketOf = {};
 const state = {
   tab: 'routes', mode: 'lookup',
   from: 'JFK', to: 'LAX', both: false, ap: 'JFK', al: 'DL', cities: false,
-  y0: 'last12', y1: null,
+  y0: 'last12', y1: null, real: false,   // real: fares in 2026 dollars instead of as paid
   rk: { m: 'busiest', lo: false, fap: '', fal: '', n: 25, hl: '' },
 };
 const cache = new Map();
@@ -125,6 +125,35 @@ function addRec(t, x) {
   t.dist = Math.min(t.dist, x.dist);
   x.brands.forEach((b) => t.brands.add(b));
 }
+// Fares (US DOT Consumer Airfare Report, fares/ in the data repo): airport pairs, each way, both
+// directions sharing one fare. Windows add up: sums are fare x passengers a day.
+async function fares() {
+  const key = windows().join(',');
+  if (fares.cacheKey === key) return fares.cached;
+  const [fm, ...files] = await Promise.all([getJSON('fares/meta.json'), ...windows().map((w) => getJSON(`fares/${w}.json`))]);
+  const pairs = new Map(), aps = new Map(), qs = [];
+  for (const file of files) {
+    if (!file) continue;
+    qs.push(...file.quarters);
+    for (const [k, v] of Object.entries(file.pairs)) {
+      const p = pairs.get(k);
+      if (!p) pairs.set(k, [...v]);
+      else {   // airlines come from the latest quarter
+        p[0] += v[0]; p[1] += v[1]; p[2] += v[2];
+        if (v[8] > p[8]) for (let i = 3; i < 9; i++) p[i] = v[i];
+      }
+    }
+    for (const [k, v] of Object.entries(file.airports)) { const a = aps.get(k) || [0, 0, 0]; aps.set(k, [a[0] + v[0], a[1] + v[1], a[2] + v[2]]); }
+  }
+  fares.cacheKey = key;
+  fares.cached = { meta: fm, pairs, aps, last: qs.sort()[qs.length - 1] || null };
+  return fares.cached;
+}
+const fareAvg = (v) => (v && v[0] ? [v[1] / v[0], v[2] / v[0]] : null);   // [as paid, 2026 dollars]
+const fareOf = (x) => (x ? x[state.real ? 1 : 0] : null);
+const money = (v) => `$${Math.round(v).toLocaleString('en-US')}`;
+const qLabel = (q) => `${MON[(+q.slice(-1) - 1) * 3 + 2]} ${q.slice(0, 4)}`;   // a quarter's last month
+
 async function ranking() {
   const key = windows().join(',');
   if (ranking.cacheKey === key) return ranking.cached;
@@ -141,8 +170,11 @@ async function ranking() {
     if (!pairs.has(p)) pairs.set(p, blankRec());
     addRec(pairs.get(p), v);
   }
+  const fr = await fares();
+  for (const [k, r] of dir) r.fare = fareAvg(fr.pairs.get(k.split('-').sort().join('-')));
+  for (const [k, r] of pairs) r.fare = fareAvg(fr.pairs.get(k));
   ranking.cacheKey = key;
-  ranking.cached = { dir, pairs };
+  ranking.cached = { dir, pairs, fr };
   return ranking.cached;
 }
 function airportTotals(dir) {
@@ -154,6 +186,11 @@ function airportTotals(dir) {
     addRec(a, r);
     a.dests.add(d);
     get(d).inF += r.f;
+  }
+  const fr = ranking.cached?.fr;
+  if (fr) for (const [u, a] of out) {
+    const t = unitCodes(u).reduce((acc, c) => { const v = fr.aps.get(c); return v ? [acc[0] + v[0], acc[1] + v[1], acc[2] + v[2]] : acc; }, [0, 0, 0]);
+    a.fare = fareAvg(t);
   }
   return out;
 }
@@ -170,6 +207,8 @@ const METRICS = [
   { id: 'padding', pri: 2, name: 'Schedule padding', hi: 'most padded schedule', lo: 'least padded schedule', val: (r) => (r.arr >= 20 ? (r.sched - r.act) / r.arr : null), sh: (v) => `${Math.abs(Math.round(v))} min ${v >= 0 ? 'early' : 'late'}` },
   { id: 'distance', p0: true, name: 'Distance', hi: 'longest', lo: 'shortest', val: (r) => r.dist, sh: (v) => `${num(v)} mi` },
   { id: 'airlines', pri: 2, name: 'Airlines', hi: 'most airlines', noLoBadge: true, lo: 'fewest airlines', val: (r) => r.brands.size, sh: (v) => String(v) },
+  { id: 'fare', pri: 1, name: 'Fare', hi: 'priciest', lo: 'cheapest', val: (r) => (state.rk.fal ? null : fareOf(r.fare)), sh: (v) => money(v) },
+  { id: 'farepm', pri: 2, name: 'Fare per mile', hi: 'priciest per mile', lo: 'cheapest per mile', val: (r) => (state.rk.fal || !r.fare ? null : fareOf(r.fare) / r.dist), sh: (v) => `$${v.toFixed(2)}` },
 ];
 // Airports: on time, cancellations, and delays are for departures
 const AMETRICS = [
@@ -179,6 +218,7 @@ const AMETRICS = [
   { id: 'delay', pri: 1, name: 'Delay when late', hi: 'longest delays', lo: 'shortest delays', val: (r) => (r.late >= 20 ? r.dmin / r.late : null), sh: (v) => `${Math.round(v)} min` },
   { id: 'routes', pri: 1, name: 'Destinations', hi: 'most destinations', noLoBadge: true, lo: 'fewest destinations', all: true, val: (r) => r.dests.size, sh: (v) => String(v) },
   { id: 'airlines', pri: 1, name: 'Airlines', hi: 'most airlines', noLoBadge: true, lo: 'fewest airlines', all: true, val: (r) => r.brands.size, sh: (v) => String(v) },
+  { id: 'fare', pri: 1, name: 'Fare', hi: 'priciest', lo: 'cheapest', val: (r) => (state.rk.fal ? null : fareOf(r.fare)), sh: (v) => money(v) },
 ];
 // Airlines: v is an entry in the airline index
 const ALMETRICS = [
@@ -282,9 +322,9 @@ function funHTML(facts) {
 const faURL = (o, d) => `https://www.flightaware.com/live/findflight?origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}`;
 function faLinks(A, B, both) {
   if (MARKETS[A] || MARKETS[B]) return '';
-  const a = (o, d, t) => `<a href="${faURL(o, d)}" target="_blank" rel="noopener">${t} &#8599;</a>`;
+  const a = (url, t) => `<a class="pill fl-out" href="${url}" target="_blank" rel="noopener">${t} &#8599;</a>`;
   const g = `https://www.google.com/travel/flights?q=${encodeURIComponent(`Flights from ${A} to ${B}`)}`;   // Google Flights search (Ronjan 11/24)
-  return ` <span class="fl-fa">&middot; ${both ? `${a(A, B, `${A} to ${B}`)} &middot; ${a(B, A, `${B} to ${A}`)}` : a(A, B, 'Live flights on FlightAware')} &middot; <a href="${g}" target="_blank" rel="noopener">Search fares on Google Flights &#8599;</a></span>`;
+  return `<div class="fl-links">${both ? `${a(faURL(A, B), `${A} to ${B}`)}${a(faURL(B, A), `${B} to ${A}`)}` : a(faURL(A, B), 'Live flights on FlightAware')}${a(g, 'Search fares on Google Flights')}</div>`;
 }
 function tableHTML(head, rows, cls = '', by = 1, asc = false) {
   return `<div class="fl-scroll"><table class="sport-table fl-sortable ${cls}" data-by="${by}" data-asc="${asc ? 1 : 0}"><thead><tr>${head.map(([h, c], i) => `<th class="${c || ''}"><button type="button" class="fl-sort fl-tsort" data-ti="${i}">${h}</button></th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
@@ -320,7 +360,7 @@ const tailFact = (tl, what) => {
   return ['Most frequent plane', `<a href="https://registry.faa.gov/AircraftInquiry/Search/NNumberResult?nNumberTxt=${encodeURIComponent(tail)}" target="_blank" rel="noopener">${esc(tail)}</a>`, `${num(n)} flights ${what}`];
 };
 // Trends: every year, with the picked years highlighted when there's a pick
-function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day') {
+function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day', fareYears = []) {
   const years = meta.years;
   const selected = state.y0 !== 'last12', picked = new Set(windows());
   const out = (y) => (selected && !picked.has(y) ? 'out' : '');
@@ -349,6 +389,7 @@ function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day') {
     <div class="fl-charts">
       ${barChart(title, per, yl, { min: 0, scale: true, plain: true, value: (x) => x.perDay, cls: (x) => out(x.k), note: nF, tip: (x, v) => `${yl(x.k)}: ${v.toFixed(1)} a day` })}
       ${barChart('On time', per, yl, { plain: true, cls: (x) => out(x.k), note: nO, tip: (x, v) => `${yl(x.k)}: ${p1(v)} on time` })}
+      ${fareYears.length ? barChart('Fare each way', fareYears, yl, { min: 0, scale: true, plain: true, value: (x) => x.v, cls: (x) => out(x.k), note: '', tip: (x, v) => `${yl(x.k)}: ${money(v)}` }) : ''}
     </div>
     ${brands.length > 1 ? `<h3>${mixLabel}</h3>${tableHTML(mixHead, mixRows, '', 0, true)}` : ''}`;
 }
@@ -357,8 +398,8 @@ function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day') {
 
 async function renderRoute() {
   const { from: A, to: B, both } = state;
-  const [ab, ba, rank, tA, tB] = await Promise.all([summed((w) => `y/${w}/${A}.json`, B), both ? summed((w) => `y/${w}/${B}.json`, A) : null,
-    ranking(), getJSON(`trends/${A}.json`), both ? getJSON(`trends/${B}.json`) : null]);
+  const [ab, ba, rank, tA, tB, fT] = await Promise.all([summed((w) => `y/${w}/${A}.json`, B), both ? summed((w) => `y/${w}/${B}.json`, A) : null,
+    ranking(), getJSON(`trends/${A}.json`), both ? getJSON(`trends/${B}.json`) : null, getJSON(`fares/ap/${A}.json`)]);
   const r = both ? merge(ab, ba) : ab;   // merge keeps the original records, so dirOf can tell which way each fun fact happened
   const dirOf = (rec) => (!both || !rec ? '' : ab && [ab.fa, ab.sl, ab.ld].includes(rec) ? ` (${A} to ${B})` : ` (${B} to ${A})`);
   const head = `<p class="fl-title">${linkAirport(A)} ${both ? '⇄' : '→'} ${linkAirport(B)}</p><p class="fl-period-line">${esc(periodTitle())}</p>`;
@@ -395,19 +436,30 @@ async function renderRoute() {
     for (const src of [t1?.a?.[y], t2?.a?.[y]]) for (const [k, v] of Object.entries(src || {})) { mix[y] = mix[y] || {}; mix[y][k] = (mix[y][k] || 0) + v; }
   }
 
+  // Fares: one per airport pair, so both directions share it
+  const fv = rank.fr.pairs.get([A, B].sort().join('-')), fare = fareOf(fareAvg(fv));
+  const adj = (v) => (state.real ? v * fv[7] : v);
+  const fareLine = fv && fv[3] ? `${esc(airlineName(fv[3]))} (biggest) ${money(adj(fv[4]))}${fv[5] && fv[5] !== fv[3] ? ` &middot; ${esc(airlineName(fv[5]))} (cheapest) ${money(adj(fv[6]))}` : ''}` : '';
+  const pEnd = state.y0 === 'last12' ? meta.last12[1] : `${state.y1 || state.y0}-${String(meta.months_in_year[state.y1 || state.y0]).padStart(2, '0')}`;
+  const lastQ = rank.fr.last, qEnd = lastQ ? `${lastQ.slice(0, 4)}-${String(+lastQ.slice(-1) * 3).padStart(2, '0')}` : null;
+  const fareNote = fare ? [fareLine, qEnd && qEnd < pEnd ? `Fares through ${qLabel(lastQ)}` : ''].filter(Boolean).join(' &middot; ') : '';
+  const fareYears = meta.years.map((y) => { const v = fT?.[B]?.[y]; return v && v[0] ? { k: y, f: 1, v: fareOf(fareAvg(v)) } : null; }).filter(Boolean);
+
   const facts = [];
   if (r.fa) facts.push(['Fastest flight', dur(r.fa.min), `${flightLabel(r.fa)}, ${fmtDate(r.fa.date)}${dirOf(r.fa)}`]);
   if (r.sl) facts.push(['Slowest flight', dur(r.sl.min), `${flightLabel(r.sl)}, ${fmtDate(r.sl.date)}${dirOf(r.sl)}`]);
   if (r.ld?.delay > 0) facts.push(['Longest delay', dur(r.ld.delay), `${flightLabel(r.ld)}, ${fmtDate(r.ld.date)}${dirOf(r.ld)}`]);
   const tf = tailFact(r.tl, 'on this route'); if (tf) facts.push(tf);
 
-  return `${head}<p class="fl-sub">${esc(`${city(A)} ${both ? 'and' : 'to'} ${city(B)}, ${num(r.d)} miles`)} ${B_('distance')}${faLinks(A, B, both)}</p>
+  return `${head}<p class="fl-sub">${esc(`${city(A)} ${both ? 'and' : 'to'} ${city(B)}, ${num(r.d)} miles`)} ${B_('distance')}</p>${faLinks(A, B, both)}
     ${factsHTML([['Flights', num(f), B_('busiest')], ['Per day', perDay(f / periodDays())], ['Airlines', brands.size, B_('airlines')],
-      ['Scheduled time', dur(r.t[0] / r.t[2])], ['Actual time', dur(r.t[1] / r.t[2]), B_('padding')], ['Avg delay when late', late ? `${Math.round(dmin / late)} min` : '-', B_('delay')]])}
+      ['Scheduled time', dur(r.t[0] / r.t[2])], ['Actual time', dur(r.t[1] / r.t[2]), B_('padding')], ['Avg delay when late', late ? `${Math.round(dmin / late)} min` : '-', B_('delay')],
+      ...(fare ? [['Fare each way', money(fare), B_('fare')]] : [])])}
+    ${fareNote ? `<p class="fl-note">${fareNote}</p>` : ''}
     <h2>On time</h2>${onTimeHTML(r.c, ['ontime', 'delayed', 'canceled', 'diverted'].map(B_).join(''), lines)}
     <p class="fl-note">Ranked among ${both ? 'round trips' : 'routes'} with a flight a day${both ? ' each way' : ''}</p>
     <h2>Airlines</h2>${tableHTML([['Airline'], ['Flights'], ['Share', 'hide-sm'], ['On time'], ['Canceled', 'hide-sm'], ['Avg delay when late']], rows)}
-    ${trendsHTML(perYear, mix, 'Airline share of flights')}
+    ${trendsHTML(perYear, mix, 'Airline share of flights', undefined, fareYears)}
     ${whenHTML(r)}${causesHTML(r)}${funHTML(facts)}`;
 }
 
@@ -613,6 +665,8 @@ function syncControls() {
   $('#fl-pick-airline').hidden = !(lookup && state.tab === 'airlines');
   $('#fl-dir').hidden = state.tab !== 'routes';
   $('#fl-cities').hidden = state.tab !== 'airports';
+  $('#fl-usd').hidden = !(state.tab === 'routes' || (state.tab === 'airports' && state.mode === 'rank'));   // where fares show
+  document.querySelectorAll('#fl-usd button').forEach((b) => b.classList.toggle('active', (b.dataset.usd === '2026') === state.real));
   document.querySelectorAll('#fl-cities button').forEach((b) => b.classList.toggle('active', (b.dataset.c === 'cities') === state.cities));
   document.querySelectorAll('#fl-dir button').forEach((b) => b.classList.toggle('active', (b.dataset.d === 'both') === state.both));
   $('#fl-from').value = `${state.from} (${city(state.from)})`;
@@ -663,6 +717,7 @@ function setURL() {
   else q.set('al', state.al);
   if (state.tab === 'airports' && state.cities) q.set('cities', '1');
   if (state.tab === 'routes' && state.both) q.set('both', '1');
+  if (state.real) q.set('usd', '2026');
   if (state.y0 !== 'last12') { q.set('y0', state.y0); q.set('y1', state.y1); }
   history.replaceState(null, '', `${location.pathname}?${q}`);
 }
@@ -704,6 +759,7 @@ async function init() {
   state.from = ok(q.get('from')) || state.from;
   state.to = ok(q.get('to')) || state.to;
   state.both = q.get('both') === '1';
+  state.real = q.get('usd') === '2026';
   state.cities = q.get('cities') === '1';
   if (state.tab === 'airports' && (ok(q.get('ap')) || MARKETS[q.get('ap')])) state.ap = ok(q.get('ap')) || q.get('ap');
   if (q.get('al') && /^[A-Z0-9]{2}$/.test(q.get('al')) && state.tab === 'airlines') state.al = q.get('al');
@@ -732,13 +788,14 @@ async function init() {
       markSort(table, true);
       return;
     }
-    const t = e.target.closest('[data-tab], [data-mode], [data-d], #fl-cities [data-c], [data-go], [data-badge], [data-m], [data-lo], [data-more], .fl-al-pick');
+    const t = e.target.closest('[data-tab], [data-mode], [data-d], #fl-cities [data-c], [data-go], [data-badge], [data-m], [data-lo], [data-more], [data-usd], .fl-al-pick');
     if (!t || !t.closest('.fl')) return;
     e.preventDefault();
     const rk = state.rk;
     if (t.dataset.tab) { state.tab = t.dataset.tab; rk.hl = ''; rk.n = 25; }
     else if (t.dataset.mode) { state.mode = t.dataset.mode; rk.hl = ''; rk.n = 25; }
     else if (t.dataset.d) state.both = t.dataset.d === 'both';
+    else if (t.dataset.usd) state.real = t.dataset.usd === '2026';
     else if (t.dataset.c) {
       // To cities: an airport in a market becomes its city. Back to airports: the city's busiest airport.
       state.cities = t.dataset.c === 'cities';

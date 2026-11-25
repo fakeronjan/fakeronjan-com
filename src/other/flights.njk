@@ -150,6 +150,9 @@ permalink: /flights/
 .fl-title-logo { display: flex; align-items: center; gap: 0.7rem; }
 .fl-title-logo .fl-logo img { height: 30px; max-width: 170px; }
 .fl-sub { color: var(--muted); margin: 0; text-wrap: pretty; }
+.fl-links { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.6rem 0 0.2rem; }
+.fl-out { text-decoration: none; }
+#fl-usd[hidden] { display: none; }
 .fl-lead { margin: 0 0 0.4rem; }
 .fl-al-picks { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0 0.6rem; }
 .fl-al-pick { border: 1px solid var(--line); border-radius: 8px; background: none; padding: 0.35rem; cursor: pointer; }
@@ -195,6 +198,7 @@ permalink: /flights/
 
   <div class="sport-controls fl-row2">
     <div class="pill-group" id="fl-cities" role="group" aria-label="Group" hidden><button class="pill active" data-c="airports" type="button">Airports</button><button class="pill" data-c="cities" type="button">Cities</button></div>
+    <div class="pill-group" id="fl-usd" role="group" aria-label="Fares"><button class="pill active" data-usd="paid" type="button">Fares as paid</button><button class="pill" data-usd="2026" type="button">In 2026 dollars</button></div>
     <div class="pill-group" id="fl-dir" role="group" aria-label="Direction"><button class="pill active" data-d="one" type="button">One way</button><button class="pill" data-d="both" type="button">Both directions</button></div>
     <div class="fl-period">
       <label for="fl-y0" class="fl-showing">Showing</label>
@@ -212,6 +216,7 @@ permalink: /flights/
       <li><strong>Data source:</strong> Every domestic flight reported to the US Department of Transportation by the larger US airlines and their regional partners, January 2018 on, from the Bureau of Transportation Statistics. It doesn't include international flights or the smallest airlines.</li>
       <li><strong>On time:</strong> Each scheduled flight counts as exactly one of on time (arrived within 15 minutes of schedule), delayed, canceled, or diverted, so the four add up to 100%. That's the government's definition.</li>
       <li><strong>Airlines:</strong> Flights are listed under the airline you'd buy the ticket from, with the regional airline that flew it when they differ.</li>
+      <li><strong>Fares:</strong> Average fare each way, from the US DOT Consumer Airfare Report, for airport pairs with at least 10 passengers a day. Both directions share one fare, and fares come out about six months after the flights. In 2026 dollars adjusts each quarter's fares by the Consumer Price Index.</li>
       <li><strong>Updates:</strong> The data is refreshed monthly. The government publishes each month about two months later.</li>
     </ul>
     <h3>Sources</h3>
