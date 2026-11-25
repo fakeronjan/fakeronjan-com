@@ -740,6 +740,13 @@ footer {
    JS-hidden pill group (e.g. GOAT's peak-only subview pills) stayed visible
    and clickable even while switched to a view it doesn't apply to. */
 .pill-group[hidden] { display: none; }
+/* Two-option choices: one split pill, the chosen half filled (Ronjan 11/24, Sun Stats and Flights).
+   Groups of three or more stay separate pills. */
+.pill-group.split { display: inline-flex; flex-wrap: nowrap; gap: 0; border: 1px solid var(--accent); border-radius: 999px; padding: 3px; vertical-align: middle; }
+.pill-group.split[hidden] { display: none; }
+.pill-group.split .pill { border: 0; border-radius: 999px; font-weight: 600; white-space: nowrap; }
+.pill-group.split .pill.active { background: var(--accent); color: var(--bg); }
+.pill-group.split .pill:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
 .pill {
   font-family: inherit;
   font-size: 0.78rem;

@@ -284,26 +284,33 @@ function barChart(title, items, label, opts = {}) {
   const max = Math.max(...rates), min = Math.min(...rates), top = opts.scale ? Math.max(...rates, 1) : 100;
   const cls = (x, v) => [opts.cls ? opts.cls(x) : '', !opts.plain && v === max ? 'best' : !opts.plain && v === min ? 'worst' : ''].filter(Boolean).join(' ');
   const bi = rates.indexOf(max), wi = rates.indexOf(min);
-  const note = opts.note !== undefined ? opts.note : shown.length > 1 ? `Best ${label(shown[bi].k)} (${p1(max)}), worst ${label(shown[wi].k)} (${p1(min)})` : '';
-  return `<div><h3>${title}</h3><div class="fl-bars">${shown.map((x, i) => `<div class="${cls(x, rates[i])}" style="height:${Math.max(2, (100 * rates[i]) / top)}%" data-t="${esc(opts.tip ? opts.tip(x, rates[i]) : `${label(x.k)}: ${p1(rates[i])} on time (${num(x.f)} flights)`)}"></div>`).join('')}</div>
+  const note = opts.note !== undefined ? opts.note : opts.lab ? '' : shown.length > 1 ? `Best ${label(shown[bi].k)} (${p1(max)}), worst ${label(shown[wi].k)} (${p1(min)})` : '';
+  return `<div><h3>${title}</h3><div class="fl-bars${opts.lab ? ' lab' : ''}">${shown.map((x, i) => `<div class="${cls(x, rates[i])}" style="height:${Math.max(2, (100 * rates[i]) / top)}%" data-t="${esc(opts.tip ? opts.tip(x, rates[i]) : `${label(x.k)}: ${p1(rates[i])} on time (${num(x.f)} flights)`)}">${opts.lab ? `<span class="fl-bar-lab">${esc(opts.lab(rates[i]))}</span>` : ''}</div>`).join('')}</div>
     <div class="fl-ticks">${shown.map((x) => `<span>${label(x.k, true)}</span>`).join('')}</div>${note ? `<p class="fl-note">${esc(note)}</p>` : ''}</div>`;
 }
 function whenHTML(r) {
   return `<h2>When to fly</h2><div class="fl-charts">
     ${barChart('On time by departure hour', Object.entries(r.h).map(([k, v]) => ({ k: +k, f: v[0], on: v[1] })).sort((x, y) => x.k - y.k),
-      (h, short) => (short ? (h % 3 === 0 ? `${h % 12 || 12}${h < 12 ? 'a' : 'p'}` : '') : hour12(h)))}
-    ${barChart('On time by day of week', Object.entries(r.w).map(([k, v]) => ({ k: +k, f: v[0], on: v[1] })).sort((x, y) => x.k - y.k), (d) => DOW[d])}
-    ${barChart('On time by month', Object.entries(r.mo).map(([k, v]) => ({ k: +k, f: v[0], on: v[1] })).sort((x, y) => x.k - y.k), (m, short) => (short ? MON[m - 1][0] : MON[m - 1]))}
+      (h, short) => (short ? (h % 3 === 0 ? `${h % 12 || 12}${h < 12 ? 'a' : 'p'}` : '') : hour12(h)), { lab: (v) => String(Math.round(v)) })}
+    ${barChart('On time by day of week', Object.entries(r.w).map(([k, v]) => ({ k: +k, f: v[0], on: v[1] })).sort((x, y) => x.k - y.k), (d) => DOW[d], { lab: (v) => `${Math.round(v)}%` })}
+    ${barChart('On time by month', Object.entries(r.mo).map(([k, v]) => ({ k: +k, f: v[0], on: v[1] })).sort((x, y) => x.k - y.k), (m, short) => (short ? MON[m - 1][0] : MON[m - 1]), { lab: (v) => `${Math.round(v)}%` })}
   </div>`;
 }
-function causesHTML(r) {
-  const tot = r.x.reduce((s, x) => s + x, 0);
+// Delay causes for every airline together, over the same years: the national benchmark
+async function nationalCauses() {
+  const idx = await Promise.all(windows().map((w) => getJSON(`y/${w}/al/index.json`)));
+  const x = [0, 0, 0, 0, 0];
+  for (const file of idx) for (const v of Object.values(file || {})) v.x.forEach((n, i) => { x[i] += n; });
+  return x;
+}
+function causesHTML(r, nat) {
+  const tot = r.x.reduce((s, x) => s + x, 0), natTot = nat ? nat.reduce((s, x) => s + x, 0) : 0;
   const ct = Object.values(r.k).reduce((s, x) => s + x, 0);
   const cancels = ct
     ? `${num(ct)} cancellation${ct === 1 ? '' : 's'}: ${Object.entries(r.k).sort((x, y) => y[1] - x[1]).map(([k, v]) => `${Math.round(pct(v, ct))}% ${CANCEL[k] || 'other'}`).join(', ')}`
     : 'No cancellations';
   return `<h2>Why flights were late</h2><p class="fl-note fl-lead">Share of delay minutes</p>
-    <div class="fl-causes">${CAUSES.map(([k, i]) => `<div><span>${k}</span><span class="track"><span class="fill" style="width:${pct(r.x[i], tot)}%"></span></span><b>${Math.round(pct(r.x[i], tot))}%</b></div>`).join('')}</div>
+    <div class="fl-causes">${CAUSES.map(([k, i]) => `<div><span>${k}</span><span class="track"><span class="fill" style="width:${pct(r.x[i], tot)}%"></span>${natTot ? `<span class="nat" style="left:${pct(nat[i], natTot)}%" title="All US flights: ${Math.round(pct(nat[i], natTot))}%"></span>` : ''}</span><b>${Math.round(pct(r.x[i], tot))}%</b>${natTot ? `<small>${Math.round(pct(nat[i], natTot))}% nationally</small>` : ''}</div>`).join('')}</div>
     <p class="fl-note">${cancels}</p>`;
 }
 // Most and least on time among rows sorted best first: [key, [flights, on time, ...]]
@@ -312,7 +319,7 @@ function bestWorstHTML(sorted, link) {
   return `<ul class="fl-rank"><li>Most on time: ${link(b[0])} (${p1(pct(b[1][1], b[1][0]))})</li><li>Least on time: ${link(w[0])} (${p1(pct(w[1][1], w[1][0]))})</li></ul>`;
 }
 function funHTML(facts) {
-  return facts.length ? `<h2>Fun facts</h2><div class="fl-fun">${facts.map(([k, v, s]) => `<div><small>${k}</small><b>${v}</b><span>${s}</span></div>`).join('')}</div>` : '';
+  return facts.length ? `<h2>Superlatives</h2><div class="fl-fun">${facts.map(([k, v, s]) => `<div><small>${k}</small><b>${v}</b><span>${s}</span></div>`).join('')}</div>` : '';
 }
 // Every table sorts by clicking a header, like the rankings: numbers start highest first, names
 // A to Z, and a second click flips it. `by` is the column the rows arrive sorted by (Flights,
@@ -324,7 +331,7 @@ function faLinks(A, B, both) {
   if (MARKETS[A] || MARKETS[B]) return '';
   const a = (url, t) => `<a class="pill fl-out" href="${url}" target="_blank" rel="noopener">${t} &#8599;</a>`;
   const g = `https://www.google.com/travel/flights?q=${encodeURIComponent(`Flights from ${A} to ${B}`)}`;   // Google Flights search (Ronjan 11/24)
-  return `<div class="fl-links">${both ? `${a(faURL(A, B), `${A} to ${B}`)}${a(faURL(B, A), `${B} to ${A}`)}` : a(faURL(A, B), 'Live flights on FlightAware')}${a(g, 'Search fares on Google Flights')}</div>`;
+  return `<div class="fl-links">${both ? `${a(faURL(A, B), `Live flights on FlightAware: ${A} to ${B}`)}${a(faURL(B, A), `Live flights on FlightAware: ${B} to ${A}`)}` : a(faURL(A, B), 'Live flights on FlightAware')}${a(g, 'Search fares on Google Flights')}</div>`;
 }
 function tableHTML(head, rows, cls = '', by = 1, asc = false) {
   return `<div class="fl-scroll"><table class="sport-table fl-sortable ${cls}" data-by="${by}" data-asc="${asc ? 1 : 0}"><thead><tr>${head.map(([h, c], i) => `<th class="${c || ''}"><button type="button" class="fl-sort fl-tsort" data-ti="${i}">${h}</button></th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
@@ -387,9 +394,9 @@ function trendsHTML(perYear, mixByYear, mixLabel, title = 'Flights a day', fareY
   const mixHead = [['Year'], ...top.map((b, i) => [LOGOS.has(b) ? logo(b, 'sm') : esc(airlineName(b)), i >= 3 ? 'fl-wide-only' : '']), ...(many ? [['Other', 'fl-wide-only']] : []), ...(phoneCut ? [['Other', 'fl-phone-only']] : [])];
   return `<h2>Trends</h2>${selected ? `<p class="fl-note fl-lead">Selected year${picked.size > 1 ? 's are' : ' is'} highlighted</p>` : ''}
     <div class="fl-charts">
-      ${barChart(title, per, yl, { min: 0, scale: true, plain: true, value: (x) => x.perDay, cls: (x) => out(x.k), note: nF, tip: (x, v) => `${yl(x.k)}: ${v.toFixed(1)} a day` })}
-      ${barChart('On time', per, yl, { plain: true, cls: (x) => out(x.k), note: nO, tip: (x, v) => `${yl(x.k)}: ${p1(v)} on time` })}
-      ${fareYears.length ? barChart('Fare each way', fareYears, yl, { min: 0, scale: true, plain: true, value: (x) => x.v, cls: (x) => out(x.k), note: '', tip: (x, v) => `${yl(x.k)}: ${money(v)}` }) : ''}
+      ${barChart(title, per, yl, { min: 0, scale: true, plain: true, value: (x) => x.perDay, lab: (v) => (v >= 10 ? Math.round(v).toLocaleString('en-US') : v.toFixed(1)), cls: (x) => out(x.k), note: nF, tip: (x, v) => `${yl(x.k)}: ${v.toFixed(1)} a day` })}
+      ${barChart('On time', per, yl, { plain: true, lab: (v) => `${Math.round(v)}%`, cls: (x) => out(x.k), note: nO, tip: (x, v) => `${yl(x.k)}: ${p1(v)} on time` })}
+      ${fareYears.length ? barChart('Fare each way', fareYears, yl, { min: 0, scale: true, plain: true, value: (x) => x.v, lab: (v) => money(v), cls: (x) => out(x.k), note: '', tip: (x, v) => `${yl(x.k)}: ${money(v)}` }) : ''}
     </div>
     ${brands.length > 1 ? `<h3>${mixLabel}</h3>${tableHTML(mixHead, mixRows, '', 0, true)}` : ''}`;
 }
@@ -403,9 +410,9 @@ async function renderRoute() {
   const r = both ? merge(ab, ba) : ab;   // merge keeps the original records, so dirOf can tell which way each fun fact happened
   const dirOf = (rec) => (!both || !rec ? '' : ab && [ab.fa, ab.sl, ab.ld].includes(rec) ? ` (${A} to ${B})` : ` (${B} to ${A})`);
   const headOf = (mid = '') => `<div class="fl-route-head">
-      <div class="fl-rh-ap"><span class="fl-title">${linkAirport(A)}</span><small>${esc(city(A))}</small></div>
+      <div class="fl-rh-ap"><span class="fl-title">${both ? '' : '<span class="fl-rh-emo" aria-hidden="true">🛫</span>'}${linkAirport(A)}</span><small>${esc(city(A))}</small></div>
       <div class="fl-rh-mid"><span class="fl-title">${both ? '⇄' : '→'}</span>${mid}</div>
-      <div class="fl-rh-ap"><span class="fl-title">${linkAirport(B)}</span><small>${esc(city(B))}</small></div>
+      <div class="fl-rh-ap"><span class="fl-title">${linkAirport(B)}${both ? '' : '<span class="fl-rh-emo" aria-hidden="true">🛬</span>'}</span><small>${esc(city(B))}</small></div>
     </div><p class="fl-period-line">${esc(periodTitle())}</p>`;
   const head = headOf();
   if (!r) return `${head}<p class="fl-sub">No flights ${both ? 'between' : 'from'} ${esc(city(A))} ${both ? 'and' : 'to'} ${esc(city(B))} on these airlines in ${esc(periodLabel())}</p>`;
@@ -465,7 +472,7 @@ async function renderRoute() {
     <p class="fl-note">Ranked among ${both ? 'round trips' : 'routes'} with a flight a day${both ? ' each way' : ''}</p>
     <h2>Airlines</h2>${tableHTML([['Airline'], ['Flights'], ['Share', 'hide-sm'], ['On time'], ['Canceled', 'hide-sm'], ['Avg delay when late']], rows)}
     ${trendsHTML(perYear, mix, 'Airline share of flights', undefined, fareYears)}
-    ${whenHTML(r)}${causesHTML(r)}${funHTML(facts)}`;
+    ${whenHTML(r)}${causesHTML(r, await nationalCauses())}${funHTML(facts)}`;
 }
 
 // ------------------------------------------------------------------ airport page
@@ -521,7 +528,7 @@ async function renderAirport() {
     <h2>Destinations</h2>${tableHTML([['Route'], ['Flights'], ['On time'], ['Canceled', 'hide-sm']], (allDestRows = dests.map(destRow).join(''), dests.slice(0, 15).map(destRow)), 'fl-dest')}
     ${dests.length > 15 ? `<button class="pill fl-more" type="button" data-more="dests">Show all ${dests.length}</button>` : ''}${destLines}
     ${trendsHTML(tr?.y || {}, tr?.a, 'Airline share of flights', 'Departures a day')}
-    ${whenHTML(r)}${causesHTML(r)}${funHTML(facts)}`;
+    ${whenHTML(r)}${causesHTML(r, await nationalCauses())}${funHTML(facts)}`;
 }
 
 // ------------------------------------------------------------------ airline page
@@ -566,7 +573,7 @@ async function renderAirline() {
     <h2>Biggest airports</h2>${tableHTML([['Airport'], ['Flights'], ['Share']], aps.slice(0, 10).map(apRow))}
     <h2>Busiest routes</h2>${tableHTML([['Route'], ['Flights'], ['On time'], ['Canceled', 'hide-sm']], routes.slice(0, 15).map(routeRow), 'fl-dest')}${bestWorst}
     ${trendsHTML(tr?.[B]?.y || {}, tr?.[B]?.ops, 'Share flown by each operator')}
-    ${whenHTML(r)}${causesHTML(r)}${funHTML(facts)}`;
+    ${whenHTML(r)}${causesHTML(r, await nationalCauses())}${funHTML(facts)}`;
 }
 function airlineIndex(idxs) {
   const out = {};
@@ -723,7 +730,8 @@ function setURL() {
   if (state.tab === 'airports' && state.cities) q.set('cities', '1');
   if (state.tab === 'routes' && state.both) q.set('both', '1');
   if (state.real) q.set('usd', '2026');
-  if (state.y0 !== 'last12') { q.set('y0', state.y0); q.set('y1', state.y1); }
+  if (state.y0 === 'last12') q.set('y0', 'last12');
+  else if (!(state.y0 === meta.years[0] && state.y1 === meta.years[meta.years.length - 1])) { q.set('y0', state.y0); q.set('y1', state.y1); }
   history.replaceState(null, '', `${location.pathname}?${q}`);
 }
 
@@ -772,7 +780,9 @@ async function init() {
   state.rk.lo = q.get('lo') === '1';
   state.rk.fap = ok(q.get('fap')) || '';
   state.rk.fal = q.get('fal') || '';
-  if (meta.years.includes(q.get('y0'))) { state.y0 = q.get('y0'); state.y1 = meta.years.includes(q.get('y1')) ? q.get('y1') : state.y0; }
+  if (q.get('y0') === 'last12') { state.y0 = 'last12'; state.y1 = null; }
+  else if (meta.years.includes(q.get('y0'))) { state.y0 = q.get('y0'); state.y1 = meta.years.includes(q.get('y1')) ? q.get('y1') : state.y0; }
+  else { state.y0 = meta.years[0]; state.y1 = meta.years[meta.years.length - 1]; }   // default: all the data
 
   $('#fl-y0').innerHTML = `<option value="last12">Last 12 months</option>${meta.years.slice().reverse().map((y) => `<option value="${y}">${y}${partial(y)}</option>`).join('')}`;
   $('#fl-y0').addEventListener('change', (e) => { state.y0 = e.target.value; state.y1 = state.y0 === 'last12' ? null : (state.y1 && state.y1 >= state.y0 ? state.y1 : state.y0); update(); });
