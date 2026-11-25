@@ -3,7 +3,7 @@ permalink: "/nielson-traitors/"
 layout: base.njk
 title: "The Post-Mortem | FAKE RONJAN!!"
 ---
-<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;800&family=Barlow+Condensed:wght@600;700&family=Saira+Condensed:wght@600&family=Playfair+Display:wght@500&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
   /* Not in the navbar on purpose: reachable by link only, like /fantasy-traitors/.
      Episode data lives in EPISODES and PUNDITS at the bottom of this file. Each new
@@ -55,6 +55,54 @@ title: "The Post-Mortem | FAKE RONJAN!!"
   .pm-episode .pm-title { font-size: 0.98rem; }
   .pm-episode.now { border-color: var(--pm-accent); border-width: 2px; }
   .pm-now { color: var(--pm-accent); font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* Rule Set 4.0: the four big changes (the infographic as cards, Ronjan 11/25). One row of four on
+     desktop (wider than the text column), 2x2 on tablets, one column on phones. Subgrid lines up each
+     card's parts across a row, so the example boxes sit level. Bullets never wrap: card text scales
+     with the card's width (--cw, from the wrapper's cqi; a container on the card itself would switch off subgrid). Each pundit speaks in their own face, as in the image version. */
+  .pm-r4-wrap { margin-inline: calc((100% - min(1432px, 100vw)) / 2);   /* centered breakout past the 980px column, up to 1400px of cards */
+                 padding: 0 16px; box-sizing: border-box; display: grid; justify-items: center; container-type: inline-size; }
+  .pm-r4 { width: 100%; max-width: 1400px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
+            --cw: calc((min(100cqi, 1400px) - 36px) / 4 - 32px); }   /* a card's text width (card padding + border = 32px) */
+  @media (max-width: 1279px) { .pm-r4 { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 980px; --cw: calc((min(100cqi, 980px) - 12px) / 2 - 32px); } }
+  @media (max-width: 760px) { .pm-r4 { grid-template-columns: minmax(0, 1fr); --cw: calc(100cqi - 32px); } }
+  .pm-r4-card { --hue: #2f8f5c; display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 12px;
+                padding: 14px; border: 2px solid var(--hue); border-radius: 12px; background: var(--pm-panel); }
+  .pm-r4-card[data-p="s"] { --hue: #2f6fae; } .pm-r4-card[data-p="d"] { --hue: #23824e; } .pm-r4-card[data-p="t"] { --hue: #b85a14; } .pm-r4-card[data-p="p"] { --hue: #b03a5e; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .pm-r4-card[data-p="s"] { --hue: #609cdc; } :root:not([data-theme="light"]) .pm-r4-card[data-p="d"] { --hue: #34a868; }
+    :root:not([data-theme="light"]) .pm-r4-card[data-p="t"] { --hue: #ec8030; } :root:not([data-theme="light"]) .pm-r4-card[data-p="p"] { --hue: #ce4868; }
+  }
+  :root[data-theme="dark"] .pm-r4-card[data-p="s"] { --hue: #609cdc; } :root[data-theme="dark"] .pm-r4-card[data-p="d"] { --hue: #34a868; }
+  :root[data-theme="dark"] .pm-r4-card[data-p="t"] { --hue: #ec8030; } :root[data-theme="dark"] .pm-r4-card[data-p="p"] { --hue: #ce4868; }
+  .pm-r4-card > * { min-width: 0; font-size: min(17px, calc(var(--cw) / 17.8)); }
+  .pm-r4-card > .pm-r4-list { font-size: min(17px, calc(var(--cw) / 21.8)); }   /* the longest bullet is ~21.4em with its row padding: it fits the card width on one line */
+  .pm-r4-head { display: flex; align-items: center; gap: 0.5em; }
+  .pm-r4-n { flex: none; width: 1.7em; height: 1.7em; border-radius: 7px; background: #a01c28; color: #f0e6d6; display: grid; place-items: center;
+             font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 1.15em; }
+  .pm-r4-head h2 { margin: 0; font-family: "Grenze Gotisch", Georgia, serif; font-weight: 800; font-size: 1.55em; line-height: 1.1; color: var(--pm-ink); white-space: nowrap; }
+  .pm-r4-who { display: grid; grid-template-columns: 4.2em minmax(0, 1fr); gap: 0.4em 0.7em; align-items: center; align-content: start; }
+  .pm-r4-who img { width: 4.2em; height: 4.2em; border-radius: 50%; border: 3px solid var(--hue); box-sizing: border-box; }
+  .pm-r4-name { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 0.95em; line-height: 1.15; color: var(--hue); text-wrap: balance; }
+  .pm-r4-says { grid-column: 1 / -1; margin: 0; color: var(--pm-ink); line-height: 1.3; text-wrap: pretty; }
+  .pm-r4-card[data-p="s"] .pm-r4-says { font-family: "Saira Condensed", sans-serif; font-weight: 600; font-size: 1.08em; }
+  .pm-r4-card[data-p="d"] .pm-r4-says { font-family: "Playfair Display", Georgia, serif; font-weight: 500; font-size: 1em; }
+  .pm-r4-card[data-p="t"] .pm-r4-says { font-family: "Special Elite", "Courier New", monospace; font-size: 0.95em; }
+  .pm-r4-card[data-p="p"] .pm-r4-says { font-family: "Grenze Gotisch", Georgia, serif; font-weight: 500; font-size: 1.12em; }
+  .pm-r4-list, .pm-r4-table { font-family: "Barlow Condensed", sans-serif; font-weight: 600; color: var(--pm-ink); }
+  .pm-r4-list { list-style: none; counter-reset: r4; margin: 0; padding: 0; display: grid; grid-auto-rows: 1fr; align-content: stretch; }   /* striped rows like card 1's table, stretched to fill the row it sets */
+  .pm-r4-list li { margin: 0; counter-increment: r4; display: flex; align-items: center; gap: 0.5em; white-space: nowrap; padding: 0.35em 0.5em; }
+  .pm-r4-list li:nth-child(odd) { background: color-mix(in srgb, var(--pm-ink) 6%, transparent); }
+  .pm-r4-list li::before { content: counter(r4); flex: none; width: 1.35em; height: 1.35em; border-radius: 50%; background: var(--hue); color: #fff;
+                           display: grid; place-items: center; font-weight: 700; font-size: 0.85em; }
+  .pm-r4-table { border-collapse: collapse; width: 100%; align-self: start; }
+  .pm-r4-table td { padding: 0.18em 0.5em; white-space: nowrap; }
+  .pm-r4-table tr:nth-child(odd) td { background: color-mix(in srgb, var(--pm-ink) 6%, transparent); }
+  .pm-r4-table td:first-child { color: var(--pm-gold); font-weight: 700; }
+  .pm-r4-ex { border: 2px solid color-mix(in srgb, var(--pm-gold) 70%, transparent); border-radius: 10px; padding: 0.6em 0.8em;
+              background: color-mix(in srgb, var(--pm-ink) 4%, transparent); font-family: "Barlow Condensed", sans-serif; font-weight: 600; color: var(--pm-ink); line-height: 1.3; }
+  .pm-r4-ex b { display: block; color: var(--pm-gold); font-weight: 700; font-size: 0.85em; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.2em; }
+  .pm-r4-ex p { margin: 0; text-wrap: pretty; }
 </style>
 
 <div class="pm">
@@ -66,6 +114,54 @@ title: "The Post-Mortem | FAKE RONJAN!!"
       <div class="pm-player" id="pm-player"></div>
       <div class="pm-meta"><span class="pm-title" id="pm-player-title"></span><div class="pm-row"><span class="pm-sub" id="pm-player-sub"></span><a class="pm-yt" id="pm-player-yt" target="_blank" rel="noopener">Open on YouTube &#8599;</a></div></div>
     </div>
+  </section>
+
+  <section class="pm-section">
+    <div class="pm-label">Rule Set 4.0: The Four Big Changes</div>
+    <div class="pm-r4-wrap"><div class="pm-r4">
+      <article class="pm-r4-card" data-p="s">
+        <div class="pm-r4-head"><span class="pm-r4-n">1</span><h2>Seven Behaviors</h2></div>
+        <div class="pm-r4-who"><img src="/img/nielson-traitors/pundit-s.png" alt=""><span class="pm-r4-name">Dr. Solveig "The Lie Detector" Bergqvist</span>
+          <p class="pm-r4-says">The shield and every secret condition now use the same seven behaviors. One short list makes patterns much easier to track.</p></div>
+        <table class="pm-r4-table"><tbody>
+          <tr><td>Chatty</td><td>8+ messages</td></tr><tr><td>Quiet</td><td>Only 1 or 2 messages</td></tr>
+          <tr><td>Early</td><td>A post in the first 10 min</td></tr><tr><td>Late</td><td>A post in the final 2 hours</td></tr>
+          <tr><td>Reactor</td><td>10+ reactions to others</td></tr><tr><td>Tagger</td><td>Tag another player</td></tr>
+          <tr><td>Long</td><td>One message of 250+ characters</td></tr>
+        </tbody></table>
+        <div class="pm-r4-ex"><b>Example</b><p>You send 9 messages in today's mission. That's Chatty. If today's shield is for the most messages and nobody sends more, the shield is yours.</p></div>
+      </article>
+      <article class="pm-r4-card" data-p="d">
+        <div class="pm-r4-head"><span class="pm-r4-n">2</span><h2>Intel With History</h2></div>
+        <div class="pm-r4-who"><img src="/img/nielson-traitors/pundit-d.png" alt=""><span class="pm-r4-name">Desmond "The Archive" Oyelaran</span>
+          <p class="pm-r4-says">Every morning you'll learn a behavior another player demonstrated in the previous round and how often they've done it before. Someone is learning yours too. It's my binder in a DM.</p></div>
+        <ol class="pm-r4-list">
+          <li>Every active player gets one fact written about them</li><li>Who gets the fact about you is random</li>
+          <li>Hitting none of the behaviors in box 1 is a fact too</li><li>Each game starts with a DM of your own history</li>
+        </ol>
+        <div class="pm-r4-ex"><b>Example</b><p>&ldquo;Tariq was Early with a post 3 minutes in. Tariq has been Early in 2 of 14 past missions.&rdquo; Tariq is rarely Early, so that's worth noticing.</p></div>
+      </article>
+      <article class="pm-r4-card" data-p="t">
+        <div class="pm-r4-head"><span class="pm-r4-n">3</span><h2>The Seer Rotates</h2></div>
+        <div class="pm-r4-who"><img src="/img/nielson-traitors/pundit-t.png" alt=""><span class="pm-r4-name">Tariq "Wake Up" Haddad</span>
+          <p class="pm-r4-says">Nobody is the Seer full-time, and the Bodyguard is folded in. Each round the bot secretly picks a new Seer. Why you? I have theories.</p></div>
+        <ol class="pm-r4-list">
+          <li>Meet your secret condition from box 1 that day</li><li>That night: check a player OR protect one</li>
+          <li>Multiple Seers have different information</li><li>Protect when one murder could end the game</li>
+        </ol>
+        <div class="pm-r4-ex"><b>Example</b><p>Your DM says you're the Seer and your condition is Early. You post 5 minutes in. Tonight you can check Solveig or protect Solveig.</p></div>
+      </article>
+      <article class="pm-r4-card" data-p="p">
+        <div class="pm-r4-head"><span class="pm-r4-n">4</span><h2>Traitor Conditions</h2></div>
+        <div class="pm-r4-who"><img src="/img/nielson-traitors/pundit-p.png" alt=""><span class="pm-r4-name">Lady Parveen "The Velvet Dagger" Chaudhry-Montague</span>
+          <p class="pm-r4-says">Each Traitor gets one condition from box 1 for the whole game, darlings. There's a murder each night as long as one of us met ours that day.</p></div>
+        <ol class="pm-r4-list">
+          <li>Same condition in every mission</li><li>Partners draw different types and know both</li>
+          <li>If neither Traitor meets theirs, nobody dies</li><li>A recruit who says yes draws their own condition</li>
+        </ol>
+        <div class="pm-r4-ex"><b>Example</b><p>My condition is Late and my partner's is Chatty. Today I post in the final 2 hours, so we murder tonight even though my partner only sent 2 messages.</p></div>
+      </article>
+    </div></div>
   </section>
 
   <section class="pm-section">
