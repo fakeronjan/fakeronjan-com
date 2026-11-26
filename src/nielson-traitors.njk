@@ -18,6 +18,11 @@ title: "The Post-Mortem | FAKE RONJAN!!"
   .pm h1 { font-family: "Grenze Gotisch", "UnifrakturMaguntia", Georgia, serif; font-weight: 800; font-size: clamp(2.4rem, 6vw, 3.4rem);
            line-height: 1.05; margin: 0; color: var(--pm-accent); text-wrap: balance; }
   .pm-section { display: grid; gap: 12px; }
+  /* Tabs (site sport-tabs): Episodes (default) and Infographics, ?tab=infographics (Ronjan 11/25) */
+  .pm-top { display: grid; gap: 14px; }
+  .pm-top .sport-tabs { margin-bottom: 0; }
+  .pm-panel { display: grid; gap: 34px; }
+  .pm-panel[hidden] { display: none; }
   .pm-label { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--pm-gold); }
   .pm-note { margin: -6px 0 0; color: var(--pm-mute); font-size: 0.9rem; }
   .pm-card { background: var(--pm-panel); border: 1px solid var(--pm-line); border-radius: 12px; overflow: hidden; }
@@ -61,7 +66,8 @@ title: "The Post-Mortem | FAKE RONJAN!!"
      card's parts across a row, so the example boxes sit level. Bullets never wrap: card text scales
      with the card's width (--cw, from the wrapper's cqi; a container on the card itself would switch off subgrid). Each pundit speaks in their own face, as in the image version. */
   .pm-r4-wrap { margin-inline: calc((100% - min(1432px, 100vw)) / 2);   /* centered breakout past the 980px column, up to 1400px of cards */
-                 padding: 0 16px; box-sizing: border-box; display: grid; justify-items: center; container-type: inline-size; }
+                 padding: 0 16px; box-sizing: border-box; display: grid; justify-items: center; container-type: inline-size;
+                overflow-x: clip; }   /* the tab's fonts load on first show; fallback text is wider for a moment */
   .pm-r4 { width: 100%; max-width: 1400px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
             --cw: calc((min(100cqi, 1400px) - 36px) / 4 - 32px); }   /* a card's text width (card padding + border = 32px) */
   @media (max-width: 1279px) { .pm-r4 { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 980px; --cw: calc((min(100cqi, 980px) - 12px) / 2 - 32px); } }
@@ -106,8 +112,15 @@ title: "The Post-Mortem | FAKE RONJAN!!"
 </style>
 
 <div class="pm">
-  <h1>The Post-Mortem</h1>
+  <div class="pm-top">
+    <h1>The Post-Mortem</h1>
+    <nav class="sport-tabs" id="pm-tabs" aria-label="Section">
+      <button class="sport-tab active" data-tab="episodes" type="button">Episodes</button>
+      <button class="sport-tab" data-tab="infographics" type="button">Infographics</button>
+    </nav>
+  </div>
 
+  <div class="pm-panel" id="pm-panel-episodes">
   <section class="pm-section">
     <div class="pm-label" id="pm-player-label">Latest Episode</div>
     <div class="pm-card">
@@ -116,6 +129,19 @@ title: "The Post-Mortem | FAKE RONJAN!!"
     </div>
   </section>
 
+  <section class="pm-section">
+    <div class="pm-label">The Desk</div>
+    <p class="pm-note">Suspect records since game 5</p>
+    <div class="pm-desk" id="pm-desk"></div>
+  </section>
+
+  <section class="pm-section">
+    <div class="pm-label">All Episodes</div>
+    <div class="pm-episodes" id="pm-episodes"></div>
+  </section>
+  </div>
+
+  <div class="pm-panel" id="pm-panel-infographics" hidden>
   <section class="pm-section">
     <div class="pm-label">Rule Set 4.0: The Four Big Changes</div>
     <div class="pm-r4-wrap"><div class="pm-r4">
@@ -163,17 +189,7 @@ title: "The Post-Mortem | FAKE RONJAN!!"
       </article>
     </div></div>
   </section>
-
-  <section class="pm-section">
-    <div class="pm-label">The Desk</div>
-    <p class="pm-note">Suspect records since game 5</p>
-    <div class="pm-desk" id="pm-desk"></div>
-  </section>
-
-  <section class="pm-section">
-    <div class="pm-label">All Episodes</div>
-    <div class="pm-episodes" id="pm-episodes"></div>
-  </section>
+  </div>
 </div>
 
 <script>
@@ -254,6 +270,19 @@ document.getElementById('pm-desk').innerHTML = PUNDITS.map(p => `
   </div>`).join('');
 
 const params = new URLSearchParams(location.search);
+function showTab(t) {
+  document.querySelectorAll('#pm-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  document.querySelectorAll('.pm-panel').forEach(p => { p.hidden = p.id !== `pm-panel-${t}`; });
+}
+document.getElementById('pm-tabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-tab]');
+  if (!b) return;
+  showTab(b.dataset.tab);
+  const u = new URL(location.href);
+  if (b.dataset.tab === 'episodes') u.searchParams.delete('tab'); else u.searchParams.set('tab', b.dataset.tab);
+  history.replaceState(null, '', u);
+});
+if (params.get('tab') === 'infographics') showTab('infographics');
 const want = +params.get('game'), slug = params.get('ep');
 showEpisode(LIVE.find(e => (slug && e.slug === slug) || (want && e.game === want)) || newest, false);
 </script>
