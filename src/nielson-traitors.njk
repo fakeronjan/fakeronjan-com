@@ -23,7 +23,18 @@ title: "The Post-Mortem | FAKE RONJAN!!"
   .pm-top .sport-tabs { margin-bottom: 0; }
   .pm-panel { display: grid; gap: 34px; }
   .pm-panel[hidden] { display: none; }
-  .pm-r4-date { margin-top: -8px; }   /* the date an infographic went out, same style as an episode's date */
+  .pm-r4-date { margin-top: -8px; }
+  .pm-sims-note { margin: 0; }
+  .pm-sims .pm-r4-card > .pm-sims-table { font-size: min(20px, calc(var(--cw) / 16.5)); }   /* bigger than the 4.0 cards' tables; still fits the narrowest card */
+  .pm-sims .pm-r4-card > .pm-r4-ex { font-size: min(19px, calc(var(--cw) / 15.5)); }
+  .pm-sims .pm-r4-ex p { text-wrap: balance; }
+  .pm-sims .pm-sims-table td, .pm-sims .pm-sims-table th { padding-left: 0.32em; padding-right: 0.32em; }
+  /* The Sims cards: one measure per row, always Rule Set #3 vs 4.0 (Ronjan 11/26: no mixed metrics) */
+  .pm-sims-table th { font-weight: 700; font-size: 0.8em; letter-spacing: 0.04em; text-transform: uppercase; color: var(--pm-mute); text-align: left; padding: 0 0.5em 0.3em; white-space: nowrap; }
+  .pm-sims-table td:first-child { white-space: nowrap; }   /* two-line labels break at the phrase (explicit <br>) */
+  .pm-sims-table td:nth-child(n+2), .pm-sims-table th:nth-child(n+2) { text-align: right; width: 1%; }
+  .pm-sims-table td:last-child { color: var(--pm-ink); font-weight: 700; }
+  section[data-publish-at][hidden] { display: none; }   /* the date an infographic went out, same style as an episode's date */
   .pm-label { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--pm-gold); }
   .pm-note { margin: -6px 0 0; color: var(--pm-mute); font-size: 0.9rem; }
   .pm-card { background: var(--pm-panel); border: 1px solid var(--pm-line); border-radius: 12px; overflow: hidden; }
@@ -143,6 +154,41 @@ title: "The Post-Mortem | FAKE RONJAN!!"
   </div>
 
   <div class="pm-panel" id="pm-panel-infographics" hidden>
+  <section class="pm-section pm-sims" data-publish-at="2026-11-26T15:00:00Z" hidden>
+    <div class="pm-label">The Sims: The Numbers</div>
+    <span class="pm-sub pm-r4-date">11/26/2026</span>
+    <p class="pm-note pm-sims-note">Every number here comes from 96,000 simulated games on the real game code, using each player's real habits.</p>
+    <div class="pm-r4-wrap"><div class="pm-r4">
+      <article class="pm-r4-card" data-p="d">
+        <div class="pm-r4-head"><span class="pm-r4-n">1</span><h2>Balance</h2></div>
+        <div class="pm-r4-who"><img src="/img/nielson-traitors/pundit-d-tg.png" alt=""><span class="pm-r4-name">Desmond "The Archive" Oyelaran</span>
+          <p class="pm-r4-says">Under 4.0, the Faithful win more often. The binder approves.</p></div>
+        <table class="pm-r4-table pm-sims-table"><thead><tr><th></th><th>Rule Set #3</th><th>4.0</th></tr></thead><tbody><tr><td>Faithful win rate,<br>all games</td><td>30%</td><td>43%</td></tr><tr><td>Faithful win rate,<br>9-11 players</td><td>31%</td><td>47%</td></tr></tbody></table>
+        <div class="pm-r4-ex"><b>What this means</b><p>At the size of our recent games, the sims put the Faithful close to even.</p></div>
+      </article>
+      <article class="pm-r4-card" data-p="t">
+        <div class="pm-r4-head"><span class="pm-r4-n">2</span><h2>The Seer</h2></div>
+        <div class="pm-r4-who"><img src="/img/nielson-traitors/pundit-t-tg.png" alt=""><span class="pm-r4-name">Tariq "Wake Up" Haddad</span>
+          <p class="pm-r4-says">The bot says one Seer can't decide the game anymore. Which is exactly what the bot would say.</p></div>
+        <table class="pm-r4-table pm-sims-table"><thead><tr><th></th><th>Rule Set #3</th><th>4.0</th></tr></thead><tbody><tr><td>Faithful win rate<br>after the Seer is out</td><td>24%</td><td>43%</td></tr><tr><td>Different Seers<br>per game</td><td>1</td><td>2.5</td></tr></tbody></table>
+        <div class="pm-r4-ex"><b>What this means</b><p>Losing a Seer hurts less, because next round brings a new one.</p></div>
+      </article>
+      <article class="pm-r4-card" data-p="s">
+        <div class="pm-r4-head"><span class="pm-r4-n">3</span><h2>Intel</h2></div>
+        <div class="pm-r4-who"><img src="/img/nielson-traitors/pundit-s-tg.png" alt=""><span class="pm-r4-name">Dr. Solveig "The Lie Detector" Bergqvist</span>
+          <p class="pm-r4-says">A behavior someone rarely shows is a signal. Finally, something I can measure.</p></div>
+        <table class="pm-r4-table pm-sims-table"><thead><tr><th></th><th>Rule Set #3</th><th>4.0</th></tr></thead><tbody><tr><td>Morning facts that<br>point at a Traitor</td><td>Trivia</td><td>37%</td></tr><tr><td>Random guesses that<br>hit a Traitor</td><td>20-25%</td><td>20-25%</td></tr></tbody></table>
+        <div class="pm-r4-ex"><b>What this means</b><p>A player breaking their own pattern is worth a closer look.</p></div>
+      </article>
+      <article class="pm-r4-card" data-p="p">
+        <div class="pm-r4-head"><span class="pm-r4-n">4</span><h2>Votes</h2></div>
+        <div class="pm-r4-who"><img src="/img/nielson-traitors/pundit-p-tg.png" alt=""><span class="pm-r4-name">Lady Parveen "The Velvet Dagger" Chaudhry-Montague</span>
+          <p class="pm-r4-says">Your votes used to be guesses, darlings. Now some of them are aimed.</p></div>
+        <table class="pm-r4-table pm-sims-table"><thead><tr><th></th><th>Rule Set #3</th><th>4.0</th></tr></thead><tbody><tr><td>Suspicious ballots<br>that hit a Traitor</td><td>34%</td><td>42%</td></tr><tr><td>Banishments that<br>hit a Traitor</td><td>27%</td><td>39%</td></tr></tbody></table>
+        <div class="pm-r4-ex"><b>What this means</b><p>Banishments find more Traitors when people act on their morning facts.</p></div>
+      </article>
+    </div></div>
+  </section>
   <section class="pm-section">
     <div class="pm-label">Rule Set 4.0: The Four Big Changes</div>
     <span class="pm-sub pm-r4-date">11/25/2026</span>
@@ -272,6 +318,8 @@ document.getElementById('pm-desk').innerHTML = PUNDITS.map(p => `
     <div class="pm-desc">${p.desc.split(' · ').map(x => `<span>${esc(x)}</span>`).join('')}</div>
   </div>`).join('');
 
+// Infographics with a release time stay hidden until then, like episodes (publishAt)
+document.querySelectorAll('[data-publish-at]').forEach(el => { if (Date.now() >= Date.parse(el.dataset.publishAt)) el.hidden = false; });
 const params = new URLSearchParams(location.search);
 function showTab(t) {
   document.querySelectorAll('#pm-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
