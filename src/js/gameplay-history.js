@@ -122,12 +122,22 @@
     return best;
   }
 
+  // A full list finished on a platform with no platinum (Retro Bowl on iOS, from its 100% screen):
+  // "100%" in the platinum style. Game Center lists have no totals, so they never count (Ronjan 2026-11-27)
+  function completeNoPlat(entries) {
+    if (entries.some(function (e) { return e.platinum; })) return false;
+    return entries.some(function (e) { return e.total && (e.earned || 0) >= e.total; });
+  }
+
   function unlockCell(r) {
     if (!r.best) return r.unlocks ? r.unlocks[1] : "-";
     var e = r.best.entry, lists = countedEntries(r).filter(function (x) { return x.total; }).length;
     var tip = lists > 1 ? ' title="Best: ' + esc(platformLabel(e)) + ". All lists: " + esc(r.unlocks[1]) + '"' : "";
     var plat = countedEntries(r).some(function (x) { return x.platinum; }) ? ' <span class="gh-pill gh-platinum">Platinum</span>' : "";
-    return '<span class="gh-nowrap"' + tip + ">" + (e.earned || 0) + " of " + e.total + ' <i class="gh-pct">' + Math.floor(r.best.pct * 100) + "%</i></span>" + plat;
+    // A finished list with no platinum: its 100% is the pill itself
+    var pct = completeNoPlat(countedEntries(r)) && r.best.pct >= 1 ? ' <span class="gh-pill gh-platinum">100%</span>'
+      : ' <i class="gh-pct">' + Math.floor(r.best.pct * 100) + "%</i>";
+    return '<span class="gh-nowrap"' + tip + ">" + (e.earned || 0) + " of " + e.total + pct + "</span>" + plat;
   }
 
   // "26 of 31 83%" for a platform's lists, the count alone when a list has no total
@@ -1324,6 +1334,7 @@
     }).join("");
     // An earned platinum: not tied to a year, so just the word
     if (row.entries.some(function (e) { return e.platinum; })) badges += '<span class="gh-badge gh-platinum">Platinum</span>';
+    else if (completeNoPlat(countedEntries(row))) badges += '<span class="gh-badge gh-platinum">100%</span>';
     var h = '<div class="gh-head">' + art + '<div class="gh-head-text"><h1>' + esc(row.name) + familyMark(row) + "</h1>" +
       '<p class="gh-facts">' + dots(row.families) + " " + facts.map(function (f) {  // each fact stays on one line; the line breaks between facts
         return '<span class="gh-nowrap">' + esc(f).replace("\uD83C\uDFC6", '<span title="Trophies and achievements" aria-label="trophies and achievements">\uD83C\uDFC6</span>')
