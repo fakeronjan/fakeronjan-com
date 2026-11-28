@@ -1652,10 +1652,10 @@
   // One column list drives the rankings table and the pair page's summary row.
   var RV_COLS = [
     { key: "score", label: "Rivalry Score", cls: "col-od", title: RV_SCORE_TITLE, val: function (p) { return p.score; }, html: function (p) { return p.score.toFixed(1); } },
-    { key: "games", label: "Games", cls: "col-od", val: function (p) { return p.games; }, html: function (p) { return p.games + '<div class="od-rank">' + p.first + "-" + p.last + "</div>"; } },
+    { key: "games", label: "Games", cls: "col-od rv-hide-720", val: function (p) { return p.games; }, html: function (p) { return p.games + '<div class="od-rank">' + p.first + "-" + p.last + "</div>"; } },
     { key: "series", label: "Series", cls: "col-od", title: "The team leading the series and its record. Sorts by how even the series is.", val: function (p) { return p.balance; }, html: function (p) { return rvLead2(p, p.a_w, p.b_w, p.ties); } },
     { key: "ps", label: "Playoffs", cls: "col-od", val: function (p) { return p.ps_games; }, html: function (p) { return rvCount(p.ps_games, p.ps_record, p); } },
-    { key: "sb", label: "Super Bowls", cls: "col-od", val: function (p) { return p.sb_games; }, html: function (p) { return rvCount(p.sb_games, p.sb_record, p); } },
+    { key: "sb", label: "Super Bowls", cls: "col-od rv-hide-720", val: function (p) { return p.sb_games; }, html: function (p) { return rvCount(p.sb_games, p.sb_record, p); } },
     { key: "quality", label: "Quality", cls: "col-od col-hide-narrow", title: RV_ADJ_TITLE("Quality"), val: function (p) { return p.quality_adj; }, html: function (p) { return Math.round(p.quality_adj); } },
     { key: "stakes", label: "Stakes", cls: "col-od col-hide-narrow", title: RV_ADJ_TITLE("Stakes"), val: function (p) { return p.stakes_adj; }, html: function (p) { return Math.round(p.stakes_adj); } },
     { key: "juice", label: "Juice", cls: "col-od col-hide-narrow", title: RV_ADJ_TITLE("Juice"), val: function (p) { return p.juice_adj; }, html: function (p) { return Math.round(p.juice_adj); } },
@@ -1726,7 +1726,7 @@
   function renderRivalries() {
     var ta = rvSlugName(rvTeamSelect.value), tb = rvSlugName(rvOppSelect.value);
     if (ta && tb && ta !== tb) return renderRivalryPair(ta, tb);
-    rvTitle.hidden = true; rvStamp.innerHTML = ""; rvSplitWrap.innerHTML = ""; rvMeetWrap.innerHTML = "";
+    rvTitle.hidden = true; rvStamp.innerHTML = ""; rvSplitWrap.innerHTML = ""; rvMeetWrap.innerHTML = ""; rvChartBox.hidden = true;
     var only = ta || tb;
     var pairs = state.rvIndex.pairs.filter(function (p) { return !only || p.a === only || p.b === only; });
     var col = RV_COLS.filter(function (c) { return c.key === state.rvSort; })[0];
@@ -1774,7 +1774,7 @@
     rvTitle.textContent = rvName(ta) + " vs. " + rvName(tb);
     if (!p) {
       rvNote.textContent = "";
-      rvStamp.innerHTML = ""; rvSplitWrap.innerHTML = ""; rvMeetWrap.innerHTML = "";
+      rvStamp.innerHTML = ""; rvSplitWrap.innerHTML = ""; rvMeetWrap.innerHTML = ""; rvChartBox.hidden = true;
       rvWrap.innerHTML = '<p class="sport-loading">These two have not met since 1970</p>';
       return;
     }
@@ -1822,11 +1822,175 @@
   }
 
   var RV_MEET_COLS = [
-    { key: "date", label: "Season", cls: "col-hide-mobile", val: function (m) { return m.season * 1000 + m.week; } },
-    { key: "quality", label: "Quality", cls: "col-od col-hide-mobile", title: WM_QUALITY_TITLE, val: function (m) { return m.quality; } },
-    { key: "stakes", label: "Stakes", cls: "col-od col-hide-mobile", title: WM_STAKES_TITLE, val: function (m) { return m.stakes; } },
+    { key: "date", label: "Season", cls: "col-hide-mobile rv-hide-720", val: function (m) { return m.season * 1000 + m.week; } },
+    { key: "quality", label: "Quality", cls: "col-od col-hide-mobile rv-hide-m8", title: WM_QUALITY_TITLE, val: function (m) { return m.quality; } },
+    { key: "stakes", label: "Stakes", cls: "col-od col-hide-mobile rv-hide-m8", title: WM_STAKES_TITLE, val: function (m) { return m.stakes; } },
     { key: "juice", label: "Juice", cls: "col-od", title: WM_JUICE_TITLE, val: function (m) { return m.juice; } },
   ];
+
+  // ── Rating timeline: both teams' DILLON rating from the first meeting on.
+  // Each team keeps one of its two colors for the whole chart, whichever pair
+  // of colors differs most (current colors, light theme), so no two rivals
+  // share a look. Meetings sit on the winner's line: playoff games larger,
+  // Super Bowls a star. A season a team didn't exist breaks its line.
+  var rvChartBox = document.getElementById("rvChartBox");
+  var rvChart = document.getElementById("rvChart");
+  var rvChartKey = document.getElementById("rvChartKey");
+  var rvChartView = document.getElementById("rvChartView");
+  rvChartView.addEventListener("change", function () { renderRivalryChart(); writeUrl(); });
+
+  function rvLab(h) {
+    var c = [1, 3, 5].map(function (i) { var v = parseInt(h.substr(i, 2), 16) / 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    var x = (c[0] * 0.4124 + c[1] * 0.3576 + c[2] * 0.1805) / 0.95047, y = c[0] * 0.2126 + c[1] * 0.7152 + c[2] * 0.0722, z = (c[0] * 0.0193 + c[1] * 0.1192 + c[2] * 0.9505) / 1.08883;
+    function f(t) { return t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116; }
+    x = f(x); y = f(y); z = f(z);
+    return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+  }
+  function rvDE(a, b) { var p = rvLab(a), q = rvLab(b); return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); }
+  function rvLoadTeam(slug) {
+    if (state.teamCache[slug]) return Promise.resolve(state.teamCache[slug]);
+    return fetch(BASE + "/teams/" + slug + ".json").then(function (r) { return r.json(); })
+      .then(function (data) { state.teamCache[slug] = data; return data; });
+  }
+  // x = season + position in it (weeks 1-18, then the playoff rounds).
+  function rvX(season, week) { return season + (week < 100 ? week : 18 + (week - 100)) / 23; }
+
+  function renderRivalryChart() {
+    var cp = state.rvChartPair;
+    if (!cp) return;
+    var d = cp.d, teams = [d.a, d.b], first = d.summary.first;
+    Promise.all(teams.map(function (t) { return rvLoadTeam(state.nameToSlug[t]); })).then(function (files) {
+      if (state.rvChartPair !== cp) return;
+      var weekly = rvChartView.value === "all";
+      var P = files.map(function (tf) {
+        var pts = [];
+        Object.keys(tf.seasons).map(Number).filter(function (s) { return s >= first; }).sort(function (a, b) { return a - b; }).forEach(function (s) {
+          var snaps = tf.seasons[s].filter(function (r) { return r.rating != null; });
+          if (!snaps.length) return;
+          if (weekly) snaps.forEach(function (r) { pts.push([rvX(s, r.week), r.rating, s]); });
+          else pts.push([s + 0.96, snaps[snaps.length - 1].rating, s]);
+        });
+        return pts;
+      });
+      if (!P[0].length && !P[1].length) { rvChartBox.hidden = true; return; }
+      rvChartBox.hidden = false;
+
+      // Colors: per season era (team-colors.js), one role per team for the whole chart.
+      var TC = window.TeamColors;
+      // A season with no color era (some teams' 1970) borrows the nearest one.
+      function cols(t, s) {
+        if (!TC) return null;
+        for (var k = 0; k <= 10; k++) {
+          var c = TC.line("NFL", t, s + k) || TC.line("NFL", t, s - k);
+          if (c) return c;
+        }
+        return TC.line("NFL", t, null);
+      }
+      var cur = teams.map(function (t, i) { var last = P[i].length ? P[i][P[i].length - 1][2] : first; return cols(t, last); });
+      var roles = ["p", "p"];
+      if (cur[0] && cur[1]) {
+        var best = -1;
+        ["p", "s"].forEach(function (ra) { ["p", "s"].forEach(function (rb) {
+          var dd = rvDE(cur[0].light[ra], cur[1].light[rb]);
+          if (dd > best) { best = dd; roles = [ra, rb]; }
+        }); });
+      }
+      var FALLBACK = ["var(--accent)", "var(--accent-2)"];
+      function paint(i, s) {
+        var c = cols(teams[i], s);
+        return c ? 'style="--tcl:' + c.light[roles[i]] + ";--tcd:" + c.dark[roles[i]] + '"' : 'style="--tcl:' + FALLBACK[i] + ";--tcd:" + FALLBACK[i] + '"';
+      }
+
+      var W = Math.max(280, rvChart.parentElement.clientWidth - 32), H = 200, CTOP = 10, CBOT = 172, L = 10, R = 10;
+      rvChart.setAttribute("viewBox", "0 0 " + W + " " + H);
+      var x0 = first, x1 = Math.max.apply(null, P[0].concat(P[1]).map(function (p) { return Math.ceil(p[0]); }));
+      var peak = 0;
+      P.forEach(function (pts) { pts.forEach(function (p) { peak = Math.max(peak, Math.abs(p[1])); }); });
+      var MAX = Math.min(24, Math.max(10, peak * 1.12));
+      function px(x) { return L + (x - x0) / ((x1 - x0) || 1) * (W - L - R); }
+      function py(v) { v = Math.max(-MAX, Math.min(MAX, v)); return CBOT - (v + MAX) / (2 * MAX) * (CBOT - CTOP); }
+      var zeroY = py(0);
+
+      function ctxLine(v) {
+        var y = py(v).toFixed(1);
+        return '<line x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3,3" stroke-opacity="0.55"/>' +
+          '<text x="12" y="' + (py(v) - 3).toFixed(1) + '" font-size="9" fill="var(--muted)">' + (v > 0 ? "+" : "") + v + "</text>";
+      }
+      var ticks = [], step = (x1 - x0) > 30 ? 10 : (x1 - x0) > 12 ? 5 : (x1 - x0) > 5 ? 2 : 1, lastX = -99;
+      for (var y = Math.ceil(x0 / step) * step; y <= x1; y += step) {
+        var tx = px(y + 0.5);
+        if (tx - lastX < 24 || tx > W - R) continue;
+        lastX = tx;
+        ticks.push('<line x1="' + tx.toFixed(1) + '" y1="' + (CBOT + 2) + '" x2="' + tx.toFixed(1) + '" y2="' + (CBOT + 6) + '" stroke="var(--muted)" stroke-width="1"/>' +
+          '<text x="' + tx.toFixed(1) + '" y="' + (CBOT + 16) + '" font-size="9" fill="var(--muted)" text-anchor="middle">' + y + "</text>");
+      }
+
+      // Lines: one run per season (colors change by era); the next season joins
+      // on, a skipped season breaks the line.
+      var lines = [];
+      P.forEach(function (pts, i) {
+        var run = null;
+        function flush() {
+          if (run && run.pts.length > 1) lines.push('<polyline class="rv-ln" ' + paint(i, run.season) + ' points="' +
+            run.pts.map(function (p) { return px(p[0]).toFixed(1) + "," + py(p[1]).toFixed(1); }).join(" ") + '" fill="none" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>');
+        }
+        pts.forEach(function (p) {
+          if (!run || run.season !== p[2]) {
+            var join = run && p[2] === run.season + 1 ? run.pts[run.pts.length - 1] : null;
+            flush();
+            run = { season: p[2], pts: join ? [join] : [] };
+          }
+          run.pts.push(p);
+        });
+        flush();
+        // A single-point season (end-of-playoffs view after a gap) still shows.
+      });
+
+      function yAt(pts, x) {
+        for (var k = 1; k < pts.length; k++) {
+          if (pts[k][0] >= x) {
+            var a = pts[k - 1], b = pts[k];
+            if (b[2] - a[2] > 1) return b[1];
+            var t = (x - a[0]) / ((b[0] - a[0]) || 1);
+            return a[1] + Math.max(0, Math.min(1, t)) * (b[1] - a[1]);
+          }
+        }
+        return pts.length ? pts[pts.length - 1][1] : 0;
+      }
+      var dots = [];
+      d.meetings.forEach(function (m) {
+        var tie = m.home_pts === m.away_pts;
+        var w = tie ? null : (m.home_pts > m.away_pts ? m.home : m.away);
+        var i = w === teams[0] ? 0 : w === teams[1] ? 1 : -1;
+        var x = rvX(m.season, m.week), cx = px(x), cy = i < 0 ? zeroY : py(yAt(P[i], x));
+        var sc = Math.max(m.home_pts, m.away_pts) + "-" + Math.min(m.home_pts, m.away_pts);
+        var t = "<title>" + m.season + " " + rvWeekShort(m.week) + ": " + (w ? rvNick(w) + " " + sc : "Tie " + sc) + "</title>";
+        var fill = i < 0 ? 'style="--tcl:var(--muted);--tcd:var(--muted)"' : paint(i, m.season);
+        if (m.week === 104) {
+          var pts = [];
+          for (var k = 0; k < 10; k++) { var a = Math.PI / 5 * k - Math.PI / 2, rr = k % 2 ? 3.4 : 8; pts.push((cx + rr * Math.cos(a)).toFixed(1) + "," + (cy + rr * Math.sin(a)).toFixed(1)); }
+          dots.push('<polygon class="rv-dot" ' + fill + ' points="' + pts.join(" ") + '" stroke="var(--fg)" stroke-width="1">' + t + "</polygon>");
+        } else if (m.week >= 100) {
+          dots.push('<circle class="rv-dot" ' + fill + ' cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5.5" stroke="var(--fg)" stroke-width="1.4">' + t + "</circle>");
+        } else {
+          dots.push('<circle class="rv-dot" ' + fill + ' cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="3.2" stroke="var(--bg)" stroke-width="1">' + t + "</circle>");
+        }
+      });
+
+      rvChart.innerHTML = ctxLine(10) + ctxLine(-10) +
+        '<line x1="' + L + '" y1="' + zeroY.toFixed(1) + '" x2="' + (W - R) + '" y2="' + zeroY.toFixed(1) + '" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4,3"/>' +
+        '<line x1="' + L + '" y1="' + (CBOT + 2) + '" x2="' + (W - R) + '" y2="' + (CBOT + 2) + '" stroke="var(--muted)" stroke-width="1"/>' +
+        ticks.join("") + lines.join("") + dots.join("");
+
+      var last = function (i) { return P[i].length ? P[i][P[i].length - 1][2] : first; };
+      rvChartKey.innerHTML = teams.map(function (t, i) {
+        return '<span><svg width="22" height="10" aria-hidden="true"><line class="rv-ln" ' + paint(i, last(i)) + ' x1="1" y1="5" x2="21" y2="5" stroke-width="2.6" stroke-linecap="round"/></svg>' + rvNick(t) + "</span>";
+      }).join("") +
+        '<span><svg width="10" height="10" aria-hidden="true"><circle cx="5" cy="5" r="3.2" fill="var(--muted)"/></svg>Regular-season meeting</span>' +
+        '<span><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="var(--muted)" stroke="var(--fg)" stroke-width="1.4"/></svg>Playoff meeting</span>' +
+        '<span><svg width="18" height="18" aria-hidden="true"><polygon points="9,1 10.9,6.4 16.6,6.5 12,10 13.7,15.5 9,12.2 4.3,15.5 6,10 1.4,6.5 7.1,6.4" fill="var(--muted)" stroke="var(--fg)" stroke-width="1"/></svg>Super Bowl</span>';
+    }).catch(function () { rvChartBox.hidden = true; });
+  }
 
   function renderRivalryDetail(d, ta, tb) {
     var p = d.summary;
@@ -1844,7 +2008,7 @@
     rvSplitWrap.innerHTML = '<table class="sport-table rv-split-table"><thead><tr><th>Team</th><th>W-L</th>' +
       '<th class="col-hide-mobile">Home</th><th class="col-hide-mobile">Away</th><th class="col-hide-mobile rv-hide-t">Neutral</th>' +
       "<th>Playoffs</th><th class=\"col-hide-mobile\">Super Bowls</th>" +
-      '<th class="col-od col-hide-mobile rv-hide-t" title="Points per meeting">PPG</th><th class="col-hide-mobile">Biggest Win</th></tr></thead><tbody>' +
+      '<th class="col-od col-hide-mobile rv-hide-t" title="Points per meeting">PPG</th><th class="col-hide-mobile rv-hide-m8">Biggest Win</th></tr></thead><tbody>' +
       sides.map(function (x) {
         var s = x.s, n = s.w + s.l + s.t, b = s.best;
         var big = b ? b.us + "-" + b.them + '<div class="sub-line-italic">' + b.m.season + " " + wmWeekLabel(b.m.week) + "</div>" : "-";
@@ -1853,10 +2017,12 @@
           '<td class="col-hide-mobile">' + rec(s.hw, s.hl, s.ht) + '</td><td class="col-hide-mobile">' + rec(s.aw, s.al, s.at) + "</td>" +
           '<td class="col-hide-mobile rv-hide-t">' + (s.nw + s.nl + s.nt ? rec(s.nw, s.nl, s.nt) : "-") + "</td>" +
           "<td>" + (s.pw + s.pl ? rec(s.pw, s.pl) : "-") + '</td><td class="col-hide-mobile">' + (s.sw + s.sl ? rec(s.sw, s.sl) : "-") + "</td>" +
-          '<td class="col-od col-hide-mobile rv-hide-t">' + (n ? (s.pf / n).toFixed(1) : "-") + '</td><td class="col-hide-mobile">' + big + "</td></tr>";
+          '<td class="col-od col-hide-mobile rv-hide-t">' + (n ? (s.pf / n).toFixed(1) : "-") + '</td><td class="col-hide-mobile rv-hide-m8">' + big + "</td></tr>";
       }).join("") + "</tbody></table>";
     renderRivalryMeetings(d);
     rvLinks(rvSplitWrap);
+    state.rvChartPair = { d: d, ta: ta, tb: tb };
+    renderRivalryChart();
   }
 
   // Both teams are in the page title, so meeting rows use nicknames (the era's
@@ -1897,12 +2063,12 @@
       var g = rvGameObj(m), ps = m.week >= 100, has = m.quality != null;
       var pk = has ? wmPick(g) : null;
       return "<tr>" +
-        td("date", m.season + '<div class="sub-line-italic">' + rvWeekShort(m.week) + "</div>", "col-hide-mobile") +
+        td("date", m.season + '<div class="sub-line-italic rv-round">' + rvWeekShort(m.week) + "</div>", "col-hide-mobile rv-hide-720") +
         '<td class="wm-matchup"><div><span class="wm-at"></span><span class="wm-rank">' + (g.away_rank || "") + "</span>" + rvNickLink(g.away, m.season) + rvMScore(g, "away") + ' <span class="wm-dim rv-mrec">' + g.away_record + "</span></div>" +
         '<div><span class="wm-at">' + (g.neutral ? "vs." : "@") + '</span><span class="wm-rank">' + (g.home_rank || "") + "</span>" + rvNickLink(g.home, m.season) + rvMScore(g, "home") + ' <span class="wm-dim rv-mrec">' + g.home_record + "</span></div>" +
         (wmKickoff(g) ? '<div class="wm-kick sub-line-italic">' + wmKickoff(g) + "</div>" : "") + "</td>" +
-        td("quality", has ? m.quality : "-", "col-od col-hide-mobile") +
-        td("stakes", has ? m.stakes : "-", "col-od col-hide-mobile") +
+        td("quality", has ? m.quality : "-", "col-od col-hide-mobile rv-hide-m8") +
+        td("stakes", has ? m.stakes : "-", "col-od col-hide-mobile rv-hide-m8") +
         td("juice", has ? m.juice : "-", "col-od wm-juice") +
         '<td class="col-od col-hide-mobile">' + (pk ? '<div class="od-val">' + wmNick(pk.team) + '</div><div class="od-rank">' + wmPct(pk.p) + "</div>" : "-") + "</td>" +
         '<td class="col-hide-tablet">' + (has && !ps ? wmStakesLines(g, "po", ps) : "-") + "</td>" +
@@ -2146,11 +2312,13 @@
         var pair = rvTeamSelect.value && rvOppSelect.value;
         if (!pair && (state.rvSort !== "score" || state.rvAsc)) add("sort", state.rvSort + (state.rvAsc ? "-asc" : ""));
         if (pair && (state.rvMeetSort !== "date" || state.rvMeetAsc)) add("sort", state.rvMeetSort + (state.rvMeetAsc ? "-asc" : ""));
+        if (pair && rvChartView.value === "all") add("view", "all");
       },
       apply: function (p) {
         if (!state.rvIndex) return Promise.resolve();
         rvTeamSelect.value = U.hasOption(rvTeamSelect, p.get("team")) ? p.get("team") : "";
         rvOppSelect.value = U.hasOption(rvOppSelect, p.get("opp")) ? p.get("opp") : "";
+        rvChartView.value = p.get("view") === "all" ? "all" : "eos";
         var sort = (p.get("sort") || "").split("-"), pair = rvTeamSelect.value && rvOppSelect.value;
         var keys = (pair ? RV_MEET_COLS : RV_COLS).map(function (c) { return c.key; });
         var k = keys.indexOf(sort[0]) !== -1 ? sort[0] : (pair ? "date" : "score");

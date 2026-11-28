@@ -1826,16 +1826,21 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .rv-row:hover td { background: color-mix(in srgb, var(--accent) 6%, transparent); }
 .rv-pair { white-space: nowrap; }
 /* Round names wrap under the season or score instead of widening the column */
-.rv-table .od-rank, .rv-meet-table .sub-line-italic { white-space: normal; max-width: 7.5rem; }
-#rvSplitWrap, #rvMeetWrap { margin-top: 1rem; }
+.rv-table .od-rank, .rv-meet-table .rv-round { white-space: normal; max-width: 7.5rem; }
+#rvSplitWrap, #rvMeetWrap, #rvChartBox { margin-top: 1rem; }
+.rv-chart-key { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem; }
+.rv-chart-key span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.rv-chart-key span:nth-child(-n+2) { color: var(--fg); font-weight: 600; }
 .rv-table th { white-space: normal; line-height: 1.2; vertical-align: bottom; }
 .rv-table th.col-od { width: 4.4rem; }
 /* Rankings columns step out as the table's measured width stops fitting */
 @media (max-width: 1420px) { .rv-table .col-hide-wide { display: none; } }
 @media (max-width: 1180px) { .rv-table .col-hide-tablet { display: none; } }
 @media (max-width: 930px) { .rv-table .col-hide-narrow { display: none; } }
-@media (max-width: 1000px) { .rv-meet-table .col-hide-tablet { display: none; } }
+@media (max-width: 1060px) { .rv-meet-table .col-hide-tablet { display: none; } }
 @media (max-width: 900px) { .rv-split-table .rv-hide-t { display: none; } }
+@media (max-width: 800px) { .rv-meet-table .rv-hide-m8, .rv-split-table .rv-hide-m8 { display: none; } }
+@media (max-width: 720px) { .rv-table .rv-hide-720, .rv-meet-table .rv-hide-720 { display: none; } }
 @media (max-width: 400px) { .rv-table th, .rv-table td { padding-left: 0.3rem; padding-right: 0.3rem; } }
 .rv-nick, .rv-mscore { display: none; }
 .rv-mscore.rv-win { font-weight: 700; }
@@ -1850,10 +1855,12 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .tc-dot .tc-ol { fill: none; stroke: color-mix(in srgb, var(--fg) 35%, transparent); stroke-width: 1; }
 .tc-glue { white-space: nowrap; }
 .tc-stop { stop-color: var(--tcl); }
+.rv-ln { stroke: var(--tcl); }
+.rv-dot { fill: var(--tcl); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .tc-stop { stop-color: var(--tcd); }
+  :root:not([data-theme="light"]) .tc-stop { stop-color: var(--tcd); } :root:not([data-theme="light"]) .rv-ln { stroke: var(--tcd); } :root:not([data-theme="light"]) .rv-dot { fill: var(--tcd); }
 }
-:root[data-theme="dark"] .tc-stop { stop-color: var(--tcd); }
+:root[data-theme="dark"] .tc-stop { stop-color: var(--tcd); } :root[data-theme="dark"] .rv-ln { stroke: var(--tcd); } :root[data-theme="dark"] .rv-dot { fill: var(--tcd); }
 
 /* ── Video Games: sub-nav and Gameplay Stats ─────────────────────────── */
 /* Platform colors were checked for color-blind separation in both themes;

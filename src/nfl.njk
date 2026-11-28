@@ -137,6 +137,16 @@ eleventyComputed:
     <p class="sport-note" id="rvNote"></p>
     <div id="rvStamp" class="wc-stamp"></div>
     <div id="rvWrap" class="sport-table-wrap"><p class="sport-loading">Loading rivalries...</p></div>
+    <div id="rvChartBox" hidden>
+      <div class="sport-controls">
+        <select id="rvChartView" class="sport-select" aria-label="Snapshot">
+          <option value="eos">End of playoffs</option>
+          <option value="all">All weeks</option>
+        </select>
+      </div>
+      <div class="sport-chart-wrap"><svg id="rvChart" role="img" aria-label="Both teams' DILLON rating over time"></svg></div>
+      <div class="rv-chart-key" id="rvChartKey"></div>
+    </div>
     <div id="rvSplitWrap" class="sport-table-wrap"></div>
     <div id="rvMeetWrap" class="sport-table-wrap"></div>
   </section>
