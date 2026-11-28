@@ -1146,7 +1146,10 @@ footer {
 #wcOddsWrap,
 #poWrap,
 #wmWrap,
-#dmWrap {
+#dmWrap,
+#rvWrap,
+#rvSplitWrap,
+#rvMeetWrap {
   width: 100vw;
   position: relative;
   left: 50%;
@@ -1160,7 +1163,10 @@ footer {
 #wcOddsWrap table,
 #poWrap table,
 #wmWrap table,
-#dmWrap table {
+#dmWrap table,
+#rvWrap table,
+#rvSplitWrap table,
+#rvMeetWrap table {
   width: auto;
   max-width: 1340px;
   margin: 0 auto;
@@ -1812,6 +1818,31 @@ table.top5 td.rating, table.top5 th.col-rating { color: var(--accent); font-weig
 .wm-stake { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .wm-result { white-space: nowrap; }
 .wm-juice { font-weight: 700; }
+/* DILLON Rivalries */
+.sport-table .th-sort { font: inherit; color: inherit; text-transform: inherit; letter-spacing: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
+.sport-table .th-sort:hover:not(:disabled) { text-decoration: underline; }
+.sport-table .th-sort:disabled { cursor: default; }
+.rv-row { cursor: pointer; }
+.rv-row:hover td { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.rv-pair { white-space: nowrap; }
+/* Round names wrap under the season or score instead of widening the column */
+.rv-table .od-rank, .rv-meet-table .sub-line-italic { white-space: normal; max-width: 7.5rem; }
+#rvSplitWrap, #rvMeetWrap { margin-top: 1rem; }
+.rv-table th { white-space: normal; line-height: 1.2; vertical-align: bottom; }
+.rv-table th.col-od { width: 4.4rem; }
+/* Rankings columns step out as the table's measured width stops fitting */
+@media (max-width: 1420px) { .rv-table .col-hide-wide { display: none; } }
+@media (max-width: 1180px) { .rv-table .col-hide-tablet { display: none; } }
+@media (max-width: 930px) { .rv-table .col-hide-narrow { display: none; } }
+@media (max-width: 1000px) { .rv-meet-table .col-hide-tablet { display: none; } }
+@media (max-width: 900px) { .rv-split-table .rv-hide-t { display: none; } }
+@media (max-width: 400px) { .rv-table th, .rv-table td { padding-left: 0.3rem; padding-right: 0.3rem; } }
+.rv-nick, .rv-mscore { display: none; }
+.rv-mscore.rv-win { font-weight: 700; }
+@media (max-width: 640px) {
+  .rv-full, .rv-mrec { display: none; }
+  .rv-nick, .rv-mscore { display: inline; }
+}
 
 /* Team colors (js/team-colors.js): two-color circle beside team names, and
    chart-line gradient stops that carry a color per theme as --tcl / --tcd. */

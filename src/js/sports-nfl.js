@@ -1581,6 +1581,353 @@
     attachLinks(wmWrap);
   }
 
+  // ═══════════════════════════════ Rivalries ══════════════════════════════
+  // Every pair of franchises that has met (rivalries/index.json), sortable by
+  // any column, plus one page per pair (rivalries/pairs/<A>__<B>.json): the
+  // series, each team's side of it, and every meeting with the Weekly
+  // Matchups numbers going in. Teams are DILLON's franchises: a rename stays
+  // one team, a relocation starts a new one.
+
+  var rvNav = document.getElementById("nflRvNav");
+  var rvTeamSelect = document.getElementById("rvTeamSelect");
+  var rvOppSelect = document.getElementById("rvOppSelect");
+  var rvNote = document.getElementById("rvNote");
+  var rvTitle = document.getElementById("rvTitle");
+  var rvStamp = document.getElementById("rvStamp");
+  var rvWrap = document.getElementById("rvWrap");
+  var rvSplitWrap = document.getElementById("rvSplitWrap");
+  var rvMeetWrap = document.getElementById("rvMeetWrap");
+  state.rvPairs = {};
+  state.rvSort = "score"; state.rvAsc = false;
+  state.rvMeetSort = "date"; state.rvMeetAsc = false;
+
+  var RV_SCORE_TITLE = "Meetings on a log scale, plus 1 for each playoff meeting and 2 more for each Super Bowl, scaled down the more one-sided the series.";
+  var RV_ADJ_TITLE = function (m) { return "Average " + m + " of the meetings since 1971, blended with 10 average games so a short series stays near the middle."; };
+  var RV_HIGH_TITLE = function (m) { return "Meetings with a " + m + " of 80 or more."; };
+
+  function rvName(team) { return state.rvCurrent[team] || team; }
+  function rvNick(team) { return wmNick(rvName(team)); }
+  // "Packers 22-17" from the leader's side; "Tied 18-18" when even.
+  function rvLead(p, aw, bw, t) {
+    var tie = t ? "-" + t : "";
+    if (aw === bw) return "Tied " + aw + "-" + bw + tie;
+    return aw > bw ? rvNick(p.a) + " " + aw + "-" + bw + tie : rvNick(p.b) + " " + bw + "-" + aw + tie;
+  }
+  function rvRec(rec) {
+    var m = rec.match(/^(\d+)-(\d+)(?:-(\d+))?$/);
+    return [+m[1], +m[2], +(m[3] || 0)];
+  }
+  function rvTeamLink(team) {
+    var slug = state.nameToSlug[team];
+    var nm = '<span class="rv-full">' + rvName(team) + '</span><span class="rv-nick">' + rvNick(team) + "</span>";
+    return slug ? '<span class="team-link linked" data-team-slug="' + slug + '" title="' + rvName(team) + '">' + nm + "</span>" : nm;
+  }
+  // Two lines: the leader (or "Tied"), then the record from their side.
+  function rvLead2(p, aw, bw, t) {
+    var tie = t ? "-" + t : "";
+    if (aw === bw) return '<div class="od-val">Tied</div><div class="od-rank">' + aw + "-" + bw + tie + "</div>";
+    var lead = aw > bw;
+    return '<div class="od-val">' + rvNick(lead ? p.a : p.b) + '</div><div class="od-rank">' + (lead ? aw + "-" + bw : bw + "-" + aw) + tie + "</div>";
+  }
+  var RV_PS_SHORT = { 101: "Wild Card", 102: "Divisional Round", 103: "Conference Championship", 104: "Super Bowl" };   // one game, so singular
+  function rvWeekShort(w) { return RV_PS_SHORT[w] || "Week " + w; }
+  function rvCount(n, recStr, p) {
+    if (!n) return '<span class="wm-dim">-</span>';
+    var r = rvRec(recStr);
+    return '<div class="od-val">' + n + '</div><div class="od-rank">' + rvLead(p, r[0], r[1], r[2]) + "</div>";
+  }
+  function rvLast(p) {
+    var x = p.last_meeting;
+    var hw = x.home_pts > x.away_pts, tie = x.home_pts === x.away_pts;
+    var w = tie ? null : (hw ? x.home : x.away);
+    var sc = Math.max(x.home_pts, x.away_pts) + "-" + Math.min(x.home_pts, x.away_pts);
+    return '<div class="od-val">' + (w ? rvNick(w) + " " + sc : "Tie " + sc) + '</div><div class="od-rank">' +
+      x.season + " " + rvWeekShort(x.week) + "</div>";
+  }
+  function rvStreak(p) {
+    if (!p.streak.n) return '<span class="wm-dim">-</span>';
+    return '<div class="od-val">' + rvNick(p.streak.team) + '</div><div class="od-rank">W' + p.streak.n + "</div>";
+  }
+
+  // One column list drives the rankings table and the pair page's summary row.
+  var RV_COLS = [
+    { key: "score", label: "Rivalry Score", cls: "col-od", title: RV_SCORE_TITLE, val: function (p) { return p.score; }, html: function (p) { return p.score.toFixed(1); } },
+    { key: "games", label: "Games", cls: "col-od", val: function (p) { return p.games; }, html: function (p) { return p.games + '<div class="od-rank">' + p.first + "-" + p.last + "</div>"; } },
+    { key: "series", label: "Series", cls: "col-od", title: "The team leading the series and its record. Sorts by how even the series is.", val: function (p) { return p.balance; }, html: function (p) { return rvLead2(p, p.a_w, p.b_w, p.ties); } },
+    { key: "ps", label: "Playoffs", cls: "col-od", val: function (p) { return p.ps_games; }, html: function (p) { return rvCount(p.ps_games, p.ps_record, p); } },
+    { key: "sb", label: "Super Bowls", cls: "col-od", val: function (p) { return p.sb_games; }, html: function (p) { return rvCount(p.sb_games, p.sb_record, p); } },
+    { key: "quality", label: "Quality", cls: "col-od col-hide-narrow", title: RV_ADJ_TITLE("Quality"), val: function (p) { return p.quality_adj; }, html: function (p) { return Math.round(p.quality_adj); } },
+    { key: "stakes", label: "Stakes", cls: "col-od col-hide-narrow", title: RV_ADJ_TITLE("Stakes"), val: function (p) { return p.stakes_adj; }, html: function (p) { return Math.round(p.stakes_adj); } },
+    { key: "juice", label: "Juice", cls: "col-od col-hide-narrow", title: RV_ADJ_TITLE("Juice"), val: function (p) { return p.juice_adj; }, html: function (p) { return Math.round(p.juice_adj); } },
+    { key: "qhigh", label: "Quality 80+", cls: "col-od col-hide-wide", title: RV_HIGH_TITLE("Quality"), val: function (p) { return p.quality_high; }, html: function (p) { return p.quality_high; } },
+    { key: "shigh", label: "Stakes 80+", cls: "col-od col-hide-wide", title: RV_HIGH_TITLE("Stakes"), val: function (p) { return p.stakes_high; }, html: function (p) { return p.stakes_high; } },
+    { key: "jhigh", label: "Juice 80+", cls: "col-od col-hide-wide", title: RV_HIGH_TITLE("Juice"), val: function (p) { return p.juice_high; }, html: function (p) { return p.juice_high; } },
+    { key: "close", label: "One-Score", cls: "col-od col-hide-wide", title: "Share of meetings decided by 8 points or fewer.", val: function (p) { return p.one_score; }, html: function (p) { return Math.round(p.one_score * 100) + "%"; } },
+    { key: "streak", label: "Streak", cls: "col-od col-hide-tablet", val: function (p) { return p.streak.n; }, html: rvStreak },
+    { key: "last", label: "Last Meeting", cls: "col-od col-hide-tablet", val: function (p) { return p.last_meeting.season * 1000 + p.last_meeting.week; }, html: rvLast },
+  ];
+  // Mobile keeps the rivalry, its score, and the series.
+  var RV_MOBILE_HIDE = { games: 1, ps: 1, sb: 1 };
+
+  function rvHead(cols, sortKey, asc, attr) {
+    return cols.map(function (c) {
+      var on = c.key === sortKey;
+      var cls = (c.cls || "") + (RV_MOBILE_HIDE[c.key] ? " col-hide-mobile" : "") + (on ? " sort-active" : "");
+      return '<th class="' + cls + '"' + (c.title ? ' title="' + c.title + '"' : "") + '><button type="button" class="th-sort" ' + attr + '="' + c.key + '">' +
+        c.label + (on ? ' <span class="sort-arrow">' + (asc ? "&uarr;" : "&darr;") + "</span>" : "") + "</button></th>";
+    }).join("");
+  }
+  function rvCells(p, sortKey) {
+    return RV_COLS.map(function (c) {
+      var cls = (c.cls || "") + (RV_MOBILE_HIDE[c.key] ? " col-hide-mobile" : "") + (c.key === sortKey ? " sort-active" : "");
+      return '<td class="' + cls + '">' + c.html(p) + "</td>";
+    }).join("");
+  }
+
+  function loadRivalries() {
+    return fetch(BASE + "/rivalries/index.json")
+      .then(function (r) { return r.json(); })
+      .then(function (idx) {
+        state.rvIndex = idx;
+        state.rvCurrent = {};
+        state.rvBySlug = {};
+        idx.pairs.forEach(function (p) {
+          state.rvCurrent[p.a] = p.current_names[0];
+          state.rvCurrent[p.b] = p.current_names[1];
+          state.rvBySlug[p.slug] = p;
+        });
+        rvNav.hidden = false;
+        var opts = '<option value="">- Any team -</option>' + state.teamsIndex.map(function (t) {
+          return '<option value="' + t.slug + '">' + t.name + "</option>";
+        }).join("");
+        rvTeamSelect.innerHTML = opts;
+        rvOppSelect.innerHTML = opts.replace("- Any team -", "- Any opponent -");
+        rvTeamSelect.onchange = rvOppSelect.onchange = function () { renderRivalries(); writeUrl(); };
+        renderRivalries();
+      })
+      .catch(function () {});
+  }
+
+  // TeamColors glues its dot to the first name in the link (the full one,
+  // hidden on phones), so the phone nickname gets its own copy.
+  function rvLinks(root) {
+    attachLinks(root);
+    root.querySelectorAll(".team-link .rv-nick").forEach(function (n) {
+      var d = n.parentNode.querySelector(".tc-dot");
+      if (d && !n.querySelector(".tc-dot")) n.insertAdjacentHTML("afterbegin", '<span class="tc-glue">' + d.outerHTML + "</span>");
+    });
+  }
+
+  function rvSlugName(slug) {
+    var t = state.teamsIndex.filter(function (x) { return x.slug === slug; })[0];
+    return t ? t.name : null;
+  }
+
+  function renderRivalries() {
+    var ta = rvSlugName(rvTeamSelect.value), tb = rvSlugName(rvOppSelect.value);
+    if (ta && tb && ta !== tb) return renderRivalryPair(ta, tb);
+    rvTitle.hidden = true; rvStamp.innerHTML = ""; rvSplitWrap.innerHTML = ""; rvMeetWrap.innerHTML = "";
+    var only = ta || tb;
+    var pairs = state.rvIndex.pairs.filter(function (p) { return !only || p.a === only || p.b === only; });
+    var col = RV_COLS.filter(function (c) { return c.key === state.rvSort; })[0];
+    pairs = pairs.slice().sort(function (x, y) {
+      var d = col.val(x) - col.val(y);
+      return (state.rvAsc ? d : -d) || (y.score - x.score);
+    });
+    rvNote.textContent = "";
+    var rows = pairs.map(function (p, i) {
+      return '<tr class="rv-row" data-rv-slug="' + p.slug + '">' +
+        '<td class="col-rank">' + (i + 1) + "</td>" +
+        '<td class="rv-pair"><div>' + rvTeamLink(p.a) + "</div><div>" + rvTeamLink(p.b) + "</div></td>" +
+        rvCells(p, state.rvSort) + "</tr>";
+    }).join("");
+    rvWrap.innerHTML = '<table class="sport-table rv-table"><thead><tr><th class="col-num">Rank</th><th>Rivalry</th>' +
+      rvHead(RV_COLS, state.rvSort, state.rvAsc, "data-rvsort") + "</tr></thead><tbody>" + rows + "</tbody></table>";
+    rvLinks(rvWrap);
+    rvWrap.querySelectorAll(".rv-row").forEach(function (tr) {
+      tr.addEventListener("click", function () {
+        var p = state.rvBySlug[tr.dataset.rvSlug];
+        rvTeamSelect.value = state.nameToSlug[p.a];
+        rvOppSelect.value = state.nameToSlug[p.b];
+        renderRivalries();
+        writeUrl(true);
+      });
+    });
+  }
+
+  rvWrap.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-rvsort]");
+    if (!b) return;
+    e.stopPropagation();
+    var k = b.dataset.rvsort;
+    if (k === state.rvSort) state.rvAsc = !state.rvAsc;
+    else { state.rvSort = k; state.rvAsc = false; }
+    renderRivalries();
+    writeUrl();
+  });
+
+  function renderRivalryPair(ta, tb) {
+    var ab = [ta, tb].sort();
+    var slug = state.nameToSlug[ab[0]] + "__" + state.nameToSlug[ab[1]];
+    var p = state.rvBySlug[slug];
+    rvTitle.hidden = false;
+    rvTitle.textContent = rvName(ta) + " vs. " + rvName(tb);
+    if (!p) {
+      rvNote.textContent = "";
+      rvStamp.innerHTML = ""; rvSplitWrap.innerHTML = ""; rvMeetWrap.innerHTML = "";
+      rvWrap.innerHTML = '<p class="sport-loading">These two have not met since 1970</p>';
+      return;
+    }
+    rvNote.textContent = "";
+    rvWrap.innerHTML = '<table class="sport-table rv-table"><thead><tr><th class="col-num">Rank</th>' +
+      rvHead(RV_COLS, null, false, "data-rvnosort") + "</tr></thead><tbody><tr>" +
+      '<td class="col-rank">' + p.rank + "</td>" + rvCells(p, null) + "</tr></tbody></table>";
+    rvWrap.querySelectorAll(".th-sort").forEach(function (b) { b.disabled = true; });
+    var have = state.rvPairs[slug];
+    var load = have ? Promise.resolve(have) : fetch(BASE + "/rivalries/pairs/" + slug + ".json").then(function (r) { return r.json(); });
+    rvMeetWrap.innerHTML = '<p class="sport-loading">Loading meetings...</p>';
+    return load.then(function (d) {
+      state.rvPairs[slug] = d;
+      if (rvOppSelect.value && rvTeamSelect.value && (rvSlugName(rvTeamSelect.value) === ta)) renderRivalryDetail(d, ta, tb);
+    });
+  }
+
+  // Each team's side: wins by venue, playoff and Super Bowl wins, scoring.
+  function rvSplit(d, team) {
+    var o = { w: 0, l: 0, t: 0, hw: 0, hl: 0, ht: 0, aw: 0, al: 0, at: 0, nw: 0, nl: 0, nt: 0, pw: 0, pl: 0, sw: 0, sl: 0, pf: 0, pa: 0, best: null };
+    d.meetings.forEach(function (m) {
+      var home = m.home === team;
+      var us = home ? m.home_pts : m.away_pts, them = home ? m.away_pts : m.home_pts;
+      var r = us > them ? "w" : us < them ? "l" : "t";
+      o[r]++;
+      var v = m.neutral ? "n" : home ? "h" : "a";
+      o[v + r]++;
+      if (m.week >= 100 && r !== "t") o["p" + r]++;
+      if (m.week === 104 && r !== "t") o["s" + r]++;
+      o.pf += us; o.pa += them;
+      if (r === "w" && (!o.best || us - them > o.best.margin)) o.best = { margin: us - them, m: m, us: us, them: them };
+    });
+    return o;
+  }
+
+  function rvGameObj(m) {
+    // Shape a meeting like a Weekly Matchups game so its cell renderers apply.
+    return {
+      home: m.home_name, away: m.away_name, neutral: m.neutral, kickoff: m.kickoff, date: m.kickoff ? null : m.date,
+      home_rank: m.home_rank, away_rank: m.away_rank,
+      home_record: m.home_record || "", away_record: m.away_record || "",
+      p_home: m.p_home, result: { home: m.home_pts, away: m.away_pts },
+      stakes: m.odds || null, quality: m.quality, stakes_score: m.stakes, juice: m.juice,
+    };
+  }
+
+  var RV_MEET_COLS = [
+    { key: "date", label: "Season", cls: "col-hide-mobile", val: function (m) { return m.season * 1000 + m.week; } },
+    { key: "quality", label: "Quality", cls: "col-od col-hide-mobile", title: WM_QUALITY_TITLE, val: function (m) { return m.quality; } },
+    { key: "stakes", label: "Stakes", cls: "col-od col-hide-mobile", title: WM_STAKES_TITLE, val: function (m) { return m.stakes; } },
+    { key: "juice", label: "Juice", cls: "col-od", title: WM_JUICE_TITLE, val: function (m) { return m.juice; } },
+  ];
+
+  function renderRivalryDetail(d, ta, tb) {
+    var p = d.summary;
+    var stamp = "";
+    if (d.upcoming) {
+      var u = d.upcoming, g = rvGameObj(Object.assign({}, u, { home_pts: null, away_pts: null }));
+      var pk = wmPick(Object.assign(g, { home: u.home_name, away: u.away_name }));
+      stamp += '<span class="wc-md-label">Next meeting</span><span class="wc-result">' + u.season + " " + wmWeekLabel(u.week) +
+        (wmKickoff(u) ? " &middot; " + wmKickoff(u) : "") + " &middot; DILLON pick <b>" + wmNick(pk.team) + " " + wmPct(pk.p) + "</b></span>";
+    }
+    rvStamp.innerHTML = stamp;
+
+    var sides = [ta, tb].map(function (t) { return { team: t, s: rvSplit(d, t) }; });
+    function rec(w, l, t) { return w + "-" + l + (t ? "-" + t : ""); }
+    rvSplitWrap.innerHTML = '<table class="sport-table rv-split-table"><thead><tr><th>Team</th><th>W-L</th>' +
+      '<th class="col-hide-mobile">Home</th><th class="col-hide-mobile">Away</th><th class="col-hide-mobile rv-hide-t">Neutral</th>' +
+      "<th>Playoffs</th><th class=\"col-hide-mobile\">Super Bowls</th>" +
+      '<th class="col-od col-hide-mobile rv-hide-t" title="Points per meeting">PPG</th><th class="col-hide-mobile">Biggest Win</th></tr></thead><tbody>' +
+      sides.map(function (x) {
+        var s = x.s, n = s.w + s.l + s.t, b = s.best;
+        var big = b ? b.us + "-" + b.them + '<div class="sub-line-italic">' + b.m.season + " " + wmWeekLabel(b.m.week) + "</div>" : "-";
+        return '<tr><td class="team-cell">' + rvTeamLink(x.team) + "</td>" +
+          "<td>" + fmtRecord(rec(s.w, s.l, s.t)) + "</td>" +
+          '<td class="col-hide-mobile">' + rec(s.hw, s.hl, s.ht) + '</td><td class="col-hide-mobile">' + rec(s.aw, s.al, s.at) + "</td>" +
+          '<td class="col-hide-mobile rv-hide-t">' + (s.nw + s.nl + s.nt ? rec(s.nw, s.nl, s.nt) : "-") + "</td>" +
+          "<td>" + (s.pw + s.pl ? rec(s.pw, s.pl) : "-") + '</td><td class="col-hide-mobile">' + (s.sw + s.sl ? rec(s.sw, s.sl) : "-") + "</td>" +
+          '<td class="col-od col-hide-mobile rv-hide-t">' + (n ? (s.pf / n).toFixed(1) : "-") + '</td><td class="col-hide-mobile">' + big + "</td></tr>";
+      }).join("") + "</tbody></table>";
+    renderRivalryMeetings(d);
+    rvLinks(rvSplitWrap);
+  }
+
+  // Both teams are in the page title, so meeting rows use nicknames (the era's
+  // name: Redskins, Oilers) and a short result: winner, score, pick mark.
+  function rvNickLink(name, season) {
+    var slug = state.nameToSlug[name];
+    return slug ? '<span class="team-link linked" data-team-slug="' + slug + '" data-season="' + season + '" title="' + name + '">' + wmNick(name) + "</span>" : wmNick(name);
+  }
+  // Phones fold the score into the matchup cell (Result column hidden there).
+  function rvMScore(g, side) {
+    var us = g.result[side], them = g.result[side === "home" ? "away" : "home"];
+    return ' <span class="rv-mscore' + (us > them ? " rv-win" : "") + '">' + us + "</span>";
+  }
+  function rvResult(g) {
+    var h = g.result.home, a = g.result.away;
+    var ok = g.p_home == null ? null : wmCorrect(g);   // 1970: no pick
+    var mark = ok == null ? "" : (ok ? ' <span class="wc-w">&#10003;</span>' : ' <span class="wc-l">&#10007;</span>');
+    if (h === a) return '<span class="wc-t">T</span> ' + h + "-" + a + mark;
+    return wmNick(h > a ? g.home : g.away) + " " + Math.max(h, a) + "-" + Math.min(h, a) + mark;
+  }
+
+  function renderRivalryMeetings(d) {
+    var col = RV_MEET_COLS.filter(function (c) { return c.key === state.rvMeetSort; })[0];
+    var ms = d.meetings.slice().sort(function (x, y) {
+      var a = col.val(x), b = col.val(y);
+      if (a == null || b == null) return a == null ? (b == null ? 0 : 1) : -1;   // 1970 (no metrics) sorts last
+      var dd = a - b;
+      return (state.rvMeetAsc ? dd : -dd) || (y.season * 1000 + y.week) - (x.season * 1000 + x.week);
+    });
+    function th(c) {
+      var on = c.key === state.rvMeetSort;
+      return '<th class="' + (c.cls || "") + (on ? " sort-active" : "") + '"' + (c.title ? ' title="' + c.title + '"' : "") +
+        '><button type="button" class="th-sort" data-rvmsort="' + c.key + '">' + c.label +
+        (on ? ' <span class="sort-arrow">' + (state.rvMeetAsc ? "&uarr;" : "&darr;") + "</span>" : "") + "</button></th>";
+    }
+    function td(key, html, cls) { return '<td class="' + (cls || "") + (key === state.rvMeetSort ? " sort-active" : "") + '">' + html + "</td>"; }
+    var rows = ms.map(function (m) {
+      var g = rvGameObj(m), ps = m.week >= 100, has = m.quality != null;
+      var pk = has ? wmPick(g) : null;
+      return "<tr>" +
+        td("date", m.season + '<div class="sub-line-italic">' + rvWeekShort(m.week) + "</div>", "col-hide-mobile") +
+        '<td class="wm-matchup"><div><span class="wm-at"></span><span class="wm-rank">' + (g.away_rank || "") + "</span>" + rvNickLink(g.away, m.season) + rvMScore(g, "away") + ' <span class="wm-dim rv-mrec">' + g.away_record + "</span></div>" +
+        '<div><span class="wm-at">' + (g.neutral ? "vs." : "@") + '</span><span class="wm-rank">' + (g.home_rank || "") + "</span>" + rvNickLink(g.home, m.season) + rvMScore(g, "home") + ' <span class="wm-dim rv-mrec">' + g.home_record + "</span></div>" +
+        (wmKickoff(g) ? '<div class="wm-kick sub-line-italic">' + wmKickoff(g) + "</div>" : "") + "</td>" +
+        td("quality", has ? m.quality : "-", "col-od col-hide-mobile") +
+        td("stakes", has ? m.stakes : "-", "col-od col-hide-mobile") +
+        td("juice", has ? m.juice : "-", "col-od wm-juice") +
+        '<td class="col-od col-hide-mobile">' + (pk ? '<div class="od-val">' + wmNick(pk.team) + '</div><div class="od-rank">' + wmPct(pk.p) + "</div>" : "-") + "</td>" +
+        '<td class="col-hide-tablet">' + (has && !ps ? wmStakesLines(g, "po", ps) : "-") + "</td>" +
+        '<td class="col-hide-tablet">' + (has ? wmStakesLines(g, "sb", ps) : "-") + "</td>" +
+        '<td class="wm-result col-hide-mobile">' + rvResult(g) + "</td></tr>";
+    }).join("");
+    rvMeetWrap.innerHTML = '<table class="sport-table wm-table rv-meet-table"><thead><tr>' + th(RV_MEET_COLS[0]) + "<th>Matchup</th>" +
+      th(RV_MEET_COLS[1]) + th(RV_MEET_COLS[2]) + th(RV_MEET_COLS[3]) +
+      '<th class="col-od col-hide-mobile">DILLON pick</th><th class="col-hide-tablet" title="Playoff odds with a win / with a loss">Playoff Odds (W/L)</th>' +
+      '<th class="col-hide-tablet" title="Super Bowl odds with a win / with a loss">SB Odds (W/L)</th><th class="col-hide-mobile">Result</th></tr></thead><tbody>' + rows + "</tbody></table>";
+    attachLinks(rvMeetWrap);
+  }
+
+  rvMeetWrap.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-rvmsort]");
+    if (!b) return;
+    var k = b.dataset.rvmsort;
+    if (k === state.rvMeetSort) state.rvMeetAsc = !state.rvMeetAsc;
+    else { state.rvMeetSort = k; state.rvMeetAsc = false; }
+    var ab = [rvSlugName(rvTeamSelect.value), rvSlugName(rvOppSelect.value)].sort();
+    var d = state.rvPairs[state.nameToSlug[ab[0]] + "__" + state.nameToSlug[ab[1]]];
+    if (d) renderRivalryMeetings(d);
+    writeUrl();
+  });
+
   // ═══════════════════════════════ NFL Playoffs ═══════════════════════════
   // Knockout odds, ported from MESSI's World Cup grid (same code as sports-wnba.js,
   // plus match scores and penalties for single-match rounds). Data: per-season
@@ -1792,6 +2139,26 @@
         });
       },
     },
+    "rivalries": {
+      query: function (add) {
+        if (rvTeamSelect.value) add("team", rvTeamSelect.value);
+        if (rvOppSelect.value) add("opp", rvOppSelect.value);
+        var pair = rvTeamSelect.value && rvOppSelect.value;
+        if (!pair && (state.rvSort !== "score" || state.rvAsc)) add("sort", state.rvSort + (state.rvAsc ? "-asc" : ""));
+        if (pair && (state.rvMeetSort !== "date" || state.rvMeetAsc)) add("sort", state.rvMeetSort + (state.rvMeetAsc ? "-asc" : ""));
+      },
+      apply: function (p) {
+        if (!state.rvIndex) return Promise.resolve();
+        rvTeamSelect.value = U.hasOption(rvTeamSelect, p.get("team")) ? p.get("team") : "";
+        rvOppSelect.value = U.hasOption(rvOppSelect, p.get("opp")) ? p.get("opp") : "";
+        var sort = (p.get("sort") || "").split("-"), pair = rvTeamSelect.value && rvOppSelect.value;
+        var keys = (pair ? RV_MEET_COLS : RV_COLS).map(function (c) { return c.key; });
+        var k = keys.indexOf(sort[0]) !== -1 ? sort[0] : (pair ? "date" : "score");
+        if (pair) { state.rvMeetSort = k; state.rvMeetAsc = sort[1] === "asc"; }
+        else { state.rvSort = k; state.rvAsc = sort[1] === "asc"; }
+        return Promise.resolve(renderRivalries());
+      },
+    },
     "team-summary": {
       query: function (add) {
         if (tsTeamSelect.value) add("team", tsTeamSelect.value);
@@ -1919,6 +2286,7 @@
       "goat": loadGoat(),
       "playoff-odds": loadPlayoffOdds(),
       "weekly-matchups": loadWeeklyMatchups(),
+      "rivalries": loadRivalries(),
       "team-summary": Promise.resolve(),
     };
     // The landing view settles once Playoffs has decided whether to take over.
